@@ -28,7 +28,6 @@ public class Interfaz extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         panelPrin = new javax.swing.JPanel();
@@ -87,6 +86,7 @@ public class Interfaz extends javax.swing.JFrame {
         homeB.setText("Principal");
         homeB.setBorder(null);
         homeB.setBorderPainted(false);
+        homeB.setContentAreaFilled(false);
         homeB.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         homeB.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -94,6 +94,11 @@ public class Interfaz extends javax.swing.JFrame {
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 homeBMouseExited(evt);
+            }
+        });
+        homeB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                homeBActionPerformed(evt);
             }
         });
         botones.add(homeB);
@@ -104,6 +109,7 @@ public class Interfaz extends javax.swing.JFrame {
         boton1.setText("Inventario  ");
         boton1.setBorder(null);
         boton1.setBorderPainted(false);
+        boton1.setContentAreaFilled(false);
         boton1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         boton1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -126,6 +132,7 @@ public class Interfaz extends javax.swing.JFrame {
         boton2.setText("Registro de Ventas");
         boton2.setBorder(null);
         boton2.setBorderPainted(false);
+        boton2.setContentAreaFilled(false);
         boton2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         boton2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -143,6 +150,7 @@ public class Interfaz extends javax.swing.JFrame {
         boton3.setText("Documentos");
         boton3.setBorder(null);
         boton3.setBorderPainted(false);
+        boton3.setContentAreaFilled(false);
         boton3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         boton3.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -160,6 +168,7 @@ public class Interfaz extends javax.swing.JFrame {
         boton4.setText("Sistema de Apartados   ");
         boton4.setBorder(null);
         boton4.setBorderPainted(false);
+        boton4.setContentAreaFilled(false);
         boton4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         boton4.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -177,6 +186,7 @@ public class Interfaz extends javax.swing.JFrame {
         boton5.setText("Resgistro de Clientes");
         boton5.setBorder(null);
         boton5.setBorderPainted(false);
+        boton5.setContentAreaFilled(false);
         boton5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         boton5.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -265,6 +275,11 @@ public class Interfaz extends javax.swing.JFrame {
         getContentPane().add(invPanel, java.awt.BorderLayout.CENTER);
         this.add(invPanel);
     }//GEN-LAST:event_boton1ActionPerformed
+
+    private void homeBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeBActionPerformed
+        // TODO add your handling code here:
+        System.out.print("Hola Mundo\n");
+    }//GEN-LAST:event_homeBActionPerformed
 
     /**
      * @param args the command line arguments
