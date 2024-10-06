@@ -28,7 +28,6 @@ public class Interfaz extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         panelPrin = new javax.swing.JPanel();
@@ -81,12 +80,12 @@ public class Interfaz extends javax.swing.JFrame {
         botones.setBackground(new java.awt.Color(213, 245, 213));
         botones.setLayout(new java.awt.GridLayout(0, 1));
 
-        homeB.setBackground(new java.awt.Color(186, 235, 186));
         homeB.setFont(new java.awt.Font("Berlin Sans FB", 0, 16)); // NOI18N
         homeB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/casita.png"))); // NOI18N
         homeB.setText("Principal");
         homeB.setBorder(null);
         homeB.setBorderPainted(false);
+        homeB.setContentAreaFilled(false);
         homeB.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         homeB.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -98,12 +97,12 @@ public class Interfaz extends javax.swing.JFrame {
         });
         botones.add(homeB);
 
-        boton1.setBackground(new java.awt.Color(186, 235, 186));
         boton1.setFont(new java.awt.Font("Berlin Sans FB", 0, 16)); // NOI18N
         boton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/inv.png"))); // NOI18N
         boton1.setText("Inventario  ");
         boton1.setBorder(null);
         boton1.setBorderPainted(false);
+        boton1.setContentAreaFilled(false);
         boton1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         boton1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -126,6 +125,7 @@ public class Interfaz extends javax.swing.JFrame {
         boton2.setText("Registro de Ventas");
         boton2.setBorder(null);
         boton2.setBorderPainted(false);
+        boton2.setContentAreaFilled(false);
         boton2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         boton2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -143,6 +143,7 @@ public class Interfaz extends javax.swing.JFrame {
         boton3.setText("Documentos");
         boton3.setBorder(null);
         boton3.setBorderPainted(false);
+        boton3.setContentAreaFilled(false);
         boton3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         boton3.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -160,6 +161,7 @@ public class Interfaz extends javax.swing.JFrame {
         boton4.setText("Sistema de Apartados   ");
         boton4.setBorder(null);
         boton4.setBorderPainted(false);
+        boton4.setContentAreaFilled(false);
         boton4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         boton4.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -177,6 +179,7 @@ public class Interfaz extends javax.swing.JFrame {
         boton5.setText("Resgistro de Clientes");
         boton5.setBorder(null);
         boton5.setBorderPainted(false);
+        boton5.setContentAreaFilled(false);
         boton5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         boton5.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -196,74 +199,82 @@ public class Interfaz extends javax.swing.JFrame {
 
     private void boton5MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton5MouseEntered
         // TODO add your handling code here:
-        boton5.requestFocus();
-        boton5.setBackground(new java.awt.Color(220,249,220));
+        boton5.setFont(new java.awt.Font("Berlin Sans FB", 2, 16));
+        boton5.setForeground(new java.awt.Color(0, 102, 102));
     }//GEN-LAST:event_boton5MouseEntered
 
     private void boton5MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton5MouseExited
         // TODO add your handling code here:
-        boton5.setBackground(new java.awt.Color(186,235,186));
+        boton5.setFont(new java.awt.Font("Berlin Sans FB", 0, 16));
+        boton5.setForeground(new java.awt.Color(0, 0, 0));
     }//GEN-LAST:event_boton5MouseExited
 
     private void homeBMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBMouseEntered
         // TODO add your handling code here:
-        homeB.requestFocus();
-        homeB.setBackground(new java.awt.Color(220,249,220));
+        homeB.setFont(new java.awt.Font("Berlin Sans FB", 2, 16));
+        homeB.setForeground(new java.awt.Color(0, 102, 102));
     }//GEN-LAST:event_homeBMouseEntered
 
     private void homeBMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBMouseExited
         // TODO add your handling code here:
-        homeB.setBackground(new java.awt.Color(186,235,186));
+        homeB.setFont(new java.awt.Font("Berlin Sans FB", 0, 16));
+        homeB.setForeground(new java.awt.Color(0, 0, 0));
     }//GEN-LAST:event_homeBMouseExited
 
     private void boton1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton1MouseEntered
         // TODO add your handling code here:
-        boton1.requestFocus();
-        boton1.setBackground(new java.awt.Color(220,249,220));
+        boton1.setFont(new java.awt.Font("Berlin Sans FB", 2, 16));
+        boton1.setForeground(new java.awt.Color(0, 102, 102));
     }//GEN-LAST:event_boton1MouseEntered
 
     private void boton1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton1MouseExited
         // TODO add your handling code here:
-        boton1.setBackground(new java.awt.Color(186,235,186));
+        boton1.setFont(new java.awt.Font("Berlin Sans FB", 0, 16));
+        boton1.setForeground(new java.awt.Color(0, 0, 0));
     }//GEN-LAST:event_boton1MouseExited
 
     private void boton2MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton2MouseEntered
         // TODO add your handling code here:
-        boton2.requestFocus();
-        boton2.setBackground(new java.awt.Color(220,249,220));
+        boton2.setFont(new java.awt.Font("Berlin Sans FB", 2, 16));
+        boton2.setForeground(new java.awt.Color(0, 102, 102));
     }//GEN-LAST:event_boton2MouseEntered
 
     private void boton2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton2MouseExited
         // TODO add your handling code here:
-        boton2.setBackground(new java.awt.Color(186,235,186));
+        boton2.setFont(new java.awt.Font("Berlin Sans FB", 0, 16));
+        boton2.setForeground(new java.awt.Color(0, 0, 0));
     }//GEN-LAST:event_boton2MouseExited
 
     private void boton3MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton3MouseEntered
         // TODO add your handling code here:
-        boton3.requestFocus();
-        boton3.setBackground(new java.awt.Color(220,249,220));
+        boton3.setFont(new java.awt.Font("Berlin Sans FB", 2, 16));
+        boton3.setForeground(new java.awt.Color(0, 102, 102));
     }//GEN-LAST:event_boton3MouseEntered
 
     private void boton3MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton3MouseExited
         // TODO add your handling code here:
-        boton3.setBackground(new java.awt.Color(186,235,186));
+        boton3.setFont(new java.awt.Font("Berlin Sans FB", 0, 16));
+        boton3.setForeground(new java.awt.Color(0, 0, 0));
     }//GEN-LAST:event_boton3MouseExited
 
     private void boton4MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton4MouseEntered
         // TODO add your handling code here:
-        boton4.requestFocus();
-        boton4.setBackground(new java.awt.Color(220,249,220));
+        boton4.setFont(new java.awt.Font("Berlin Sans FB", 2, 16));
+        boton4.setForeground(new java.awt.Color(0, 102, 102));
     }//GEN-LAST:event_boton4MouseEntered
 
     private void boton4MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton4MouseExited
         // TODO add your handling code here:
-        boton4.setBackground(new java.awt.Color(186,235,186));
+        boton4.setFont(new java.awt.Font("Berlin Sans FB", 0, 16));
+        boton4.setForeground(new java.awt.Color(0, 0, 0));
     }//GEN-LAST:event_boton4MouseExited
 
     private void boton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton1ActionPerformed
         // TODO add your handling code here:
+        panelPrin.setVisible(false);
         getContentPane().add(invPanel, java.awt.BorderLayout.CENTER);
         this.add(invPanel);
+        invPanel.setVisible(true);
     }//GEN-LAST:event_boton1ActionPerformed
 
     /**
