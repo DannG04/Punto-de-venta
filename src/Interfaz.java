@@ -11,7 +11,15 @@
  */
 public class Interfaz extends javax.swing.JFrame {
 
+    //Paneles
     InventarioP invPanel = new InventarioP();
+    VentasP ventPanel = new VentasP();
+    DocumentosP docsPanel = new DocumentosP();
+    ApartadosP apPanel = new ApartadosP();
+    ClientesP cliPanel = new ClientesP();
+    
+    java.awt.Color colSel = new java.awt.Color(255, 255, 255);
+    java.awt.Color colNorm = new java.awt.Color(180, 180, 180);
     
     /**
      * Creates new form Interfaz
@@ -31,11 +39,11 @@ public class Interfaz extends javax.swing.JFrame {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         panelPrin = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
         panelT = new javax.swing.JPanel();
         titulo = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
         botones = new javax.swing.JPanel();
-        homeB = new javax.swing.JButton();
+        boton0 = new javax.swing.JButton();
         boton1 = new javax.swing.JButton();
         boton2 = new javax.swing.JButton();
         boton3 = new javax.swing.JButton();
@@ -47,58 +55,69 @@ public class Interfaz extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(1100, 700));
         setSize(new java.awt.Dimension(1100, 700));
 
-        panelPrin.setBackground(new java.awt.Color(246, 255, 246));
+        panelPrin.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel1.setText("principal");
 
         javax.swing.GroupLayout panelPrinLayout = new javax.swing.GroupLayout(panelPrin);
         panelPrin.setLayout(panelPrinLayout);
         panelPrinLayout.setHorizontalGroup(
             panelPrinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 702, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelPrinLayout.createSequentialGroup()
+                .addContainerGap(298, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(289, 289, 289))
         );
         panelPrinLayout.setVerticalGroup(
             panelPrinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 541, Short.MAX_VALUE)
+            .addGroup(panelPrinLayout.createSequentialGroup()
+                .addGap(138, 138, 138)
+                .addComponent(jLabel1)
+                .addContainerGap(426, Short.MAX_VALUE))
         );
 
         getContentPane().add(panelPrin, java.awt.BorderLayout.CENTER);
 
-        panelT.setBackground(new java.awt.Color(114, 181, 164));
+        panelT.setBackground(new java.awt.Color(0, 0, 0));
         panelT.setLayout(new java.awt.BorderLayout());
 
         titulo.setFont(new java.awt.Font("Berlin Sans FB", 0, 36)); // NOI18N
+        titulo.setForeground(new java.awt.Color(204, 204, 204));
         titulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         titulo.setText("Punto de Ventas");
         panelT.add(titulo, java.awt.BorderLayout.CENTER);
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/vM.png"))); // NOI18N
-        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        panelT.add(jLabel1, java.awt.BorderLayout.LINE_START);
-
         getContentPane().add(panelT, java.awt.BorderLayout.PAGE_START);
 
-        botones.setBackground(new java.awt.Color(213, 245, 213));
+        botones.setBackground(new java.awt.Color(0, 0, 0));
         botones.setLayout(new java.awt.GridLayout(0, 1));
 
-        homeB.setFont(new java.awt.Font("Berlin Sans FB", 0, 16)); // NOI18N
-        homeB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/casita.png"))); // NOI18N
-        homeB.setText("Principal");
-        homeB.setBorder(null);
-        homeB.setBorderPainted(false);
-        homeB.setContentAreaFilled(false);
-        homeB.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        homeB.addMouseListener(new java.awt.event.MouseAdapter() {
+        boton0.setFont(new java.awt.Font("Berlin Sans FB", 0, 16)); // NOI18N
+        boton0.setForeground(new java.awt.Color(180, 180, 180));
+        boton0.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/jom.png"))); // NOI18N
+        boton0.setText("Principal");
+        boton0.setBorder(null);
+        boton0.setBorderPainted(false);
+        boton0.setContentAreaFilled(false);
+        boton0.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        boton0.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                homeBMouseEntered(evt);
+                boton0MouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                homeBMouseExited(evt);
+                boton0MouseExited(evt);
             }
         });
-        botones.add(homeB);
+        boton0.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                boton0ActionPerformed(evt);
+            }
+        });
+        botones.add(boton0);
 
         boton1.setFont(new java.awt.Font("Berlin Sans FB", 0, 16)); // NOI18N
-        boton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/inv.png"))); // NOI18N
+        boton1.setForeground(new java.awt.Color(180, 180, 180));
+        boton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/invent.png"))); // NOI18N
         boton1.setText("Inventario  ");
         boton1.setBorder(null);
         boton1.setBorderPainted(false);
@@ -121,7 +140,8 @@ public class Interfaz extends javax.swing.JFrame {
 
         boton2.setBackground(new java.awt.Color(186, 235, 186));
         boton2.setFont(new java.awt.Font("Berlin Sans FB", 0, 16)); // NOI18N
-        boton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/ventas.png"))); // NOI18N
+        boton2.setForeground(new java.awt.Color(180, 180, 180));
+        boton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/ventA.png"))); // NOI18N
         boton2.setText("Registro de Ventas");
         boton2.setBorder(null);
         boton2.setBorderPainted(false);
@@ -135,11 +155,17 @@ public class Interfaz extends javax.swing.JFrame {
                 boton2MouseExited(evt);
             }
         });
+        boton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                boton2ActionPerformed(evt);
+            }
+        });
         botones.add(boton2);
 
         boton3.setBackground(new java.awt.Color(186, 235, 186));
         boton3.setFont(new java.awt.Font("Berlin Sans FB", 0, 16)); // NOI18N
-        boton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/docs.png"))); // NOI18N
+        boton3.setForeground(new java.awt.Color(180, 180, 180));
+        boton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/carpe.png"))); // NOI18N
         boton3.setText("Documentos");
         boton3.setBorder(null);
         boton3.setBorderPainted(false);
@@ -153,11 +179,17 @@ public class Interfaz extends javax.swing.JFrame {
                 boton3MouseExited(evt);
             }
         });
+        boton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                boton3ActionPerformed(evt);
+            }
+        });
         botones.add(boton3);
 
         boton4.setBackground(new java.awt.Color(186, 235, 186));
         boton4.setFont(new java.awt.Font("Berlin Sans FB", 0, 16)); // NOI18N
-        boton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/apartao.png"))); // NOI18N
+        boton4.setForeground(new java.awt.Color(180, 180, 180));
+        boton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/doc.png"))); // NOI18N
         boton4.setText("Sistema de Apartados   ");
         boton4.setBorder(null);
         boton4.setBorderPainted(false);
@@ -171,11 +203,17 @@ public class Interfaz extends javax.swing.JFrame {
                 boton4MouseExited(evt);
             }
         });
+        boton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                boton4ActionPerformed(evt);
+            }
+        });
         botones.add(boton4);
 
         boton5.setBackground(new java.awt.Color(186, 235, 186));
         boton5.setFont(new java.awt.Font("Berlin Sans FB", 0, 16)); // NOI18N
-        boton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/usuario.png"))); // NOI18N
+        boton5.setForeground(new java.awt.Color(180, 180, 180));
+        boton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/uzuario.png"))); // NOI18N
         boton5.setText("Resgistro de Clientes");
         boton5.setBorder(null);
         boton5.setBorderPainted(false);
@@ -189,6 +227,11 @@ public class Interfaz extends javax.swing.JFrame {
                 boton5MouseExited(evt);
             }
         });
+        boton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                boton5ActionPerformed(evt);
+            }
+        });
         botones.add(boton5);
 
         getContentPane().add(botones, java.awt.BorderLayout.WEST);
@@ -200,82 +243,116 @@ public class Interfaz extends javax.swing.JFrame {
     private void boton5MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton5MouseEntered
         // TODO add your handling code here:
         boton5.setFont(new java.awt.Font("Berlin Sans FB", 2, 16));
-        boton5.setForeground(new java.awt.Color(0, 102, 102));
+        boton5.setForeground(colSel);
+        boton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/uzuario0.png")));
     }//GEN-LAST:event_boton5MouseEntered
 
     private void boton5MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton5MouseExited
         // TODO add your handling code here:
         boton5.setFont(new java.awt.Font("Berlin Sans FB", 0, 16));
-        boton5.setForeground(new java.awt.Color(0, 0, 0));
+        boton5.setForeground(colNorm);
+        boton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/uzuario.png")));
     }//GEN-LAST:event_boton5MouseExited
 
-    private void homeBMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBMouseEntered
+    private void boton0MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton0MouseEntered
         // TODO add your handling code here:
-        homeB.setFont(new java.awt.Font("Berlin Sans FB", 2, 16));
-        homeB.setForeground(new java.awt.Color(0, 102, 102));
-    }//GEN-LAST:event_homeBMouseEntered
+        boton0.setFont(new java.awt.Font("Berlin Sans FB", 2, 16));
+        boton0.setForeground(colSel);
+        boton0.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/jom0.png")));
+    }//GEN-LAST:event_boton0MouseEntered
 
-    private void homeBMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeBMouseExited
+    private void boton0MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton0MouseExited
         // TODO add your handling code here:
-        homeB.setFont(new java.awt.Font("Berlin Sans FB", 0, 16));
-        homeB.setForeground(new java.awt.Color(0, 0, 0));
-    }//GEN-LAST:event_homeBMouseExited
+        boton0.setFont(new java.awt.Font("Berlin Sans FB", 0, 16));
+        boton0.setForeground(colNorm);
+        boton0.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/jom.png")));
+    }//GEN-LAST:event_boton0MouseExited
 
     private void boton1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton1MouseEntered
         // TODO add your handling code here:
         boton1.setFont(new java.awt.Font("Berlin Sans FB", 2, 16));
-        boton1.setForeground(new java.awt.Color(0, 102, 102));
+        boton1.setForeground(colSel);
+        boton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/invent0.png")));
     }//GEN-LAST:event_boton1MouseEntered
 
     private void boton1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton1MouseExited
         // TODO add your handling code here:
         boton1.setFont(new java.awt.Font("Berlin Sans FB", 0, 16));
-        boton1.setForeground(new java.awt.Color(0, 0, 0));
+        boton1.setForeground(colNorm);
+        boton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/invent.png")));
     }//GEN-LAST:event_boton1MouseExited
 
     private void boton2MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton2MouseEntered
         // TODO add your handling code here:
         boton2.setFont(new java.awt.Font("Berlin Sans FB", 2, 16));
-        boton2.setForeground(new java.awt.Color(0, 102, 102));
+        boton2.setForeground(colSel);
+        boton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/ventA0.png")));
     }//GEN-LAST:event_boton2MouseEntered
 
     private void boton2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton2MouseExited
         // TODO add your handling code here:
         boton2.setFont(new java.awt.Font("Berlin Sans FB", 0, 16));
-        boton2.setForeground(new java.awt.Color(0, 0, 0));
+        boton2.setForeground(colNorm);
+        boton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/ventA.png")));
     }//GEN-LAST:event_boton2MouseExited
 
     private void boton3MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton3MouseEntered
         // TODO add your handling code here:
         boton3.setFont(new java.awt.Font("Berlin Sans FB", 2, 16));
-        boton3.setForeground(new java.awt.Color(0, 102, 102));
+        boton3.setForeground(colSel);
+        boton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/carpe0.png")));
     }//GEN-LAST:event_boton3MouseEntered
 
     private void boton3MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton3MouseExited
         // TODO add your handling code here:
         boton3.setFont(new java.awt.Font("Berlin Sans FB", 0, 16));
-        boton3.setForeground(new java.awt.Color(0, 0, 0));
+        boton3.setForeground(colNorm);
+        boton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/carpe.png")));
     }//GEN-LAST:event_boton3MouseExited
 
     private void boton4MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton4MouseEntered
         // TODO add your handling code here:
         boton4.setFont(new java.awt.Font("Berlin Sans FB", 2, 16));
-        boton4.setForeground(new java.awt.Color(0, 102, 102));
+        boton4.setForeground(colSel);
+        boton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/doc0.png")));
     }//GEN-LAST:event_boton4MouseEntered
 
     private void boton4MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton4MouseExited
         // TODO add your handling code here:
         boton4.setFont(new java.awt.Font("Berlin Sans FB", 0, 16));
-        boton4.setForeground(new java.awt.Color(0, 0, 0));
+        boton4.setForeground(colNorm);
+        boton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/doc.png")));
     }//GEN-LAST:event_boton4MouseExited
 
     private void boton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton1ActionPerformed
         // TODO add your handling code here:
-        panelPrin.setVisible(false);
-        getContentPane().add(invPanel, java.awt.BorderLayout.CENTER);
-        this.add(invPanel);
-        invPanel.setVisible(true);
+        visibilidad(1);
     }//GEN-LAST:event_boton1ActionPerformed
+
+    private void boton0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton0ActionPerformed
+        // TODO add your handling code here:
+        visibilidad(0);
+    }//GEN-LAST:event_boton0ActionPerformed
+
+    private void boton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton2ActionPerformed
+        // TODO add your handling code here:
+        visibilidad(2);
+    }//GEN-LAST:event_boton2ActionPerformed
+
+    private void boton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton3ActionPerformed
+        // TODO add your handling code here:
+        visibilidad(3);
+    }//GEN-LAST:event_boton3ActionPerformed
+
+    private void boton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton4ActionPerformed
+        // TODO add your handling code here:
+        visibilidad(4);
+    }//GEN-LAST:event_boton4ActionPerformed
+
+    private void boton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton5ActionPerformed
+        // TODO add your handling code here:
+        visibilidad(5);
+    }//GEN-LAST:event_boton5ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -311,8 +388,49 @@ public class Interfaz extends javax.swing.JFrame {
             }
         });
     }
+    
+    
+    public void visibilidad(int a){
+        panelPrin.setVisible(false);
+        invPanel.setVisible(false);
+        ventPanel.setVisible(false);
+        docsPanel.setVisible(false);
+        apPanel.setVisible(false);
+        cliPanel.setVisible(false);
+        switch(a){
+            case 0://Panel Principal
+                panelPrin.setVisible(true);
+                break;
+            case 1://Panel Inventario
+                getContentPane().add(invPanel, java.awt.BorderLayout.CENTER);
+                this.add(invPanel);
+                invPanel.setVisible(true);
+                break;
+            case 2://Panel Registro de Ventas
+                getContentPane().add(ventPanel, java.awt.BorderLayout.CENTER);
+                this.add(ventPanel);
+                ventPanel.setVisible(true);
+                break;
+            case 3://Panel Documentos
+                getContentPane().add(docsPanel, java.awt.BorderLayout.CENTER);
+                this.add(docsPanel);
+                docsPanel.setVisible(true);
+                break;
+            case 4://Panel Sistema de Apartados
+                getContentPane().add(apPanel, java.awt.BorderLayout.CENTER);
+                this.add(apPanel);
+                apPanel.setVisible(true);
+                break;
+            case 5://Panel Registro de Clientes
+                getContentPane().add(cliPanel, java.awt.BorderLayout.CENTER);
+                this.add(cliPanel);
+                cliPanel.setVisible(true);
+                break;
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton boton0;
     private javax.swing.JButton boton1;
     private javax.swing.JButton boton2;
     private javax.swing.JButton boton3;
@@ -320,7 +438,6 @@ public class Interfaz extends javax.swing.JFrame {
     private javax.swing.JButton boton5;
     private javax.swing.JPanel botones;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton homeB;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel panelPrin;
     private javax.swing.JPanel panelT;
