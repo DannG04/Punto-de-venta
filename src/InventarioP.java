@@ -1,3 +1,7 @@
+
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
@@ -9,11 +13,23 @@
  */
 public class InventarioP extends javax.swing.JPanel {
 
+    static java.util.ArrayList<String> codInv = new java.util.ArrayList<>();
+    static java.util.ArrayList<String> nombreInv = new java.util.ArrayList<>();
+    static java.util.ArrayList<Integer> cantInv = new java.util.ArrayList<>();
+    static java.util.ArrayList<Integer> precioInv = new java.util.ArrayList<>();
+    static DefaultTableModel modelo = new DefaultTableModel(); 
+    
     /**
      * Creates new form Inventario
      */
     public InventarioP() {
         initComponents();
+        modelo=(DefaultTableModel)tablaVentas.getModel();
+        inventarioCod();
+        inventarioNom();
+        inventarioCant();
+        inventarioPreU();
+        mostrarTabla();
     }
 
     /**
@@ -24,41 +40,450 @@ public class InventarioP extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
+        jDialog1 = new javax.swing.JDialog();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        codp = new javax.swing.JFormattedTextField();
+        nom = new javax.swing.JFormattedTextField();
+        precu = new javax.swing.JFormattedTextField();
+        cadd = new javax.swing.JFormattedTextField();
+        hechoB1 = new javax.swing.JButton();
+        hechoB2 = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        jButton4 = new javax.swing.JButton();
+        codigoProd = new javax.swing.JFormattedTextField();
+        jPanel2 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablaVentas = new javax.swing.JTable();
 
-        setBackground(new java.awt.Color(246, 255, 246));
+        jDialog1.setModal(true);
+        jDialog1.setPreferredSize(new java.awt.Dimension(450, 350));
+        jDialog1.setSize(new java.awt.Dimension(450, 350));
 
-        jLabel1.setText("jLabel1");
+        jPanel3.setBackground(new java.awt.Color(224, 224, 224));
+        jPanel3.setLayout(new java.awt.GridBagLayout());
 
-        jTextField1.setText("jTextField1");
+        jLabel2.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel2.setText("Código del Producto:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 16;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel3.add(jLabel2, gridBagConstraints);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(123, 123, 123)
-                .addComponent(jLabel1)
-                .addGap(41, 41, 41)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(270, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(67, 67, 67)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(315, Short.MAX_VALUE))
-        );
+        jLabel3.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel3.setText("Nombre: ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 16;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel3.add(jLabel3, gridBagConstraints);
+
+        jLabel4.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel4.setText("Precio Unitario:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.ipadx = 16;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel3.add(jLabel4, gridBagConstraints);
+
+        jLabel5.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel5.setText("Cantidad: ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.ipadx = 16;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel3.add(jLabel5, gridBagConstraints);
+
+        codp.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        codp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                codpActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 150;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel3.add(codp, gridBagConstraints);
+
+        nom.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 150;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel3.add(nom, gridBagConstraints);
+
+        precu.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.ipadx = 150;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel3.add(precu, gridBagConstraints);
+
+        cadd.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.ipadx = 150;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel3.add(cadd, gridBagConstraints);
+
+        hechoB1.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        hechoB1.setForeground(new java.awt.Color(102, 102, 102));
+        hechoB1.setText("Hecho");
+        hechoB1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hechoB1ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.insets = new java.awt.Insets(30, 10, 10, 10);
+        jPanel3.add(hechoB1, gridBagConstraints);
+        hechoB1.setVisible(false);
+
+        hechoB2.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        hechoB2.setForeground(new java.awt.Color(102, 102, 102));
+        hechoB2.setText("Hecho");
+        hechoB2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hechoB2ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.insets = new java.awt.Insets(30, 10, 10, 10);
+        jPanel3.add(hechoB2, gridBagConstraints);
+        hechoB2.setVisible(false);
+
+        jDialog1.getContentPane().add(jPanel3, java.awt.BorderLayout.CENTER);
+
+        setBackground(new java.awt.Color(255, 255, 255));
+        setLayout(new java.awt.BorderLayout());
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
+        jLabel1.setFont(new java.awt.Font("Berlin Sans FB", 0, 36)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Inventario");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.ipadx = 10;
+        gridBagConstraints.ipady = 10;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel1.add(jLabel1, gridBagConstraints);
+
+        jButton4.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        jButton4.setText("Buscar");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 10);
+        jPanel1.add(jButton4, gridBagConstraints);
+
+        codigoProd.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        codigoProd.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                codigoProdKeyTyped(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 500;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+        jPanel1.add(codigoProd, gridBagConstraints);
+
+        add(jPanel1, java.awt.BorderLayout.NORTH);
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        jButton1.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        jButton1.setText("Agregar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel2.add(jButton1, gridBagConstraints);
+
+        jButton2.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        jButton2.setText("Eliminar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel2.add(jButton2, gridBagConstraints);
+
+        jButton3.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        jButton3.setText("Actalizar");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel2.add(jButton3, gridBagConstraints);
+
+        add(jPanel2, java.awt.BorderLayout.EAST);
+
+        jScrollPane1.setBackground(new java.awt.Color(255, 255, 255));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(540, 402));
+
+        tablaVentas.setFont(new java.awt.Font("Berlin Sans FB", 0, 14)); // NOI18N
+        tablaVentas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Código", "Producto", "Cantidad", "Precio"
+            }
+        ));
+        jScrollPane1.setViewportView(tablaVentas);
+
+        add(jScrollPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        if(tablaVentas.getSelectedRow() != -1){
+            int a = tablaVentas.getSelectedRow();
+            eliminarElementos(a);
+            modelo.removeRow(tablaVentas.getSelectedRow());
+        }
+        else
+            JOptionPane.showMessageDialog(null,"Debe seleccionar la fila que desea eliminar");
+    }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        codp.setText("");
+        nom.setText("");
+        precu.setText("");
+        cadd.setText("");
+        hechoB1.setVisible(true);
+        hechoB2.setVisible(false);
+        jDialog1.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        if(tablaVentas.getSelectedRow() != -1){
+            int a = tablaVentas.getSelectedRow();
+            hechoB1.setVisible(false);
+            hechoB2.setVisible(true);
+            //MOSTRAR LOS DATOS EN EL FIELD
+            codp.setText(codInv.get(a));
+            nom.setText(nombreInv.get(a));
+            precu.setText("" + precioInv.get(a));
+            cadd.setText("" + cantInv.get(a));
+            jDialog1.setVisible(true);
+        }
+        else
+            JOptionPane.showMessageDialog(null,"Debe seleccionar la fila que desea actualizar");
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void codigoProdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_codigoProdKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_codigoProdKeyTyped
+
+    private void codpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_codpActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_codpActionPerformed
+
+    private void hechoB1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoB1ActionPerformed
+        // TODO add your handling code here:
+        guardarElementos();
+        mostrarTabla();
+        jDialog1.setVisible(false);
+    }//GEN-LAST:event_hechoB1ActionPerformed
+
+    private void hechoB2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoB2ActionPerformed
+        // TODO add your handling code here:
+        int a = tablaVentas.getSelectedRow();
+        actualizarElementos(a);
+        mostrarTabla();
+        jDialog1.setVisible(false);
+    }//GEN-LAST:event_hechoB2ActionPerformed
+
+    //BASE DE DATOS TEMPORAL DEL INVENTARIO
+    public final void inventarioCod(){
+        codInv.add("P123M");
+        codInv.add("C123T");
+        codInv.add("T123C");
+        codInv.add("T123D");
+    }
+    
+    public final void inventarioNom(){
+        nombreInv.add("Pantalon de Mezclilla");
+        nombreInv.add("Chanclas de Tiburón");
+        nombreInv.add("Tines de Caballero");
+        nombreInv.add("Tines de Dama");
+    }
+    
+    public final void inventarioCant(){
+        cantInv.add(50);
+        cantInv.add(100);
+        cantInv.add(500);
+        cantInv.add(600);
+    }
+    
+    public final void inventarioPreU(){
+        precioInv.add(180);
+        precioInv.add(110);
+        precioInv.add(10);
+        precioInv.add(10);
+    }
+    
+    //TABLAS
+    public static final void mostrarTabla(){
+        if(modelo.getRowCount() != 0){
+            limpiarTabla();
+            llenarTabla();
+        }
+        else{
+            llenarTabla();
+        }
+    }
+    
+    public static void llenarTabla(){
+        int a = codInv.size();
+        for(int i=0;i<a;i++){
+            modelo.addRow(new Object[]{codInv.get(i),nombreInv.get(i),cantInv.get(i),precioInv.get(i)});
+        }
+    }
+    
+    public static void limpiarTabla(){
+     int a=modelo.getRowCount();    
+        while(a!=0){ 
+            if(a!=0)
+                modelo.removeRow(0);                      
+            a=modelo.getRowCount();
+        }
+    }
+    
+    public void eliminarElementos(int a){
+        codInv.remove(a);
+        nombreInv.remove(a);
+        cantInv.remove(a);
+        precioInv.remove(a);
+    }
+    
+    public void guardarElementos(){
+        codInv.add(codp.getText());
+        nombreInv.add(nom.getText());
+        cantInv.add(Integer.valueOf(cadd.getText()));
+        precioInv.add(Integer.valueOf(precu.getText()));
+    }
+    
+    public void actualizarElementos(int a){
+        //reemplazar
+        codInv.set(a, codp.getText());
+        nombreInv.set(a, nom.getText());
+        cantInv.set(a, Integer.valueOf(cadd.getText()));
+        precioInv.set(a, Integer.valueOf(precu.getText()));
+    }
+    
+    //AEA PRODUCTOS
+    public void agregarProd(){
+        
+    }
+    
+    public void eliminarProd(){
+        
+    }
+    
+    public void actualizarProd(){
+        
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JFormattedTextField cadd;
+    private javax.swing.JFormattedTextField codigoProd;
+    private javax.swing.JFormattedTextField codp;
+    private javax.swing.JButton hechoB1;
+    private javax.swing.JButton hechoB2;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JDialog jDialog1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JFormattedTextField nom;
+    private javax.swing.JFormattedTextField precu;
+    public static javax.swing.JTable tablaVentas;
     // End of variables declaration//GEN-END:variables
 }

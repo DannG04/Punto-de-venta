@@ -1,4 +1,7 @@
 
+import javax.swing.JOptionPane;
+
+
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -11,6 +14,9 @@
  */
 public class Interfaz extends javax.swing.JFrame {
 
+    String administrador = "DanielG";
+    
+    
     //Paneles
     InventarioP invPanel = new InventarioP();
     VentasP ventPanel = new VentasP();
@@ -21,11 +27,15 @@ public class Interfaz extends javax.swing.JFrame {
     java.awt.Color colSel = new java.awt.Color(255, 255, 255);
     java.awt.Color colNorm = new java.awt.Color(180, 180, 180);
     
+    java.util.ArrayList<String> usuarios = new java.util.ArrayList<>();
+    java.util.HashMap<String,String> contraseña = new java.util.HashMap<>();
+    
     /**
      * Creates new form Interfaz
      */
     public Interfaz() {
         initComponents();
+        usuariosBD();
     }
 
     /**
@@ -36,10 +46,16 @@ public class Interfaz extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         panelPrin = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        usuarioF = new javax.swing.JFormattedTextField();
+        contraF = new javax.swing.JPasswordField();
+        jButton1 = new javax.swing.JButton();
         panelT = new javax.swing.JPanel();
         titulo = new javax.swing.JLabel();
         botones = new javax.swing.JPanel();
@@ -56,25 +72,80 @@ public class Interfaz extends javax.swing.JFrame {
         setSize(new java.awt.Dimension(1100, 700));
 
         panelPrin.setBackground(new java.awt.Color(255, 255, 255));
+        panelPrin.setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setText("principal");
+        jLabel1.setFont(new java.awt.Font("Berlin Sans FB", 0, 36)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/usua.png"))); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.ipadx = 10;
+        gridBagConstraints.ipady = 10;
+        panelPrin.add(jLabel1, gridBagConstraints);
 
-        javax.swing.GroupLayout panelPrinLayout = new javax.swing.GroupLayout(panelPrin);
-        panelPrin.setLayout(panelPrinLayout);
-        panelPrinLayout.setHorizontalGroup(
-            panelPrinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelPrinLayout.createSequentialGroup()
-                .addContainerGap(298, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(289, 289, 289))
-        );
-        panelPrinLayout.setVerticalGroup(
-            panelPrinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelPrinLayout.createSequentialGroup()
-                .addGap(138, 138, 138)
-                .addComponent(jLabel1)
-                .addContainerGap(426, Short.MAX_VALUE))
-        );
+        jLabel2.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel2.setText("Nombre de Usuario:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 16;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        panelPrin.add(jLabel2, gridBagConstraints);
+
+        jLabel3.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel3.setText("Contraseña:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 16;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        panelPrin.add(jLabel3, gridBagConstraints);
+
+        usuarioF.setFont(new java.awt.Font("Berlin Sans FB", 0, 18)); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 150;
+        gridBagConstraints.ipady = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        panelPrin.add(usuarioF, gridBagConstraints);
+
+        contraF.setFont(new java.awt.Font("Berlin Sans FB", 0, 14)); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 150;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        panelPrin.add(contraF, gridBagConstraints);
+
+        jButton1.setFont(new java.awt.Font("Berlin Sans FB", 0, 20)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(102, 102, 102));
+        jButton1.setText(" Verificar ");
+        jButton1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102)));
+        jButton1.setContentAreaFilled(false);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.ipadx = 20;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.insets = new java.awt.Insets(30, 10, 10, 10);
+        panelPrin.add(jButton1, gridBagConstraints);
 
         getContentPane().add(panelPrin, java.awt.BorderLayout.CENTER);
 
@@ -214,7 +285,7 @@ public class Interfaz extends javax.swing.JFrame {
         boton5.setFont(new java.awt.Font("Berlin Sans FB", 0, 16)); // NOI18N
         boton5.setForeground(new java.awt.Color(180, 180, 180));
         boton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/uzuario.png"))); // NOI18N
-        boton5.setText("Resgistro de Clientes");
+        boton5.setText("Registro de Clientes");
         boton5.setBorder(null);
         boton5.setBorderPainted(false);
         boton5.setContentAreaFilled(false);
@@ -354,6 +425,26 @@ public class Interfaz extends javax.swing.JFrame {
         visibilidad(5);
     }//GEN-LAST:event_boton5ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String us = usuarioF.getText();
+        String c = contraF.getText();
+        if(!us.isEmpty() || !c.isEmpty()){
+            if(usuarios.contains(us)){
+                System.out.println(contraseña.get(us)+ "\t"+c);
+                if(!contraseña.get(us).equals(c)){
+                    JOptionPane.showMessageDialog(null, "Contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "¡Bienvenido, " + us +"!");
+                }
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "Datos érroneos, intentelo de nuevo", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -428,6 +519,13 @@ public class Interfaz extends javax.swing.JFrame {
                 break;
         }
     }
+    
+    public final void usuariosBD (){
+        String nombreU = "DanielG";
+        String contraU = "183";
+        usuarios.add(nombreU);
+        contraseña.put(nombreU, contraU);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton boton0;
@@ -438,9 +536,14 @@ public class Interfaz extends javax.swing.JFrame {
     private javax.swing.JButton boton5;
     private javax.swing.JPanel botones;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JPasswordField contraF;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel panelPrin;
     private javax.swing.JPanel panelT;
     private javax.swing.JLabel titulo;
+    private javax.swing.JFormattedTextField usuarioF;
     // End of variables declaration//GEN-END:variables
 }
