@@ -1,0 +1,9 @@
+********************************
+        FACTURA DE VENTA        
+ Folio: B0001                   
+ Fecha de emision : 00/00/00    
+ Hora: 00:00                    
+ Vendedor: Fer0                 
+ producto 1                     
+ ------Muchas gracias por su com
+ pra.------                     
