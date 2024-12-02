@@ -29,13 +29,17 @@ public class AdministracionP extends javax.swing.JPanel {
     static java.util.HashMap<Integer,Integer> ventDiarias = new java.util.HashMap<>();
     static int contDei = 0;
     
+    ConexionBD conect = new ConexionBD();
+    
     static DefaultTableModel modelo = new DefaultTableModel();
     static DefaultTableModel modeloRV = new DefaultTableModel();
+    DefaultTableModel modeloCaja = new DefaultTableModel();
     
     public AdministracionP() {
         initComponents();
         modelo=(DefaultTableModel)tablaVentas.getModel();
         modeloRV = (DefaultTableModel)jTable1.getModel();
+        modeloCaja = (DefaultTableModel)tablaCierreCaja.getModel();
         usuariosBDAdm();
     }
 
@@ -78,9 +82,8 @@ public class AdministracionP extends javax.swing.JPanel {
         jTable1 = new javax.swing.JTable();
         VentasDia = new javax.swing.JDialog();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        tablaCierreCaja = new javax.swing.JTable();
+        sumLabel = new javax.swing.JLabel();
         Documentos_Contables = new javax.swing.JDialog();
         Balance = new javax.swing.JButton();
         E_Resultados = new javax.swing.JButton();
@@ -394,74 +397,40 @@ public class AdministracionP extends javax.swing.JPanel {
         VentasDia.setTitle("CIERRE DE CAJA");
         VentasDia.setMinimumSize(new java.awt.Dimension(375, 275));
         VentasDia.setLocationRelativeTo(null);
-        VentasDia.setPreferredSize(new java.awt.Dimension(375, 275));
         VentasDia.setResizable(false);
-        VentasDia.getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        tablaCierreCaja.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Nombre producto", "Id.Producto", "Precio"
+                "Id Venta", "Total", "Fecha"
             }
         ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Integer.class, java.lang.Float.class
+            boolean[] canEdit = new boolean [] {
+                false, true, true
             };
 
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
-        jScrollPane4.setViewportView(jTable2);
+        jScrollPane4.setViewportView(tablaCierreCaja);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.ipadx = 354;
-        gridBagConstraints.ipady = 170;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        VentasDia.getContentPane().add(jScrollPane4, gridBagConstraints);
+        VentasDia.getContentPane().add(jScrollPane4, java.awt.BorderLayout.CENTER);
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null}
-            },
-            new String [] {
-                "Suma"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Float.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
-        jScrollPane5.setViewportView(jTable3);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.ipadx = 354;
-        gridBagConstraints.ipady = 30;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        VentasDia.getContentPane().add(jScrollPane5, gridBagConstraints);
+        sumLabel.setBackground(new java.awt.Color(255, 255, 255));
+        sumLabel.setFont(new java.awt.Font("Noto Serif", 1, 24)); // NOI18N
+        sumLabel.setForeground(new java.awt.Color(78, 150, 150));
+        sumLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        sumLabel.setText("Suma: ");
+        sumLabel.setPreferredSize(new java.awt.Dimension(81, 40));
+        VentasDia.getContentPane().add(sumLabel, java.awt.BorderLayout.PAGE_END);
 
         Documentos_Contables.setTitle("REGISTRO CONTABLE");
         Documentos_Contables.setIconImage(null);
         Documentos_Contables.setLocationByPlatform(true);
-        Documentos_Contables.setMaximumSize(new java.awt.Dimension(390, 275));
         Documentos_Contables.setMinimumSize(new java.awt.Dimension(390, 275));
-        Documentos_Contables.setPreferredSize(new java.awt.Dimension(390, 275));
         Documentos_Contables.getContentPane().setLayout(null);
         Documentos_Contables.setLocationRelativeTo(null);
 
@@ -494,7 +463,6 @@ public class AdministracionP extends javax.swing.JPanel {
 
         Gasto_D.setMinimumSize(new java.awt.Dimension(714, 491));
         Gasto_D.setModal(true);
-        Gasto_D.setPreferredSize(new java.awt.Dimension(714, 491));
         Gasto_D.getContentPane().setLayout(null);
         Gasto_D.setLocationRelativeTo(null);
 
@@ -541,9 +509,7 @@ public class AdministracionP extends javax.swing.JPanel {
 
         Agregar_G.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         Agregar_G.setTitle("AGREGAR GASTO");
-        Agregar_G.setMaximumSize(new java.awt.Dimension(400, 300));
         Agregar_G.setModal(true);
-        Agregar_G.setPreferredSize(new java.awt.Dimension(400, 300));
         Agregar_G.setSize(new java.awt.Dimension(400, 300));
         Agregar_G.getContentPane().setLayout(null);
         Agregar_G.setLocationRelativeTo(null);
@@ -719,7 +685,7 @@ public class AdministracionP extends javax.swing.JPanel {
 
     private void nomKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nomKeyTyped
         char letra = evt.getKeyChar();
-        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra) && !Cake.letrasMinus(letra) && !(Cake.inicioSinEspacios(letra))){
+        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra) && !Cake.letrasMinus(letra) && !(Cake.inicioEspacios(letra))){
             evt.consume();
         }
 
@@ -729,7 +695,7 @@ public class AdministracionP extends javax.swing.JPanel {
             }
         }
         else{
-            if(Cake.inicioSinEspacios(letra)){
+            if(Cake.inicioEspacios(letra)){
                 evt.consume();
             }
         }
@@ -808,15 +774,15 @@ public class AdministracionP extends javax.swing.JPanel {
     }//GEN-LAST:event_hechoB2ActionPerformed
 
     private void BalanceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BalanceActionPerformed
-        JOptionPane.showMessageDialog(null, "Se ha generado el balance general");
+        Excel.balanceGeneral();
     }//GEN-LAST:event_BalanceActionPerformed
 
     private void E_ResultadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_E_ResultadosActionPerformed
-        JOptionPane.showMessageDialog(null, "Se ha generado el estado de resultados");
+        Excel.estadodeResultados();
     }//GEN-LAST:event_E_ResultadosActionPerformed
 
     private void Ventas_HActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Ventas_HActionPerformed
-        JOptionPane.showMessageDialog(null, "Se ha generado el reporte de ventas de hoy");
+        Excel.reporteDiario();
     }//GEN-LAST:event_Ventas_HActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -835,6 +801,26 @@ public class AdministracionP extends javax.swing.JPanel {
         Agregar_G.setVisible(false);
     }//GEN-LAST:event_B_AgregarActionPerformed
 
+    public void mostrarCierreCaja(){
+        String fecha = generarHora("yyyy-MM-dd");
+        java.sql.ResultSet rs = conect.query("SELECT * FROM registroventat WHERE fechaventa='" + fecha + "';");
+        try{
+            while(rs.next()){
+                modeloCaja.addRow(new Object[]{rs.getString("idventat"), rs.getDouble("totalventat"), rs.getDate("fechaventa")});
+            }
+            java.sql.ResultSet rsSum =conect.query("SELECT SUM(totalventat) FROM registroventat;");
+            try{
+                while(rsSum.next()){
+                    sumLabel.setText("Total: " + rsSum.getDouble(1));
+                }
+            }catch(Exception e){
+                System.out.println("Error al sumar los totales");
+            }
+        } catch(Exception e){
+            System.out.println("Error al mostrar el cierre de caja");
+        }
+    }
+    
     public void guardarElementos(){
         codCom.add(codp.getText());
         nombreCom.add(nom.getText());
@@ -906,6 +892,12 @@ public class AdministracionP extends javax.swing.JPanel {
         ventDiarias.put(contDei, VentasP.diaV);
         modeloRV.addRow(new Object[]{contDei, VentasP.diaV});
     }
+    
+    public String generarHora(String formato){
+        java.time.LocalDateTime ahora = java.time.LocalDateTime.now();
+        java.time.format.DateTimeFormatter formateado = java.time.format.DateTimeFormatter.ofPattern(formato);
+        return ahora.format(formateado);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton A_gasto;
@@ -920,7 +912,7 @@ public class AdministracionP extends javax.swing.JPanel {
     private javax.swing.JDialog Gasto_D;
     private javax.swing.JTextField Monto_G;
     private javax.swing.JTextField N_gasto;
-    public static javax.swing.JDialog VentasDia;
+    public javax.swing.JDialog VentasDia;
     private javax.swing.JButton Ventas_H;
     private javax.swing.JFormattedTextField codp;
     private javax.swing.JDialog comDialog;
@@ -951,17 +943,16 @@ public class AdministracionP extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable3;
     private javax.swing.JTable jTable4;
     private javax.swing.JFormattedTextField nom;
     private javax.swing.JFormattedTextField paC;
     private javax.swing.JDialog pagoEmp;
     private javax.swing.JFormattedTextField pvC;
     public static javax.swing.JDialog regVentas;
+    private javax.swing.JLabel sumLabel;
+    private javax.swing.JTable tablaCierreCaja;
     private javax.swing.JTable tablaVentas;
     public static javax.swing.JTable tablaVentas1;
     // End of variables declaration//GEN-END:variables

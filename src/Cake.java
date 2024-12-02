@@ -25,12 +25,31 @@ public class Cake {
     }
     
     public static boolean espacios(String palabra, char letra){
-        
         int i = palabra.length(); 
         return (palabra.charAt(i-1) == ' ') && (letra == ' ');
     }
     
-    public static boolean inicioSinEspacios(char letra){
+    public static boolean inicioEspacios(char letra){
         return letra == ' ';
     }
+    
+    public static boolean inicioPunto(char letra){
+        return letra == '.';
+    }
+    
+    public static boolean punto(String palabra, char letra){
+        int i = palabra.length(); 
+        return (palabra.charAt(i-1) == '.') && (letra == '.');
+    }
+    
+    public static boolean hayPuntos(String palabra){
+        int cont = 0;
+        int i = palabra.length(); 
+        for(int j=0; j<i; j++){
+            if(palabra.charAt(j) == '.')
+                cont++;
+        }
+        return cont>0;
+    }
+    
 }

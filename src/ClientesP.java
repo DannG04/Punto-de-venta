@@ -13,10 +13,12 @@ import javax.swing.table.DefaultTableModel;
 public class ClientesP extends javax.swing.JPanel {
 
     DefaultTableModel modelo = new DefaultTableModel();
+    ConexionBD conect = new ConexionBD();
     
     public ClientesP() {
         initComponents();
         modelo=(DefaultTableModel)tablaC.getModel();
+        mostrarTabla();
     }
 
     /**
@@ -142,11 +144,10 @@ public class ClientesP extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
         if(!nomCliente.getText().isEmpty() || !numTel.getText().isEmpty()){
             if(numTel.getText().length() == 10){
-                String id = generarID(nomCliente.getText(), numTel.getText());
-                modelo.addRow(new Object[]{id, nomCliente.getText(), numTel.getText()});
+                regCliente();
+                mostrarTabla();
                 nomCliente.setText("");
                 numTel.setText("");
             }
@@ -177,6 +178,43 @@ public class ClientesP extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_numTelKeyTyped
 
+    public final void mostrarTabla(){
+        limpiarTabla();
+        String inst = "SELECT * FROM cliente;";
+        llenarTabla(inst);
+    }
+    
+    public void llenarTabla(String instruccion){
+        java.sql.ResultSet rs = conect.query(instruccion);
+        if(rs != null){
+            try{
+                while(rs.next()){
+                    modelo.addRow( new Object[]{rs.getString("idcliente"), rs.getString("nombre"), rs.getLong("numero")});
+                }
+            }catch(Exception e){
+                System.out.println("Ha ocurrido un error");
+            }
+        }
+    }
+    
+    public void limpiarTabla(){
+        int a=modelo.getRowCount();    
+        while(a!=0){ 
+            if(a!=0)
+                modelo.removeRow(0);                      
+            a=modelo.getRowCount();
+        }
+    }
+    
+    public void regCliente(){
+        String nombreC = nomCliente.getText();
+        String numTelef = numTel.getText();
+        String id = generarID(nombreC, numTelef);
+        
+        String instruct = "INSERT INTO cliente VALUES('" + id + "', '" + nombreC + "', " + numTelef + ");";
+        conect.inst(instruct);
+    }
+    
     public String generarID(String nombre, String telefono){
         String id = "";
         java.util.Random random = new java.util.Random();

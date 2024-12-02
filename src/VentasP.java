@@ -1,7 +1,21 @@
 
+//import br.com.adilson.util.Extenso;
+//import br.com.adilson.util.PrinterMatrix;
+//import java.io.FileInputStream;
+//import javax.print.Doc;
+//import javax.print.DocFlavor;
+//import javax.print.DocPrintJob;
+//import javax.print.PrintService;
+//import javax.print.PrintServiceLookup;
+//import javax.print.SimpleDoc;
+//import javax.print.attribute.HashPrintRequestAttributeSet;
+//import javax.print.attribute.PrintRequestAttributeSet;
 import br.com.adilson.util.Extenso;
 import br.com.adilson.util.PrinterMatrix;
 import java.io.FileInputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.print.Doc;
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
@@ -23,25 +37,18 @@ import javax.swing.table.DefaultTableModel;
  * @author 76905
  */
 public class VentasP extends javax.swing.JPanel {
-//ESTE ES UN COMENTARIO :/
+
     static int diaV = 0;
-            
-    String prod = "";
-    Integer cant = 0;
-    Integer precioU = 0;
-    Integer precioUT = 0;
-    String cod = "";
     
     Integer desc = 0;
     
-    static Integer precT = 0;
+    static Double precT = 0.0;
     DefaultTableModel modelo = new DefaultTableModel();
+    DefaultTableModel modeloBusc = new DefaultTableModel();
     
-    static java.util.ArrayList<String> registroCod = new java.util.ArrayList<>();
-    static java.util.ArrayList<Integer> registroCant = new java.util.ArrayList<>();
-    static java.util.ArrayList<Integer> registroPrecU = new java.util.ArrayList<>();
-    static java.util.ArrayList<Integer> registroPrecT = new java.util.ArrayList<>();
-    
+    ConexionBD conect = new ConexionBD();
+    String idTemV = "";
+    boolean alertaP = false;
     
     /**
      * Creates new form Ventas
@@ -49,6 +56,7 @@ public class VentasP extends javax.swing.JPanel {
     public VentasP() {
         initComponents();
         modelo=(DefaultTableModel)tablaVentas.getModel();
+        modeloBusc=(DefaultTableModel)jTable1.getModel();
         totalLabel.setText("Total: " + precT);
     }
 
@@ -63,13 +71,21 @@ public class VentasP extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         jDialog1 = new javax.swing.JDialog();
+        panelAct = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         codp = new javax.swing.JFormattedTextField();
         jLabel7 = new javax.swing.JLabel();
         cantP = new javax.swing.JFormattedTextField();
-        hechoB2 = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tablaVentas = new javax.swing.JTable();
+        hechoAct = new javax.swing.JButton();
+        panelCamb = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        totalCT = new javax.swing.JFormattedTextField();
+        jLabel6 = new javax.swing.JLabel();
+        recCT = new javax.swing.JFormattedTextField();
+        jLabel8 = new javax.swing.JLabel();
+        cambCT = new javax.swing.JFormattedTextField();
+        cancelarB = new javax.swing.JButton();
+        hechoCamb = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
@@ -79,41 +95,40 @@ public class VentasP extends javax.swing.JPanel {
         jLabel4 = new javax.swing.JLabel();
         totalLabel = new javax.swing.JLabel();
         reg = new javax.swing.JButton();
-        genT = new javax.swing.JButton();
+        ventaReali = new javax.swing.JButton();
         elim = new javax.swing.JButton();
         actB = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablaVentas = new javax.swing.JTable();
+        jLabel10 = new javax.swing.JLabel();
+        Busc = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
 
         jDialog1.setModal(true);
         jDialog1.setResizable(false);
         jDialog1.setSize(new java.awt.Dimension(230, 180));
-        jDialog1.getContentPane().setLayout(new java.awt.GridLayout(0, 1));
+        jDialog1.getContentPane().setLayout(new java.awt.CardLayout());
+
+        panelAct.setLayout(new java.awt.GridLayout(0, 1));
 
         jLabel2.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(78, 150, 150));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Código del Producto:");
-        jDialog1.getContentPane().add(jLabel2);
+        panelAct.add(jLabel2);
 
         codp.setEditable(false);
         codp.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         codp.setPreferredSize(new java.awt.Dimension(200, 35));
-        codp.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                codpActionPerformed(evt);
-            }
-        });
-        codp.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                codpKeyTyped(evt);
-            }
-        });
-        jDialog1.getContentPane().add(codp);
+        panelAct.add(codp);
 
         jLabel7.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(78, 150, 150));
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel7.setText("Cantidad: ");
-        jDialog1.getContentPane().add(jLabel7);
+        panelAct.add(jLabel7);
 
         cantP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         cantP.setPreferredSize(new java.awt.Dimension(200, 35));
@@ -122,45 +137,90 @@ public class VentasP extends javax.swing.JPanel {
                 cantPKeyTyped(evt);
             }
         });
-        jDialog1.getContentPane().add(cantP);
+        panelAct.add(cantP);
 
-        hechoB2.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        hechoB2.setForeground(new java.awt.Color(78, 150, 150));
-        hechoB2.setText("Hecho");
-        hechoB2.addActionListener(new java.awt.event.ActionListener() {
+        hechoAct.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        hechoAct.setForeground(new java.awt.Color(78, 150, 150));
+        hechoAct.setText("Hecho");
+        hechoAct.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hechoB2ActionPerformed(evt);
+                hechoActActionPerformed(evt);
             }
         });
-        jDialog1.getContentPane().add(hechoB2);
-        hechoB2.setVisible(false);
+        panelAct.add(hechoAct);
+        hechoAct.setVisible(false);
+
+        jDialog1.getContentPane().add(panelAct, "card2");
+
+        panelCamb.setLayout(new java.awt.GridLayout(4, 2));
+
+        jLabel5.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel5.setText("Total: $");
+        panelCamb.add(jLabel5);
+
+        totalCT.setEditable(false);
+        totalCT.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        totalCT.setPreferredSize(new java.awt.Dimension(200, 35));
+        panelCamb.add(totalCT);
+
+        jLabel6.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("Recibido: $");
+        panelCamb.add(jLabel6);
+
+        recCT.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        recCT.setPreferredSize(new java.awt.Dimension(200, 35));
+        recCT.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                recCTKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                recCTKeyTyped(evt);
+            }
+        });
+        panelCamb.add(recCT);
+
+        jLabel8.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("Cambio: $");
+        panelCamb.add(jLabel8);
+
+        cambCT.setEditable(false);
+        cambCT.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        cambCT.setPreferredSize(new java.awt.Dimension(200, 35));
+        panelCamb.add(cambCT);
+
+        cancelarB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        cancelarB.setForeground(new java.awt.Color(78, 150, 150));
+        cancelarB.setText("Cancelar");
+        cancelarB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelarBActionPerformed(evt);
+            }
+        });
+        panelCamb.add(cancelarB);
+        hechoAct.setVisible(false);
+
+        hechoCamb.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        hechoCamb.setForeground(new java.awt.Color(78, 150, 150));
+        hechoCamb.setText("Hecho");
+        hechoCamb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hechoCambActionPerformed(evt);
+            }
+        });
+        panelCamb.add(hechoCamb);
+        hechoAct.setVisible(false);
+
+        jDialog1.getContentPane().add(panelCamb, "card3");
 
         jDialog1.setLocationRelativeTo(null);
 
         setLayout(new java.awt.BorderLayout());
-
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(540, 402));
-
-        tablaVentas.setFont(new java.awt.Font("Noto Serif", 0, 14)); // NOI18N
-        tablaVentas.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Producto", "Cantidad", "Precio Unitario", "Precio Total"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane1.setViewportView(tablaVentas);
-
-        add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
         jLabel1.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(78, 150, 150));
@@ -177,7 +237,7 @@ public class VentasP extends javax.swing.JPanel {
         jLabel3.setText("Código:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.ipadx = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
@@ -192,7 +252,7 @@ public class VentasP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(codigoProd, gridBagConstraints);
@@ -206,7 +266,7 @@ public class VentasP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(cantidadProd, gridBagConstraints);
@@ -216,7 +276,7 @@ public class VentasP extends javax.swing.JPanel {
         jLabel4.setText("Cantidad:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.ipadx = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
@@ -242,26 +302,26 @@ public class VentasP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(20, 10, 10, 10);
         jPanel2.add(reg, gridBagConstraints);
 
-        genT.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        genT.setForeground(new java.awt.Color(78, 150, 150));
-        genT.setText("Generar Ticket");
-        genT.addActionListener(new java.awt.event.ActionListener() {
+        ventaReali.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        ventaReali.setForeground(new java.awt.Color(78, 150, 150));
+        ventaReali.setText("Venta Hecha");
+        ventaReali.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                genTActionPerformed(evt);
+                ventaRealiActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.insets = new java.awt.Insets(50, 10, 10, 10);
-        jPanel2.add(genT, gridBagConstraints);
+        jPanel2.add(ventaReali, gridBagConstraints);
 
         elim.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         elim.setForeground(new java.awt.Color(78, 150, 150));
@@ -273,7 +333,7 @@ public class VentasP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(elim, gridBagConstraints);
@@ -288,75 +348,89 @@ public class VentasP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(actB, gridBagConstraints);
 
         add(jPanel2, java.awt.BorderLayout.LINE_END);
+
+        jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.Y_AXIS));
+
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(540, 402));
+
+        tablaVentas.setFont(new java.awt.Font("Noto Serif", 0, 14)); // NOI18N
+        tablaVentas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Codigo", "Producto", "Cantidad", "Tipo de Venta", "Precio Dado", "Precio Total"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(tablaVentas);
+
+        jPanel3.add(jScrollPane1);
+
+        jLabel10.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel10.setText("Buscar");
+        jPanel3.add(jLabel10);
+
+        Busc.setMaximumSize(new java.awt.Dimension(2147483647, 30));
+        Busc.setMinimumSize(new java.awt.Dimension(150, 30));
+        Busc.setPreferredSize(new java.awt.Dimension(150, 30));
+        Busc.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                BuscKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                BuscKeyTyped(evt);
+            }
+        });
+        jPanel3.add(Busc);
+
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(452, 200));
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Codigo", "Producto", "Precio Menudeo", "Precio Mayoreo", "En Existencia"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(jTable1);
+
+        jPanel3.add(jScrollPane2);
+
+        add(jPanel3, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void regActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regActionPerformed
-        // TODO add your handling code here:
-        if(!codigoProd.getText().isEmpty() && !cantidadProd.getText().isEmpty()){
-            guardarDatos();
-            
-            //LIMPIAR
-            codigoProd.setText("");
-            cantidadProd.setText("");
-        }
-    }//GEN-LAST:event_regActionPerformed
-
-    private void genTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_genTActionPerformed
-        // TODO add your handling code here:
-        //GENERA TICKET
-        generarTicket();
-        limpiarTabla();
-        
-        diaV = diaV + precT;
-        precT = 0;
-        totalLabel.setText("Total: " + precT);
-        
-        //Se elimina de la BD
-        registroCod.clear();
-        registroCant.clear();
-        registroPrecT.clear();
-        registroPrecU.clear();
-    }//GEN-LAST:event_genTActionPerformed
-
-    private void codigoProdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_codigoProdKeyTyped
-        // TODO add your handling code here:
-        char letra = evt.getKeyChar();
-        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra)){
-            evt.consume();
-        }
-    }//GEN-LAST:event_codigoProdKeyTyped
-
-    private void cantidadProdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cantidadProdKeyTyped
-        // TODO add your handling code here:
-        char letra = evt.getKeyChar();
-        if(!Cake.numeros(letra)){
-            evt.consume();
-        }
-    }//GEN-LAST:event_cantidadProdKeyTyped
-
-    private void elimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elimActionPerformed
-        if(tablaVentas.getSelectedRow() != -1){
-            int a = tablaVentas.getSelectedRow();
-            eliminarElementos(a);
-            totalLabel.setText("Total: " + precT);
-        }
-        else
-            JOptionPane.showMessageDialog(null,"Debe seleccionar la fila que desea eliminar");
-    }//GEN-LAST:event_elimActionPerformed
-
-    private void codpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_codpActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_codpActionPerformed
-
-    private void codpKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_codpKeyTyped
-
-    }//GEN-LAST:event_codpKeyTyped
 
     private void cantPKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cantPKeyTyped
         char letra = evt.getKeyChar();
@@ -369,224 +443,595 @@ public class VentasP extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_cantPKeyTyped
 
-    private void hechoB2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoB2ActionPerformed
+    private void hechoActActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoActActionPerformed
         // TODO add your handling code here:
         if(codp.getText().isEmpty() || cantP.getText().isEmpty()){
             javax.swing.JOptionPane.showMessageDialog(null, "Todos los campos deben ser completados", "Error",javax.swing.JOptionPane.ERROR_MESSAGE);
         }
         else{
-            int a = tablaVentas.getSelectedRow();
-            actualizarElementos(a);
+            //Se actualizan los datos en la tabla temporal y en el inventario
+            actualizarDatos(tablaVentas.getSelectedRow());
             mostrarTabla();
             totalLabel.setText("Total: " + precT);
             jDialog1.setVisible(false);
         }
-    }//GEN-LAST:event_hechoB2ActionPerformed
+    }//GEN-LAST:event_hechoActActionPerformed
+
+    private void recCTKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_recCTKeyTyped
+        char letra = evt.getKeyChar();
+        if(!Cake.numeros(letra) && !Cake.inicioPunto(letra)){
+            evt.consume();
+        }
+        
+        if(!(recCT.getText().isEmpty())){
+            if(Cake.hayPuntos(recCT.getText()) && letra=='.'){
+                evt.consume();
+            } else{
+                if(Cake.punto(recCT.getText(), letra)){
+                    evt.consume();
+                }
+            }
+        } else{
+            if(Cake.inicioPunto(letra)){
+                evt.consume();
+            }
+        }
+        
+        if(Cake.tamaño(recCT.getText(), 10)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_recCTKeyTyped
+
+    private void hechoCambActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoCambActionPerformed
+        //GENERA TICKET
+        generarTicket();
+        guardarVenta();
+        limpiarTabla();
+        
+        precT = 0.0;
+        totalLabel.setText("Total: " + precT);
+        
+        //Se elimina de la tabla temporal
+        eliminarTodosCampos();
+        jDialog1.setVisible(false);
+    }//GEN-LAST:event_hechoCambActionPerformed
+
+    private void cancelarBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarBActionPerformed
+        jDialog1.setVisible(false);
+    }//GEN-LAST:event_cancelarBActionPerformed
+
+    private void recCTKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_recCTKeyReleased
+        if(!recCT.getText().isEmpty()){
+            cambCT.setText("" + cambioT(recCT.getText()));
+        }
+    }//GEN-LAST:event_recCTKeyReleased
+
+    private void BuscKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_BuscKeyTyped
+        char letra = evt.getKeyChar();
+        if(!Cake.letrasMayus(letra) && !Cake.letrasMinus(letra) && !Cake.numeros(letra) && !(Cake.inicioEspacios(letra))){
+            evt.consume();
+        }
+        
+        if(!(Busc.getText().isEmpty())){
+            if(Cake.espacios(Busc.getText(), letra)){
+                evt.consume();
+            }
+        }
+        else{
+            if(Cake.inicioEspacios(letra)){
+                evt.consume();
+            }
+        }
+        
+        if(Cake.tamaño(Busc.getText(), 30)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_BuscKeyTyped
+
+    public void mostrarResul(String instruccion){
+        java.sql.ResultSet rs = conect.query(instruccion);
+        if(rs != null){
+            try{
+                while(rs.next()){
+                    modeloBusc.addRow( new Object[]{rs.getString("idproducto"), rs.getString("nombre"), rs.getDouble("precio_menudeo"), 
+                        rs.getDouble("precio_mayoreo"), rs.getInt("cantidad")});
+                }
+            }catch(Exception e){
+                System.out.println("Ha ocurrido un error");
+            }
+        } else {
+            System.out.println("El result set esta vacio");
+        }
+    }
 
     private void actBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actBActionPerformed
-        // TODO add your handling code here:
+
         if(tablaVentas.getSelectedRow() != -1){
             int a = tablaVentas.getSelectedRow();
-            hechoB2.setVisible(true);
+            hechoAct.setVisible(true);
             //MOSTRAR LOS DATOS EN EL FIELD
-            codp.setText(registroCod.get(a));
-            cantP.setText("" + registroCant.get(a));
-            
+            mostrarDAct(a);
+            panelAct.setVisible(true);
+            panelCamb.setVisible(false);
             jDialog1.setVisible(true);
         }
         else
-            JOptionPane.showMessageDialog(null,"Debe seleccionar la fila que desea actualizar");
+        JOptionPane.showMessageDialog(null,"Debe seleccionar la fila que desea actualizar");
     }//GEN-LAST:event_actBActionPerformed
 
-    public final void mostrarTabla(){
-        if(modelo.getRowCount() != 0){
-            limpiarTabla();
-            llenarTabla();
+    private void elimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elimActionPerformed
+        if(tablaVentas.getSelectedRow() != -1){
+            int a = tablaVentas.getSelectedRow();
+            if(eliminarElementos(a))
+            mostrarTabla();
+            else
+            System.out.println("Error al intentar eliminar el dato");
+            totalLabel.setText("Total: " + precT);
         }
-        else{
-            llenarTabla();
+        else
+        JOptionPane.showMessageDialog(null,"Debe seleccionar la fila que desea eliminar");
+    }//GEN-LAST:event_elimActionPerformed
+
+    private void ventaRealiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ventaRealiActionPerformed
+        idTemV = generarID();
+        sumarTotales();
+        recCT.setText("");
+        totalCT.setText("" + precT);
+        panelAct.setVisible(false);
+        panelCamb.setVisible(true);
+        jDialog1.setVisible(true);
+    }//GEN-LAST:event_ventaRealiActionPerformed
+
+    private void regActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regActionPerformed
+        // TODO add your handling code here:
+        if(!codigoProd.getText().isEmpty() && !cantidadProd.getText().isEmpty()){
+            if(guardarProd())
+            mostrarTabla();
+            //LIMPIAR
+            codigoProd.setText("");
+            cantidadProd.setText("");
+            Busc.setText(null);
+            limpiarTablaBusc();
         }
+    }//GEN-LAST:event_regActionPerformed
+
+    private void cantidadProdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cantidadProdKeyTyped
+        // TODO add your handling code here:
+        char letra = evt.getKeyChar();
+        if(!Cake.numeros(letra)){
+            evt.consume();
+        }
+
+        if(Cake.tamaño(cantidadProd.getText(), 10)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_cantidadProdKeyTyped
+
+    private void codigoProdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_codigoProdKeyTyped
+        // TODO add your handling code here:
+        char letra = evt.getKeyChar();
+        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra)){
+            evt.consume();
+        }
+
+        if(Cake.tamaño(codigoProd.getText(), 20)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_codigoProdKeyTyped
+
+    private void BuscKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_BuscKeyReleased
+        // TODO add your handling code here:
+        String palabra = Busc.getText();
+        limpiarTablaBusc();
+        String instruccion = "SELECT * FROM producto WHERE nombre LIKE '%" + palabra + "%';";
+        mostrarResul(instruccion);
+
+    }//GEN-LAST:event_BuscKeyReleased
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        // TODO add your handling code here:
+        if(jTable1.getSelectedRow() != -1){
+            codigoProd.setText((String)jTable1.getValueAt(jTable1.getSelectedRow(), 0));
+        }
+        
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    public Double cambioT(String palabra){
+        sumarTotales();
+        totalCT.setText("" + precT);
+        Double cambioNum = Double.valueOf(palabra);
+        if(cambioNum >= precT){
+            cambioNum = cambioNum-precT;
+        } else {
+            cambioNum = 0.0;
+        }
+        return cambioNum;
     }
     
-    public void llenarTabla(){
-        int a = registroCod.size();
-        for(int i=0;i<a;i++){
-            modelo.addRow(new Object[]{registroCod.get(i),registroCant.get(i), registroPrecU.get(i),registroPrecT.get(i)});
+    public final void mostrarTabla(){
+        limpiarTabla();
+        llenarTabla("SELECT * FROM ventatemporal;");
+    }
+    
+    public void llenarTabla(String instruccion){
+        java.sql.ResultSet rs = conect.query(instruccion);
+        if(rs != null){
+            try{
+                while(rs.next()){
+                    modelo.addRow( new Object[]{rs.getString("idproducto"), rs.getString("nombre"), rs.getInt("cantidadvendida"), 
+                        rs.getString("tipoventatemporal"), rs.getDouble("precio_dado"), rs.getDouble("total")});
+                }
+            }catch(Exception e){
+                System.out.println("Ha ocurrido un error");
+            }
+        } else {
+            System.out.println("El result set esta vacio");
         }
     }
     
     public  void limpiarTabla(){
-     int a=modelo.getRowCount();    
+        int a=modelo.getRowCount();    
         while(a!=0){ 
             if(a!=0)
                 modelo.removeRow(0);                      
             a=modelo.getRowCount();
         }
     }
-    
-    public void actualizarElementos(int a){
-        registroCant.set(a, Integer.valueOf(cantP.getText()));
-        precT = precT - registroPrecT.get(a);
-        registroPrecT.set(a, registroPrecU.get(a) * registroCant.get(a));
-        precT = precT + registroPrecT.get(a);
-    }
-    
-    public void guardarDatos (){
-        cod = codigoProd.getText();
-        int a = InventarioP.codInv.indexOf(cod);
-        if(a != -1){
-            //Registramos el producto y verificamos si está o no
-            if(registroCod.contains(cod)){
-                acumularProd(cod, a);
-            }
-            else{
-                consulta(a);
-            }
-            precT = precT + precioUT;
-            totalLabel.setText("Total: " + precT);
-        }
-        else{
-            JOptionPane.showMessageDialog(null, "No se encontró el producto", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    
-    public void consulta(int a){
-        prod = InventarioP.nombreInv.get(a);
-        cant = Integer.valueOf(cantidadProd.getText());
-        //Decrementar la cantidad de productos y actualizarlo
-        Integer b = InventarioP.cantInv.get(a)-cant;
-        InventarioP.cantInv.set(a, b);
-        InventarioP.mostrarTabla();
-        //
-        precioU = InventarioP.precioInv.get(a);
-        precioUT = precioU*cant;
-        modelo.addRow(new Object[]{prod,cant,precioU,precioUT});
-        //Agregarlo al registro
-        registroCod.add(cod);
-        registroCant.add(cant);
-        registroPrecU.add(precioU);
-        registroPrecT.add(precioUT);
-    }
-    
-    public void acumularProd(String cod, int c){
-        int a = registroCod.indexOf(cod);
-        //operacion y decremento en el inventario
-        cant = Integer.valueOf(cantidadProd.getText());
-        Integer b = InventarioP.cantInv.get(c)-cant;
-        InventarioP.cantInv.set(c, b);
-        InventarioP.mostrarTabla();
-        
-        precioU = registroPrecU.get(a);
-        precioUT = precioU*cant;
-        
-        //se suma a lo acumulado y se registra
-        cant = cant + registroCant.get(a);
-        registroCant.set(a, cant);
-        precioUT = precioUT + registroPrecT.get(a);
-        registroPrecT.set(a, precioUT);
-        
-        //Actualizar la tabla
-        modelo.setValueAt(cant, a, 1);
-        modelo.setValueAt(precioUT, a, 3);
-    }
-    
-    public void eliminarElementos(int a){
-        //Se regresan los productos al inventario
-        int b = InventarioP.codInv.indexOf(registroCod.get(a));
-        int c = InventarioP.cantInv.get(b) + registroCant.get(a);
-        InventarioP.cantInv.set(b, c);
-        //Se actualiza el total
-        precT = precT - registroPrecT.get(a);
-        //Se elimina el elemento
-        registroCod.remove(a);
-        registroCant.remove(a);
-        registroPrecU.remove(a);
-        registroPrecT.remove(a);
-        InventarioP.mostrarTabla();
-        
-        modelo.removeRow(tablaVentas.getSelectedRow());
-    }
-    
-    public void generarTicket(){
-//        String ticketcitu = "PRODUCTO   CANT    PCIO U. DESC    TOTAL";
-//        
-//        int max = registroCod.size();
-//        for(int i=0; i<max; i++){
-//            ticketcitu = ticketcitu + "\n" + registroCod.get(i) + "     " + registroCant.get(i) + "     " + desc + "%        " + registroPrecT.get(i);
-//        }
-//        
-//        javax.swing.JOptionPane.showMessageDialog(null, ticketcitu, "Ticket", javax.swing.JOptionPane.PLAIN_MESSAGE);
-          PrinterMatrix printer = new PrinterMatrix();
-          
-          String numeroFactura = "B0001", nombreVendedor = "Fer0";
-          
-          Extenso e = new Extenso();
-          
-          e.setNumber(101.85);
-          printer.setOutSize(9, 32);
-          
-          printer.printCharAtCol(1, 1, 32, "*");
-          printer.printTextWrap(1, 2, 8, 32, "FACTURA DE VENTA");
-          printer.printTextWrap(2, 3, 1, 32, "Folio: "+numeroFactura);
-          printer.printTextWrap(3, 3, 1, 32, "Fecha de emision : 00/00/00");
-          printer.printTextWrap(4, 3, 1, 32, "Hora: 00:00");
-          printer.printTextWrap(5, 3, 1, 32, "Vendedor: "+nombreVendedor);
-          printer.printTextWrap(6, 3, 1, 32, "producto 1");
-          printer.printTextWrap(7, 3, 1, 32, "------Muchas gracias por su compra.------");
-          
-          printer.toFile("impresion.txt");
-          
-          FileInputStream inputStream = null;
-          
-          try{
-              inputStream = new FileInputStream("impresion.txt");
 
-              }catch(Exception ex){
-                  ex.printStackTrace();
-              }
-          if(inputStream==null){
-              return;
-          }
-             
-          DocFlavor  docFormat = DocFlavor.INPUT_STREAM.AUTOSENSE;
-          Doc document = new SimpleDoc(inputStream, docFormat, null);
-          PrintRequestAttributeSet attributeSet = new HashPrintRequestAttributeSet();
-          PrintService defaultPrintService = PrintServiceLookup.lookupDefaultPrintService();
-          
-          if(defaultPrintService != null){
-              DocPrintJob printJob = defaultPrintService.createPrintJob();
-              try{
-                  printJob.print(document, attributeSet);
-                  
-              }catch(Exception ex){
-                  ex.printStackTrace();
-              }
-          }else{
-              System.out.println("No hay una impresora instalada");
-          }
-              
+    public  void limpiarTablaBusc(){
+        int a=modeloBusc.getRowCount();    
+        while(a!=0){ 
+            if(a!=0)
+                modeloBusc.removeRow(0);                      
+            a=modeloBusc.getRowCount();
+        }
+    }
+    
+    public boolean guardarProd(){
+        boolean bandG = false;
+        String cod = codigoProd.getText();
+        int cantP = Integer.parseInt(cantidadProd.getText());
+        String instrucc = "SELECT * FROM producto WHERE idproducto='" + cod +"';";
+        java.sql.ResultSet rsI = conect.query(instrucc);
+        try{
+            if(!rsI.isBeforeFirst()){
+                JOptionPane.showMessageDialog(null, "No se encontró el producto", "Error", JOptionPane.ERROR_MESSAGE);
+            } else{
+                try{
+                    while(rsI.next()){
+                        String nombreP = rsI.getString("nombre");
+                        System.out.println(nombreP);
+                        int cantInv = isInventario(cod);
+                        cantP = cantP + cantInv;//SI ES QUE EL PRODUCTO YA ESTA EN LA TABLA TEMPORAL SE SUMARA LA CANTIDAD QUE HAYA
+                        String tipoVenta, aux;
+                        if(cantP>=12){//SI LA CANTIDAD DE PRODUCTOS ES MAYORIGUAL DE 12 ES MAYOREO
+                            tipoVenta = "Mayoreo";
+                            aux = "precio_mayoreo";
+                        } else{
+                            tipoVenta = "Menudeo";
+                            aux = "precio_menudeo";
+                        }
+                        Double precDado = rsI.getDouble(aux);
+                        Double total = precDado*cantP;
+                        String[] datos = {cod, nombreP, "" + cantP, tipoVenta, "" + precDado, "" + total};
+                        System.out.println(instrucc);
+                        cantidadInventario(true, cod, cantP-cantInv);//SE DECREMENTA LA CANTIDAD EN EL INVENTARIO
+                        instrucc = agregarTablaTem(datos);
+                        System.out.println(instrucc);
+                        if(conect.inst(instrucc)){
+                            sumarTotales();
+                            totalLabel.setText("Total: " + precT);
+                            bandG = true;
+                            if(alertaP){
+                                javax.swing.JOptionPane.showMessageDialog(null, "Quedan pocos " + nombreP + " en el inventario", "Alerta",javax.swing.JOptionPane.WARNING_MESSAGE);
+                                alertaP = false;
+                            }
+                        }
+                    }
+                } catch(Exception e){
+                    System.out.println("Error");
+                }
+            }
+        } catch(Exception e){
+            System.out.println("Error");
+        }
+        return bandG;
+    }
+    
+    public String agregarTablaTem(String[] campos){
+        String instruccion = "SELECT idproducto FROM ventatemporal WHERE idproducto='" + campos[0] +"';";
+        String[] aux = new String[6];
+        java.sql.ResultSet rs = conect.query(instruccion);//VERIFICAMOS SI EL PRODUCTO YA ESTA EN LA TABLA TEMPORAL
+        instruccion = "";
+        try{
+            if(!rs.isBeforeFirst()){//SI NO LO ESTA, SE INSERTA
+                instruccion = "INSERT INTO ventatemporal VALUES(" +
+                        "'" + campos[0] + "', '" + campos[1] + "', " + campos[2] + ", '"+ campos[3] + "', "+ campos[4] + ", "+ campos[5] + ");";
+
+            } else{//SI LO ESTA, SE INCREMENTA LA CANTIDAD DE PRODUCTOS Y SE ACTUALIZA EL PRECIO
+                try{
+                    instruccion = "UPDATE ventatemporal SET cantidadvendida=" + campos[2] + ", tipoventatemporal='" + campos[3] + "'" + ", precio_dado=" + campos[4] 
+                            +", total=" + campos[5] + " WHERE idproducto='" + campos[0] +"';";
+                } catch (Exception e){
+                    System.out.println("Error");
+                }
+            }
+        } catch(Exception e){
+            System.out.println("Error al agregar tabla");
+        }
+        return instruccion;
+    }
+    
+    public int isInventario(String codProd){
+        int cantInventario = 0;
+        String instruccion = "SELECT * FROM ventatemporal WHERE idproducto='" + codProd +"';";
+        java.sql.ResultSet rs = conect.query(instruccion);//VERIFICAMOS SI EL PRODUCTO YA ESTA EN LA TABLA TEMPORAL
+        if(rs!=null){
+            try{
+                while(rs.next()){
+                    cantInventario = rs.getInt("cantidadvendida");
+                }
+            }catch(Exception e){
+                System.out.println("Error al obtener la cantidad vendida");
+            }
+        }
+        return cantInventario;
+    }
+    
+    public void sumarTotales(){
+        String in = "SELECT SUM(total) FROM ventatemporal;";
+        java.sql.ResultSet rs = conect.query(in);
+        try{
+            while(rs.next()){
+                precT = rs.getDouble(1);
+            }
+        }catch(Exception e){
+            System.out.println("Error al obtener la suma");
+        }
+    }
+    
+    public boolean eliminarElementos(int a){
+        boolean band = false;
+        
+        String elemento = "" + modelo.getValueAt(a, 0);
+        String instruccion = "SELECT cantidadvendida FROM ventatemporal WHERE idproducto='" + elemento + "';";
+        java.sql.ResultSet rs = conect.query(instruccion);
+        try{
+            while(rs.next()){
+                cantidadInventario(false, elemento, rs.getInt("cantidadvendida"));//SE INCREMENTA LA CANTIDAD EN EL INVENTARIO
+                instruccion = "DELETE FROM ventatemporal";
+                instruccion = instruccion + " WHERE idproducto='" + elemento + "';";
+                band = conect.inst(instruccion);
+            }
+        } catch(Exception e){
+            System.out.println("Error");
+        }
+        
+        return band;
+    }
+    
+    public void cantidadInventario(boolean op, String idprod, int cantTem){
+        String instruccion = "SELECT cantidad FROM producto WHERE idproducto='" + idprod + "';";
+        java.sql.ResultSet rs = conect.query(instruccion);
+        if(rs != null){
+            try{
+                while(rs.next()){
+                    int x = 0;
+                    int cantBD = rs.getInt("cantidad");
+
+                    instruccion = "UPDATE producto SET cantidad=";
+                    if(op){//SI ES TRUE SE DECREMENTA LA CANTIDAD EN EL INVENTARIO
+                        x = cantBD-cantTem;
+                    } else{//SI ES FALSE SE INCREMENTA LA CANTIDAD
+                        x = cantBD+cantTem;
+                    }
+                    instruccion = instruccion + x + " WHERE idproducto='" + idprod + "';";
+                    if(cantBD<12)
+                        alertaP = true;
+                    System.out.println(instruccion);
+                    if(conect.inst(instruccion))
+                        System.out.println("Inventario Actualizado");
+                    else
+                        System.out.println("No se actualizo el inventario");
+                }
+                
+            }catch(Exception e){
+                System.out.println("Error");
+            }
+            
+        }
+    }
+    
+    public void eliminarTodosCampos(){
+        String inst = "TRUNCATE TABLE ventatemporal;";
+        conect.inst(inst);
+    }
+    
+    public void actualizarDatos(int a){
+        String instruccion = "UPDATE ventatemporal ";
+        String elemento = codp.getText();
+        int cantOld = isInventario(elemento);
+        cantidadInventario(false, elemento, cantOld);//REGRESAMOS LA CANTIDAD DE PRODUCTOS QUE HABIA
+        int cantNew = Integer.parseInt(cantP.getText());
+        String tipoVenta, aux;
+        if(cantNew>=12){//SI LA CANTIDAD NUEVA DE PRODUCTOS ES MAYORIGUAL DE 12 ES MAYOREO
+            tipoVenta = "Mayoreo";
+            aux = "precio_mayoreo";
+        } else{
+            tipoVenta = "Menudeo";
+            aux = "precio_menudeo";
+        }
+        java.sql.ResultSet rs = conect.query("SELECT * FROM producto WHERE='"+ elemento+"';");
+        try{
+            while(rs.next()){
+                Double tipoV = rs.getDouble(aux);
+                Double total = tipoV*cantNew;
+                instruccion = instruccion + "SET cantidad=" + cantNew +", tipoventatemporal='"+ tipoVenta+ "', precio_dado=" + tipoV + ", total=" + total;
+                instruccion = instruccion + " WHERE idproducto='" + elemento +"'";
+                System.out.println(instruccion);
+                if(conect.inst(instruccion))
+                    cantidadInventario(true, elemento, cantNew);
+            }
+        }catch(Exception e){
+            System.out.println("");
+        }
+        
+    }
+    
+    public void mostrarDAct(int a){
+        String elemento = "" + modelo.getValueAt(a, 0);
+        String instruccion = "SELECT * FROM ventatemporal WHERE idproducto='" + elemento + "';";
+        System.out.println(instruccion);
+        java.sql.ResultSet rs = conect.query(instruccion);
+        if(rs!=null){
+            try {
+                while(rs.next()){
+                    codp.setText(rs.getString("idproducto"));
+                    cantP.setText("" + rs.getInt("cantidadvendida"));
+                }
+            } catch (java.sql.SQLException ex) {
+                System.out.println("Error");
+            }
+        }
+    }
+    
+    public String generarHora(String formato){
+        java.time.LocalDateTime ahora = java.time.LocalDateTime.now();
+        java.time.format.DateTimeFormatter formateado = java.time.format.DateTimeFormatter.ofPattern(formato);
+        return ahora.format(formateado);
+    }
+    
+    public String generarID(){
+        String hora = generarHora("HH:mm:ss");
+        String fecha = generarHora("dd/MM/yyyy");
+        String id = "";
+        fecha = fecha+hora;
+        for (int i=0; i<fecha.length();i++) {
+            if(Character.isDigit(fecha.charAt(i))){
+                id = id + fecha.charAt(i);
+            }
+        }
+        System.out.println(id);
+        return id;
+    }
+    
+    public void guardarVenta(){
+        String inst = "INSERT INTO registroventat (idventat, totalventat)";
+        inst = inst + " VALUES('" + idTemV + "', " + precT +")";
+        conect.inst(inst);
+    }
+    
+    public void generarTicket() {
+        DateFormat formatoHora = new SimpleDateFormat("HH:mm:ss");
+        Date date = new Date();
+        Date fechahoy = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        String fechaActual = sdf.format(fechahoy);
+        PrinterMatrix printer = new PrinterMatrix();
+        Extenso e = new Extenso();
+        e.setNumber(precT);
+
+        int rows = modelo.getRowCount();
+        int cols = modelo.getColumnCount();
+        int totalRows = rows + 12; // Adjust based on header and footer
+
+        printer.setOutSize(totalRows, 55); // Adjust the width as needed
+
+        printer.printCharAtCol(1, 1, 44, "*");
+        printer.printTextWrap(1, 2, 10, 55, "FACTURA DE VENTA");
+        printer.printTextWrap(2, 3, 1, 55, "Folio: " + idTemV);
+        printer.printTextWrap(3, 3, 1, 55, "Fecha de emisión : "+fechaActual);
+        printer.printTextWrap(4, 3, 1, 55, "Hora: "+ formatoHora.format(date));
+        printer.printTextWrap(5, 3, 1, 55, "Vendedor: " + Interfaz.us);
+        printer.printTextWrap(6, 3, 1, 55, "-------------------------------------------");
+        printer.printTextWrap(7, 3, 1, 55, "     Producto         Cant  P.Unit  P.Total");
+
+        int rowIndex = 8;
+        for (int i = 0; i < rows; i++) {
+            String producto = modelo.getValueAt(i, 1).toString();
+            String cantidad = modelo.getValueAt(i, 2).toString();
+            String precioUnitario = modelo.getValueAt(i, 4).toString();
+            String precioTotal = modelo.getValueAt(i, 5).toString();
+            printer.printTextWrap(rowIndex, rowIndex + 1, 1, 22, producto);
+            printer.printTextWrap(rowIndex, rowIndex + 1, 24, 26, cantidad);
+            printer.printTextWrap(rowIndex, rowIndex + 1, 30, 33, precioUnitario);
+            printer.printTextWrap(rowIndex, rowIndex + 1, 38, 43, precioTotal);
+            rowIndex++;
+        }
+
+        printer.printTextWrap(rowIndex, rowIndex + 1, 1, 55, "-------------------------------------------");
+        printer.printTextWrap(rowIndex + 1, rowIndex + 2, 1, 55, "Total: " + precT);
+        printer.printTextWrap(rowIndex + 2, rowIndex + 3, 1, 55, "-------Muchas gracias por su compra.-------");
+
+        printer.toFile("impresion.txt");
+
+        FileInputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream("impresion.txt");
+            JOptionPane.showMessageDialog(null, "Ticket generado","Ticket",JOptionPane.PLAIN_MESSAGE);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        if (inputStream == null) {
+            return;
+        }
+
+        DocFlavor docFormat = DocFlavor.INPUT_STREAM.AUTOSENSE;
+        Doc document = new SimpleDoc(inputStream, docFormat, null);
+        PrintRequestAttributeSet attributeSet = new HashPrintRequestAttributeSet();
+        PrintService defaultPrintService = PrintServiceLookup.lookupDefaultPrintService();
+
+        if (defaultPrintService != null) {
+            DocPrintJob printJob = defaultPrintService.createPrintJob();
+            try {
+                printJob.print(document, attributeSet);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            System.out.println("No hay una impresora instalada");
+        }
+        
+    
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField Busc;
     private javax.swing.JButton actB;
+    private javax.swing.JFormattedTextField cambCT;
+    private javax.swing.JButton cancelarB;
     private javax.swing.JFormattedTextField cantP;
     private javax.swing.JFormattedTextField cantidadProd;
     private javax.swing.JFormattedTextField codigoProd;
     private javax.swing.JFormattedTextField codp;
     private javax.swing.JButton elim;
-    private javax.swing.JButton genT;
-    private javax.swing.JButton hechoB2;
+    private javax.swing.JButton hechoAct;
+    private javax.swing.JButton hechoCamb;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JPanel panelAct;
+    private javax.swing.JPanel panelCamb;
+    private javax.swing.JFormattedTextField recCT;
     private javax.swing.JButton reg;
     private javax.swing.JTable tablaVentas;
+    private javax.swing.JFormattedTextField totalCT;
     private javax.swing.JLabel totalLabel;
+    private javax.swing.JButton ventaReali;
     // End of variables declaration//GEN-END:variables
 }

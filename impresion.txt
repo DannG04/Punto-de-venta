@@ -1,9 +1,13 @@
-********************************
-        FACTURA DE VENTA        
- Folio: B0001                   
- Fecha de emision : 00/00/00    
- Hora: 00:00                    
- Vendedor: Fer0                 
- producto 1                     
- ------Muchas gracias por su com
- pra.------                     
+********************************************           
+          FACTURA DE VENTA                             
+ Folio: 28112024110234                                 
+ Fecha de emisión : 28/11/2024                         
+ Hora: 11:02:38                                        
+ Vendedor: Daniel                                      
+ -------------------------------------------           
+      Producto         Cant  P.Unit  P.Total           
+ Pantalon T28MC         2     132     264.0            
+ -------------------------------------------           
+ Total: 264.0                                          
+ -------Muchas gracias por su compra.-------           
+                                                       
