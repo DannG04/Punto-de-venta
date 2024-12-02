@@ -23,7 +23,7 @@ import javax.swing.table.DefaultTableModel;
  * @author 76905
  */
 public class VentasP extends javax.swing.JPanel {
-
+//ESTE ES UN COMENTARIO :/
     static int diaV = 0;
             
     String prod = "";
