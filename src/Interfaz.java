@@ -1,4 +1,4 @@
-
+//importar librerias
 import com.jtattoo.plaf.mcwin.McWinLookAndFeel;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
