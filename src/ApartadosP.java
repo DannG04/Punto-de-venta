@@ -11,7 +11,7 @@ import javax.swing.table.DefaultTableModel;
  * @author 76905
  */
 public class ApartadosP extends javax.swing.JPanel {
-
+//cc
     DefaultTableModel modeloAp = new DefaultTableModel();
     DefaultTableModel modeloProdAp = new DefaultTableModel();
     DefaultTableModel modeloProd = new DefaultTableModel();
