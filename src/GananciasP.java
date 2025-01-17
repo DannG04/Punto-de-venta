@@ -59,10 +59,8 @@ public class GananciasP extends javax.swing.JPanel {
 
         actualizarDialog.setTitle("Actualizar");
         actualizarDialog.setAlwaysOnTop(true);
-        actualizarDialog.setMaximumSize(new java.awt.Dimension(400, 260));
         actualizarDialog.setMinimumSize(new java.awt.Dimension(400, 260));
         actualizarDialog.setModal(true);
-        actualizarDialog.setPreferredSize(new java.awt.Dimension(400, 260));
         actualizarDialog.setResizable(false);
         actualizarDialog.getContentPane().setLayout(new java.awt.CardLayout());
 
@@ -183,7 +181,7 @@ public class GananciasP extends javax.swing.JPanel {
         jLabel1.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(78, 150, 150));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Ganancias");
+        jLabel1.setText("Otras Ganancias");
         jPanel1.add(jLabel1);
 
         add(jPanel1, java.awt.BorderLayout.NORTH);

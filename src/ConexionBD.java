@@ -13,10 +13,10 @@ import java.time.format.DateTimeFormatter;
  */
 public class ConexionBD {
     
-    String url = "jdbc:postgresql://localhost:5432/";
+    String url = "jdbc:postgresql://dpg-ctk67dhopnds73fsk4i0-a.oregon-postgres.render.com:5432/";
     String nameBD = "tienda_punto_venta";
-    String usuario = "postgres";
-    String contra = "mayraK";
+    String usuario = "daniel183";
+    String contra = "IwkTvhnv40tjCIsyVASGpa218IkeVUIE";
     
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     

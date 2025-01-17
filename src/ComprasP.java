@@ -130,9 +130,10 @@ public class ComprasP extends javax.swing.JPanel {
         prodComDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         prodComDialog.setTitle("Compras");
         prodComDialog.setAlwaysOnTop(true);
-        prodComDialog.setMinimumSize(new java.awt.Dimension(1000, 550));
+        prodComDialog.setMinimumSize(new java.awt.Dimension(1400, 550));
         prodComDialog.setModal(true);
-        prodComDialog.setSize(new java.awt.Dimension(1000, 550));
+        prodComDialog.setPreferredSize(new java.awt.Dimension(1400, 435));
+        prodComDialog.setSize(new java.awt.Dimension(1400, 550));
         prodComDialog.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 prodComDialogWindowClosing(evt);
@@ -142,7 +143,10 @@ public class ComprasP extends javax.swing.JPanel {
 
         panelRegProdC.setLayout(new java.awt.BorderLayout());
 
-        jScrollPane7.setPreferredSize(new java.awt.Dimension(270, 402));
+        jScrollPane7.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        jScrollPane7.setMinimumSize(new java.awt.Dimension(550, 402));
+        jScrollPane7.setOpaque(false);
+        jScrollPane7.setPreferredSize(new java.awt.Dimension(550, 402));
 
         tablaProd.setFont(new java.awt.Font("Noto Serif", 0, 16)); // NOI18N
         tablaProd.setModel(new javax.swing.table.DefaultTableModel(
@@ -161,6 +165,7 @@ public class ComprasP extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
+        tablaProd.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         tablaProd.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tablaProdMouseClicked(evt);
@@ -282,7 +287,7 @@ public class ComprasP extends javax.swing.JPanel {
 
         panelRegProdC.add(jPanel5, java.awt.BorderLayout.CENTER);
 
-        jPanel4.setLayout(new java.awt.GridLayout());
+        jPanel4.setLayout(new java.awt.GridLayout(1, 0));
 
         jLabel1.setFont(new java.awt.Font("Noto Serif", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(78, 150, 150));

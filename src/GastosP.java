@@ -428,7 +428,7 @@ public class GastosP extends javax.swing.JPanel {
 
     public void mostrarTablaGastos(){
         Mise.limpiarTabla(modeloG);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM gastos;");
+        java.sql.ResultSet rs = conect.query("SELECT * FROM gastos order by fecha_gasto;");
         try{
             while(rs.next()){
                 modeloG.addRow(new Object[]{rs.getString("id_gasto"), rs.getString("id_empleado"), rs.getDate("fecha_gasto"), rs.getString("descripcion"), rs.getDouble("monto")});
