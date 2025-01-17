@@ -38,25 +38,26 @@ import javax.swing.table.DefaultTableModel;
  */
 public class VentasP extends javax.swing.JPanel {
 
-    static int diaV = 0;
-    
-    Integer desc = 0;
+    String id_cliente="";
     
     static Double precT = 0.0;
     DefaultTableModel modelo = new DefaultTableModel();
     DefaultTableModel modeloBusc = new DefaultTableModel();
+    DefaultTableModel modeloCli = new DefaultTableModel();
+    DefaultTableModel modeloProdP = new DefaultTableModel();
     
     ConexionBD conect = new ConexionBD();
     String idTemV = "";
-    boolean alertaP = false;
     
     /**
      * Creates new form Ventas
      */
     public VentasP() {
         initComponents();
-        modelo=(DefaultTableModel)tablaVentas.getModel();
-        modeloBusc=(DefaultTableModel)jTable1.getModel();
+        modelo = (DefaultTableModel)tablaVentas.getModel();
+        modeloBusc = (DefaultTableModel)tablaBusc.getModel();
+        modeloCli = (DefaultTableModel)tablaCli.getModel();
+        modeloProdP = (DefaultTableModel)tablaProdPocos.getModel();
         totalLabel.setText("Total: " + precT);
     }
 
@@ -86,6 +87,20 @@ public class VentasP extends javax.swing.JPanel {
         cambCT = new javax.swing.JFormattedTextField();
         cancelarB = new javax.swing.JButton();
         hechoCamb = new javax.swing.JButton();
+        regVentaDialog = new javax.swing.JDialog();
+        panelRegVenta = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
+        curpCliente = new javax.swing.JFormattedTextField();
+        labelinc = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tablaCli = new javax.swing.JTable();
+        prodPocosDialog = new javax.swing.JDialog();
+        panelProdPoc = new javax.swing.JPanel();
+        labelinc1 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        tablaProdPocos = new javax.swing.JTable();
+        hechoAct1 = new javax.swing.JButton();
+        jLabel11 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
@@ -104,11 +119,15 @@ public class VentasP extends javax.swing.JPanel {
         jLabel10 = new javax.swing.JLabel();
         Busc = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tablaBusc = new javax.swing.JTable();
 
+        jDialog1.setTitle("Venta");
+        jDialog1.setAlwaysOnTop(true);
+        jDialog1.setMinimumSize(new java.awt.Dimension(400, 300));
         jDialog1.setModal(true);
+        jDialog1.setPreferredSize(new java.awt.Dimension(400, 300));
         jDialog1.setResizable(false);
-        jDialog1.setSize(new java.awt.Dimension(230, 180));
+        jDialog1.setSize(new java.awt.Dimension(400, 300));
         jDialog1.getContentPane().setLayout(new java.awt.CardLayout());
 
         panelAct.setLayout(new java.awt.GridLayout(0, 1));
@@ -220,6 +239,166 @@ public class VentasP extends javax.swing.JPanel {
 
         jDialog1.setLocationRelativeTo(null);
 
+        regVentaDialog.setTitle("Venta");
+        regVentaDialog.setAlwaysOnTop(true);
+        regVentaDialog.setMinimumSize(new java.awt.Dimension(500, 500));
+        regVentaDialog.setModal(true);
+        regVentaDialog.setResizable(false);
+        regVentaDialog.setSize(new java.awt.Dimension(500, 500));
+        regVentaDialog.getContentPane().setLayout(new java.awt.CardLayout());
+
+        panelRegVenta.setLayout(new java.awt.GridBagLayout());
+
+        jLabel9.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel9.setText("CURP cliente:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.ipadx = 16;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        panelRegVenta.add(jLabel9, gridBagConstraints);
+
+        curpCliente.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        curpCliente.setPreferredSize(new java.awt.Dimension(250, 30));
+        curpCliente.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                curpClienteKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                curpClienteKeyTyped(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        panelRegVenta.add(curpCliente, gridBagConstraints);
+
+        labelinc.setFont(new java.awt.Font("Noto Serif", 0, 12)); // NOI18N
+        labelinc.setForeground(new java.awt.Color(204, 0, 51));
+        labelinc.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelinc.setText(" ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        panelRegVenta.add(labelinc, gridBagConstraints);
+
+        jScrollPane3.setPreferredSize(new java.awt.Dimension(450, 300));
+
+        tablaCli.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        tablaCli.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Curp", "Nombre"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tablaCli.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaCliMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(tablaCli);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        panelRegVenta.add(jScrollPane3, gridBagConstraints);
+
+        regVentaDialog.getContentPane().add(panelRegVenta, "card2");
+
+        regVentaDialog.setLocationRelativeTo(null);
+
+        prodPocosDialog.setTitle("Alerta");
+        prodPocosDialog.setAlwaysOnTop(true);
+        prodPocosDialog.setMinimumSize(new java.awt.Dimension(550, 450));
+        prodPocosDialog.setModal(true);
+        prodPocosDialog.setPreferredSize(new java.awt.Dimension(550, 450));
+        prodPocosDialog.setResizable(false);
+        prodPocosDialog.setSize(new java.awt.Dimension(550, 450));
+        prodPocosDialog.getContentPane().setLayout(new java.awt.CardLayout());
+
+        panelProdPoc.setLayout(new java.awt.GridBagLayout());
+
+        labelinc1.setFont(new java.awt.Font("Noto Serif", 0, 12)); // NOI18N
+        labelinc1.setForeground(new java.awt.Color(204, 0, 51));
+        labelinc1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelinc1.setText(" ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        panelProdPoc.add(labelinc1, gridBagConstraints);
+
+        jScrollPane4.setPreferredSize(new java.awt.Dimension(500, 300));
+
+        tablaProdPocos.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        tablaProdPocos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Producto", "Nombre", "Cantidad"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane4.setViewportView(tablaProdPocos);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        panelProdPoc.add(jScrollPane4, gridBagConstraints);
+
+        hechoAct1.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        hechoAct1.setForeground(new java.awt.Color(78, 150, 150));
+        hechoAct1.setText("Aceptar");
+        hechoAct1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hechoAct1ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        panelProdPoc.add(hechoAct1, gridBagConstraints);
+        hechoAct.setVisible(false);
+
+        jLabel11.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel11.setText("Quedan pocos productos en el inventario:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.ipadx = 16;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
+        panelProdPoc.add(jLabel11, gridBagConstraints);
+
+        prodPocosDialog.getContentPane().add(panelProdPoc, "card2");
+
+        prodPocosDialog.setLocationRelativeTo(null);
+
         setLayout(new java.awt.BorderLayout());
 
         jLabel1.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
@@ -284,6 +463,7 @@ public class VentasP extends javax.swing.JPanel {
 
         totalLabel.setFont(new java.awt.Font("Noto Serif", 1, 40)); // NOI18N
         totalLabel.setForeground(new java.awt.Color(78, 150, 150));
+        totalLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         totalLabel.setText("Total: ");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -384,6 +564,7 @@ public class VentasP extends javax.swing.JPanel {
         jLabel10.setForeground(new java.awt.Color(78, 150, 150));
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel10.setText("Buscar");
+        jLabel10.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         jPanel3.add(jLabel10);
 
         Busc.setMaximumSize(new java.awt.Dimension(2147483647, 30));
@@ -401,12 +582,10 @@ public class VentasP extends javax.swing.JPanel {
 
         jScrollPane2.setPreferredSize(new java.awt.Dimension(452, 200));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tablaBusc.setFont(new java.awt.Font("Noto Serif", 0, 14)); // NOI18N
+        tablaBusc.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+
             },
             new String [] {
                 "Codigo", "Producto", "Precio Menudeo", "Precio Mayoreo", "En Existencia"
@@ -420,12 +599,12 @@ public class VentasP extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+        tablaBusc.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTable1MouseClicked(evt);
+                tablaBuscMouseClicked(evt);
             }
         });
-        jScrollPane2.setViewportView(jTable1);
+        jScrollPane2.setViewportView(tablaBusc);
 
         jPanel3.add(jScrollPane2);
 
@@ -444,15 +623,14 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_cantPKeyTyped
 
     private void hechoActActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoActActionPerformed
-        // TODO add your handling code here:
         if(codp.getText().isEmpty() || cantP.getText().isEmpty()){
-            javax.swing.JOptionPane.showMessageDialog(null, "Todos los campos deben ser completados", "Error",javax.swing.JOptionPane.ERROR_MESSAGE);
+            Mise.JOption("Todos los campos deben ser completados", "Error", JOptionPane.ERROR_MESSAGE);
         }
         else{
-            //Se actualizan los datos en la tabla temporal y en el inventario
-            actualizarDatos(tablaVentas.getSelectedRow());
-            mostrarTabla();
-            totalLabel.setText("Total: " + precT);
+            String[] datos = {codp.getText(), cantP.getText()};
+            conect.insertarVentaTemp(datos, false); //Se actualizan los datos en la venta temporal
+            mostrarTablaVentaT();
+            mostrarBusqueda("");
             jDialog1.setVisible(false);
         }
     }//GEN-LAST:event_hechoActActionPerformed
@@ -483,17 +661,27 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_recCTKeyTyped
 
     private void hechoCambActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoCambActionPerformed
-        //GENERA TICKET
-        generarTicket();
-        guardarVenta();
-        limpiarTabla();
-        
-        precT = 0.0;
-        totalLabel.setText("Total: " + precT);
-        
-        //Se elimina de la tabla temporal
-        eliminarTodosCampos();
-        jDialog1.setVisible(false);
+        if(recCT.getText().isEmpty()){
+            Mise.JOption("El campo no puede estar vacío", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            Double a = Double.valueOf(recCT.getText());
+            Double b = Double.valueOf(totalCT.getText());
+            if(a < b){
+                Mise.JOption("Lo recibido no debe ser menor que el total", "Error", JOptionPane.ERROR_MESSAGE);
+            } else{
+                idTemV = conect.registrarVenta(Interfaz.idVendedor,id_cliente); //Se registra la venta
+                //generarTicket(); //Se genera el ticket
+                Mise.limpiarTabla(modelo); //Se limpia el modelo
+                precT = 0.0;
+                totalLabel.setText("Total: " + precT);
+                jDialog1.setVisible(false);
+                //EN ESTA PARTE DEBERIA MOSTRAR LA ALERTAA SI HAY POCOS PRODUCTOS
+                if(conect.hayPocosProductos()){
+                    mostrarProdPocos();
+                    prodPocosDialog.setVisible(true);
+                }
+            }
+        }
     }//GEN-LAST:event_hechoCambActionPerformed
 
     private void cancelarBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarBActionPerformed
@@ -528,24 +716,7 @@ public class VentasP extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_BuscKeyTyped
 
-    public void mostrarResul(String instruccion){
-        java.sql.ResultSet rs = conect.query(instruccion);
-        if(rs != null){
-            try{
-                while(rs.next()){
-                    modeloBusc.addRow( new Object[]{rs.getString("idproducto"), rs.getString("nombre"), rs.getDouble("precio_menudeo"), 
-                        rs.getDouble("precio_mayoreo"), rs.getInt("cantidad")});
-                }
-            }catch(Exception e){
-                System.out.println("Ha ocurrido un error");
-            }
-        } else {
-            System.out.println("El result set esta vacio");
-        }
-    }
-
     private void actBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actBActionPerformed
-
         if(tablaVentas.getSelectedRow() != -1){
             int a = tablaVentas.getSelectedRow();
             hechoAct.setVisible(true);
@@ -554,44 +725,44 @@ public class VentasP extends javax.swing.JPanel {
             panelAct.setVisible(true);
             panelCamb.setVisible(false);
             jDialog1.setVisible(true);
+        } else{
+            Mise.JOption("Debe seleccionar la fila que desea actualizar", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        else
-        JOptionPane.showMessageDialog(null,"Debe seleccionar la fila que desea actualizar");
     }//GEN-LAST:event_actBActionPerformed
 
     private void elimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elimActionPerformed
-        if(tablaVentas.getSelectedRow() != -1){
-            int a = tablaVentas.getSelectedRow();
-            if(eliminarElementos(a))
-            mostrarTabla();
-            else
-            System.out.println("Error al intentar eliminar el dato");
-            totalLabel.setText("Total: " + precT);
+        int a = tablaVentas.getSelectedRow();
+        if(a != -1){
+            conect.eliminarVentaTemp("" + modelo.getValueAt(a, 0)); //se elimina el producto
+            mostrarTablaVentaT();
+            mostrarBusqueda("");
         }
-        else
-        JOptionPane.showMessageDialog(null,"Debe seleccionar la fila que desea eliminar");
+        else {
+            Mise.JOption("Debe seleccionar la fila que desea eliminar", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_elimActionPerformed
 
     private void ventaRealiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ventaRealiActionPerformed
-        idTemV = generarID();
-        sumarTotales();
-        recCT.setText("");
-        totalCT.setText("" + precT);
-        panelAct.setVisible(false);
-        panelCamb.setVisible(true);
-        jDialog1.setVisible(true);
+        if(modelo.getRowCount() != 0){
+            mostrarClientes("");
+            regVentaDialog.setVisible(true);
+        } else{
+            Mise.JOption("No es posible registrar una venta sin productos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_ventaRealiActionPerformed
 
     private void regActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regActionPerformed
-        // TODO add your handling code here:
         if(!codigoProd.getText().isEmpty() && !cantidadProd.getText().isEmpty()){
-            if(guardarProd())
-            mostrarTabla();
-            //LIMPIAR
+            String[] datos = {codigoProd.getText(), cantidadProd.getText()};
+            conect.insertarVentaTemp(datos, true); //Se inserta el producto en la tabla
+            mostrarTablaVentaT();
+            //Se limpian los campos de texto
             codigoProd.setText("");
             cantidadProd.setText("");
-            Busc.setText(null);
-            limpiarTablaBusc();
+            Busc.setText("");
+            mostrarBusqueda("");
+        } else{
+            Mise.JOption("Debe llenar los dos campos de texto", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_regActionPerformed
 
@@ -610,7 +781,7 @@ public class VentasP extends javax.swing.JPanel {
     private void codigoProdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_codigoProdKeyTyped
         // TODO add your handling code here:
         char letra = evt.getKeyChar();
-        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra)){
+        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra) && !Cake.guionShort(letra)){
             evt.consume();
         }
 
@@ -620,24 +791,51 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_codigoProdKeyTyped
 
     private void BuscKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_BuscKeyReleased
-        // TODO add your handling code here:
         String palabra = Busc.getText();
-        limpiarTablaBusc();
-        String instruccion = "SELECT * FROM producto WHERE nombre LIKE '%" + palabra + "%';";
-        mostrarResul(instruccion);
-
+        Mise.limpiarTabla(modeloBusc);
+        String instruccion = "SELECT * FROM producto WHERE nombre LIKE '%" + palabra + "%' ORDER BY id_producto;";
+        mostrarBusqueda(instruccion);
     }//GEN-LAST:event_BuscKeyReleased
 
-    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        // TODO add your handling code here:
-        if(jTable1.getSelectedRow() != -1){
-            codigoProd.setText((String)jTable1.getValueAt(jTable1.getSelectedRow(), 0));
+    private void tablaBuscMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaBuscMouseClicked
+        if(tablaBusc.getSelectedRow() != -1){
+            codigoProd.setText((String)tablaBusc.getValueAt(tablaBusc.getSelectedRow(), 0));
         }
-        
-    }//GEN-LAST:event_jTable1MouseClicked
+    }//GEN-LAST:event_tablaBuscMouseClicked
 
+    private void tablaCliMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaCliMouseClicked
+        id_cliente = "" + tablaCli.getValueAt(tablaCli.getSelectedRow(), 0);
+        precT = conect.sumaVentaTemp();
+        recCT.setText("");
+        totalCT.setText("" + precT);
+        cambCT.setText("0.0");
+        panelAct.setVisible(false);
+        panelCamb.setVisible(true);
+        regVentaDialog.setVisible(false);
+        jDialog1.setVisible(true);
+    }//GEN-LAST:event_tablaCliMouseClicked
+
+    private void curpClienteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_curpClienteKeyTyped
+        char letra = evt.getKeyChar();
+        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra)){
+            evt.consume();
+        }
+
+        if(Cake.tamaño(curpCliente.getText(), 18)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_curpClienteKeyTyped
+
+    private void curpClienteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_curpClienteKeyReleased
+        String pal = curpCliente.getText();
+        mostrarClientes("SELECT * FROM cliente WHERE estatus='Activo' AND id_cliente LIKE '% " + pal +"%';");
+    }//GEN-LAST:event_curpClienteKeyReleased
+
+    private void hechoAct1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoAct1ActionPerformed
+        prodPocosDialog.setVisible(false);
+    }//GEN-LAST:event_hechoAct1ActionPerformed
+    
     public Double cambioT(String palabra){
-        sumarTotales();
         totalCT.setText("" + precT);
         Double cambioNum = Double.valueOf(palabra);
         if(cambioNum >= precT){
@@ -648,277 +846,70 @@ public class VentasP extends javax.swing.JPanel {
         return cambioNum;
     }
     
-    public final void mostrarTabla(){
-        limpiarTabla();
-        llenarTabla("SELECT * FROM ventatemporal;");
-    }
-    
-    public void llenarTabla(String instruccion){
-        java.sql.ResultSet rs = conect.query(instruccion);
-        if(rs != null){
-            try{
-                while(rs.next()){
-                    modelo.addRow( new Object[]{rs.getString("idproducto"), rs.getString("nombre"), rs.getInt("cantidadvendida"), 
-                        rs.getString("tipoventatemporal"), rs.getDouble("precio_dado"), rs.getDouble("total")});
-                }
-            }catch(Exception e){
-                System.out.println("Ha ocurrido un error");
-            }
-        } else {
-            System.out.println("El result set esta vacio");
-        }
-    }
-    
-    public  void limpiarTabla(){
-        int a=modelo.getRowCount();    
-        while(a!=0){ 
-            if(a!=0)
-                modelo.removeRow(0);                      
-            a=modelo.getRowCount();
-        }
-    }
-
-    public  void limpiarTablaBusc(){
-        int a=modeloBusc.getRowCount();    
-        while(a!=0){ 
-            if(a!=0)
-                modeloBusc.removeRow(0);                      
-            a=modeloBusc.getRowCount();
-        }
-    }
-    
-    public boolean guardarProd(){
-        boolean bandG = false;
-        String cod = codigoProd.getText();
-        int cantP = Integer.parseInt(cantidadProd.getText());
-        String instrucc = "SELECT * FROM producto WHERE idproducto='" + cod +"';";
-        java.sql.ResultSet rsI = conect.query(instrucc);
-        try{
-            if(!rsI.isBeforeFirst()){
-                JOptionPane.showMessageDialog(null, "No se encontró el producto", "Error", JOptionPane.ERROR_MESSAGE);
-            } else{
-                try{
-                    while(rsI.next()){
-                        String nombreP = rsI.getString("nombre");
-                        System.out.println(nombreP);
-                        int cantInv = isInventario(cod);
-                        cantP = cantP + cantInv;//SI ES QUE EL PRODUCTO YA ESTA EN LA TABLA TEMPORAL SE SUMARA LA CANTIDAD QUE HAYA
-                        String tipoVenta, aux;
-                        if(cantP>=12){//SI LA CANTIDAD DE PRODUCTOS ES MAYORIGUAL DE 12 ES MAYOREO
-                            tipoVenta = "Mayoreo";
-                            aux = "precio_mayoreo";
-                        } else{
-                            tipoVenta = "Menudeo";
-                            aux = "precio_menudeo";
-                        }
-                        Double precDado = rsI.getDouble(aux);
-                        Double total = precDado*cantP;
-                        String[] datos = {cod, nombreP, "" + cantP, tipoVenta, "" + precDado, "" + total};
-                        System.out.println(instrucc);
-                        cantidadInventario(true, cod, cantP-cantInv);//SE DECREMENTA LA CANTIDAD EN EL INVENTARIO
-                        instrucc = agregarTablaTem(datos);
-                        System.out.println(instrucc);
-                        if(conect.inst(instrucc)){
-                            sumarTotales();
-                            totalLabel.setText("Total: " + precT);
-                            bandG = true;
-                            if(alertaP){
-                                javax.swing.JOptionPane.showMessageDialog(null, "Quedan pocos " + nombreP + " en el inventario", "Alerta",javax.swing.JOptionPane.WARNING_MESSAGE);
-                                alertaP = false;
-                            }
-                        }
-                    }
-                } catch(Exception e){
-                    System.out.println("Error");
-                }
-            }
-        } catch(Exception e){
-            System.out.println("Error");
-        }
-        return bandG;
-    }
-    
-    public String agregarTablaTem(String[] campos){
-        String instruccion = "SELECT idproducto FROM ventatemporal WHERE idproducto='" + campos[0] +"';";
-        String[] aux = new String[6];
-        java.sql.ResultSet rs = conect.query(instruccion);//VERIFICAMOS SI EL PRODUCTO YA ESTA EN LA TABLA TEMPORAL
-        instruccion = "";
-        try{
-            if(!rs.isBeforeFirst()){//SI NO LO ESTA, SE INSERTA
-                instruccion = "INSERT INTO ventatemporal VALUES(" +
-                        "'" + campos[0] + "', '" + campos[1] + "', " + campos[2] + ", '"+ campos[3] + "', "+ campos[4] + ", "+ campos[5] + ");";
-
-            } else{//SI LO ESTA, SE INCREMENTA LA CANTIDAD DE PRODUCTOS Y SE ACTUALIZA EL PRECIO
-                try{
-                    instruccion = "UPDATE ventatemporal SET cantidadvendida=" + campos[2] + ", tipoventatemporal='" + campos[3] + "'" + ", precio_dado=" + campos[4] 
-                            +", total=" + campos[5] + " WHERE idproducto='" + campos[0] +"';";
-                } catch (Exception e){
-                    System.out.println("Error");
-                }
-            }
-        } catch(Exception e){
-            System.out.println("Error al agregar tabla");
-        }
-        return instruccion;
-    }
-    
-    public int isInventario(String codProd){
-        int cantInventario = 0;
-        String instruccion = "SELECT * FROM ventatemporal WHERE idproducto='" + codProd +"';";
-        java.sql.ResultSet rs = conect.query(instruccion);//VERIFICAMOS SI EL PRODUCTO YA ESTA EN LA TABLA TEMPORAL
-        if(rs!=null){
-            try{
-                while(rs.next()){
-                    cantInventario = rs.getInt("cantidadvendida");
-                }
-            }catch(Exception e){
-                System.out.println("Error al obtener la cantidad vendida");
-            }
-        }
-        return cantInventario;
-    }
-    
-    public void sumarTotales(){
-        String in = "SELECT SUM(total) FROM ventatemporal;";
-        java.sql.ResultSet rs = conect.query(in);
+    public final void mostrarTablaVentaT(){
+        Mise.limpiarTabla(modelo);
+        java.sql.ResultSet rs = conect.query("SELECT * FROM venta_temp");
         try{
             while(rs.next()){
-                precT = rs.getDouble(1);
+                modelo.addRow( new Object[]{rs.getString("id_producto"), rs.getString("nombre_p"), rs.getInt("cantidad_prod"), 
+                    rs.getString("tipo_venta"), rs.getDouble("precio_dado"), rs.getDouble("precio_total")});
             }
-        }catch(Exception e){
-            System.out.println("Error al obtener la suma");
+        }catch(java.sql.SQLException e){
+            System.out.println("Error al tratar de llenar la tabla venta temporal");
         }
+        //Se actualiza la suma total
+        precT = conect.sumaVentaTemp();
+        totalLabel.setText("Total: " + precT);
     }
     
-    public boolean eliminarElementos(int a){
-        boolean band = false;
-        
-        String elemento = "" + modelo.getValueAt(a, 0);
-        String instruccion = "SELECT cantidadvendida FROM ventatemporal WHERE idproducto='" + elemento + "';";
+    public void mostrarBusqueda(String instruccion){
+        if(instruccion.equals("")){
+            instruccion = "SELECT * FROM producto ORDER BY id_producto";
+        }
+        Mise.limpiarTabla(modeloBusc);
         java.sql.ResultSet rs = conect.query(instruccion);
         try{
             while(rs.next()){
-                cantidadInventario(false, elemento, rs.getInt("cantidadvendida"));//SE INCREMENTA LA CANTIDAD EN EL INVENTARIO
-                instruccion = "DELETE FROM ventatemporal";
-                instruccion = instruccion + " WHERE idproducto='" + elemento + "';";
-                band = conect.inst(instruccion);
+                modeloBusc.addRow( new Object[]{rs.getString("id_producto"), rs.getString("nombre"), rs.getDouble("precio_menudeo"), 
+                    rs.getDouble("precio_mayoreo"), rs.getInt("cantidad")});
             }
-        } catch(Exception e){
-            System.out.println("Error");
+        }catch(java.sql.SQLException e){
+            System.out.println("Error en la tabla de busqueda de productos");
         }
-        
-        return band;
     }
     
-    public void cantidadInventario(boolean op, String idprod, int cantTem){
-        String instruccion = "SELECT cantidad FROM producto WHERE idproducto='" + idprod + "';";
+    public void mostrarClientes(String instruccion){
+        if(instruccion.equals("")){
+            instruccion = "SELECT * FROM cliente WHERE estatus='Activo';";
+        }
+        Mise.limpiarTabla(modeloCli);
         java.sql.ResultSet rs = conect.query(instruccion);
-        if(rs != null){
-            try{
-                while(rs.next()){
-                    int x = 0;
-                    int cantBD = rs.getInt("cantidad");
-
-                    instruccion = "UPDATE producto SET cantidad=";
-                    if(op){//SI ES TRUE SE DECREMENTA LA CANTIDAD EN EL INVENTARIO
-                        x = cantBD-cantTem;
-                    } else{//SI ES FALSE SE INCREMENTA LA CANTIDAD
-                        x = cantBD+cantTem;
-                    }
-                    instruccion = instruccion + x + " WHERE idproducto='" + idprod + "';";
-                    if(cantBD<12)
-                        alertaP = true;
-                    System.out.println(instruccion);
-                    if(conect.inst(instruccion))
-                        System.out.println("Inventario Actualizado");
-                    else
-                        System.out.println("No se actualizo el inventario");
-                }
-                
-            }catch(Exception e){
-                System.out.println("Error");
-            }
-            
-        }
-    }
-    
-    public void eliminarTodosCampos(){
-        String inst = "TRUNCATE TABLE ventatemporal;";
-        conect.inst(inst);
-    }
-    
-    public void actualizarDatos(int a){
-        String instruccion = "UPDATE ventatemporal ";
-        String elemento = codp.getText();
-        int cantOld = isInventario(elemento);
-        cantidadInventario(false, elemento, cantOld);//REGRESAMOS LA CANTIDAD DE PRODUCTOS QUE HABIA
-        int cantNew = Integer.parseInt(cantP.getText());
-        String tipoVenta, aux;
-        if(cantNew>=12){//SI LA CANTIDAD NUEVA DE PRODUCTOS ES MAYORIGUAL DE 12 ES MAYOREO
-            tipoVenta = "Mayoreo";
-            aux = "precio_mayoreo";
-        } else{
-            tipoVenta = "Menudeo";
-            aux = "precio_menudeo";
-        }
-        java.sql.ResultSet rs = conect.query("SELECT * FROM producto WHERE='"+ elemento+"';");
         try{
             while(rs.next()){
-                Double tipoV = rs.getDouble(aux);
-                Double total = tipoV*cantNew;
-                instruccion = instruccion + "SET cantidad=" + cantNew +", tipoventatemporal='"+ tipoVenta+ "', precio_dado=" + tipoV + ", total=" + total;
-                instruccion = instruccion + " WHERE idproducto='" + elemento +"'";
-                System.out.println(instruccion);
-                if(conect.inst(instruccion))
-                    cantidadInventario(true, elemento, cantNew);
+                modeloCli.addRow( new Object[]{rs.getString("id_cliente"), rs.getString("nombre")});
             }
-        }catch(Exception e){
-            System.out.println("");
+        }catch(java.sql.SQLException e){
+            System.out.println("Error al mostrar la tabal de clientes");
         }
-        
+    }
+    
+    public void mostrarProdPocos(){
+        Mise.limpiarTabla(modeloProdP);
+        java.sql.ResultSet rs = conect.query("SELECT * FROM producto WHERE cantidad<=12 ORDER BY id_producto");
+        try{
+            while(rs.next()){
+                modeloProdP.addRow(new Object[]{rs.getString("id_producto"), rs.getString("nombre"), rs.getInt("cantidad")});
+            }
+        } catch(java.sql.SQLException e){
+            System.out.println("Error al mostrar la tabla pocos productos");
+        }
     }
     
     public void mostrarDAct(int a){
         String elemento = "" + modelo.getValueAt(a, 0);
-        String instruccion = "SELECT * FROM ventatemporal WHERE idproducto='" + elemento + "';";
-        System.out.println(instruccion);
-        java.sql.ResultSet rs = conect.query(instruccion);
-        if(rs!=null){
-            try {
-                while(rs.next()){
-                    codp.setText(rs.getString("idproducto"));
-                    cantP.setText("" + rs.getInt("cantidadvendida"));
-                }
-            } catch (java.sql.SQLException ex) {
-                System.out.println("Error");
-            }
-        }
-    }
-    
-    public String generarHora(String formato){
-        java.time.LocalDateTime ahora = java.time.LocalDateTime.now();
-        java.time.format.DateTimeFormatter formateado = java.time.format.DateTimeFormatter.ofPattern(formato);
-        return ahora.format(formateado);
-    }
-    
-    public String generarID(){
-        String hora = generarHora("HH:mm:ss");
-        String fecha = generarHora("dd/MM/yyyy");
-        String id = "";
-        fecha = fecha+hora;
-        for (int i=0; i<fecha.length();i++) {
-            if(Character.isDigit(fecha.charAt(i))){
-                id = id + fecha.charAt(i);
-            }
-        }
-        System.out.println(id);
-        return id;
-    }
-    
-    public void guardarVenta(){
-        String inst = "INSERT INTO registroventat (idventat, totalventat)";
-        inst = inst + " VALUES('" + idTemV + "', " + precT +")";
-        conect.inst(inst);
+        String canti = "" + modelo.getValueAt(a, 2);
+        codp.setText(elemento);
+        cantP.setText(canti);
     }
     
     public void generarTicket() {
@@ -1006,12 +997,15 @@ public class VentasP extends javax.swing.JPanel {
     private javax.swing.JFormattedTextField cantidadProd;
     private javax.swing.JFormattedTextField codigoProd;
     private javax.swing.JFormattedTextField codp;
+    private javax.swing.JFormattedTextField curpCliente;
     private javax.swing.JButton elim;
     private javax.swing.JButton hechoAct;
+    private javax.swing.JButton hechoAct1;
     private javax.swing.JButton hechoCamb;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1019,16 +1013,27 @@ public class VentasP extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    public static javax.swing.JLabel labelinc;
+    public static javax.swing.JLabel labelinc1;
     private javax.swing.JPanel panelAct;
     private javax.swing.JPanel panelCamb;
+    private javax.swing.JPanel panelProdPoc;
+    private javax.swing.JPanel panelRegVenta;
+    private javax.swing.JDialog prodPocosDialog;
     private javax.swing.JFormattedTextField recCT;
     private javax.swing.JButton reg;
+    private javax.swing.JDialog regVentaDialog;
+    private javax.swing.JTable tablaBusc;
+    private javax.swing.JTable tablaCli;
+    private javax.swing.JTable tablaProdPocos;
     private javax.swing.JTable tablaVentas;
     private javax.swing.JFormattedTextField totalCT;
     private javax.swing.JLabel totalLabel;

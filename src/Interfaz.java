@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.Toolkit;
 import java.awt.Dimension;
-import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -33,21 +32,28 @@ public class Interfaz extends javax.swing.JFrame {
     VentasP ventPanel = new VentasP();
     AdministracionP docsPanel = new AdministracionP();
     ApartadosP apPanel = new ApartadosP();
+    DevolucionesP devPanel = new DevolucionesP();
     ClientesP cliPanel = new ClientesP();
+    GastosP gastPanel =  new GastosP();
+    GananciasP ganPanel = new GananciasP();
+    //Administracion
+    ComprasP comPanel = new ComprasP();
+    EmpleadosP empPanel = new EmpleadosP();
     
-    static String idVendedor = "DANIEL123";
+    //Conexion
+    ConexionBD conect = new ConexionBD();
+    static String idVendedor = "";
     
     boolean iniDia = false;
     Dimension tamanio = Toolkit.getDefaultToolkit().getScreenSize();
 
-    
-    
     /**
      * Creates new form Interfaz
      */
     public Interfaz() {
         initComponents();
-        
+        Hora fecha = new Hora();
+        fecha.start();
     }
 
     /**
@@ -64,6 +70,15 @@ public class Interfaz extends javax.swing.JFrame {
         popupMenu = new javax.swing.JPopupMenu();
         opcion1 = new javax.swing.JMenuItem();
         opcion2 = new javax.swing.JMenuItem();
+        opcion3 = new javax.swing.JMenuItem();
+        adminPM = new javax.swing.JPopupMenu();
+        comp1 = new javax.swing.JMenuItem();
+        emp2 = new javax.swing.JMenuItem();
+        regV3 = new javax.swing.JMenuItem();
+        regCont = new javax.swing.JMenu();
+        balG5 = new javax.swing.JMenuItem();
+        estR6 = new javax.swing.JMenuItem();
+        vtasHoy7 = new javax.swing.JMenuItem();
         panelPrin = new javax.swing.JPanel();
         perfil = new javax.swing.JButton();
         closeSesion = new javax.swing.JButton();
@@ -76,6 +91,9 @@ public class Interfaz extends javax.swing.JFrame {
         boton3 = new javax.swing.JToggleButton();
         boton4 = new javax.swing.JToggleButton();
         boton5 = new javax.swing.JToggleButton();
+        boton6 = new javax.swing.JToggleButton();
+        boton7 = new javax.swing.JToggleButton();
+        boton8 = new javax.swing.JToggleButton();
         iniSession = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         etiquetaN1 = new javax.swing.JLabel();
@@ -85,6 +103,9 @@ public class Interfaz extends javax.swing.JFrame {
         contInc = new javax.swing.JLabel();
         veriB1 = new javax.swing.JButton();
         usuarioBox = new javax.swing.JComboBox<>();
+        jSeparator1 = new javax.swing.JSeparator();
+        horaPanel = new javax.swing.JPanel();
+        labelHora = new javax.swing.JLabel();
 
         popupMenu.setToolTipText("");
 
@@ -95,39 +116,92 @@ public class Interfaz extends javax.swing.JFrame {
         opcion2.setToolTipText("");
         popupMenu.add(opcion2);
 
+        opcion3.setText("jMenuItem1");
+        popupMenu.add(opcion3);
+
+        comp1.setText("Compras");
+        comp1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comp1ActionPerformed(evt);
+            }
+        });
+        adminPM.add(comp1);
+
+        emp2.setText("Empleados");
+        emp2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                emp2ActionPerformed(evt);
+            }
+        });
+        adminPM.add(emp2);
+
+        regV3.setText("Registro de Ventas");
+        regV3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                regV3ActionPerformed(evt);
+            }
+        });
+        adminPM.add(regV3);
+
+        regCont.setText("Registros Contables");
+
+        balG5.setText("Balance General");
+        balG5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                balG5ActionPerformed(evt);
+            }
+        });
+        regCont.add(balG5);
+
+        estR6.setText("Estado de Resultados");
+        estR6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                estR6ActionPerformed(evt);
+            }
+        });
+        regCont.add(estR6);
+
+        vtasHoy7.setText("Reporte Diario");
+        vtasHoy7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                vtasHoy7ActionPerformed(evt);
+            }
+        });
+        regCont.add(vtasHoy7);
+
+        adminPM.add(regCont);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Punto de Ventas");
         setMinimumSize(new java.awt.Dimension(430, 400));
         setSize(new java.awt.Dimension(430, 400));
 
-        panelPrin.setBackground(new java.awt.Color(0, 102, 102));
+        panelPrin.setBackground(new java.awt.Color(204, 226, 249));
         panelPrin.setLayout(new java.awt.GridBagLayout());
 
-        perfil.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/userCi.png"))); // NOI18N
+        perfil.setBackground(new java.awt.Color(204, 226, 249));
+        perfil.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/usuariu1.png"))); // NOI18N
         perfil.setMaximumSize(new java.awt.Dimension(90, 90));
         perfil.setMinimumSize(new java.awt.Dimension(90, 90));
-        perfil.setPreferredSize(new java.awt.Dimension(90, 90));
+        perfil.setPreferredSize(new java.awt.Dimension(160, 160));
         perfil.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                perfilMousePressed(evt);
-            }
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                perfilMouseReleased(evt);
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                perfilMouseEntered(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 12, 12, 12);
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 12, 0);
         panelPrin.add(perfil, gridBagConstraints);
 
-        closeSesion.setFont(new java.awt.Font("Noto Serif", 1, 12)); // NOI18N
+        closeSesion.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         closeSesion.setForeground(new java.awt.Color(78, 150, 150));
         closeSesion.setText("Cerrar sesión");
         closeSesion.setMaximumSize(new java.awt.Dimension(115, 25));
         closeSesion.setMinimumSize(new java.awt.Dimension(115, 25));
-        closeSesion.setPreferredSize(new java.awt.Dimension(115, 25));
+        closeSesion.setPreferredSize(new java.awt.Dimension(160, 60));
         closeSesion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeSesionActionPerformed(evt);
@@ -140,12 +214,12 @@ public class Interfaz extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
         panelPrin.add(closeSesion, gridBagConstraints);
 
-        initerDia.setFont(new java.awt.Font("Noto Serif", 1, 12)); // NOI18N
+        initerDia.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         initerDia.setForeground(new java.awt.Color(78, 150, 150));
         initerDia.setText("Iniciar día");
         initerDia.setMaximumSize(new java.awt.Dimension(115, 25));
         initerDia.setMinimumSize(new java.awt.Dimension(115, 25));
-        initerDia.setPreferredSize(new java.awt.Dimension(115, 25));
+        initerDia.setPreferredSize(new java.awt.Dimension(160, 60));
         initerDia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 initerDiaActionPerformed(evt);
@@ -159,19 +233,21 @@ public class Interfaz extends javax.swing.JFrame {
         panelPrin.add(initerDia, gridBagConstraints);
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/astetik.gif"))); // NOI18N
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/fondo.jpg"))); // NOI18N
         jLabel3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jLabel3.setPreferredSize(new java.awt.Dimension(1000, 600));
+        jLabel3.setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
+        jLabel3.setMinimumSize(new java.awt.Dimension(1620, 990));
+        jLabel3.setPreferredSize(new java.awt.Dimension(1620, 990));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = 4;
+        gridBagConstraints.gridheight = 3;
         panelPrin.add(jLabel3, gridBagConstraints);
 
         getContentPane().add(panelPrin, java.awt.BorderLayout.CENTER);
         panelPrin.setVisible(false);
 
-        botones.setBackground(new java.awt.Color(0, 102, 102));
+        botones.setBackground(new java.awt.Color(204, 226, 249));
         botones.setLayout(new javax.swing.BoxLayout(botones, javax.swing.BoxLayout.Y_AXIS));
 
         botonGrup.add(boton0);
@@ -226,9 +302,9 @@ public class Interfaz extends javax.swing.JFrame {
         boton3.setText("Administración");
         boton3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         boton3.setMaximumSize(new java.awt.Dimension(300, 400));
-        boton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                boton3ActionPerformed(evt);
+        boton3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                boton3MouseClicked(evt);
             }
         });
         botones.add(boton3);
@@ -263,6 +339,51 @@ public class Interfaz extends javax.swing.JFrame {
         });
         botones.add(boton5);
         boton5.setVisible(false);
+
+        botonGrup.add(boton6);
+        boton6.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        boton6.setForeground(new java.awt.Color(78, 150, 150));
+        boton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/dev.png"))); // NOI18N
+        boton6.setText("Devoluciones");
+        boton6.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        boton6.setMaximumSize(new java.awt.Dimension(300, 400));
+        boton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                boton6ActionPerformed(evt);
+            }
+        });
+        botones.add(boton6);
+        boton3.setVisible(false);
+
+        botonGrup.add(boton7);
+        boton7.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        boton7.setForeground(new java.awt.Color(78, 150, 150));
+        boton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/gtos.png"))); // NOI18N
+        boton7.setText("Gastos");
+        boton7.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        boton7.setMaximumSize(new java.awt.Dimension(300, 400));
+        boton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                boton7ActionPerformed(evt);
+            }
+        });
+        botones.add(boton7);
+        boton3.setVisible(false);
+
+        botonGrup.add(boton8);
+        boton8.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        boton8.setForeground(new java.awt.Color(78, 150, 150));
+        boton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/gansias.png"))); // NOI18N
+        boton8.setText("Ganancias");
+        boton8.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        boton8.setMaximumSize(new java.awt.Dimension(300, 400));
+        boton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                boton8ActionPerformed(evt);
+            }
+        });
+        botones.add(boton8);
+        boton3.setVisible(false);
 
         getContentPane().add(botones, java.awt.BorderLayout.WEST);
         botones.setVisible(false);
@@ -357,7 +478,7 @@ public class Interfaz extends javax.swing.JFrame {
         iniSession.add(veriB1, gridBagConstraints);
 
         usuarioBox.setFont(new java.awt.Font("Noto Serif", 0, 12)); // NOI18N
-        usuarioBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Daniel", "Gaelin", "Elisa" }));
+        usuarioBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Daniel Gonzalez", "Gael Eduardo García", "Elisa Sánchez" }));
         usuarioBox.setPreferredSize(new java.awt.Dimension(180, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -365,8 +486,22 @@ public class Interfaz extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         iniSession.add(usuarioBox, gridBagConstraints);
+        iniSession.add(jSeparator1, new java.awt.GridBagConstraints());
 
         getContentPane().add(iniSession, java.awt.BorderLayout.PAGE_START);
+
+        horaPanel.setBackground(new java.awt.Color(204, 226, 249));
+        horaPanel.setLayout(new java.awt.GridBagLayout());
+
+        labelHora.setFont(new java.awt.Font("Ubuntu Sans Mono", 0, 18)); // NOI18N
+        labelHora.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelHora.setText("00:00");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        horaPanel.add(labelHora, gridBagConstraints);
+
+        getContentPane().add(horaPanel, java.awt.BorderLayout.SOUTH);
+        horaPanel.setVisible(false);
 
         pack();
         setLocationRelativeTo(null);
@@ -403,71 +538,51 @@ public class Interfaz extends javax.swing.JFrame {
         iniciarSesion();
     }//GEN-LAST:event_veriB1ActionPerformed
 
-    private void perfilMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_perfilMouseReleased
-        if (evt.isPopupTrigger()) {
-            popupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-        }
-    }//GEN-LAST:event_perfilMouseReleased
-
     private void boton0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton0ActionPerformed
         botonesFore(0);
-        visibilidad(0);
+        visibilidad(0, 0);
     }//GEN-LAST:event_boton0ActionPerformed
 
     private void boton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton1ActionPerformed
         botonesFore(1);
-        visibilidad(1);
+        visibilidad(1, 0);
     }//GEN-LAST:event_boton1ActionPerformed
 
     private void boton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton2ActionPerformed
         botonesFore(2);
-        visibilidad(2);
+        visibilidad(2, 0);
     }//GEN-LAST:event_boton2ActionPerformed
-
-    private void boton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton3ActionPerformed
-        botonesFore(3);
-        visibilidad(3);
-    }//GEN-LAST:event_boton3ActionPerformed
 
     private void boton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton4ActionPerformed
         botonesFore(4);
-        visibilidad(4);
+        visibilidad(4, 0);
     }//GEN-LAST:event_boton4ActionPerformed
 
     private void boton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton5ActionPerformed
         botonesFore(5);
-        visibilidad(5);
+        visibilidad(5, 0);
     }//GEN-LAST:event_boton5ActionPerformed
-
-    private void perfilMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_perfilMousePressed
-        if (evt.isPopupTrigger()) {
-            popupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-        }
-    }//GEN-LAST:event_perfilMousePressed
 
     private void initerDiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_initerDiaActionPerformed
         if(!iniDia){
-            JOption("Dia iniciado","Dia info");
+            Mise.JOption("Día iniciado","Información del día", javax.swing.JOptionPane.PLAIN_MESSAGE);
             initerDia.setText("Terminar día");
             iniDia = true;
-            VentasP.diaV = 0;
-            AdministracionP.contDei++;
             boton2.setVisible(true);
         }
         else{
             docsPanel.mostrarCierreCaja();
-            docsPanel.VentasDia.setVisible(true);
-            JOption("Día terminado. Se han guardado las ventas del día", "Mensaje");
+            docsPanel.cierreCajaDialog.setVisible(true);
+            Mise.JOption("Día terminado. Se han guardado las ventas del día", "Cierre de caja", javax.swing.JOptionPane.PLAIN_MESSAGE);
             initerDia.setText("Ïniciar día");
             iniDia = false;
-            AdministracionP.regTVentas();
             boton2.setVisible(false);
         }
     }//GEN-LAST:event_initerDiaActionPerformed
 
     private void closeSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeSesionActionPerformed
         if(!iniDia){
-            JOption("Hasta luego", "Salir");
+            Mise.JOption("Hasta luego", "Salir", javax.swing.JOptionPane.PLAIN_MESSAGE);
             userActivo = false;
             admActivo = false;
             contraF1.setText("");
@@ -481,9 +596,61 @@ public class Interfaz extends javax.swing.JFrame {
             this.setLocationRelativeTo(null);
         }
         else{
-            javax.swing.JOptionPane.showMessageDialog(null, "Debe terminar el día para cerrar sesión");
+            Mise.JOption(null, "Debe terminar el día para cerrar sesión", javax.swing.JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_closeSesionActionPerformed
+
+    private void boton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton3MouseClicked
+        botonesFore(3);
+        adminPM.show(evt.getComponent(), evt.getX(), evt.getY());
+    }//GEN-LAST:event_boton3MouseClicked
+
+    private void boton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton6ActionPerformed
+        visibilidad(6, 0);
+    }//GEN-LAST:event_boton6ActionPerformed
+
+    private void comp1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comp1ActionPerformed
+        visibilidad(3, 1);
+    }//GEN-LAST:event_comp1ActionPerformed
+
+    private void emp2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emp2ActionPerformed
+        visibilidad(3, 2);
+    }//GEN-LAST:event_emp2ActionPerformed
+
+    private void balG5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_balG5ActionPerformed
+        Excel.balanceGeneral();
+    }//GEN-LAST:event_balG5ActionPerformed
+
+    private void estR6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_estR6ActionPerformed
+        String res = Mise.JOptionInput("Ingrese el inventario inicial", "Estado de Resultados");
+        try{
+            Double invini = Double.valueOf(res);
+            Excel.estadodeResultados(invini);
+        } catch(NumberFormatException e){
+            Mise.JOption("Debe ingresar un numero", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_estR6ActionPerformed
+
+    private void vtasHoy7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vtasHoy7ActionPerformed
+        Excel.reporteDiario("Reporte_Diario.xlsx");
+        Excel.abrirExcel("Reporte_Diario.xlsx");
+    }//GEN-LAST:event_vtasHoy7ActionPerformed
+
+    private void perfilMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_perfilMouseEntered
+        popupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+    }//GEN-LAST:event_perfilMouseEntered
+
+    private void regV3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regV3ActionPerformed
+        visibilidad(3, 3);
+    }//GEN-LAST:event_regV3ActionPerformed
+
+    private void boton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton7ActionPerformed
+        visibilidad(7, 0);
+    }//GEN-LAST:event_boton7ActionPerformed
+
+    private void boton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton8ActionPerformed
+        visibilidad(8, 0);
+    }//GEN-LAST:event_boton8ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -508,32 +675,39 @@ public class Interfaz extends javax.swing.JFrame {
         us = usuarioBox.getSelectedItem().toString();
         String c = contraF1.getText();
         if(!us.isEmpty() || !c.isEmpty()){
-            if(AdministracionP.userC.containsKey(us)){
-                if(!AdministracionP.userC.get(us).equals(c)){
+            if(empPanel.userC.containsKey(us)){
+                if(!empPanel.userC.get(us).equals(c)){
                     contInc.setText("Contraseña incorrecta");
                 }
                 else{
-                    JOption("Bienvenido " + us, "Inicio de sesión");
-                    userActivo = true;
-                    if(us.equals(AdministracionP.administrador)){
-                        admActivo = true;
+                    idVendedor = conect.idEmpleado(us);
+                    if(idVendedor.equals("")){
+                        contInc.setText("Error al iniciar sesión");
+                    } else{
+                        Mise.JOption("Bienvenido " + us, "Inicio de sesión", javax.swing.JOptionPane.PLAIN_MESSAGE);
+                        userActivo = true;
+                        if(us.equals(empPanel.administrador)){
+                            admActivo = true;
+                        }
+                        opcion2.setText("Curp: " + idVendedor);
+
+                        opcion1.setText("Nombre: " + us);
+                        if(admActivo){
+                            opcion3.setText("Puesto: Gerente");
+                        } else {
+                            opcion3.setText("Puesto: Vendedor");
+                        }
+
+                        boton0.setForeground(Color.BLACK);
+                        boton0.setSelected(true);
+                        iniSession.setVisible(false);
+                        botonesVis();
+                        botones.setVisible(true);
+                        panelPrin.setVisible(true);
+                        horaPanel.setVisible(true);
+                        this.setSize(tamanio.width, tamanio.height-20);
+                        this.setLocationRelativeTo(null);
                     }
-                    
-                    opcion1.setText("Nombre: " + us);
-                    if(admActivo){
-                        opcion2.setText("Puesto: Administrador");
-                    } else {
-                        opcion2.setText("Puesto: Vendedor");
-                    }
-                    
-                    boton0.setForeground(Color.BLACK);
-                    boton0.setSelected(true);
-                    iniSession.setVisible(false);
-                    botonesVis();
-                    botones.setVisible(true);
-                    panelPrin.setVisible(true);
-                    this.setSize(tamanio.width, tamanio.height-20);
-                    this.setLocationRelativeTo(null);
                 }
             }
             else{
@@ -544,13 +718,17 @@ public class Interfaz extends javax.swing.JFrame {
         }
     }
     
-    public void visibilidad(int a){
+    public void visibilidad(int a, int b){
         panelPrin.setVisible(false);
         invPanel.setVisible(false);
         ventPanel.setVisible(false);
         docsPanel.setVisible(false);
         apPanel.setVisible(false);
         cliPanel.setVisible(false);
+        devPanel.setVisible(false);
+        gastPanel.setVisible(false);
+        ganPanel.setVisible(false);
+        panelesAdm(b);
         switch(a){
             case 0://Panel Principal
                 panelPrin.setVisible(true);
@@ -558,34 +736,73 @@ public class Interfaz extends javax.swing.JFrame {
             case 1://Panel Inventario
                 getContentPane().add(invPanel, java.awt.BorderLayout.CENTER);
                 this.add(invPanel);
-                invPanel.mostrarTabla();
-                if(admActivo){
-                    InventarioP.panelBotones.setVisible(true);
-                }
-                else{
-                    InventarioP.panelBotones.setVisible(false);
-                }
+                invPanel.mostrarTabla("");
+                invPanel.panelBotones.setVisible(admActivo);
                 invPanel.setVisible(true);
                 break;
             case 2://Panel Registro de Ventas
                 getContentPane().add(ventPanel, java.awt.BorderLayout.CENTER);
                 this.add(ventPanel);
+                ventPanel.mostrarTablaVentaT();
+                ventPanel.mostrarBusqueda("");
                 ventPanel.setVisible(true);
                 break;
-            case 3://Panel Administración
-                getContentPane().add(docsPanel, java.awt.BorderLayout.CENTER);
-                this.add(docsPanel);
-                docsPanel.setVisible(true);
-                break;
+            // NO HAY CASE 3
             case 4://Panel Sistema de Apartados
                 getContentPane().add(apPanel, java.awt.BorderLayout.CENTER);
                 this.add(apPanel);
+                apPanel.mostrarTablaAp("");
                 apPanel.setVisible(true);
                 break;
             case 5://Panel Registro de Clientes
                 getContentPane().add(cliPanel, java.awt.BorderLayout.CENTER);
                 this.add(cliPanel);
+                cliPanel.mostrarTabla();
                 cliPanel.setVisible(true);
+                break;
+            case 6://Panel Devoluciones
+                getContentPane().add(devPanel, java.awt.BorderLayout.CENTER);
+                this.add(devPanel);
+                devPanel.mostrarDev();
+                devPanel.setVisible(true);
+                break;
+            case 7://Panel de Gastos
+                getContentPane().add(gastPanel, java.awt.BorderLayout.CENTER);
+                this.add(gastPanel);
+                gastPanel.mostrarTablaGastos();
+                gastPanel.setVisible(true);
+                break;
+            case 8://Panel de Ganancias
+                getContentPane().add(ganPanel, java.awt.BorderLayout.CENTER);
+                this.add(ganPanel);
+                ganPanel.mostrarTablaOG();
+                ganPanel.setVisible(true);
+                break;
+        }
+    }
+    
+    public void panelesAdm(int b){
+        comPanel.setVisible(false);
+        empPanel.setVisible(false);
+        docsPanel.setVisible(false);
+        switch(b){
+            case 1://Panel de Compras
+                getContentPane().add(comPanel, java.awt.BorderLayout.CENTER);
+                this.add(comPanel);
+                comPanel.mostrarTablaCom();
+                comPanel.setVisible(true);
+                break;
+            case 2://Panel de Empleados
+                getContentPane().add(empPanel, java.awt.BorderLayout.CENTER);
+                this.add(empPanel);
+                empPanel.mostrarTablaEmp();
+                empPanel.setVisible(true);
+                break;
+            case 3://Panel de Registro de Ventas
+                getContentPane().add(docsPanel, java.awt.BorderLayout.CENTER);
+                this.add(docsPanel);
+                docsPanel.mostrarTablaVentas();
+                docsPanel.setVisible(true);
                 break;
         }
     }
@@ -623,57 +840,52 @@ public class Interfaz extends javax.swing.JFrame {
         if(userActivo){
             boton0.setVisible(true);
             boton1.setVisible(true);
-            if(admActivo){
-                boton3.setVisible(true);
-            }
+            boton3.setVisible(admActivo);
             boton4.setVisible(true);
             boton5.setVisible(true);
         }
     }
-    
-    public static void JOption(String mensaje, String titulo){
-        javax.swing.JOptionPane optionPane = new javax.swing.JOptionPane(mensaje);
-        javax.swing.JDialog dialog = optionPane.createDialog(titulo);
-        dialog.setAlwaysOnTop(true);
-        dialog.setVisible(true);
-        dialog.toFront();
-        dialog.requestFocus();
-    }
-    public static int JOptionYesNo(String mensaje, String titulo){
-        javax.swing.JOptionPane optionPane = new javax.swing.JOptionPane(mensaje, javax.swing.JOptionPane.QUESTION_MESSAGE, javax.swing.JOptionPane.YES_NO_OPTION);
-        javax.swing.JDialog dialog = optionPane.createDialog(titulo);
-        dialog.setAlwaysOnTop(true);
-        dialog.setVisible(true);
-        dialog.toFront();
-        dialog.requestFocus();
-        return (int) optionPane.getValue();
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPopupMenu adminPM;
+    private javax.swing.JMenuItem balG5;
     private javax.swing.JToggleButton boton0;
     private javax.swing.JToggleButton boton1;
     private javax.swing.JToggleButton boton2;
-    private javax.swing.JToggleButton boton3;
+    public javax.swing.JToggleButton boton3;
     private javax.swing.JToggleButton boton4;
     private javax.swing.JToggleButton boton5;
+    private javax.swing.JToggleButton boton6;
+    private javax.swing.JToggleButton boton7;
+    private javax.swing.JToggleButton boton8;
     private javax.swing.ButtonGroup botonGrup;
     private javax.swing.JPanel botones;
     private javax.swing.JButton closeSesion;
+    private javax.swing.JMenuItem comp1;
     public static javax.swing.JLabel contInc;
     public static javax.swing.JPasswordField contraF1;
+    private javax.swing.JMenuItem emp2;
+    private javax.swing.JMenuItem estR6;
     private javax.swing.JLabel etiquetaC1;
     private javax.swing.JLabel etiquetaN1;
     public static javax.swing.JToggleButton eyeB1;
+    public static javax.swing.JPanel horaPanel;
     private javax.swing.JPanel iniSession;
     private javax.swing.JButton initerDia;
     public static javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JSeparator jSeparator1;
+    public static javax.swing.JLabel labelHora;
     private javax.swing.JMenuItem opcion1;
     private javax.swing.JMenuItem opcion2;
+    private javax.swing.JMenuItem opcion3;
     private javax.swing.JPanel panelPrin;
     private javax.swing.JButton perfil;
     private javax.swing.JPopupMenu popupMenu;
+    private javax.swing.JMenu regCont;
+    private javax.swing.JMenuItem regV3;
     private javax.swing.JComboBox<String> usuarioBox;
     private javax.swing.JButton veriB1;
+    private javax.swing.JMenuItem vtasHoy7;
     // End of variables declaration//GEN-END:variables
 }

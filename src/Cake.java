@@ -42,6 +42,10 @@ public class Cake {
         return (palabra.charAt(i-1) == '.') && (letra == '.');
     }
     
+    public static boolean guionShort(char letra) {
+        return letra == '-';
+    }
+    
     public static boolean hayPuntos(String palabra){
         int cont = 0;
         int i = palabra.length(); 

@@ -1,13 +1,13 @@
 ********************************************           
           FACTURA DE VENTA                             
- Folio: 28112024110234                                 
- Fecha de emisión : 28/11/2024                         
- Hora: 11:02:38                                        
- Vendedor: Daniel                                      
+ Folio: V20250112204203                                
+ Fecha de emisión : 12/01/2025                         
+ Hora: 20:42:03                                        
+ Vendedor: Daniel Gonzalez                             
  -------------------------------------------           
       Producto         Cant  P.Unit  P.Total           
- Pantalon T28MC         2     132     264.0            
+ Pantalón negro de mez  5     180     900.0            
  -------------------------------------------           
- Total: 264.0                                          
+ Total: 900.0                                          
  -------Muchas gracias por su compra.-------           
                                                        

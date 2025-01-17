@@ -12,15 +12,21 @@ import javax.swing.table.DefaultTableModel;
  */
 public class ApartadosP extends javax.swing.JPanel {
 
-    DefaultTableModel modelo = new DefaultTableModel();
+    DefaultTableModel modeloAp = new DefaultTableModel();
+    DefaultTableModel modeloProdAp = new DefaultTableModel();
+    DefaultTableModel modeloProd = new DefaultTableModel();
+    DefaultTableModel modeloCli = new DefaultTableModel();
+    
     ConexionBD conect = new ConexionBD();
-    boolean alertaP = false;
-    String idAp = "";
+    String id_apartado = "";
+    boolean ins = true;
     
     public ApartadosP() {
         initComponents();
-        modelo=(DefaultTableModel)tablaAp.getModel();
-        mostrarTabla();
+        modeloAp = (DefaultTableModel)tablaAp.getModel();
+        modeloProdAp = (DefaultTableModel)tablaProdAp.getModel();
+        modeloProd = (DefaultTableModel)tablaProd.getModel();
+        modeloCli = (DefaultTableModel)tablaCli.getModel();
     }
 
     /**
@@ -33,27 +39,10 @@ public class ApartadosP extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        dialogAp = new javax.swing.JDialog();
-        panelProducto = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        codp = new javax.swing.JFormattedTextField();
-        jLabel8 = new javax.swing.JLabel();
-        cantp = new javax.swing.JFormattedTextField();
-        regPr = new javax.swing.JButton();
-        regAp = new javax.swing.JButton();
-        panelApartado = new javax.swing.JPanel();
-        cantMinLabel = new javax.swing.JLabel();
-        cantMinF = new javax.swing.JFormattedTextField();
-        jLabel10 = new javax.swing.JLabel();
-        cantPagF = new javax.swing.JFormattedTextField();
-        jLabel11 = new javax.swing.JLabel();
-        vigF = new javax.swing.JFormattedTextField();
-        jLabel9 = new javax.swing.JLabel();
-        idclientep = new javax.swing.JFormattedTextField();
-        hechoB4 = new javax.swing.JButton();
+        saldarDialog = new javax.swing.JDialog();
         panelSald = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
-        idApField = new javax.swing.JFormattedTextField();
+        idApF = new javax.swing.JFormattedTextField();
         jLabel13 = new javax.swing.JLabel();
         cantSaldaF = new javax.swing.JFormattedTextField();
         jLabel14 = new javax.swing.JLabel();
@@ -61,152 +50,62 @@ public class ApartadosP extends javax.swing.JPanel {
         jLabel15 = new javax.swing.JLabel();
         cambCT = new javax.swing.JFormattedTextField();
         regSaldasion = new javax.swing.JButton();
+        prodApartadoDialog = new javax.swing.JDialog();
+        panelApart = new javax.swing.JPanel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        tablaProdAp = new javax.swing.JTable();
+        panelRegProd = new javax.swing.JPanel();
+        jLabel16 = new javax.swing.JLabel();
+        codP = new javax.swing.JFormattedTextField();
+        jLabel17 = new javax.swing.JLabel();
+        cantP = new javax.swing.JFormattedTextField();
+        agP = new javax.swing.JButton();
+        acP = new javax.swing.JButton();
+        elP = new javax.swing.JButton();
+        heP = new javax.swing.JButton();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        tablaProd = new javax.swing.JTable();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        guardarApDialog = new javax.swing.JDialog();
+        panelApartado = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
+        totF = new javax.swing.JFormattedTextField();
+        cantMinLabel = new javax.swing.JLabel();
+        cantMinF = new javax.swing.JFormattedTextField();
+        jLabel10 = new javax.swing.JLabel();
+        cantPagF = new javax.swing.JFormattedTextField();
+        jLabel11 = new javax.swing.JLabel();
+        vigF = new javax.swing.JFormattedTextField();
+        hechoB4 = new javax.swing.JButton();
+        hechoB5 = new javax.swing.JButton();
+        regApartDialog = new javax.swing.JDialog();
+        panelRegAp1 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        curpCliente = new javax.swing.JFormattedTextField();
+        regC = new javax.swing.JButton();
+        labelinc = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tablaCli = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
-        reg = new javax.swing.JButton();
+        regAp = new javax.swing.JButton();
         sald = new javax.swing.JButton();
+        canc = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         buskAp = new javax.swing.JFormattedTextField();
-        botonBusk = new javax.swing.JToggleButton();
+        sumLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaAp = new javax.swing.JTable();
 
-        dialogAp.setTitle("Registro de Apartados");
-        dialogAp.setAlwaysOnTop(true);
-        dialogAp.setMinimumSize(new java.awt.Dimension(400, 310));
-        dialogAp.setModal(true);
-        dialogAp.setResizable(false);
-        dialogAp.setSize(new java.awt.Dimension(400, 310));
-        dialogAp.addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                dialogApWindowClosing(evt);
-            }
-        });
-        dialogAp.getContentPane().setLayout(new java.awt.CardLayout());
-
-        panelProducto.setLayout(new java.awt.GridLayout(0, 1));
-
-        jLabel3.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(78, 150, 150));
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("Código del Producto:");
-        panelProducto.add(jLabel3);
-
-        codp.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        codp.setPreferredSize(new java.awt.Dimension(200, 35));
-        codp.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                codpActionPerformed(evt);
-            }
-        });
-        codp.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                codpKeyTyped(evt);
-            }
-        });
-        panelProducto.add(codp);
-
-        jLabel8.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(78, 150, 150));
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel8.setText("Cantidad: ");
-        panelProducto.add(jLabel8);
-
-        cantp.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        cantp.setPreferredSize(new java.awt.Dimension(200, 35));
-        cantp.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                cantpKeyTyped(evt);
-            }
-        });
-        panelProducto.add(cantp);
-
-        regPr.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        regPr.setForeground(new java.awt.Color(78, 150, 150));
-        regPr.setText("Registrar producto");
-        regPr.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                regPrActionPerformed(evt);
-            }
-        });
-        panelProducto.add(regPr);
-
-        regAp.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        regAp.setForeground(new java.awt.Color(78, 150, 150));
-        regAp.setText("Registrar apartado");
-        regAp.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                regApActionPerformed(evt);
-            }
-        });
-        panelProducto.add(regAp);
-
-        dialogAp.getContentPane().add(panelProducto, "card2");
-
-        panelApartado.setLayout(new java.awt.GridLayout(0, 1));
-
-        cantMinLabel.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        cantMinLabel.setForeground(new java.awt.Color(78, 150, 150));
-        cantMinLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        cantMinLabel.setText("Cantidad mínima a pagar:");
-        panelApartado.add(cantMinLabel);
-
-        cantMinF.setEditable(false);
-        cantMinF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        cantMinF.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        cantMinF.setPreferredSize(new java.awt.Dimension(200, 35));
-        panelApartado.add(cantMinF);
-
-        jLabel10.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(78, 150, 150));
-        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel10.setText("Cantidad Pagada:");
-        panelApartado.add(jLabel10);
-
-        cantPagF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        cantPagF.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
-        cantPagF.setPreferredSize(new java.awt.Dimension(150, 30));
-        panelApartado.add(cantPagF);
-
-        jLabel11.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(78, 150, 150));
-        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel11.setText("Vigencia:");
-        panelApartado.add(jLabel11);
-
-        vigF.setEditable(false);
-        vigF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        vigF.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
-        vigF.setPreferredSize(new java.awt.Dimension(150, 30));
-        panelApartado.add(vigF);
-
-        jLabel9.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(78, 150, 150));
-        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel9.setText("ID cliente:");
-        panelApartado.add(jLabel9);
-
-        idclientep.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        idclientep.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        idclientep.setPreferredSize(new java.awt.Dimension(200, 35));
-        idclientep.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                idclientepKeyTyped(evt);
-            }
-        });
-        panelApartado.add(idclientep);
-
-        hechoB4.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        hechoB4.setForeground(new java.awt.Color(78, 150, 150));
-        hechoB4.setText("Registrar");
-        hechoB4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hechoB4ActionPerformed(evt);
-            }
-        });
-        panelApartado.add(hechoB4);
-
-        dialogAp.getContentPane().add(panelApartado, "card3");
+        saldarDialog.setTitle("Registro de Apartados");
+        saldarDialog.setAlwaysOnTop(true);
+        saldarDialog.setMinimumSize(new java.awt.Dimension(400, 350));
+        saldarDialog.setModal(true);
+        saldarDialog.setResizable(false);
+        saldarDialog.setSize(new java.awt.Dimension(400, 350));
+        saldarDialog.getContentPane().setLayout(new java.awt.CardLayout());
 
         panelSald.setLayout(new java.awt.GridLayout(0, 1));
 
@@ -216,19 +115,11 @@ public class ApartadosP extends javax.swing.JPanel {
         jLabel12.setText("ID Apartado:");
         panelSald.add(jLabel12);
 
-        idApField.setEditable(false);
-        idApField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        idApField.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
-        idApField.setPreferredSize(new java.awt.Dimension(150, 30));
-        idApField.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                idApFieldKeyReleased(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                idApFieldKeyTyped(evt);
-            }
-        });
-        panelSald.add(idApField);
+        idApF.setEditable(false);
+        idApF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        idApF.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        idApF.setPreferredSize(new java.awt.Dimension(150, 30));
+        panelSald.add(idApF);
 
         jLabel13.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         jLabel13.setForeground(new java.awt.Color(78, 150, 150));
@@ -283,21 +174,363 @@ public class ApartadosP extends javax.swing.JPanel {
         });
         panelSald.add(regSaldasion);
 
-        dialogAp.getContentPane().add(panelSald, "card4");
+        saldarDialog.getContentPane().add(panelSald, "card4");
 
-        dialogAp.setLocationRelativeTo(null);
+        saldarDialog.setLocationRelativeTo(null);
+
+        prodApartadoDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        prodApartadoDialog.setTitle("Registro de Apartados");
+        prodApartadoDialog.setAlwaysOnTop(true);
+        prodApartadoDialog.setMinimumSize(new java.awt.Dimension(1000, 460));
+        prodApartadoDialog.setModal(true);
+        prodApartadoDialog.setPreferredSize(new java.awt.Dimension(1000, 460));
+        prodApartadoDialog.setSize(new java.awt.Dimension(1000, 460));
+        prodApartadoDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                prodApartadoDialogWindowClosing(evt);
+            }
+        });
+        prodApartadoDialog.getContentPane().setLayout(new java.awt.CardLayout());
+
+        panelApart.setLayout(new java.awt.BorderLayout());
+
+        tablaProdAp.setFont(new java.awt.Font("Noto Serif", 0, 16)); // NOI18N
+        tablaProdAp.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Producto", "Cantidad", "Precio Unitario", "Precio Total", "Tipo de Venta"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane6.setViewportView(tablaProdAp);
+
+        panelApart.add(jScrollPane6, java.awt.BorderLayout.EAST);
+
+        panelRegProd.setLayout(new java.awt.GridLayout(0, 1));
+
+        jLabel16.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel16.setText("Código:");
+        panelRegProd.add(jLabel16);
+
+        codP.setEditable(false);
+        codP.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        codP.setPreferredSize(new java.awt.Dimension(150, 30));
+        panelRegProd.add(codP);
+
+        jLabel17.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel17.setText("Cantidad:");
+        panelRegProd.add(jLabel17);
+
+        cantP.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        cantP.setPreferredSize(new java.awt.Dimension(150, 30));
+        cantP.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                cantPKeyTyped(evt);
+            }
+        });
+        panelRegProd.add(cantP);
+
+        agP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        agP.setForeground(new java.awt.Color(78, 150, 150));
+        agP.setText("Agregar");
+        agP.setPreferredSize(new java.awt.Dimension(125, 33));
+        agP.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                agPActionPerformed(evt);
+            }
+        });
+        panelRegProd.add(agP);
+
+        acP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        acP.setForeground(new java.awt.Color(78, 150, 150));
+        acP.setText("Actualizar");
+        acP.setPreferredSize(new java.awt.Dimension(125, 33));
+        acP.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                acPActionPerformed(evt);
+            }
+        });
+        panelRegProd.add(acP);
+
+        elP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        elP.setForeground(new java.awt.Color(78, 150, 150));
+        elP.setText("Eliminar");
+        elP.setPreferredSize(new java.awt.Dimension(125, 33));
+        elP.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                elPActionPerformed(evt);
+            }
+        });
+        panelRegProd.add(elP);
+
+        heP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        heP.setForeground(new java.awt.Color(78, 150, 150));
+        heP.setText("Hecho");
+        heP.setPreferredSize(new java.awt.Dimension(125, 33));
+        heP.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hePActionPerformed(evt);
+            }
+        });
+        panelRegProd.add(heP);
+
+        panelApart.add(panelRegProd, java.awt.BorderLayout.CENTER);
+
+        jScrollPane7.setPreferredSize(new java.awt.Dimension(270, 402));
+
+        tablaProd.setFont(new java.awt.Font("Noto Serif", 0, 16)); // NOI18N
+        tablaProd.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Producto", "Nombre"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tablaProd.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaProdMouseClicked(evt);
+            }
+        });
+        jScrollPane7.setViewportView(tablaProd);
+
+        panelApart.add(jScrollPane7, java.awt.BorderLayout.WEST);
+
+        jPanel3.setLayout(new java.awt.GridLayout(1, 0));
+
+        jLabel1.setFont(new java.awt.Font("Noto Serif", 1, 24)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel1.setText("Productos");
+        jPanel3.add(jLabel1);
+
+        jLabel2.setFont(new java.awt.Font("Noto Serif", 1, 24)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel2.setText("Productos Apartados");
+        jPanel3.add(jLabel2);
+
+        panelApart.add(jPanel3, java.awt.BorderLayout.NORTH);
+
+        prodApartadoDialog.getContentPane().add(panelApart, "card3");
+
+        prodApartadoDialog.setLocationRelativeTo(null);
+
+        guardarApDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        guardarApDialog.setTitle("Registro de Apartados");
+        guardarApDialog.setAlwaysOnTop(true);
+        guardarApDialog.setMinimumSize(new java.awt.Dimension(400, 400));
+        guardarApDialog.setModal(true);
+        guardarApDialog.setResizable(false);
+        guardarApDialog.setSize(new java.awt.Dimension(400, 400));
+        guardarApDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                guardarApDialogWindowClosing(evt);
+            }
+        });
+        guardarApDialog.getContentPane().setLayout(new java.awt.CardLayout());
+
+        panelApartado.setLayout(new java.awt.GridLayout(0, 1));
+
+        jLabel9.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel9.setText("Total:");
+        panelApartado.add(jLabel9);
+
+        totF.setEditable(false);
+        totF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        totF.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        totF.setPreferredSize(new java.awt.Dimension(200, 35));
+        panelApartado.add(totF);
+
+        cantMinLabel.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        cantMinLabel.setForeground(new java.awt.Color(78, 150, 150));
+        cantMinLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        cantMinLabel.setText("Cantidad mínima a pagar:");
+        panelApartado.add(cantMinLabel);
+
+        cantMinF.setEditable(false);
+        cantMinF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        cantMinF.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        cantMinF.setPreferredSize(new java.awt.Dimension(200, 35));
+        panelApartado.add(cantMinF);
+
+        jLabel10.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel10.setText("Cantidad Pagada:");
+        panelApartado.add(jLabel10);
+
+        cantPagF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        cantPagF.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        cantPagF.setPreferredSize(new java.awt.Dimension(150, 30));
+        cantPagF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                cantPagFKeyTyped(evt);
+            }
+        });
+        panelApartado.add(cantPagF);
+
+        jLabel11.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel11.setText("Vigencia:");
+        panelApartado.add(jLabel11);
+
+        vigF.setEditable(false);
+        vigF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        vigF.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        vigF.setPreferredSize(new java.awt.Dimension(150, 30));
+        panelApartado.add(vigF);
+
+        hechoB4.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        hechoB4.setForeground(new java.awt.Color(78, 150, 150));
+        hechoB4.setText("Registrar");
+        hechoB4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hechoB4ActionPerformed(evt);
+            }
+        });
+        panelApartado.add(hechoB4);
+
+        hechoB5.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        hechoB5.setForeground(new java.awt.Color(78, 150, 150));
+        hechoB5.setText("Volver");
+        hechoB5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hechoB5ActionPerformed(evt);
+            }
+        });
+        panelApartado.add(hechoB5);
+
+        guardarApDialog.getContentPane().add(panelApartado, "card3");
+
+        guardarApDialog.setLocationRelativeTo(null);
+
+        regApartDialog.setTitle("Registro de Apartados");
+        regApartDialog.setAlwaysOnTop(true);
+        regApartDialog.setMinimumSize(new java.awt.Dimension(500, 500));
+        regApartDialog.setModal(true);
+        regApartDialog.setResizable(false);
+        regApartDialog.setSize(new java.awt.Dimension(500, 500));
+        regApartDialog.getContentPane().setLayout(new java.awt.CardLayout());
+
+        panelRegAp1.setLayout(new java.awt.GridBagLayout());
+
+        jLabel5.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel5.setText("CURP cliente:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.ipadx = 16;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        panelRegAp1.add(jLabel5, gridBagConstraints);
+
+        curpCliente.setEditable(false);
+        curpCliente.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        curpCliente.setPreferredSize(new java.awt.Dimension(250, 30));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        panelRegAp1.add(curpCliente, gridBagConstraints);
+
+        regC.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        regC.setForeground(new java.awt.Color(78, 150, 150));
+        regC.setText("Registrar");
+        regC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                regCActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.insets = new java.awt.Insets(30, 10, 10, 10);
+        panelRegAp1.add(regC, gridBagConstraints);
+
+        labelinc.setFont(new java.awt.Font("Noto Serif", 0, 12)); // NOI18N
+        labelinc.setForeground(new java.awt.Color(204, 0, 51));
+        labelinc.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelinc.setText(" ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        panelRegAp1.add(labelinc, gridBagConstraints);
+
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(450, 300));
+
+        tablaCli.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        tablaCli.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Curp", "Nombre"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tablaCli.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaCliMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(tablaCli);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        panelRegAp1.add(jScrollPane2, gridBagConstraints);
+
+        regApartDialog.getContentPane().add(panelRegAp1, "card2");
+
+        regApartDialog.setLocationRelativeTo(null);
 
         setLayout(new java.awt.BorderLayout());
 
+        jPanel2.setPreferredSize(new java.awt.Dimension(150, 165));
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
-        reg.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        reg.setForeground(new java.awt.Color(78, 150, 150));
-        reg.setText("Registrar");
-        reg.setPreferredSize(new java.awt.Dimension(125, 35));
-        reg.addActionListener(new java.awt.event.ActionListener() {
+        regAp.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        regAp.setForeground(new java.awt.Color(78, 150, 150));
+        regAp.setText("Registrar");
+        regAp.setPreferredSize(new java.awt.Dimension(125, 35));
+        regAp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                regActionPerformed(evt);
+                regApActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -305,7 +538,7 @@ public class ApartadosP extends javax.swing.JPanel {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.RELATIVE;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jPanel2.add(reg, gridBagConstraints);
+        jPanel2.add(regAp, gridBagConstraints);
 
         sald.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         sald.setForeground(new java.awt.Color(78, 150, 150));
@@ -322,6 +555,21 @@ public class ApartadosP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(sald, gridBagConstraints);
 
+        canc.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        canc.setForeground(new java.awt.Color(78, 150, 150));
+        canc.setText("Cancelar");
+        canc.setPreferredSize(new java.awt.Dimension(125, 35));
+        canc.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel2.add(canc, gridBagConstraints);
+
         add(jPanel2, java.awt.BorderLayout.EAST);
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
@@ -337,7 +585,7 @@ public class ApartadosP extends javax.swing.JPanel {
         jPanel1.add(jLabel7, gridBagConstraints);
 
         buskAp.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
-        buskAp.setPreferredSize(new java.awt.Dimension(600, 30));
+        buskAp.setPreferredSize(new java.awt.Dimension(1300, 30));
         buskAp.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 buskApKeyReleased(evt);
@@ -347,26 +595,24 @@ public class ApartadosP extends javax.swing.JPanel {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
         jPanel1.add(buskAp, gridBagConstraints);
 
-        botonBusk.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        botonBusk.setForeground(new java.awt.Color(78, 150, 150));
-        botonBusk.setText("Buscar");
-        botonBusk.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonBuskActionPerformed(evt);
-            }
-        });
+        sumLabel.setBackground(new java.awt.Color(255, 255, 255));
+        sumLabel.setFont(new java.awt.Font("Noto Serif", 1, 20)); // NOI18N
+        sumLabel.setForeground(new java.awt.Color(78, 150, 150));
+        sumLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        sumLabel.setText("Buscar:");
+        sumLabel.setPreferredSize(new java.awt.Dimension(81, 40));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jPanel1.add(botonBusk, gridBagConstraints);
+        jPanel1.add(sumLabel, gridBagConstraints);
 
         add(jPanel1, java.awt.BorderLayout.NORTH);
 
@@ -376,125 +622,78 @@ public class ApartadosP extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "Cant. Pagada", "Cant. Restante", "Fecha"
+                "Apartado", "Empleado", "Cliente", "Inicio", "Limite", "Dado", "Faltante", "Total", "Estado"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(tablaAp);
 
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void regActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regActionPerformed
-        paneles(1);
-        idAp = generarID();
-        conect.inst("INSERT INTO apartado(idapartado) VALUES('" + idAp +"');");
-        dialogAp.setVisible(true);
-    }//GEN-LAST:event_regActionPerformed
+    private void regApActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regApActionPerformed
+        mostrarTablaCli();
+        regApartDialog.setVisible(true);
+    }//GEN-LAST:event_regApActionPerformed
 
     private void saldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saldActionPerformed
-        paneles(3);
         if(tablaAp.getSelectedRow() != -1){
-            mostrarDatSald();
-            dialogAp.setVisible(true);
+            idApF.setText("" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 0));
+            cantSaldaF.setText("" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 6));
+            recSaldF.setText("");
+            cambCT.setText("");
+            saldarDialog.setVisible(true);
         } else{
-            javax.swing.JOptionPane.showMessageDialog(null, "Seleccione la fila que desea saldar", "Error",javax.swing.JOptionPane.ERROR_MESSAGE);
+            Mise.JOption("Seleccione la fila que desea saldar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_saldActionPerformed
 
-    private void codpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_codpActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_codpActionPerformed
-
-    private void codpKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_codpKeyTyped
-        char letra = evt.getKeyChar();
-        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra)){
-            evt.consume();
-        }
-    }//GEN-LAST:event_codpKeyTyped
-
-    private void cantpKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cantpKeyTyped
-        char letra = evt.getKeyChar();
-        if(!Cake.numeros(letra)){
-            evt.consume();
-        }
-
-        if(Cake.tamaño(cantp.getText(), 10)){
-            evt.consume();
-        }
-    }//GEN-LAST:event_cantpKeyTyped
-
-    private void regApActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regApActionPerformed
-        if(consultarAp()){
-            cantMinPago();
-            vigenciaFut();
-            paneles(2);
-        } else{
-            javax.swing.JOptionPane.showMessageDialog(null, "LLene todos los campos", "Error",javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-    }//GEN-LAST:event_regApActionPerformed
-
     private void hechoB4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoB4ActionPerformed
-        if(!cantPagF.getText().isEmpty() && !vigF.getText().isEmpty() && !idclientep.getText().isEmpty()){
-            if(Double.parseDouble(cantPagF.getText()) >= Double.parseDouble(cantMinF.getText())){
-                registrarApartado();
-                mostrarTabla();
-                dialogAp.setVisible(false);
+        if(!cantPagF.getText().isEmpty()){
+            double a = Double.parseDouble(cantPagF.getText());
+            double b = Double.parseDouble(cantMinF.getText());
+            if(a >= b){
+                //Restamos la cantidad pagada al total
+                double c = Double.parseDouble(totF.getText()) - a;
+                String[] campos = {cantPagF.getText(), "" + c};
+                conect.actualizarApartado(id_apartado, campos);
+                guardarApDialog.setVisible(false);
+                mostrarTablaAp("");
             } else{
-                javax.swing.JOptionPane.showMessageDialog(null, "El pago debe ser mayor o igual a la cantidad mínima a pagar", "Error",javax.swing.JOptionPane.ERROR_MESSAGE);
+                Mise.JOption("El pago debe ser mayor o igual a la cantidad mínima a pagar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         } else{
-            javax.swing.JOptionPane.showMessageDialog(null, "LLene todos los campos", "Error",javax.swing.JOptionPane.ERROR_MESSAGE);
+            Mise.JOption("LLene todos los campos", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_hechoB4ActionPerformed
 
     private void regSaldasionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regSaldasionActionPerformed
         if(!recSaldF.getText().isEmpty()){
             if(Double.parseDouble(recSaldF.getText()) >= Double.parseDouble(cantSaldaF.getText())){
-                saldarProdAp();
-                mostrarTabla();
-                dialogAp.setVisible(false);
+                conect.entregarApartado(idApF.getText());
+                mostrarTablaAp("");
+                saldarDialog.setVisible(false);
+            } else{
+                Mise.JOption("Lo recibido debe ser mayor o igual a la cantidad con la que salda", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         } else{
-            javax.swing.JOptionPane.showMessageDialog(null, "LLene todos los campos", "Error",javax.swing.JOptionPane.ERROR_MESSAGE);
+            Mise.JOption("Debe llenar todos los campos", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_regSaldasionActionPerformed
 
-    private void idclientepKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idclientepKeyTyped
-        char letra = evt.getKeyChar();
-        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra)){
-            evt.consume();
-        }
-    }//GEN-LAST:event_idclientepKeyTyped
-
-    private void regPrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regPrActionPerformed
-        if(!codp.getText().isEmpty() && !cantp.getText().isEmpty()){
-            registrarProdA();
-            codp.setText("");
-            cantp.setText("");
-        } else{
-            javax.swing.JOptionPane.showMessageDialog(null, "LLene todos los campos", "Error",javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-    }//GEN-LAST:event_regPrActionPerformed
-
-    private void dialogApWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_dialogApWindowClosing
-        verificarAp();
-    }//GEN-LAST:event_dialogApWindowClosing
-
-    private void idApFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idApFieldKeyTyped
-        char letra = evt.getKeyChar();
-        if(!Cake.numeros(letra)){
-            evt.consume();
-        }
-    }//GEN-LAST:event_idApFieldKeyTyped
-
-    private void idApFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idApFieldKeyReleased
-        
-    }//GEN-LAST:event_idApFieldKeyReleased
-
     private void buskApKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buskApKeyReleased
+        if(!buskAp.getText().isEmpty()){
+            mostrarTablaAp("SELECT * FROM apartado WHERE id_apartado LIKE '%" + buskAp + "%';");
+        }
         if(evt.getKeyChar() == java.awt.event.KeyEvent.VK_BACK_SPACE){
-            botonBusk.setSelected(false);
-            mostrarTabla();
+            mostrarTablaAp("SELECT * FROM apartado WHERE id_apartado LIKE '%" + buskAp + "%';");
         }
     }//GEN-LAST:event_buskApKeyReleased
 
@@ -520,15 +719,27 @@ public class ApartadosP extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_buskApKeyTyped
 
-    private void botonBuskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBuskActionPerformed
-        if(buskAp.getText().length()==14){
-            buscarAp();
-        }
-    }//GEN-LAST:event_botonBuskActionPerformed
-
     private void recSaldFKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_recSaldFKeyTyped
         char letra = evt.getKeyChar();
-        if(!Cake.numeros(letra)){
+        if(!Cake.numeros(letra) && !Cake.inicioPunto(letra)){
+            evt.consume();
+        }
+        
+        if(!(recSaldF.getText().isEmpty())){
+            if(Cake.hayPuntos(recSaldF.getText()) && letra=='.'){
+                evt.consume();
+            } else{
+                if(Cake.punto(recSaldF.getText(), letra)){
+                    evt.consume();
+                }
+            }
+        } else{
+            if(Cake.inicioPunto(letra)){
+                evt.consume();
+            }
+        }
+        
+        if(Cake.tamaño(recSaldF.getText(), 10)){
             evt.consume();
         }
     }//GEN-LAST:event_recSaldFKeyTyped
@@ -538,6 +749,149 @@ public class ApartadosP extends javax.swing.JPanel {
             cambCT.setText("" + cambioT(recSaldF.getText()));
         }
     }//GEN-LAST:event_recSaldFKeyReleased
+
+    private void cantPKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cantPKeyTyped
+        char letra = evt.getKeyChar();
+        if(!Cake.numeros(letra)){
+            evt.consume();
+        }
+
+        if(Cake.tamaño(cantP.getText(), 10)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_cantPKeyTyped
+
+    private void agPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agPActionPerformed
+        if(codP.getText().isEmpty() || cantP.getText().isEmpty()){
+            Mise.JOption("Debe llenar todos los campos", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } else{
+            String[] campos = {id_apartado, codP.getText(), cantP.getText()};
+            conect.insertarProdApartado(campos, ins);
+            ins = true;
+            codP.setText("");
+            cantP.setText("");
+        }
+        mostrarTablaProdA();
+    }//GEN-LAST:event_agPActionPerformed
+
+    private void acPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acPActionPerformed
+        if(tablaProdAp.getSelectedRow() == -1){
+            Mise.JOption("Seleccione la fila de la tabla de Productos Apartados que desea actualizar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } else{
+            codP.setText("" + tablaProdAp.getValueAt(tablaProdAp.getSelectedRow(), 0));
+            cantP.setText("" + tablaProdAp.getValueAt(tablaProdAp.getSelectedRow(), 1));
+            ins = false;
+        }
+    }//GEN-LAST:event_acPActionPerformed
+
+    private void elPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elPActionPerformed
+        if(tablaProdAp.getSelectedRow() == -1){
+            Mise.JOption("Seleccione la fila de la tabla de Productos Apartados que desea eliminar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } else{
+            String[] campos = {id_apartado, "" + tablaProdAp.getValueAt(tablaProdAp.getSelectedRow(), 0)};
+            conect.eliminarProdApartado(campos);
+            mostrarTablaProdA();
+        }
+    }//GEN-LAST:event_elPActionPerformed
+
+    private void prodApartadoDialogWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_prodApartadoDialogWindowClosing
+        if(modeloProdAp.getRowCount() == 0){
+            int res = Mise.JOptionYesNo("No registró ningun producto, ¿seguro que desea cerrar esta ventana?"
+                + "\n(al realizar esta acción el apartado no podrá guardarse)", "Cerrar ventana");
+            if(res == 0){
+                conect.eliminarApartado(id_apartado);
+                prodApartadoDialog.setVisible(false);
+            }
+        }
+    }//GEN-LAST:event_prodApartadoDialogWindowClosing
+
+    private void cantPagFKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cantPagFKeyTyped
+        char letra = evt.getKeyChar();
+        if(!Cake.numeros(letra) && !Cake.inicioPunto(letra)){
+            evt.consume();
+        }
+        
+        if(!(cantPagF.getText().isEmpty())){
+            if(Cake.hayPuntos(cantPagF.getText()) && letra=='.'){
+                evt.consume();
+            } else{
+                if(Cake.punto(cantPagF.getText(), letra)){
+                    evt.consume();
+                }
+            }
+        } else{
+            if(Cake.inicioPunto(letra)){
+                evt.consume();
+            }
+        }
+        
+        if(Cake.tamaño(cantPagF.getText(), 10)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_cantPagFKeyTyped
+
+    private void guardarApDialogWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_guardarApDialogWindowClosing
+        if(modeloProdAp.getRowCount() != 0){
+            Mise.JOption("No ha registrado el apartado, no es posible cerrar la ventana."
+                    + "\nSi desea cancelar el apartado debe registrarlo y depués cancelarlo, o eliminar todos los productos que registró anteriormente.", "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+            
+        }
+    }//GEN-LAST:event_guardarApDialogWindowClosing
+
+    private void cancActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancActionPerformed
+        if(tablaAp.getSelectedRow() != -1){
+            id_apartado = "" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 0);
+            double mon = conect.cantidadCancelarApartado(id_apartado);
+            double tor = (double) tablaAp.getValueAt(tablaAp.getSelectedRow(), 5) - mon;
+            int res = Mise.JOptionYesNo("¿Seguro que desea cancelar el apartado? Dada la cantidad recibida y la cantidad de dias que han pasado,\n"
+                    + " se le cobrarán $" + mon + " y se le dovolerán $" + tor, "Confirmar");
+            if(res == 0){
+                conect.cancelarApartado(id_apartado);
+            }
+        } else{
+            Mise.JOption("Seleccione la fila del apartado que desea cancelar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_cancActionPerformed
+
+    private void hechoB5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoB5ActionPerformed
+        guardarApDialog.setVisible(false);
+        prodApartadoDialog.setVisible(true);
+    }//GEN-LAST:event_hechoB5ActionPerformed
+
+    private void hePActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hePActionPerformed
+        if(modeloProdAp.getRowCount() != 0){
+            prodApartadoDialog.setVisible(false);
+            datosAp();
+            guardarApDialog.setVisible(true);
+        } else{
+            Mise.JOption("No puede registrar un apartado sin productos", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_hePActionPerformed
+
+    private void regCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regCActionPerformed
+        if(curpCliente.getText().isEmpty()){
+            labelinc.setText("Debe rellenar el campo");
+        } else{
+            String[] campos = {Interfaz.idVendedor, curpCliente.getText()};
+            id_apartado = conect.insertarApartado(campos);
+            regApartDialog.setVisible(false);
+            Mise.limpiarTabla(modeloProdAp);
+            mostrarTablaPro();
+            curpCliente.setText("");
+            codP.setText("");
+            cantP.setText("");
+            prodApartadoDialog.setVisible(true);
+        }
+    }//GEN-LAST:event_regCActionPerformed
+
+    private void tablaCliMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaCliMouseClicked
+        curpCliente.setText("" + tablaCli.getValueAt(tablaCli.getSelectedRow(), 0));
+    }//GEN-LAST:event_tablaCliMouseClicked
+
+    private void tablaProdMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaProdMouseClicked
+        codP.setText("" + tablaProd.getValueAt(tablaProd.getSelectedRow(), 0));
+    }//GEN-LAST:event_tablaProdMouseClicked
 
     public Double cambioT(String palabra){
         Double precT = Double.valueOf(cantSaldaF.getText());
@@ -550,265 +904,142 @@ public class ApartadosP extends javax.swing.JPanel {
         return cambioNum;
     }
     
-    public final void mostrarTabla(){
-        limpiarTabla();
-        String inst = "SELECT * FROM apartado";
-        llenarTabla(inst);
-    }
-    
-    public void llenarTabla(String instruccion){
+    public void mostrarTablaAp(String instruccion){
+        if(instruccion.equals("")){
+            instruccion = "SELECT * FROM apartado";
+        }
+        Mise.limpiarTabla(modeloAp);
         java.sql.ResultSet rs = conect.query(instruccion);
         if(rs != null){
             try{
                 while(rs.next()){
-                    modelo.addRow( new Object[]{rs.getString("idapartado"), rs.getDouble("cantidad_dada"), rs.getDouble("cantidad_falta"), rs.getDate("fecha_limite")});
+                    modeloAp.addRow(new Object[]{rs.getString("id_apartado"), rs.getString("id_empleado"), rs.getString("id_cliente"), rs.getDate("fecha_inicio"),
+                        rs.getDate("fecha_limite"), rs.getDouble("cantidad_dada"), rs.getDouble("cantidad_faltante"), rs.getDouble("cantidad_total"),rs.getString("estado")});
                 }
-            }catch(Exception e){
-                System.out.println("Ha ocurrido un error");
+            }catch(java.sql.SQLException e){
+                System.out.println("Error al mostrar la tabla apartados");
             }
         }
     }
     
-    public void limpiarTabla(){
-        int a=modelo.getRowCount();    
-        while(a!=0){ 
-            if(a!=0)
-                modelo.removeRow(0);                      
-            a=modelo.getRowCount();
-        }
-    }
-    
-    public void paneles(int a){
-        panelProducto.setVisible(false);
-        panelApartado.setVisible(false);
-        panelSald.setVisible(false);
-        switch(a){
-            case 1:
-                panelProducto.setVisible(true);
-                break;
-            case 2:
-                panelApartado.setVisible(true);
-                break;
-            case 3:
-                panelSald.setVisible(true);
-                break;
-            default:
-                break;
-        }
-    }
-    
-    public void verificarAp(){
-        java.sql.ResultSet rs = conect.query("SELECT * FROM apartado WHERE idapartado='" + idAp + "';");
-        
-        try{
-            while(rs.next()){
-                if(rs.getString("idcliente") == null){
-                    String inst = "DELETE FROM detalleapartado WHERE idapartado='" + idAp + "';";
-                    System.out.println(inst);
-                    conect.inst(inst);
-                    inst = "DELETE FROM apartado WHERE idapartado='" + idAp + "';";
-                    System.out.println(inst);
-                    conect.inst(inst);
-                }
-            }
-        }catch(Exception e){
-            System.out.println("Error al consultar producto");
-        }
-    }
-    
-    public void registrarProdA(){
-        String elemento = codp.getText();
-        int cant = Integer.parseInt(cantp.getText());
-        java.sql.ResultSet rs = conect.query("SELECT * FROM producto WHERE idproducto='" + elemento + "';");
-        
-        try{
-            while(rs.next()){
-                String aux;
-                if(cant>12){
-                    aux = "precio_mayoreo";
-                } else{
-                    aux = "precio_menudeo";
-                }
-                Double precio = rs.getDouble(aux) * cant;
-                
-                String inst = "INSERT INTO detalleapartado VALUES(" + cant +", " + precio + ", '" + elemento +"', '" + idAp + "');";
-                System.out.println(inst);
-                conect.inst(inst);
-            }
-        }catch(Exception e){
-            System.out.println("Error al consultar producto");
-        }
-    }
-    
-    public void saldarProdAp(){
-        String elemento = idApField.getText();
-        Double pagoDeu = (Double)tablaAp.getValueAt(tablaAp.getSelectedRow(), 1);
-        Double pagoEnt = (Double)tablaAp.getValueAt(tablaAp.getSelectedRow(), 2) + pagoDeu;
-        pagoDeu = 0.0;
-        String estao = "Entregado";
-        
-        String instruct = "UPDATE apartado SET cantidad_falta=" + pagoDeu +", cantidad_dada=" + pagoEnt +", "
-                + "estado='" + estao +"' ";
-        instruct = instruct + "WHERE idapartado='" + elemento +"';";
-        System.out.println(instruct);
-        conect.inst(instruct);
-    }
-    
-    public void mostrarDatSald(){
-        String elemento = tablaAp.getValueAt(tablaAp.getSelectedRow(), 0).toString();
-        String cantpag = tablaAp.getValueAt(tablaAp.getSelectedRow(), 2).toString();
-        idApField.setText(elemento);
-        cantSaldaF.setText(cantpag);
-        cambCT.setText("0.0");
-    }
-    
-    public boolean consultarAp(){
-        boolean band = false;
-        java.sql.ResultSet rs = conect.query("SELECT * FROM detalleapartado WHERE idapartado='" + idAp + "';");
-        try{
-            if(rs.isBeforeFirst()){
-                band = true;
-            }
-        } catch(Exception e){
-            System.out.println("Error");
-        }
-        return band;
-    }
-    
-    
-    public void registrarApartado(){
-        Double pagoEnt = Double.valueOf(cantPagF.getText());
-        Double pagoDeu = Double.parseDouble(cantMinF.getText()) * 2;
-        pagoDeu = pagoDeu-pagoEnt;
-        String estao = "Vigente";
-        String fechaL= vigF.getText();
-        String idC = idclientep.getText();
-        
-        String instruct = "UPDATE apartado SET cantidad_falta=" + pagoDeu +", cantidad_dada=" + pagoEnt +", "
-                + "estado='" + estao +"', idcliente='" + idC +"', fecha_limite='" + fechaL + "' ";
-        instruct = instruct + "WHERE idapartado='" + idAp +"';";
-        System.out.println(instruct);
-        conect.inst(instruct);
-    }
-    
-    public void cantMinPago(){
-        java.sql.ResultSet rs = conect.query("SELECT SUM(precio) FROM detalleapartado WHERE idapartado='" + idAp + "';");
-        try{
-            while(rs.next()){
-                Double prec = rs.getDouble(1);
-                prec = prec/2;
-                cantMinF.setText("" + prec);
-                //cantidadInventario(true, cod, cant);
-            }
-        } catch(Exception e){
-            System.out.println("Error al consultar el producto");
-        }
-    }
-    
-    public void buscarAp(){
-        String  ins = "SELECT * FROM apartado WHERE idapartado='" + buskAp.getText() + "';";
-        limpiarTabla();
-        llenarTabla(ins);
-    }
-    
-    public void vigenciaFut(){
-        java.time.LocalDateTime fecha = java.time.LocalDateTime.now();
-        java.time.LocalDateTime fechaFut = fecha.plusDays(30);
-        java.time.format.DateTimeFormatter formateado = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String fechaVig = fechaFut.format(formateado);
-        vigF.setText(fechaVig);
-    }
-    
-    public void cantidadInventario(boolean op, String idprod, int cantTem){
-        String instruccion = "SELECT cantidad FROM producto WHERE idproducto='" + idprod + "';";
-        java.sql.ResultSet rs = conect.query(instruccion);
+    public void mostrarTablaProdA(){
+        Mise.limpiarTabla(modeloProdAp);
+        java.sql.ResultSet rs = conect.query("SELECT * FROM apartado_detalle WHERE id_apartado='" + id_apartado + "';");
         if(rs != null){
             try{
                 while(rs.next()){
-                    int x = 0;
-                    int cantBD = rs.getInt("cantidad");
-
-                    instruccion = "UPDATE producto SET cantidad=";
-                    if(op){//SI ES TRUE SE DECREMENTA LA CANTIDAD EN EL INVENTARIO
-                        x = cantBD-cantTem;
-                    } else{//SI ES FALSE SE INCREMENTA LA CANTIDAD
-                        x = cantBD+cantTem;
-                    }
-                    instruccion = instruccion + x + " WHERE idproducto='" + idprod + "';";
-                    if(cantBD<12)
-                        alertaP = true;
-                    System.out.println(instruccion);
-                    if(conect.inst(instruccion))
-                        System.out.println("Inventario Actualizado");
-                    else
-                        System.out.println("No se actualizo el inventario");
+                    modeloProdAp.addRow(new Object[]{rs.getString("id_producto"), rs.getInt("cantidad"),
+                        rs.getDouble("precio_unitario"), rs.getDouble("precio_total"), rs.getString("tipo")});
                 }
-                
-            }catch(Exception e){
-                System.out.println("Error");
+            }catch(java.sql.SQLException e){
+                System.out.println("Error al mostrar la tabla apartados");
             }
-            
+        }
+    }
+    
+    public void mostrarTablaPro(){
+        Mise.limpiarTabla(modeloProd);
+        java.sql.ResultSet rs = conect.query("SELECT * FROM producto ORDER BY id_producto");
+        if(rs != null){
+            try{
+                while(rs.next()){
+                    modeloProd.addRow(new Object[]{rs.getString("id_producto"), rs.getString("nombre")});
+                }
+            }catch(java.sql.SQLException e){
+                System.out.println("Error al mostrar la tabla producto");
+            }
+        }
+    }
+    
+    public void mostrarTablaCli(){
+        Mise.limpiarTabla(modeloCli);
+        java.sql.ResultSet rs = conect.query("SELECT * FROM cliente WHERE estatus='Activo'");
+        if(rs != null){
+            try{
+                while(rs.next()){
+                    modeloCli.addRow(new Object[]{rs.getString("id_cliente"), rs.getString("nombre")});
+                }
+            }catch(java.sql.SQLException e){
+                System.out.println("Error al mostrar la tabla clientes");
+            }
         }
     }
     
-    public String generarHora(String formato){
-        java.time.LocalDateTime ahora = java.time.LocalDateTime.now();
-        java.time.format.DateTimeFormatter formateado = java.time.format.DateTimeFormatter.ofPattern(formato);
-        return ahora.format(formateado);
-    }
-    
-    public String generarID(){
-        String hora = generarHora("HH:mm:ss");
-        String fecha = generarHora("yyyy-MM-dd");
-        String id = "";
-        fecha = fecha+hora;
-        for (int i=0; i<fecha.length();i++) {
-            if(Character.isDigit(fecha.charAt(i))){
-                id = id + fecha.charAt(i);
+    public void datosAp(){
+        java.sql.ResultSet rs = conect.query("SELECT * FROM apartado WHERE id_apartado='" + id_apartado + "';");
+        if(rs != null){
+            try{
+                while(rs.next()){
+                    totF.setText("" + rs.getDouble("cantidad_total"));
+                    cantMinF.setText("" + rs.getDouble("cantidad_total")/2);
+                    cantPagF.setText("");
+                    vigF.setText("" + rs.getDate("fecha_limite"));
+                }
+            }catch(java.sql.SQLException e){
+                System.out.println("Error al mostrar los datos de apartado");
             }
         }
-        System.out.println(id);
-        return id;
     }
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JToggleButton botonBusk;
+    private javax.swing.JButton acP;
+    private javax.swing.JButton agP;
     private javax.swing.JFormattedTextField buskAp;
     private javax.swing.JFormattedTextField cambCT;
+    private javax.swing.JButton canc;
     private javax.swing.JFormattedTextField cantMinF;
     private javax.swing.JLabel cantMinLabel;
+    private javax.swing.JFormattedTextField cantP;
     private javax.swing.JFormattedTextField cantPagF;
     private javax.swing.JFormattedTextField cantSaldaF;
-    private javax.swing.JFormattedTextField cantp;
-    private javax.swing.JFormattedTextField codp;
-    private javax.swing.JDialog dialogAp;
+    private javax.swing.JFormattedTextField codP;
+    private javax.swing.JFormattedTextField curpCliente;
+    private javax.swing.JButton elP;
+    private javax.swing.JDialog guardarApDialog;
+    private javax.swing.JButton heP;
     private javax.swing.JButton hechoB4;
-    private javax.swing.JFormattedTextField idApField;
-    private javax.swing.JFormattedTextField idclientep;
+    private javax.swing.JButton hechoB5;
+    private javax.swing.JFormattedTextField idApF;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
+    public static javax.swing.JLabel labelinc;
+    private javax.swing.JPanel panelApart;
     private javax.swing.JPanel panelApartado;
-    private javax.swing.JPanel panelProducto;
+    private javax.swing.JPanel panelRegAp1;
+    private javax.swing.JPanel panelRegProd;
     private javax.swing.JPanel panelSald;
+    private javax.swing.JDialog prodApartadoDialog;
     private javax.swing.JFormattedTextField recSaldF;
-    private javax.swing.JButton reg;
     private javax.swing.JButton regAp;
-    private javax.swing.JButton regPr;
+    private javax.swing.JDialog regApartDialog;
+    private javax.swing.JButton regC;
     private javax.swing.JButton regSaldasion;
     private javax.swing.JButton sald;
+    private javax.swing.JDialog saldarDialog;
+    private javax.swing.JLabel sumLabel;
     private javax.swing.JTable tablaAp;
+    private javax.swing.JTable tablaCli;
+    private javax.swing.JTable tablaProd;
+    private javax.swing.JTable tablaProdAp;
+    private javax.swing.JFormattedTextField totF;
     private javax.swing.JFormattedTextField vigF;
     // End of variables declaration//GEN-END:variables
 }

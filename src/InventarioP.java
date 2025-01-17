@@ -1,5 +1,5 @@
 
-import javax.swing.JOptionPane;
+import java.awt.event.KeyEvent;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -14,7 +14,7 @@ import javax.swing.table.DefaultTableModel;
 public class InventarioP extends javax.swing.JPanel {
 
     static DefaultTableModel modelo = new DefaultTableModel();
-    
+    boolean aux = false;
     ConexionBD conect = new ConexionBD();
     
     /**
@@ -23,7 +23,7 @@ public class InventarioP extends javax.swing.JPanel {
     public InventarioP() {
         initComponents();
         modelo=(DefaultTableModel)tablaVentas.getModel();
-        mostrarTabla();
+        mostrarTabla("");
     }
 
     /**
@@ -37,22 +37,23 @@ public class InventarioP extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         jDialog1 = new javax.swing.JDialog();
-        jLabel2 = new javax.swing.JLabel();
+        leibel = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        precMen = new javax.swing.JFormattedTextField();
         jLabel5 = new javax.swing.JLabel();
+        precMay = new javax.swing.JFormattedTextField();
         jLabel6 = new javax.swing.JLabel();
-        codp = new javax.swing.JFormattedTextField();
-        nom = new javax.swing.JFormattedTextField();
-        precU = new javax.swing.JFormattedTextField();
-        precM = new javax.swing.JFormattedTextField();
         cadd = new javax.swing.JFormattedTextField();
+        labelinc = new javax.swing.JLabel();
         hechoIns = new javax.swing.JButton();
         hechoAct = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        nom = new javax.swing.JTextPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         buskProd = new javax.swing.JFormattedTextField();
-        botonBusk = new javax.swing.JToggleButton();
+        sumLabel = new javax.swing.JLabel();
         panelBotones = new javax.swing.JPanel();
         agB = new javax.swing.JButton();
         eliB = new javax.swing.JButton();
@@ -60,27 +61,31 @@ public class InventarioP extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaVentas = new javax.swing.JTable();
 
+        jDialog1.setAlwaysOnTop(true);
+        jDialog1.setMinimumSize(new java.awt.Dimension(510, 420));
         jDialog1.setModal(true);
-        jDialog1.setSize(new java.awt.Dimension(490, 390));
+        jDialog1.setPreferredSize(new java.awt.Dimension(510, 420));
+        jDialog1.setSize(new java.awt.Dimension(510, 420));
         jDialog1.getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        jLabel2.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(78, 150, 150));
-        jLabel2.setText("Código del Producto:");
+        leibel.setFont(new java.awt.Font("Noto Serif", 1, 17)); // NOI18N
+        leibel.setForeground(new java.awt.Color(121, 167, 167));
+        leibel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        leibel.setText("El ID del producto se asignará automáticamente");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.ipadx = 16;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabel2, gridBagConstraints);
+        jDialog1.getContentPane().add(leibel, gridBagConstraints);
 
         jLabel3.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(78, 150, 150));
         jLabel3.setText("Nombre: ");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.ipadx = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
@@ -91,53 +96,17 @@ public class InventarioP extends javax.swing.JPanel {
         jLabel4.setText("Precio Mayoreo:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.ipadx = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(jLabel4, gridBagConstraints);
 
-        jLabel5.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(78, 150, 150));
-        jLabel5.setText("Cantidad: ");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.ipadx = 16;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabel5, gridBagConstraints);
-
-        jLabel6.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(78, 150, 150));
-        jLabel6.setText("Precio Menudeo:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.ipadx = 16;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabel6, gridBagConstraints);
-
-        codp.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        codp.setPreferredSize(new java.awt.Dimension(200, 35));
-        codp.addKeyListener(new java.awt.event.KeyAdapter() {
+        precMen.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        precMen.setPreferredSize(new java.awt.Dimension(200, 35));
+        precMen.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
-                codpKeyTyped(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(codp, gridBagConstraints);
-
-        nom.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        nom.setPreferredSize(new java.awt.Dimension(200, 35));
-        nom.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                nomKeyTyped(evt);
+                precMenKeyTyped(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -145,13 +114,24 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(nom, gridBagConstraints);
+        jDialog1.getContentPane().add(precMen, gridBagConstraints);
 
-        precU.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        precU.setPreferredSize(new java.awt.Dimension(200, 35));
-        precU.addKeyListener(new java.awt.event.KeyAdapter() {
+        jLabel5.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel5.setText("Cantidad: ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.ipadx = 16;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jDialog1.getContentPane().add(jLabel5, gridBagConstraints);
+
+        precMay.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        precMay.setPreferredSize(new java.awt.Dimension(200, 35));
+        precMay.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
-                precUKeyTyped(evt);
+                precMayKeyTyped(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -159,21 +139,18 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(precU, gridBagConstraints);
+        jDialog1.getContentPane().add(precMay, gridBagConstraints);
 
-        precM.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        precM.setPreferredSize(new java.awt.Dimension(200, 35));
-        precM.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                precMKeyTyped(evt);
-            }
-        });
+        jLabel6.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel6.setText("Precio Menudeo:");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(precM, gridBagConstraints);
+        jDialog1.getContentPane().add(jLabel6, gridBagConstraints);
 
         cadd.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         cadd.setPreferredSize(new java.awt.Dimension(200, 35));
@@ -184,12 +161,22 @@ public class InventarioP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(cadd, gridBagConstraints);
 
-        hechoIns.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        labelinc.setFont(new java.awt.Font("Noto Serif", 0, 12)); // NOI18N
+        labelinc.setForeground(new java.awt.Color(204, 0, 51));
+        labelinc.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelinc.setText(" ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 2;
+        jDialog1.getContentPane().add(labelinc, gridBagConstraints);
+
+        hechoIns.setFont(new java.awt.Font("Noto Serif", 1, 20)); // NOI18N
         hechoIns.setForeground(new java.awt.Color(78, 150, 150));
         hechoIns.setText("Hecho");
         hechoIns.addActionListener(new java.awt.event.ActionListener() {
@@ -205,7 +192,7 @@ public class InventarioP extends javax.swing.JPanel {
         jDialog1.getContentPane().add(hechoIns, gridBagConstraints);
         hechoIns.setVisible(false);
 
-        hechoAct.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        hechoAct.setFont(new java.awt.Font("Noto Serif", 1, 20)); // NOI18N
         hechoAct.setForeground(new java.awt.Color(78, 150, 150));
         hechoAct.setText("Hecho");
         hechoAct.addActionListener(new java.awt.event.ActionListener() {
@@ -220,6 +207,24 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(30, 10, 10, 10);
         jDialog1.getContentPane().add(hechoAct, gridBagConstraints);
         hechoAct.setVisible(false);
+
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(200, 35));
+
+        nom.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        nom.setPreferredSize(new java.awt.Dimension(200, 35));
+        nom.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                nomKeyTyped(evt);
+            }
+        });
+        jScrollPane2.setViewportView(nom);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jDialog1.getContentPane().add(jScrollPane2, gridBagConstraints);
 
         jDialog1.setLocationRelativeTo(null);
 
@@ -241,7 +246,7 @@ public class InventarioP extends javax.swing.JPanel {
         jPanel1.add(jLabel1, gridBagConstraints);
 
         buskProd.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
-        buskProd.setPreferredSize(new java.awt.Dimension(600, 30));
+        buskProd.setPreferredSize(new java.awt.Dimension(1300, 30));
         buskProd.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 buskProdKeyReleased(evt);
@@ -251,26 +256,24 @@ public class InventarioP extends javax.swing.JPanel {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
         jPanel1.add(buskProd, gridBagConstraints);
 
-        botonBusk.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        botonBusk.setForeground(new java.awt.Color(78, 150, 150));
-        botonBusk.setText("Buscar");
-        botonBusk.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonBuskActionPerformed(evt);
-            }
-        });
+        sumLabel.setBackground(new java.awt.Color(255, 255, 255));
+        sumLabel.setFont(new java.awt.Font("Noto Serif", 1, 20)); // NOI18N
+        sumLabel.setForeground(new java.awt.Color(78, 150, 150));
+        sumLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        sumLabel.setText("Buscar:");
+        sumLabel.setPreferredSize(new java.awt.Dimension(81, 40));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jPanel1.add(botonBusk, gridBagConstraints);
+        jPanel1.add(sumLabel, gridBagConstraints);
 
         add(jPanel1, java.awt.BorderLayout.NORTH);
 
@@ -350,41 +353,48 @@ public class InventarioP extends javax.swing.JPanel {
         // TODO add your handling code here:
         
         if(tablaVentas.getSelectedRow() != -1){
-            int resp = Interfaz.JOptionYesNo("¿Estas seguro de eliminar esta fila?", "Eliminar");
+            int resp = Mise.JOptionYesNo("¿Seguro que desea eliminar esta fila?", "Eliminar");
             if(resp == 0){
-            int a = tablaVentas.getSelectedRow();
-            eliminarElementos(a);
-            modelo.removeRow(tablaVentas.getSelectedRow());
+                int a = tablaVentas.getSelectedRow();
+                if(conect.eliminarProducto("" + modelo.getValueAt(a, 0))){//Si se elimina muestra la nueva tabla
+                    mostrarTabla("");
+                }
             }
         }
         else
-            Interfaz.JOption("Debe seleccionar la fila que desea eliminar", "Error");
+            Mise.JOption("Debe seleccionar la fila que desea eliminar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
     }//GEN-LAST:event_eliBActionPerformed
 
     private void agBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agBActionPerformed
         // TODO add your handling code here:
-        codp.setText("");
+        jDialog1.setTitle("Agregar Producto");
+        leibel.setText("El ID del producto se asigna automáticamente");
         nom.setText("");
-        precU.setText("");
-        precM.setText("");
+        precMen.setText("");
+        precMay.setText("");
         cadd.setText("");
+        labelinc.setText("");
         hechoIns.setVisible(true);
         hechoAct.setVisible(false);
         jDialog1.setVisible(true);
+        aux = false;
     }//GEN-LAST:event_agBActionPerformed
 
     private void actBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actBActionPerformed
         // ACTUALIZAR
         if(tablaVentas.getSelectedRow() != -1){
+            jDialog1.setTitle("Actualizar Producto");
+            labelinc.setText("");
             int a = tablaVentas.getSelectedRow();
             hechoIns.setVisible(false);
             hechoAct.setVisible(true);
             //MOSTRAR LOS DATOS EN EL FIELD
             mostrarDAct(a);
             jDialog1.setVisible(true);
+            aux = false;
         }
         else
-            JOptionPane.showMessageDialog(null,"Debe seleccionar la fila que desea actualizar");
+            Mise.JOption("Debe seleccionar la fila que desea actualizar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
     }//GEN-LAST:event_actBActionPerformed
 
     private void buskProdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buskProdKeyTyped
@@ -410,45 +420,114 @@ public class InventarioP extends javax.swing.JPanel {
     }//GEN-LAST:event_buskProdKeyTyped
 
     private void hechoInsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoInsActionPerformed
-        // TODO add your handling code here:
-        if(codp.getText().isEmpty() || nom.getText().isEmpty() || precU.getText().isEmpty() || cadd.getText().isEmpty()){
-            javax.swing.JOptionPane.showMessageDialog(null, "Todos los campos deben ser completados", "Error",javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-        else{
-            if(!estaEnInv()){
-                guardarElementos();
-                mostrarTabla();
-                jDialog1.setVisible(false);
-            } else{
-                javax.swing.JOptionPane.showMessageDialog(null, "El código del producto que intenta insertar \nya pertenece a un producto existente", "Error",javax.swing.JOptionPane.ERROR_MESSAGE);
+        if(nom.getText().isEmpty() || precMen.getText().isEmpty() || precMay.getText().isEmpty() || cadd.getText().isEmpty()){
+            labelinc.setText("Todos los campos deben ser completados");
+        } else{
+            if(Double.parseDouble(precMay.getText()) < Double.parseDouble(precMen.getText())){
+                if(aux == false){
+                    aux = true;
+                    String campos[] = {nom.getText(), cadd.getText(), precMay.getText(), precMen.getText()};
+                    conect.insertarProducto(campos);
+                    mostrarTabla("");
+                    jDialog1.setVisible(false);
+                }
+            } else {
+                labelinc.setText("El precio mayoreo debe ser menor que el precio menudeo");
             }
         }
     }//GEN-LAST:event_hechoInsActionPerformed
 
     private void hechoActActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoActActionPerformed
         // TODO add your handling code here:
-        if(codp.getText().isEmpty() || nom.getText().isEmpty() || precU.getText().isEmpty() || cadd.getText().isEmpty()){
-            javax.swing.JOptionPane.showMessageDialog(null, "Todos los campos deben ser completados", "Error",javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-        else{
-            int a = tablaVentas.getSelectedRow();
-            actualizarElementos(a);
-            mostrarTabla();
-            jDialog1.setVisible(false);
-            
+        if(nom.getText().isEmpty() || precMen.getText().isEmpty() || precMay.getText().isEmpty() || cadd.getText().isEmpty()){
+            labelinc.setText("Todos los campos deben ser completados");
+        } else{
+            if(Double.parseDouble(precMay.getText()) < Double.parseDouble(precMen.getText())){
+                if(aux == false){
+                    aux = true;
+                    int a = tablaVentas.getSelectedRow();
+                    String elemento = "" + modelo.getValueAt(a, 0);
+                    String[] campos = {nom.getText(), cadd.getText(), precMay.getText(), precMen.getText()};
+                    conect.actualizarProducto(elemento, campos);
+                    mostrarTabla("");
+                    jDialog1.setVisible(false);
+                }
+            } else {
+                labelinc.setText("El precio mayoreo debe ser menor que el precio menudeo");
+            }
         }
     }//GEN-LAST:event_hechoActActionPerformed
 
-    private void codpKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_codpKeyTyped
+    private void precMenKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_precMenKeyTyped
         char letra = evt.getKeyChar();
-        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra)){
+        if(!Cake.numeros(letra) && !Cake.inicioPunto(letra)){
             evt.consume();
         }
         
-        if(Cake.tamaño(codp.getText(), 20)){
+        if(!(precMen.getText().isEmpty())){
+            if(Cake.hayPuntos(precMen.getText()) && letra=='.'){
+                evt.consume();
+            } else{
+                if(Cake.punto(precMen.getText(), letra)){
+                    evt.consume();
+                }
+            }
+        } else{
+            if(Cake.inicioPunto(letra)){
+                evt.consume();
+            }
+        }
+        
+        if(Cake.tamaño(precMen.getText(), 10)){
             evt.consume();
         }
-    }//GEN-LAST:event_codpKeyTyped
+    }//GEN-LAST:event_precMenKeyTyped
+
+    private void caddKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_caddKeyTyped
+        char letra = evt.getKeyChar();
+        if(!Cake.numeros(letra)){
+            evt.consume();
+        }
+        
+        if(Cake.tamaño(cadd.getText(), 10)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_caddKeyTyped
+
+    private void precMayKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_precMayKeyTyped
+        char letra = evt.getKeyChar();
+        if(!Cake.numeros(letra) && !Cake.inicioPunto(letra)){
+            evt.consume();
+        }
+        
+        if(!(precMay.getText().isEmpty())){
+            if(Cake.hayPuntos(precMay.getText()) && letra=='.'){
+                evt.consume();
+            } else{
+                if(Cake.punto(precMay.getText(), letra)){
+                    evt.consume();
+                }
+            }
+        } else{
+            if(Cake.inicioPunto(letra)){
+                evt.consume();
+            }
+        }
+        
+        if(Cake.tamaño(precMay.getText(), 10)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_precMayKeyTyped
+
+    private void buskProdKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buskProdKeyReleased
+        String instruccion = "SELECT * FROM producto WHERE nombre LIKE '%" + buskProd.getText() + "%' ORDER BY id_producto;";
+        if(!buskProd.getText().isEmpty()){
+            mostrarTabla(instruccion);
+        }
+        if(evt.getKeyCode() == KeyEvent.VK_BACK_SPACE){
+            mostrarTabla(instruccion);
+        }
+    }//GEN-LAST:event_buskProdKeyReleased
 
     private void nomKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nomKeyTyped
         char letra = evt.getKeyChar();
@@ -467,179 +546,39 @@ public class InventarioP extends javax.swing.JPanel {
             }
         }
         
-        if(Cake.tamaño(nom.getText(), 30)){
+        if(Cake.tamaño(nom.getText(), 50)){
             evt.consume();
         }
     }//GEN-LAST:event_nomKeyTyped
-
-    private void precUKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_precUKeyTyped
-        char letra = evt.getKeyChar();
-        if(!Cake.numeros(letra) && !Cake.inicioPunto(letra)){
-            evt.consume();
-        }
-        
-        if(!(precU.getText().isEmpty())){
-            if(Cake.hayPuntos(precU.getText()) && letra=='.'){
-                evt.consume();
-            } else{
-                if(Cake.punto(precU.getText(), letra)){
-                    evt.consume();
-                }
-            }
-        } else{
-            if(Cake.inicioPunto(letra)){
-                evt.consume();
-            }
-        }
-        
-        if(Cake.tamaño(precU.getText(), 10)){
-            evt.consume();
-        }
-    }//GEN-LAST:event_precUKeyTyped
-
-    private void caddKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_caddKeyTyped
-        char letra = evt.getKeyChar();
-        if(!Cake.numeros(letra)){
-            evt.consume();
-        }
-        
-        if(Cake.tamaño(cadd.getText(), 10)){
-            evt.consume();
-        }
-    }//GEN-LAST:event_caddKeyTyped
-
-    private void precMKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_precMKeyTyped
-        char letra = evt.getKeyChar();
-        if(!Cake.numeros(letra) && !Cake.inicioPunto(letra)){
-            evt.consume();
-        }
-        
-        if(!(precM.getText().isEmpty())){
-            if(Cake.hayPuntos(precM.getText()) && letra=='.'){
-                evt.consume();
-            } else{
-                if(Cake.punto(precM.getText(), letra)){
-                    evt.consume();
-                }
-            }
-        } else{
-            if(Cake.inicioPunto(letra)){
-                evt.consume();
-            }
-        }
-        
-        if(Cake.tamaño(precM.getText(), 10)){
-            evt.consume();
-        }
-    }//GEN-LAST:event_precMKeyTyped
-
-    private void botonBuskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBuskActionPerformed
-        mostrarTabla();
-    }//GEN-LAST:event_botonBuskActionPerformed
-
-    private void buskProdKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buskProdKeyReleased
-        if(evt.getKeyChar() == java.awt.event.KeyEvent.VK_BACK_SPACE)
-            botonBusk.setSelected(false);
-    }//GEN-LAST:event_buskProdKeyReleased
     
     //TABLAS
-    public final void mostrarTabla(){
-        limpiarTabla();
-        String inst = "SELECT * FROM producto;";
-        if(botonBusk.isSelected() && !buskProd.getText().isEmpty()){
-            inst = buscarProd();
-        } else if(botonBusk.isSelected() && buskProd.getText().isEmpty()){
-            botonBusk.setSelected(false);
+    public final void mostrarTabla(String inst){
+        Mise.limpiarTabla(modelo);
+        if(inst.isEmpty()){
+            inst = "SELECT * FROM producto ORDER BY id_producto";
         }
         llenarTabla(inst);
     }
     
     public void llenarTabla(String instruccion){
         java.sql.ResultSet rs = conect.query(instruccion);
-        if(rs != null){
-            try{
-                while(rs.next()){
-                    modelo.addRow( new Object[]{rs.getString("idproducto"), rs.getString("nombre"), rs.getInt("cantidad"), 
-                        rs.getDouble("precio_mayoreo"), rs.getDouble("precio_menudeo")});
-                }
-            }catch(Exception e){
-                System.out.println("Ha ocurrido un error");
-            }
-        }
-    }
-    
-    public void limpiarTabla(){
-        int a=modelo.getRowCount();    
-        while(a!=0){ 
-            if(a!=0)
-                modelo.removeRow(0);                      
-            a=modelo.getRowCount();
-        }
-    }
-    
-    public void eliminarElementos(int a){
-        String elemento = "" + modelo.getValueAt(a, 0);
-        String instruccion = "DELETE FROM producto";
-        instruccion = instruccion + " WHERE idproducto='" + elemento + "';";
-        
-        conect.inst(instruccion);
-    }
-    
-    public void guardarElementos(){
-        String[] campos = {codp.getText(), nom.getText(), cadd.getText(), precM.getText(), precU.getText()};
-        conect.insertarProducto(campos);
-    }
-    
-    public boolean estaEnInv(){
-        boolean band = true;
-        java.sql.ResultSet rs = conect.query("SELECT * FROM producto WHERE idproducto='" + codp.getText() + "'");
         try{
-            if(!rs.isBeforeFirst()){
-                band = false;
+            while(rs.next()){
+                modelo.addRow( new Object[]{rs.getString("id_producto"), rs.getString("nombre"), rs.getInt("cantidad"), 
+                    rs.getDouble("precio_mayoreo"), rs.getDouble("precio_menudeo")});
             }
-        } catch(Exception e){
-            System.out.println("Error");
+        }catch(java.sql.SQLException e){
+            System.out.println("Error al mostrar el inventario");
         }
-        return band;
-    }
-    
-    public String buscarProd(){
-        String instruccion = "SELECT * FROM producto WHERE nombre LIKE '%" + buskProd.getText() + "%';";
-        return instruccion;
-    }
-    
-    public void actualizarElementos(int a){
-        String instruccion = "UPDATE producto";
-        String elemento = "" + modelo.getValueAt(a, 0);
-        
-        String[] campos = {codp.getText(), nom.getText(), cadd.getText(), precM.getText(), precU.getText()};
-        
-        instruccion = instruccion + " SET idproducto='" + campos[0] + "', nombre='" + campos[1] + "', cantidad=" + campos[2]
-                + ", precio_mayoreo=" + campos[3] + ", precio_menudeo=" + campos[4];
-        instruccion = instruccion + " WHERE idproducto='" + elemento + "';";
-        System.out.println(instruccion);
-        
-        conect.inst(instruccion);
     }
     
     public void mostrarDAct(int a){
         String elemento = "" + modelo.getValueAt(a, 0);
-        String instruccion = "SELECT * FROM producto WHERE idproducto='" + elemento + "';";
-        System.out.println(instruccion);
-        java.sql.ResultSet rs = conect.query(instruccion);
-        if(rs!=null){
-            try {
-                while(rs.next()){
-                    codp.setText(rs.getString("idproducto"));
-                    nom.setText(rs.getString("nombre"));
-                    precU.setText("" + rs.getDouble("precio_menudeo"));
-                    precM.setText("" + rs.getDouble("precio_mayoreo"));
-                    cadd.setText("" + rs.getInt("cantidad"));
-                }
-            } catch (java.sql.SQLException ex) {
-                System.out.println("Error");
-            }
-        }
+        leibel.setText("ID: " + elemento);
+        nom.setText("" + modelo.getValueAt(a, 1));
+        cadd.setText("" + modelo.getValueAt(a, 2));
+        precMay.setText("" + modelo.getValueAt(a, 3));
+        precMen.setText("" + modelo.getValueAt(a, 4));
     }
     
     
@@ -647,26 +586,27 @@ public class InventarioP extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton actB;
     private javax.swing.JButton agB;
-    private javax.swing.JToggleButton botonBusk;
     private javax.swing.JFormattedTextField buskProd;
     private javax.swing.JFormattedTextField cadd;
-    private javax.swing.JFormattedTextField codp;
     private javax.swing.JButton eliB;
     private javax.swing.JButton hechoAct;
     private javax.swing.JButton hechoIns;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JFormattedTextField nom;
-    public static javax.swing.JPanel panelBotones;
-    private javax.swing.JFormattedTextField precM;
-    private javax.swing.JFormattedTextField precU;
+    private javax.swing.JScrollPane jScrollPane2;
+    public static javax.swing.JLabel labelinc;
+    private javax.swing.JLabel leibel;
+    private javax.swing.JTextPane nom;
+    public javax.swing.JPanel panelBotones;
+    private javax.swing.JFormattedTextField precMay;
+    private javax.swing.JFormattedTextField precMen;
+    private javax.swing.JLabel sumLabel;
     public static javax.swing.JTable tablaVentas;
     // End of variables declaration//GEN-END:variables
 }
