@@ -148,7 +148,7 @@ public class Excel {
         String mes = String.valueOf(fecha.getMonthValue());
         String anio = String.valueOf(fecha.getYear());
         try {
-            InputStream is = new FileInputStream("src/img/logo.png");
+            InputStream is = new FileInputStream("src/img/Mega.png");
             byte[] bytes = IOUtils.toByteArray(is);
             int imgIndex = book.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
             is.close();
@@ -202,7 +202,7 @@ public class Excel {
             Row filaFecha = sheet.createRow(3);
             Cell celdaFecha = filaFecha.createCell(1);
             celdaFecha.setCellStyle(fechaEstilo);
-            celdaTitulo.setCellValue("Punto de venta S.A.");
+            celdaTitulo.setCellValue("Mega Mix Store S.A.");
             sheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 5));
             String mes2 = cambiarmes(mes);
             celdaFecha.setCellValue("Estado de resultados del " + dia + " de " + mes2 + " del año " + anio);
