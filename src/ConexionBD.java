@@ -613,4 +613,44 @@ public class ConexionBD {
         }
         return rs;
     }
+    
+        public ResultSet seleccionarApartado(String idap) {
+        ResultSet resultado = null;
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement consulta = conexion.prepareStatement(
+                    "SELECT id_apartado,id_empleado,fecha_inicio,fecha_limite,cantidad_dada,cantidad_faltante,cantidad_total FROM apartado where id_apartado ='"
+                            + idap + "'");
+            resultado = consulta.executeQuery();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.toString());
+        }
+        return resultado;
+
+    }
+
+    public ResultSet seleccionarVendedor(String idVendedor) {
+        ResultSet resultado = null;
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement consulta = conexion.prepareStatement(
+                    "SELECT nombre FROM empleado where id_empleado = '" + idVendedor + "'");
+            resultado = consulta.executeQuery();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.toString());
+        }
+        return resultado;
+    }
+
+    public ResultSet seleccionarProductos(String idApartado) {
+        ResultSet resultado = null;
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement consulta = conexion.prepareStatement("select * from apartado_detalle natural join producto where id_apartado='"+ idApartado + "'");
+            resultado = consulta.executeQuery();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.toString());
+        }
+        return resultado;
+    }
 }
