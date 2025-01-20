@@ -21,6 +21,7 @@ public class Excel {
         String dia = String.valueOf(fecha.getDayOfMonth());
         String mes = String.valueOf(fecha.getMonthValue());
         String anio = String.valueOf(fecha.getYear());
+        
         try {
             InputStream is = new FileInputStream("src/img/logo.png");
             byte[] bytes = IOUtils.toByteArray(is);
@@ -121,6 +122,9 @@ public class Excel {
             celdaFecha.setCellValue("Balance general del " + dia + " de " + mes2 + " del año " + anio);
 
             sheet.setZoom(150);
+            BalGeneral bg = new BalGeneral(sheet,6);
+            bg.llenarBalance();
+
             String fileName = "balanceGeneral" + dia + "_" + mes + "_" + anio;
             File file = new File("BalancesGenerales" + "/" + fileName + ".xlsx");
             FileOutputStream fileOut = new FileOutputStream(file);
