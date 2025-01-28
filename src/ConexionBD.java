@@ -12,12 +12,12 @@ import java.time.format.DateTimeFormatter;
  * @author mayra
  */
 public class ConexionBD {
-    
+
     String url = "jdbc:postgresql://localhost:5432/";
     String nameBD = "tienda_punto_venta";
     String usuario = "postgres";
     String contra = "Daniel183.";
-    
+
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // FUNCIONES GENERALES
@@ -648,8 +648,10 @@ public class ConexionBD {
         ResultSet resultado = null;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement consulta = conexion.prepareStatement("select * from apartado_detalle natural join producto where id_apartado='"+ idApartado + "'");
-            resultado = consulta.executeQuery();
+            Statement stmt = conexion.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            String query = "SELECT * FROM producto, apartado_detalle where producto.id_producto = apartado_detalle.id_producto and id_apartado = '"
+                    + idApartado + "';";
+            resultado = stmt.executeQuery(query);
         } catch (Exception e) {
             System.out.println("Error: " + e.toString());
         }
