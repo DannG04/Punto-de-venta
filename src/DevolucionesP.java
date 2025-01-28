@@ -148,7 +148,6 @@ public class DevolucionesP extends javax.swing.JPanel {
         prodDevDialog.setAlwaysOnTop(true);
         prodDevDialog.setMinimumSize(new java.awt.Dimension(1000, 500));
         prodDevDialog.setModal(true);
-        prodDevDialog.setPreferredSize(new java.awt.Dimension(1000, 500));
         prodDevDialog.setResizable(false);
         prodDevDialog.setSize(new java.awt.Dimension(1000, 500));
         prodDevDialog.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -285,7 +284,7 @@ public class DevolucionesP extends javax.swing.JPanel {
 
         panelRegProdC.add(jScrollPane7, java.awt.BorderLayout.WEST);
 
-        jPanel4.setLayout(new java.awt.GridLayout());
+        jPanel4.setLayout(new java.awt.GridLayout(1, 0));
 
         jLabel2.setFont(new java.awt.Font("Noto Serif", 1, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(78, 150, 150));
@@ -433,13 +432,16 @@ public class DevolucionesP extends javax.swing.JPanel {
     private void tablaVMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaVMouseClicked
         if(tablaV.getSelectedRow() != -1) {
             id_ven = "" + tablaV.getValueAt(tablaV.getSelectedRow(), 0);
-            int res = Mise.JOptionYesNo("Desea registrar la devolución de la venta: " + id_ven + ", ¿es correcto?", "Confirmar venta");
+            int res = Mise.JOptionYesNo("Desea registrar la devolución de la venta: " + id_ven + ", ¿es correcto?", "Confirmar Devolución");
             if(res==0){
                 id_dev = conect.insertarDevolucion(new String[]{id_ven, "0"});
-                mostrarVenDet();
-                mostrarProdD();
-                ventasBusDialog.setVisible(false);
-                prodDevDialog.setVisible(true);
+                System.out.println("Devolusion " + id_dev);
+                if(!id_dev.equals("")){
+                    mostrarVenDet();
+                    mostrarProdD();
+                    ventasBusDialog.setVisible(false);
+                    prodDevDialog.setVisible(true);
+                }
             }
         }
     }//GEN-LAST:event_tablaVMouseClicked

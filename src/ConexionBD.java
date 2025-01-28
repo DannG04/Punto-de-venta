@@ -13,10 +13,10 @@ import java.time.format.DateTimeFormatter;
  */
 public class ConexionBD {
     
-    String url = "jdbc:postgresql://dpg-ctk67dhopnds73fsk4i0-a.oregon-postgres.render.com:5432/";
+    String url = "jdbc:postgresql://localhost:5432/";
     String nameBD = "tienda_punto_venta";
-    String usuario = "daniel183";
-    String contra = "IwkTvhnv40tjCIsyVASGpa218IkeVUIE";
+    String usuario = "postgres";
+    String contra = "mayraK";
     
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     
@@ -397,20 +397,20 @@ public class ConexionBD {
         return idAp;
     }
     
-    public void actualizarApartado(String idAp, String[] campos){
-        String columnas = "SET cantidad_dada=?, cantidad_faltante=?";
-        String instruccion = "UPDATE apartado " + columnas + " WHERE id_apartado=?;";
+    public boolean actualizarApartado(String idAp, Double cantPag){
+        boolean band = false;
         try{
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setDouble(1, Double.parseDouble(campos[0]));
-            pstm.setDouble(2, Double.parseDouble(campos[1]));
-            pstm.setString(3, idAp);
-            pstm.executeUpdate();
+            CallableStatement cstm = conexion.prepareCall("{call act_apartado(?,?)}");
+            cstm.setString(1, idAp);
+            cstm.setObject(2, cantPag, Types.NUMERIC);
+            cstm.execute();
             conexion.close();
+            band = true;
         } catch(SQLException e){
             Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
+        return band;
     }
     
     public void eliminarApartado(String idAp){
@@ -614,7 +614,7 @@ public class ConexionBD {
         return rs;
     }
     
-        public ResultSet seleccionarApartado(String idap) {
+    public ResultSet seleccionarApartado(String idap) {
         ResultSet resultado = null;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -646,7 +646,7 @@ public class ConexionBD {
         ResultSet resultado = null;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement consulta = conexion.prepareStatement("select * from apartado_detalle natural join producto where id_apartado='"+ idApartado + "'");
+            PreparedStatement consulta = conexion.prepareStatement("select * from producto, apartado_detalle where producto.id_producto = apartado_detalle.id_producto and id_apartado='"+ idApartado + "'");
             resultado = consulta.executeQuery();
         } catch (Exception e) {
             System.out.println("Error: " + e.toString());

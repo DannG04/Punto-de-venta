@@ -484,7 +484,12 @@ public class ClientesP extends javax.swing.JPanel {
 
     private void elimCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elimCActionPerformed
         if(tablaC.getSelectedRow() != -1){
-            Mise.JOptionYesNo("¿Está seguro que desea dar de baja a este cliente?", "Cliente");
+            idCli = "" + tablaC.getValueAt(tablaC.getSelectedRow(), 0);
+            int res = Mise.JOptionYesNo("¿Está seguro que desea dar de baja a este cliente?", "Cliente");
+            if(res == 0){
+                conect.inactivarCliente(idCli);
+                mostrarTabla();
+            }
         } else{
             labelinc.setText("Seleccione la fila que desea dar de baja");
         }

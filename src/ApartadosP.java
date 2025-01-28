@@ -660,13 +660,11 @@ public class ApartadosP extends javax.swing.JPanel {
             double a = Double.parseDouble(cantPagF.getText());
             double b = Double.parseDouble(cantMinF.getText());
             if(a >= b){
-                //Restamos la cantidad pagada al total
-                double c = Double.parseDouble(totF.getText()) - a;
-                String[] campos = {cantPagF.getText(), "" + c};
-                conect.actualizarApartado(id_apartado, campos);
-                guardarApDialog.setVisible(false);
-                mostrarTablaAp("");
-                GenTicket.generarTicketApartado(conect.seleccionarApartado(id_apartado));
+                if(conect.actualizarApartado(id_apartado, Double.valueOf(cantPagF.getText()))){
+                    guardarApDialog.setVisible(false);
+                    mostrarTablaAp("");
+                    GenTicket.generarTicketApartado(conect.seleccionarApartado(id_apartado));
+                }
             } else{
                 Mise.JOption("El pago debe ser mayor o igual a la cantidad mínima a pagar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
@@ -692,10 +690,10 @@ public class ApartadosP extends javax.swing.JPanel {
 
     private void buskApKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buskApKeyReleased
         if(!buskAp.getText().isEmpty()){
-            mostrarTablaAp("SELECT * FROM apartado WHERE id_apartado LIKE '%" + buskAp + "%';");
+            mostrarTablaAp("SELECT * FROM apartado WHERE id_apartado LIKE '%" + buskAp.getText() + "%' ORDER BY id_apartado;");
         }
         if(evt.getKeyChar() == java.awt.event.KeyEvent.VK_BACK_SPACE){
-            mostrarTablaAp("SELECT * FROM apartado WHERE id_apartado LIKE '%" + buskAp + "%';");
+            mostrarTablaAp("SELECT * FROM apartado WHERE id_apartado LIKE '%" + buskAp.getText() + "%' ORDER BY id_apartado;");
         }
     }//GEN-LAST:event_buskApKeyReleased
 
@@ -708,7 +706,7 @@ public class ApartadosP extends javax.swing.JPanel {
         if(!(buskAp.getText().isEmpty())){
             if(Cake.espacios(buskAp.getText(), letra)){
                 evt.consume();
-            }
+            }   
         }
         else{
             if(Cake.inicioEspacios(letra)){
@@ -908,7 +906,7 @@ public class ApartadosP extends javax.swing.JPanel {
     
     public void mostrarTablaAp(String instruccion){
         if(instruccion.equals("")){
-            instruccion = "SELECT * FROM apartado";
+            instruccion = "SELECT * FROM apartado ORDER BY id_apartado";
         }
         Mise.limpiarTabla(modeloAp);
         java.sql.ResultSet rs = conect.query(instruccion);

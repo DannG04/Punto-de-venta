@@ -1,0 +1,15 @@
+********************************************        
+          COMPROBANTE DE APARTADO                   
+ Folio: A20250122195244                             
+ Fecha de emisión : 22/01/2025                      
+ Hora: 19:53:04                                     
+ Vendedor: Elisa Sánchez                            
+ -------------------------------------------        
+ Fecha Inicio: 2025-01-22                           
+ Fecha Límite de pago: 2025-02-21                   
+ Cantidad Dada: 200.0                               
+ Cantidad Faltante: 180.0                           
+ Cantidad Total: 380.0                              
+ -------Muchas gracias por su compra.-------        
+                                                    
+                                                    

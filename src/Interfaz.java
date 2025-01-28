@@ -171,10 +171,16 @@ public class Interfaz extends javax.swing.JFrame {
 
         adminPM.add(regCont);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Punto de Ventas");
         setMinimumSize(new java.awt.Dimension(430, 400));
+        setResizable(false);
         setSize(new java.awt.Dimension(430, 400));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         panelPrin.setBackground(new java.awt.Color(204, 226, 249));
         panelPrin.setLayout(new java.awt.GridBagLayout());
@@ -592,6 +598,7 @@ public class Interfaz extends javax.swing.JFrame {
             iniSession.setVisible(true);
             botones.setVisible(false);
             panelPrin.setVisible(false);
+            horaPanel.setVisible(false);
             this.setSize(430, 400);
             this.setLocationRelativeTo(null);
         }
@@ -651,6 +658,13 @@ public class Interfaz extends javax.swing.JFrame {
     private void boton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton8ActionPerformed
         visibilidad(8, 0);
     }//GEN-LAST:event_boton8ActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        int res = Mise.JOptionYesNo("Seguro que desea cerrar la ventana?", "Cerrar Ventana");
+        if(res == 0){
+            System.exit(0);
+        }
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments

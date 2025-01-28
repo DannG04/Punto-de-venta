@@ -1,29 +1,4 @@
 
-//import br.com.adilson.util.Extenso;
-//import br.com.adilson.util.PrinterMatrix;
-//import java.io.FileInputStream;
-//import javax.print.Doc;
-//import javax.print.DocFlavor;
-//import javax.print.DocPrintJob;
-//import javax.print.PrintService;
-//import javax.print.PrintServiceLookup;
-//import javax.print.SimpleDoc;
-//import javax.print.attribute.HashPrintRequestAttributeSet;
-//import javax.print.attribute.PrintRequestAttributeSet;
-import br.com.adilson.util.Extenso;
-import br.com.adilson.util.PrinterMatrix;
-import java.io.FileInputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import javax.print.Doc;
-import javax.print.DocFlavor;
-import javax.print.DocPrintJob;
-import javax.print.PrintService;
-import javax.print.PrintServiceLookup;
-import javax.print.SimpleDoc;
-import javax.print.attribute.HashPrintRequestAttributeSet;
-import javax.print.attribute.PrintRequestAttributeSet;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -71,7 +46,7 @@ public class VentasP extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        jDialog1 = new javax.swing.JDialog();
+        ventaDialog = new javax.swing.JDialog();
         panelAct = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         codp = new javax.swing.JFormattedTextField();
@@ -121,14 +96,14 @@ public class VentasP extends javax.swing.JPanel {
         jScrollPane2 = new javax.swing.JScrollPane();
         tablaBusc = new javax.swing.JTable();
 
-        jDialog1.setTitle("Venta");
-        jDialog1.setAlwaysOnTop(true);
-        jDialog1.setMinimumSize(new java.awt.Dimension(400, 300));
-        jDialog1.setModal(true);
-        jDialog1.setPreferredSize(new java.awt.Dimension(400, 300));
-        jDialog1.setResizable(false);
-        jDialog1.setSize(new java.awt.Dimension(400, 300));
-        jDialog1.getContentPane().setLayout(new java.awt.CardLayout());
+        ventaDialog.setTitle("Venta");
+        ventaDialog.setAlwaysOnTop(true);
+        ventaDialog.setMinimumSize(new java.awt.Dimension(400, 300));
+        ventaDialog.setModal(true);
+        ventaDialog.setPreferredSize(new java.awt.Dimension(400, 300));
+        ventaDialog.setResizable(false);
+        ventaDialog.setSize(new java.awt.Dimension(400, 300));
+        ventaDialog.getContentPane().setLayout(new java.awt.CardLayout());
 
         panelAct.setLayout(new java.awt.GridLayout(0, 1));
 
@@ -169,7 +144,7 @@ public class VentasP extends javax.swing.JPanel {
         panelAct.add(hechoAct);
         hechoAct.setVisible(false);
 
-        jDialog1.getContentPane().add(panelAct, "card2");
+        ventaDialog.getContentPane().add(panelAct, "card2");
 
         panelCamb.setLayout(new java.awt.GridLayout(4, 2));
 
@@ -235,9 +210,9 @@ public class VentasP extends javax.swing.JPanel {
         panelCamb.add(hechoCamb);
         hechoAct.setVisible(false);
 
-        jDialog1.getContentPane().add(panelCamb, "card3");
+        ventaDialog.getContentPane().add(panelCamb, "card3");
 
-        jDialog1.setLocationRelativeTo(null);
+        ventaDialog.setLocationRelativeTo(null);
 
         regVentaDialog.setTitle("Venta");
         regVentaDialog.setAlwaysOnTop(true);
@@ -631,7 +606,7 @@ public class VentasP extends javax.swing.JPanel {
             conect.insertarVentaTemp(datos, false); //Se actualizan los datos en la venta temporal
             mostrarTablaVentaT();
             mostrarBusqueda("");
-            jDialog1.setVisible(false);
+            ventaDialog.setVisible(false);
         }
     }//GEN-LAST:event_hechoActActionPerformed
 
@@ -674,7 +649,7 @@ public class VentasP extends javax.swing.JPanel {
                 Mise.limpiarTabla(modelo); //Se limpia el modelo
                 precT = 0.0;
                 totalLabel.setText("Total: " + precT);
-                jDialog1.setVisible(false);
+                ventaDialog.setVisible(false);
                 //EN ESTA PARTE DEBERIA MOSTRAR LA ALERTAA SI HAY POCOS PRODUCTOS
                 if(conect.hayPocosProductos()){
                     mostrarProdPocos();
@@ -685,7 +660,7 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_hechoCambActionPerformed
 
     private void cancelarBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarBActionPerformed
-        jDialog1.setVisible(false);
+        ventaDialog.setVisible(false);
     }//GEN-LAST:event_cancelarBActionPerformed
 
     private void recCTKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_recCTKeyReleased
@@ -724,7 +699,7 @@ public class VentasP extends javax.swing.JPanel {
             mostrarDAct(a);
             panelAct.setVisible(true);
             panelCamb.setVisible(false);
-            jDialog1.setVisible(true);
+            ventaDialog.setVisible(true);
         } else{
             Mise.JOption("Debe seleccionar la fila que desea actualizar", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -812,7 +787,7 @@ public class VentasP extends javax.swing.JPanel {
         panelAct.setVisible(false);
         panelCamb.setVisible(true);
         regVentaDialog.setVisible(false);
-        jDialog1.setVisible(true);
+        ventaDialog.setVisible(true);
     }//GEN-LAST:event_tablaCliMouseClicked
 
     private void curpClienteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_curpClienteKeyTyped
@@ -911,82 +886,6 @@ public class VentasP extends javax.swing.JPanel {
         codp.setText(elemento);
         cantP.setText(canti);
     }
-    
-    public void generarTicket() {
-        DateFormat formatoHora = new SimpleDateFormat("HH:mm:ss");
-        Date date = new Date();
-        Date fechahoy = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        String fechaActual = sdf.format(fechahoy);
-        PrinterMatrix printer = new PrinterMatrix();
-        Extenso e = new Extenso();
-        e.setNumber(precT);
-
-        int rows = modelo.getRowCount();
-        int cols = modelo.getColumnCount();
-        int totalRows = rows + 12; // Adjust based on header and footer
-
-        printer.setOutSize(totalRows, 55); // Adjust the width as needed
-
-        printer.printCharAtCol(1, 1, 44, "*");
-        printer.printTextWrap(1, 2, 10, 55, "FACTURA DE VENTA");
-        printer.printTextWrap(2, 3, 1, 55, "Folio: " + idTemV);
-        printer.printTextWrap(3, 3, 1, 55, "Fecha de emisión : "+fechaActual);
-        printer.printTextWrap(4, 3, 1, 55, "Hora: "+ formatoHora.format(date));
-        printer.printTextWrap(5, 3, 1, 55, "Vendedor: " + Interfaz.us);
-        printer.printTextWrap(6, 3, 1, 55, "-------------------------------------------");
-        printer.printTextWrap(7, 3, 1, 55, "     Producto         Cant  P.Unit  P.Total");
-
-        int rowIndex = 8;
-        for (int i = 0; i < rows; i++) {
-            String producto = modelo.getValueAt(i, 1).toString();
-            String cantidad = modelo.getValueAt(i, 2).toString();
-            String precioUnitario = modelo.getValueAt(i, 4).toString();
-            String precioTotal = modelo.getValueAt(i, 5).toString();
-            printer.printTextWrap(rowIndex, rowIndex + 1, 1, 22, producto);
-            printer.printTextWrap(rowIndex, rowIndex + 1, 24, 26, cantidad);
-            printer.printTextWrap(rowIndex, rowIndex + 1, 30, 33, precioUnitario);
-            printer.printTextWrap(rowIndex, rowIndex + 1, 38, 43, precioTotal);
-            rowIndex++;
-        }
-
-        printer.printTextWrap(rowIndex, rowIndex + 1, 1, 55, "-------------------------------------------");
-        printer.printTextWrap(rowIndex + 1, rowIndex + 2, 1, 55, "Total: " + precT);
-        printer.printTextWrap(rowIndex + 2, rowIndex + 3, 1, 55, "-------Muchas gracias por su compra.-------");
-
-        printer.toFile("impresion.txt");
-
-        FileInputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream("impresion.txt");
-            JOptionPane.showMessageDialog(null, "Ticket generado","Ticket",JOptionPane.PLAIN_MESSAGE);
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        if (inputStream == null) {
-            return;
-        }
-
-        DocFlavor docFormat = DocFlavor.INPUT_STREAM.AUTOSENSE;
-        Doc document = new SimpleDoc(inputStream, docFormat, null);
-        PrintRequestAttributeSet attributeSet = new HashPrintRequestAttributeSet();
-        PrintService defaultPrintService = PrintServiceLookup.lookupDefaultPrintService();
-
-        if (defaultPrintService != null) {
-            DocPrintJob printJob = defaultPrintService.createPrintJob();
-            try {
-                printJob.print(document, attributeSet);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        } else {
-            System.out.println("No hay una impresora instalada");
-        }
-        
-    
-
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField Busc;
@@ -1002,7 +901,6 @@ public class VentasP extends javax.swing.JPanel {
     private javax.swing.JButton hechoAct;
     private javax.swing.JButton hechoAct1;
     private javax.swing.JButton hechoCamb;
-    private javax.swing.JDialog jDialog1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1037,6 +935,7 @@ public class VentasP extends javax.swing.JPanel {
     private javax.swing.JTable tablaVentas;
     private javax.swing.JFormattedTextField totalCT;
     private javax.swing.JLabel totalLabel;
+    private javax.swing.JDialog ventaDialog;
     private javax.swing.JButton ventaReali;
     // End of variables declaration//GEN-END:variables
 }

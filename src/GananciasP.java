@@ -312,17 +312,12 @@ public class GananciasP extends javax.swing.JPanel {
         if(tablaOG.getSelectedRow() == -1){
             labelinc.setText("Seleccione la fila que desea actualizar");
         } else{
-            String desc = "" + tablaOG.getValueAt(tablaOG.getSelectedRow(), 1);
-            if(desc.contains("Anulación del apartado:") || desc.contains("Cancelación del apartado:")){
-                Mise.JOption("No es posible eliminar esta ganancia", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-            } else{
-                id_otraganancia = "" + tablaOG.getValueAt(tablaOG.getSelectedRow(), 0);
-                desF1.setText("" + tablaOG.getValueAt(tablaOG.getSelectedRow(), 1));
-                monF1.setText("" + tablaOG.getValueAt(tablaOG.getSelectedRow(), 2));
-                labelinc.setText("");
-                labelGanID.setText("Ganancia: " + id_otraganancia);
-                actualizarDialog.setVisible(true);
-            }
+            id_otraganancia = "" + tablaOG.getValueAt(tablaOG.getSelectedRow(), 0);
+            desF1.setText("" + tablaOG.getValueAt(tablaOG.getSelectedRow(), 1));
+            monF1.setText("" + tablaOG.getValueAt(tablaOG.getSelectedRow(), 2));
+            labelinc.setText("");
+            labelGanID.setText("Ganancia: " + id_otraganancia);
+            actualizarDialog.setVisible(true);
         }
     }//GEN-LAST:event_actGActionPerformed
 
@@ -330,10 +325,15 @@ public class GananciasP extends javax.swing.JPanel {
         if(tablaOG.getSelectedRow() == -1){
             labelinc.setText("Seleccione la fila que desea eliminar");
         } else{
-            id_otraganancia = "" + tablaOG.getValueAt(tablaOG.getSelectedRow(), 0);
-            conect.inst("DELETE FROM otras_ganancias WHERE id_otras_ganancias='" + id_otraganancia + "';");
-            labelinc.setText("");
-            mostrarTablaOG();
+            String desc = "" + tablaOG.getValueAt(tablaOG.getSelectedRow(), 1);
+            if(desc.contains("Anulación del apartado:") || desc.contains("Cancelación del apartado:")){
+                Mise.JOption("No es posible eliminar esta ganancia", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            } else{
+                id_otraganancia = "" + tablaOG.getValueAt(tablaOG.getSelectedRow(), 0);
+                conect.inst("DELETE FROM otras_ganancias WHERE id_otras_ganancias='" + id_otraganancia + "';");
+                labelinc.setText("");
+                mostrarTablaOG();
+            }
         }
     }//GEN-LAST:event_elimGActionPerformed
 

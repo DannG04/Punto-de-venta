@@ -485,8 +485,6 @@ public class Excel {
             book.write(fileOut);
             fileOut.close();
             Desktop.getDesktop().open(file);
-            JOptionPane.showMessageDialog(null, "Reporte Generado");
-
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Excel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
