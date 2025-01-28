@@ -194,6 +194,9 @@ public class ApartadosP extends javax.swing.JPanel {
 
         panelApart.setLayout(new java.awt.BorderLayout());
 
+        jScrollPane6.setMinimumSize(new java.awt.Dimension(550, 402));
+        jScrollPane6.setPreferredSize(new java.awt.Dimension(550, 402));
+
         tablaProdAp.setFont(new java.awt.Font("Noto Serif", 0, 16)); // NOI18N
         tablaProdAp.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
