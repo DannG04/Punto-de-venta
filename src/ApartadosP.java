@@ -183,7 +183,6 @@ public class ApartadosP extends javax.swing.JPanel {
         prodApartadoDialog.setAlwaysOnTop(true);
         prodApartadoDialog.setMinimumSize(new java.awt.Dimension(1000, 460));
         prodApartadoDialog.setModal(true);
-        prodApartadoDialog.setPreferredSize(new java.awt.Dimension(1000, 460));
         prodApartadoDialog.setSize(new java.awt.Dimension(1000, 460));
         prodApartadoDialog.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -255,7 +254,6 @@ public class ApartadosP extends javax.swing.JPanel {
         acP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         acP.setForeground(new java.awt.Color(78, 150, 150));
         acP.setText("Actualizar");
-        acP.setPreferredSize(new java.awt.Dimension(125, 33));
         acP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 acPActionPerformed(evt);
@@ -680,7 +678,7 @@ public class ApartadosP extends javax.swing.JPanel {
             if(Double.parseDouble(recSaldF.getText()) >= Double.parseDouble(cantSaldaF.getText())){
                 conect.entregarApartado(idApF.getText());
                 mostrarTablaAp("");                
-                //GenTicket.generarTicketProductos(conect.seleccionarProductos(id_apartado));
+                GenTicket.generarTicketProductos(conect.seleccionarProductos(id_apartado));
                 saldarDialog.setVisible(false);
             } else{
                 Mise.JOption("Lo recibido debe ser mayor o igual a la cantidad con la que salda", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
