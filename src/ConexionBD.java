@@ -12,21 +12,12 @@ import java.time.format.DateTimeFormatter;
  * @author mayra
  */
 public class ConexionBD {
-<<<<<<< HEAD
     
     String url = "jdbc:postgresql://localhost:5432/";
     String nameBD = "tienda_punto_venta";
     String usuario = "postgres";
     String contra = "Daniel183.";
     
-=======
-
-    String url = "jdbc:postgresql://dpg-ctk67dhopnds73fsk4i0-a.oregon-postgres.render.com:5432/";
-    String nameBD = "tienda_punto_venta";
-    String usuario = "daniel183";
-    String contra = "IwkTvhnv40tjCIsyVASGpa218IkeVUIE";
-
->>>>>>> 413299089a57938a513a297862faaf6eea8bb4d6
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // FUNCIONES GENERALES
@@ -657,15 +648,8 @@ public class ConexionBD {
         ResultSet resultado = null;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-<<<<<<< HEAD
-            PreparedStatement consulta = conexion.prepareStatement("select * from producto, apartado_detalle where producto.id_producto = apartado_detalle.id_producto and id_apartado='"+ idApartado + "'");
+            PreparedStatement consulta = conexion.prepareStatement("select * from apartado_detalle natural join producto where id_apartado='"+ idApartado + "'");
             resultado = consulta.executeQuery();
-=======
-            Statement stmt = conexion.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            String query = "SELECT * FROM producto, apartado_detalle where producto.id_producto = apartado_detalle.id_producto and id_apartado = '"
-                    + idApartado + "';";
-            resultado = stmt.executeQuery(query);
->>>>>>> 413299089a57938a513a297862faaf6eea8bb4d6
         } catch (Exception e) {
             System.out.println("Error: " + e.toString());
         }

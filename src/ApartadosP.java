@@ -181,8 +181,9 @@ public class ApartadosP extends javax.swing.JPanel {
         prodApartadoDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         prodApartadoDialog.setTitle("Registro de Apartados");
         prodApartadoDialog.setAlwaysOnTop(true);
-        prodApartadoDialog.setMinimumSize(new java.awt.Dimension(1000, 460));
+        prodApartadoDialog.setMinimumSize(new java.awt.Dimension(1400, 550));
         prodApartadoDialog.setModal(true);
+        prodApartadoDialog.setPreferredSize(new java.awt.Dimension(1400, 550));
         prodApartadoDialog.setSize(new java.awt.Dimension(1000, 460));
         prodApartadoDialog.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -285,7 +286,9 @@ public class ApartadosP extends javax.swing.JPanel {
 
         panelApart.add(panelRegProd, java.awt.BorderLayout.CENTER);
 
-        jScrollPane7.setPreferredSize(new java.awt.Dimension(270, 402));
+        jScrollPane7.setMinimumSize(new java.awt.Dimension(550, 402));
+        jScrollPane7.setPreferredSize(new java.awt.Dimension(550, 402));
+        jScrollPane7.setVerifyInputWhenFocusTarget(false);
 
         tablaProd.setFont(new java.awt.Font("Noto Serif", 0, 16)); // NOI18N
         tablaProd.setModel(new javax.swing.table.DefaultTableModel(

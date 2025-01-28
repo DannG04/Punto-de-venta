@@ -76,10 +76,7 @@ public class GenTicket {
                 FileInputStream inputStream = null;
                 try {
                     inputStream = new FileInputStream("impresionApartado.txt");
-<<<<<<< HEAD
-=======
                     JOptionPane.showMessageDialog(null, "Ticket generado", "Ticket", JOptionPane.PLAIN_MESSAGE);
->>>>>>> 413299089a57938a513a297862faaf6eea8bb4d6
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -155,21 +152,12 @@ public class GenTicket {
             printer.printTextWrap(rowIndex + 1, rowIndex + 2, 1, 55, "Total: " + total);
             printer.printTextWrap(rowIndex + 2, rowIndex + 3, 1, 55, "-------Muchas gracias por su compra.-------");
 
-<<<<<<< HEAD
-            printer.toFile("impresionEntrega.txt");
-
-            FileInputStream inputStream = null;
-            try {
-                inputStream = new FileInputStream("impresionEntrega.txt");
-                //JOptionPane.showMessageDialog(null, "Ticket generado", "Ticket", JOptionPane.PLAIN_MESSAGE);
-=======
             printer.toFile("impresionPagado.txt");
 
             FileInputStream inputStream = null;
             try {
                 inputStream = new FileInputStream("impresionPagado.txt");
                 JOptionPane.showMessageDialog(null, "Ticket generado", "Ticket", JOptionPane.PLAIN_MESSAGE);
->>>>>>> 413299089a57938a513a297862faaf6eea8bb4d6
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
