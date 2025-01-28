@@ -13,10 +13,10 @@ import java.time.format.DateTimeFormatter;
  */
 public class ConexionBD {
     
-    String url = "jdbc:postgresql://dpg-ctk67dhopnds73fsk4i0-a.oregon-postgres.render.com:5432/";
+    String url = "jdbc:postgresql://localhost:5432/";
     String nameBD = "tienda_punto_venta";
-    String usuario = "daniel183";
-    String contra = "IwkTvhnv40tjCIsyVASGpa218IkeVUIE";
+    String usuario = "postgres";
+    String contra = "Daniel183.";
     
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     
@@ -646,7 +646,7 @@ public class ConexionBD {
         ResultSet resultado = null;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement consulta = conexion.prepareStatement("select * from apartado_detalle natural join producto where id_apartado='"+ idApartado + "'");
+            PreparedStatement consulta = conexion.prepareStatement("select * from producto, apartado_detalle where producto.id_producto = apartado_detalle.id_producto and id_apartado='"+ idApartado + "'");
             resultado = consulta.executeQuery();
         } catch (Exception e) {
             System.out.println("Error: " + e.toString());

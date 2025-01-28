@@ -23,7 +23,7 @@ public class Excel {
         String mes = String.valueOf(fecha.getMonthValue());
         String anio = String.valueOf(fecha.getYear());
         try {
-            InputStream is = new FileInputStream("src/img/logo.png");
+            InputStream is = new FileInputStream("src/img/Mega.png");
             byte[] bytes = IOUtils.toByteArray(is);
             int imgIndex = book.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
             is.close();
@@ -40,17 +40,20 @@ public class Excel {
 
             // Estilos de encabezados
             CellStyle tituloEstilo = book.createCellStyle();
-            tituloEstilo.setAlignment(HorizontalAlignment.CENTER);
-            tituloEstilo.setVerticalAlignment(VerticalAlignment.CENTER);
             tituloEstilo.setFillForegroundColor(IndexedColors.WHITE.getIndex());
             tituloEstilo.setFillBackgroundColor(IndexedColors.WHITE.getIndex());
             tituloEstilo = estilodeCelda(tituloEstilo);
+            tituloEstilo.setAlignment(HorizontalAlignment.CENTER);
+            tituloEstilo.setVerticalAlignment(VerticalAlignment.CENTER);
             Font fuenteTitulo = book.createFont();
+            tituloEstilo.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+            tituloEstilo.setFillForegroundColor(IndexedColors.AQUA.getIndex());
+            tituloEstilo = estilodeCelda(tituloEstilo);
+            tituloEstilo.setBorderRight(BorderStyle.THIN);
             fuenteTitulo.setFontName("Times new roman");
             fuenteTitulo.setBold(true);
             fuenteTitulo.setFontHeightInPoints((short) 14);
             tituloEstilo.setFont(fuenteTitulo);
-
             Row filaTitulo = sheet.createRow(1);
             Cell celdaTitulo = filaTitulo.createCell(1);
             celdaTitulo.setCellStyle(tituloEstilo);
@@ -116,7 +119,7 @@ public class Excel {
             Row filaFecha = sheet.createRow(3);
             Cell celdaFecha = filaFecha.createCell(1);
             celdaFecha.setCellStyle(fechaEstilo);
-            celdaTitulo.setCellValue("Punto de venta S.A.");
+            celdaTitulo.setCellValue("Mega Mix S.A.");
             sheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 5));
             String mes2 = cambiarmes(mes);
             celdaFecha.setCellValue("Balance general del " + dia + " de " + mes2 + " del año " + anio);
@@ -139,7 +142,7 @@ public class Excel {
     }
 
     public static void estadodeResultados(Double inv_ini) {
-         ConexionBD conexion = new ConexionBD();
+        ConexionBD conexion = new ConexionBD();
 
         Workbook book = new XSSFWorkbook();
         Sheet sheet = book.createSheet("Estado de resultados");
@@ -485,8 +488,6 @@ public class Excel {
             book.write(fileOut);
             fileOut.close();
             Desktop.getDesktop().open(file);
-            JOptionPane.showMessageDialog(null, "Reporte Generado");
-
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Excel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

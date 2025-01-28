@@ -1,0 +1,15 @@
+********************************************        
+          COMPROBANTE DE APARTADO                   
+ Folio: A20250120084107                             
+ Fecha de emisión : 20/01/2025                      
+ Hora: 08:41:25                                     
+ Vendedor: Daniel Gonzalez                          
+ -------------------------------------------        
+ Fecha Inicio: 2025-01-20                           
+ Fecha Límite de pago: 2025-02-19                   
+ Cantidad Dada: 180.0                               
+ Cantidad Faltante: 180.0                           
+ Cantidad Total: 360.0                              
+ -------Muchas gracias por su compra.-------        
+                                                    
+                                                    
