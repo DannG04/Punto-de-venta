@@ -181,9 +181,9 @@ public class ApartadosP extends javax.swing.JPanel {
         prodApartadoDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         prodApartadoDialog.setTitle("Registro de Apartados");
         prodApartadoDialog.setAlwaysOnTop(true);
-        prodApartadoDialog.setMinimumSize(new java.awt.Dimension(1000, 460));
+        prodApartadoDialog.setMinimumSize(new java.awt.Dimension(1400, 550));
         prodApartadoDialog.setModal(true);
-        prodApartadoDialog.setPreferredSize(new java.awt.Dimension(1000, 460));
+        prodApartadoDialog.setPreferredSize(new java.awt.Dimension(1400, 550));
         prodApartadoDialog.setSize(new java.awt.Dimension(1000, 460));
         prodApartadoDialog.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -255,7 +255,6 @@ public class ApartadosP extends javax.swing.JPanel {
         acP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         acP.setForeground(new java.awt.Color(78, 150, 150));
         acP.setText("Actualizar");
-        acP.setPreferredSize(new java.awt.Dimension(125, 33));
         acP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 acPActionPerformed(evt);
@@ -287,7 +286,9 @@ public class ApartadosP extends javax.swing.JPanel {
 
         panelApart.add(panelRegProd, java.awt.BorderLayout.CENTER);
 
-        jScrollPane7.setPreferredSize(new java.awt.Dimension(270, 402));
+        jScrollPane7.setMinimumSize(new java.awt.Dimension(550, 402));
+        jScrollPane7.setPreferredSize(new java.awt.Dimension(550, 402));
+        jScrollPane7.setVerifyInputWhenFocusTarget(false);
 
         tablaProd.setFont(new java.awt.Font("Noto Serif", 0, 16)); // NOI18N
         tablaProd.setModel(new javax.swing.table.DefaultTableModel(
@@ -678,7 +679,7 @@ public class ApartadosP extends javax.swing.JPanel {
             if(Double.parseDouble(recSaldF.getText()) >= Double.parseDouble(cantSaldaF.getText())){
                 conect.entregarApartado(idApF.getText());
                 mostrarTablaAp("");                
-                //GenTicket.generarTicketProductos(conect.seleccionarProductos(id_apartado));
+                GenTicket.generarTicketProductos(conect.seleccionarProductos(id_apartado));
                 saldarDialog.setVisible(false);
             } else{
                 Mise.JOption("Lo recibido debe ser mayor o igual a la cantidad con la que salda", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);

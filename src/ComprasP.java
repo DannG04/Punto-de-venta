@@ -78,7 +78,6 @@ public class ComprasP extends javax.swing.JPanel {
         comDialog.setAlwaysOnTop(true);
         comDialog.setMinimumSize(new java.awt.Dimension(550, 260));
         comDialog.setModal(true);
-        comDialog.setPreferredSize(new java.awt.Dimension(550, 260));
         comDialog.setSize(new java.awt.Dimension(550, 260));
         comDialog.getContentPane().setLayout(new java.awt.CardLayout());
 
