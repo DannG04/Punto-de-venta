@@ -39,20 +39,20 @@ public class EmpleadosP extends javax.swing.JPanel {
 
         RegistroE = new javax.swing.JDialog();
         jLabel2 = new javax.swing.JLabel();
-        nombreE = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        CURPempleado = new javax.swing.JTextField();
-        telefono = new javax.swing.JTextField();
-        user = new javax.swing.JTextField();
-        contrasenia = new javax.swing.JTextField();
-        contrasenia2 = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         errorContraseña = new javax.swing.JLabel();
+        Contra1 = new javax.swing.JPasswordField();
+        Contra2 = new javax.swing.JPasswordField();
+        NombreE = new javax.swing.JFormattedTextField();
+        CURPE = new javax.swing.JFormattedTextField();
+        numE = new javax.swing.JFormattedTextField();
+        userE = new javax.swing.JFormattedTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaEmp = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
@@ -73,19 +73,8 @@ public class EmpleadosP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         RegistroE.getContentPane().add(jLabel2, gridBagConstraints);
-
-        nombreE.setMinimumSize(new java.awt.Dimension(150, 25));
-        nombreE.setPreferredSize(new java.awt.Dimension(150, 25));
-        nombreE.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(nombreE, gridBagConstraints);
 
         jLabel3.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(78, 150, 150));
@@ -93,7 +82,6 @@ public class EmpleadosP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         RegistroE.getContentPane().add(jLabel3, gridBagConstraints);
 
@@ -133,46 +121,6 @@ public class EmpleadosP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         RegistroE.getContentPane().add(jLabel7, gridBagConstraints);
 
-        CURPempleado.setMinimumSize(new java.awt.Dimension(150, 25));
-        CURPempleado.setPreferredSize(new java.awt.Dimension(150, 25));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(CURPempleado, gridBagConstraints);
-
-        telefono.setMinimumSize(new java.awt.Dimension(150, 25));
-        telefono.setPreferredSize(new java.awt.Dimension(150, 25));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(telefono, gridBagConstraints);
-
-        user.setMinimumSize(new java.awt.Dimension(150, 25));
-        user.setPreferredSize(new java.awt.Dimension(150, 25));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 12;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(user, gridBagConstraints);
-
-        contrasenia.setMinimumSize(new java.awt.Dimension(150, 25));
-        contrasenia.setPreferredSize(new java.awt.Dimension(150, 25));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 14;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(contrasenia, gridBagConstraints);
-
-        contrasenia2.setMinimumSize(new java.awt.Dimension(150, 25));
-        contrasenia2.setPreferredSize(new java.awt.Dimension(150, 25));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 15;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(contrasenia2, gridBagConstraints);
-
         jLabel8.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(78, 150, 150));
         jLabel8.setText("Contraseña");
@@ -202,6 +150,54 @@ public class EmpleadosP extends javax.swing.JPanel {
         gridBagConstraints.gridy = 16;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         RegistroE.getContentPane().add(errorContraseña, gridBagConstraints);
+
+        Contra1.setMinimumSize(new java.awt.Dimension(150, 25));
+        Contra1.setPreferredSize(new java.awt.Dimension(150, 25));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 14;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        RegistroE.getContentPane().add(Contra1, gridBagConstraints);
+
+        Contra2.setMinimumSize(new java.awt.Dimension(150, 25));
+        Contra2.setPreferredSize(new java.awt.Dimension(150, 25));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 15;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        RegistroE.getContentPane().add(Contra2, gridBagConstraints);
+
+        NombreE.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        NombreE.setMinimumSize(new java.awt.Dimension(150, 25));
+        NombreE.setPreferredSize(new java.awt.Dimension(150, 25));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        RegistroE.getContentPane().add(NombreE, gridBagConstraints);
+
+        CURPE.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        CURPE.setMinimumSize(new java.awt.Dimension(150, 25));
+        CURPE.setPreferredSize(new java.awt.Dimension(150, 25));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        RegistroE.getContentPane().add(CURPE, gridBagConstraints);
+
+        numE.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        numE.setMinimumSize(new java.awt.Dimension(150, 25));
+        numE.setPreferredSize(new java.awt.Dimension(150, 25));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 7;
+        RegistroE.getContentPane().add(numE, gridBagConstraints);
+
+        userE.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        userE.setMinimumSize(new java.awt.Dimension(150, 25));
+        userE.setPreferredSize(new java.awt.Dimension(150, 25));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 12;
+        RegistroE.getContentPane().add(userE, gridBagConstraints);
 
         setLayout(new java.awt.BorderLayout());
 
@@ -334,12 +330,13 @@ public class EmpleadosP extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField CURPempleado;
+    private javax.swing.JFormattedTextField CURPE;
+    private javax.swing.JPasswordField Contra1;
+    private javax.swing.JPasswordField Contra2;
+    private javax.swing.JFormattedTextField NombreE;
     private javax.swing.JDialog RegistroE;
     private javax.swing.JButton actB;
     private javax.swing.JButton agB;
-    private javax.swing.JTextField contrasenia;
-    private javax.swing.JTextField contrasenia2;
     private javax.swing.JButton eliB;
     private javax.swing.JLabel errorContraseña;
     private javax.swing.JButton jButton1;
@@ -353,10 +350,9 @@ public class EmpleadosP extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField nombreE;
+    private javax.swing.JFormattedTextField numE;
     public javax.swing.JPanel panelBotones;
     private javax.swing.JTable tablaEmp;
-    private javax.swing.JTextField telefono;
-    private javax.swing.JTextField user;
+    private javax.swing.JFormattedTextField userE;
     // End of variables declaration//GEN-END:variables
 }
