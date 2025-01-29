@@ -14,9 +14,9 @@ import java.time.format.DateTimeFormatter;
 public class ConexionBD {
     //Server credenciales: url: dpg-cucgfkhopnds739808h0-a.oregon-postgres.render.com contrasenia: IdIwMrtXsrYNLKBsoDM7yR4fW6fGHxWP usuario: daniel183 base: tienda_punto_venta_40vd
     String url = "jdbc:postgresql://localhost:5432/";
-    String nameBD = "tienda_punto_venta";
+    String nameBD = "tienda_punto_venta_40vd";
     String usuario = "postgres";
-    String contra = "mayraK";
+    String contra = "Daniel183.";
     
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -272,7 +272,8 @@ public class ConexionBD {
     }
 
     // FUNCIONES DE LA TABLA CLIENTE
-    public void insertarCliente(String[] campos) {
+    public boolean insertarCliente(String[] campos) {
+        boolean band = false;
         String columnas = "cliente(id_cliente, nombre, telefono)";
         String instruccion = "INSERT INTO " + columnas + " VALUES(?,?,?);";
         try {
@@ -283,10 +284,11 @@ public class ConexionBD {
             pstm.setString(3, campos[2]);
             pstm.executeUpdate();
             conexion.close();
+            band = true;
         } catch (SQLException e) {
             Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-
         }
+        return band;
     }
 
     public void actualizarCliente(String[] campos, String idC) {
