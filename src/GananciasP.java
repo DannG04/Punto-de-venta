@@ -180,7 +180,11 @@ public class GananciasP extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        tablaOG.setRowHeight(40);
+        tablaOG.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+                tablaOGMouseWheelMoved(evt);
+            }
+        });
         jScrollPane1.setViewportView(tablaOG);
 
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -450,6 +454,10 @@ public class GananciasP extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_actG1ActionPerformed
 
+    private void tablaOGMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_tablaOGMouseWheelMoved
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tablaOGMouseWheelMoved
+
     public void mostrarTablaOG(){
         Mise.limpiarTabla(modeloOG);
         java.sql.ResultSet rs = conect.query("SELECT * FROM otras_ganancias");
@@ -483,7 +491,7 @@ public class GananciasP extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel labelGanID;
     public static javax.swing.JLabel labelinc;
-    private javax.swing.JLabel labelinc1;
+    public static javax.swing.JLabel labelinc1;
     private javax.swing.JFormattedTextField monF;
     private javax.swing.JFormattedTextField monF1;
     private javax.swing.JTable tablaOG;

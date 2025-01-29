@@ -224,8 +224,10 @@
                 <Column editable="false" title="Fecha" type="java.lang.Object"/>
               </Table>
             </Property>
-            <Property name="rowHeight" type="int" value="40"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseWheelMoved" listener="java.awt.event.MouseWheelListener" parameters="java.awt.event.MouseWheelEvent" handler="tablaOGMouseWheelMoved"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

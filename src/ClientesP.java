@@ -56,7 +56,8 @@ public class ClientesP extends javax.swing.JPanel {
         regC = new javax.swing.JButton();
         labelinc = new javax.swing.JLabel();
         actC = new javax.swing.JButton();
-        elimC = new javax.swing.JButton();
+        alta = new javax.swing.JButton();
+        elimC1 = new javax.swing.JButton();
 
         actualizarDialog.setTitle("Actualizar");
         actualizarDialog.setAlwaysOnTop(true);
@@ -319,12 +320,26 @@ public class ClientesP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(actC, gridBagConstraints);
 
-        elimC.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        elimC.setForeground(new java.awt.Color(78, 150, 150));
-        elimC.setText("Baja");
-        elimC.addActionListener(new java.awt.event.ActionListener() {
+        alta.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        alta.setForeground(new java.awt.Color(78, 150, 150));
+        alta.setText("Alta");
+        alta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                elimCActionPerformed(evt);
+                altaActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridwidth = 2;
+        jPanel2.add(alta, gridBagConstraints);
+
+        elimC1.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        elimC1.setForeground(new java.awt.Color(78, 150, 150));
+        elimC1.setText("Baja");
+        elimC1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                elimC1ActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -332,7 +347,7 @@ public class ClientesP extends javax.swing.JPanel {
         gridBagConstraints.gridy = 6;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jPanel2.add(elimC, gridBagConstraints);
+        jPanel2.add(elimC1, gridBagConstraints);
 
         add(jPanel2, java.awt.BorderLayout.LINE_END);
     }// </editor-fold>//GEN-END:initComponents
@@ -482,18 +497,22 @@ public class ClientesP extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_actC1ActionPerformed
 
-    private void elimCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elimCActionPerformed
+    private void altaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_altaActionPerformed
         if(tablaC.getSelectedRow() != -1){
             idCli = "" + tablaC.getValueAt(tablaC.getSelectedRow(), 0);
-            int res = Mise.JOptionYesNo("¿Está seguro que desea dar de baja a este cliente?", "Cliente");
+            int res = Mise.JOptionYesNo("¿Está seguro que desea dar de alta a este cliente?", "Cliente");
             if(res == 0){
-                conect.inactivarCliente(idCli);
+                conect.activarCliente(idCli);
                 mostrarTabla();
             }
         } else{
             labelinc.setText("Seleccione la fila que desea dar de baja");
         }
-    }//GEN-LAST:event_elimCActionPerformed
+    }//GEN-LAST:event_altaActionPerformed
+
+    private void elimC1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elimC1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_elimC1ActionPerformed
 
     public void mostrarTabla(){
         Mise.limpiarTabla(modelo);
@@ -513,9 +532,10 @@ public class ClientesP extends javax.swing.JPanel {
     private javax.swing.JButton actC;
     private javax.swing.JButton actC1;
     private javax.swing.JDialog actualizarDialog;
+    private javax.swing.JButton alta;
     private javax.swing.JFormattedTextField curpCliente;
     private javax.swing.JFormattedTextField curpCliente1;
-    private javax.swing.JButton elimC;
+    private javax.swing.JButton elimC1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
