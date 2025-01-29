@@ -159,9 +159,6 @@
           <Dimension value="[1400, 550]"/>
         </Property>
         <Property name="modal" type="boolean" value="true"/>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[1400, 550]"/>
-        </Property>
         <Property name="size" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[1000, 460]"/>
         </Property>
@@ -926,7 +923,7 @@
                 <Column editable="false" title="Dado" type="java.lang.Object"/>
                 <Column editable="false" title="Faltante" type="java.lang.Object"/>
                 <Column editable="false" title="Total" type="java.lang.Object"/>
-                <Column editable="false" title="Estado" type="java.lang.Object"/>
+                <Column editable="false" title="Estado" type="java.lang.String"/>
               </Table>
             </Property>
           </Properties>

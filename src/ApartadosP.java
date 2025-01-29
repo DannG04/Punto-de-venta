@@ -183,7 +183,6 @@ public class ApartadosP extends javax.swing.JPanel {
         prodApartadoDialog.setAlwaysOnTop(true);
         prodApartadoDialog.setMinimumSize(new java.awt.Dimension(1400, 550));
         prodApartadoDialog.setModal(true);
-        prodApartadoDialog.setPreferredSize(new java.awt.Dimension(1400, 550));
         prodApartadoDialog.setSize(new java.awt.Dimension(1000, 460));
         prodApartadoDialog.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -629,9 +628,16 @@ public class ApartadosP extends javax.swing.JPanel {
                 "Apartado", "Empleado", "Cliente", "Inicio", "Limite", "Dado", "Faltante", "Total", "Estado"
             }
         ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.String.class
+            };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false, false, false, false, false
             };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
@@ -648,6 +654,7 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_regApActionPerformed
 
     private void saldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saldActionPerformed
+        if((modeloAp.getValueAt(tablaAp.getSelectedRow(), 8)).equals("Vigente")){
         if(tablaAp.getSelectedRow() != -1){
             idApF.setText("" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 0));
             cantSaldaF.setText("" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 6));
@@ -656,6 +663,9 @@ public class ApartadosP extends javax.swing.JPanel {
             saldarDialog.setVisible(true);
         } else{
             Mise.JOption("Seleccione la fila que desea saldar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        }else{
+            Mise.JOption("Ese pedido ya no esta vigente", "Pedido", WIDTH);
         }
     }//GEN-LAST:event_saldActionPerformed
 
