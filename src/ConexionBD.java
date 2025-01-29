@@ -14,9 +14,9 @@ import java.time.format.DateTimeFormatter;
 public class ConexionBD {
     //Server credenciales: url: dpg-cucgfkhopnds739808h0-a.oregon-postgres.render.com contrasenia: IdIwMrtXsrYNLKBsoDM7yR4fW6fGHxWP usuario: daniel183 base: tienda_punto_venta_40vd
     String url = "jdbc:postgresql://localhost:5432/";
-    String nameBD = "tienda_punto_venta_40vd";
+    String nameBD = "tienda_punto_venta";
     String usuario = "postgres";
-    String contra = "Daniel183.";
+    String contra = "mayraK";
     
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -306,22 +306,12 @@ public class ConexionBD {
         }
     }
 
-    public void inactivarCliente(String idC) {
+    public void inactivarCliente(String idC, boolean act) {
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            CallableStatement cstm = conexion.prepareCall("{call inactivar_cliente(?::curp_dominio)}");
+            CallableStatement cstm = conexion.prepareCall("{call inactivar_cliente(?::curp_dominio,?)}");
             cstm.setString(1, idC);
-            cstm.execute();
-            conexion.close();
-        } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    public void activarCliente(String idC) {
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            CallableStatement cstm = conexion.prepareCall("{call inactivar_cliente(?::curp_dominio)}");
-            cstm.setString(1, idC);
+            cstm.setBoolean(2, act);
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {

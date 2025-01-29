@@ -620,16 +620,25 @@ public class ClientesP extends javax.swing.JPanel {
             idCli = "" + tablaC.getValueAt(tablaC.getSelectedRow(), 0);
             int res = Mise.JOptionYesNo("¿Está seguro que desea dar de alta a este cliente?", "Cliente");
             if(res == 0){
-                conect.activarCliente(idCli);
+                conect.inactivarCliente(idCli, false);
+                mostrarTabla();
+            }
+        } else{
+            labelinc.setText("Seleccione la fila que desea dar de alta");
+        }
+    }//GEN-LAST:event_altaActionPerformed
+
+    private void elimC1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elimC1ActionPerformed
+        if(tablaC.getSelectedRow() != -1){
+            idCli = "" + tablaC.getValueAt(tablaC.getSelectedRow(), 0);
+            int res = Mise.JOptionYesNo("¿Está seguro que desea dar de baja a este cliente?", "Cliente");
+            if(res == 0){
+                conect.inactivarCliente(idCli, true);
                 mostrarTabla();
             }
         } else{
             labelinc.setText("Seleccione la fila que desea dar de baja");
         }
-    }//GEN-LAST:event_altaActionPerformed
-
-    private void elimC1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elimC1ActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_elimC1ActionPerformed
 
     private void regC1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regC1ActionPerformed
@@ -643,6 +652,7 @@ public class ClientesP extends javax.swing.JPanel {
                     nomCliente2.setText("");
                     numTel2.setText("");
                     labelinc2.setText("");
+                    Registro.setVisible(false);
                 } else{
                     labelinc2.setText("La CURP debe ser de 18 dígitos alfanumericos");
                 }
@@ -652,8 +662,6 @@ public class ClientesP extends javax.swing.JPanel {
         } else{
             labelinc2.setText("Debe llenar todos los campos");
         }
-        Registro.setVisible(false);
-        
     }//GEN-LAST:event_regC1ActionPerformed
 
     private void curpCliente2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_curpCliente2KeyTyped
