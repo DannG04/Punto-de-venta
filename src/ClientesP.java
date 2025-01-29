@@ -15,7 +15,7 @@ public class ClientesP extends javax.swing.JPanel {
     String idCli = "";
     DefaultTableModel modelo = new DefaultTableModel();
     ConexionBD conect = new ConexionBD();
-    
+    VentasP dialog=new VentasP();
     public ClientesP() {
         initComponents();
         modelo=(DefaultTableModel)tablaC.getModel();
@@ -42,6 +42,15 @@ public class ClientesP extends javax.swing.JPanel {
         numTel1 = new javax.swing.JFormattedTextField();
         labelinc1 = new javax.swing.JLabel();
         actC1 = new javax.swing.JButton();
+        Registro = new javax.swing.JDialog();
+        jLabel8 = new javax.swing.JLabel();
+        curpCliente2 = new javax.swing.JFormattedTextField();
+        jLabel9 = new javax.swing.JLabel();
+        nomCliente2 = new javax.swing.JFormattedTextField();
+        jLabel10 = new javax.swing.JLabel();
+        numTel2 = new javax.swing.JFormattedTextField();
+        regC1 = new javax.swing.JButton();
+        labelinc2 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -171,6 +180,116 @@ public class ClientesP extends javax.swing.JPanel {
         actualizarDialog.getContentPane().add(jPanel3, "card2");
 
         actualizarDialog.setLocationRelativeTo(null);
+
+        Registro.setAlwaysOnTop(true);
+        Registro.setMinimumSize(new java.awt.Dimension(520, 250));
+        Registro.setModal(true);
+        Registro.setPreferredSize(new java.awt.Dimension(520, 250));
+        Registro.getContentPane().setLayout(new java.awt.GridBagLayout());
+        Registro.setLocationRelativeTo(null);
+
+        jLabel8.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel8.setText("CURP:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.ipadx = 16;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        Registro.getContentPane().add(jLabel8, gridBagConstraints);
+
+        curpCliente2.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        curpCliente2.setMinimumSize(new java.awt.Dimension(250, 30));
+        curpCliente2.setPreferredSize(new java.awt.Dimension(250, 30));
+        curpCliente2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                curpCliente2KeyTyped(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        Registro.getContentPane().add(curpCliente2, gridBagConstraints);
+
+        jLabel9.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel9.setText("Nombre:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 16;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        Registro.getContentPane().add(jLabel9, gridBagConstraints);
+
+        nomCliente2.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        nomCliente2.setMinimumSize(new java.awt.Dimension(250, 30));
+        nomCliente2.setPreferredSize(new java.awt.Dimension(250, 30));
+        nomCliente2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                nomCliente2KeyTyped(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        Registro.getContentPane().add(nomCliente2, gridBagConstraints);
+
+        jLabel10.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel10.setText("Número de teléfono:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 16;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        Registro.getContentPane().add(jLabel10, gridBagConstraints);
+
+        numTel2.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        numTel2.setMinimumSize(new java.awt.Dimension(250, 30));
+        numTel2.setPreferredSize(new java.awt.Dimension(250, 30));
+        numTel2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                numTel2KeyTyped(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        Registro.getContentPane().add(numTel2, gridBagConstraints);
+
+        regC1.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        regC1.setForeground(new java.awt.Color(78, 150, 150));
+        regC1.setText("Registrar");
+        regC1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                regC1ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.insets = new java.awt.Insets(30, 10, 10, 10);
+        Registro.getContentPane().add(regC1, gridBagConstraints);
+
+        labelinc2.setFont(new java.awt.Font("Noto Serif", 0, 12)); // NOI18N
+        labelinc2.setForeground(new java.awt.Color(204, 0, 51));
+        labelinc2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelinc2.setText(" ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
+        Registro.getContentPane().add(labelinc2, gridBagConstraints);
 
         setLayout(new java.awt.BorderLayout());
 
@@ -514,6 +633,78 @@ public class ClientesP extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_elimC1ActionPerformed
 
+    private void regC1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regC1ActionPerformed
+        // TODO add your handling code here:
+        if(!nomCliente2.getText().isEmpty() || !numTel2.getText().isEmpty()){
+            if(numTel2.getText().length() == 10){
+                if(curpCliente2.getText().length() == 18){
+                    String[] campos = {curpCliente2.getText(), nomCliente2.getText(), numTel2.getText()};
+                    conect.insertarCliente(campos);
+                    curpCliente2.setText("");
+                    nomCliente2.setText("");
+                    numTel2.setText("");
+                    labelinc2.setText("");
+                } else{
+                    labelinc2.setText("La CURP debe ser de 18 dígitos alfanumericos");
+                }
+            } else{
+                labelinc2.setText("El número telefónico debe ser de 10 dígitos");
+            }
+        } else{
+            labelinc2.setText("Debe llenar todos los campos");
+        }
+        dialog.llamar();
+        Registro.setVisible(false);
+        
+    }//GEN-LAST:event_regC1ActionPerformed
+
+    private void curpCliente2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_curpCliente2KeyTyped
+        // TODO add your handling code here:
+        char letra = evt.getKeyChar();
+        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra)){
+            evt.consume();
+        }
+
+        if(Cake.tamaño(curpCliente2.getText(), 18)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_curpCliente2KeyTyped
+
+    private void nomCliente2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nomCliente2KeyTyped
+        // TODO add your handling code here:
+        char letra = evt.getKeyChar();
+        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra) && !Cake.letrasMinus(letra) && !(Cake.inicioEspacios(letra))){
+            evt.consume();
+        }
+
+        if(!(nomCliente2.getText().isEmpty())){
+            if(Cake.espacios(nomCliente2.getText(), letra)){
+                evt.consume();
+            }
+        }
+        else{
+            if(Cake.inicioEspacios(letra)){
+                evt.consume();
+            }
+        }
+
+        if(Cake.tamaño(nomCliente2.getText(), 50)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_nomCliente2KeyTyped
+
+    private void numTel2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_numTel2KeyTyped
+        // TODO add your handling code here:
+        char letra = evt.getKeyChar();
+        if(!Cake.numeros(letra)){
+            evt.consume();
+        }
+        
+        if(Cake.tamaño(numTel2.getText(), 10)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_numTel2KeyTyped
+
     public void mostrarTabla(){
         Mise.limpiarTabla(modelo);
         java.sql.ResultSet rs = conect.query("SELECT * FROM cliente");
@@ -529,31 +720,40 @@ public class ClientesP extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public static javax.swing.JDialog Registro;
     private javax.swing.JButton actC;
     private javax.swing.JButton actC1;
     private javax.swing.JDialog actualizarDialog;
     private javax.swing.JButton alta;
     private javax.swing.JFormattedTextField curpCliente;
     private javax.swing.JFormattedTextField curpCliente1;
+    private javax.swing.JFormattedTextField curpCliente2;
     private javax.swing.JButton elimC1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     public static javax.swing.JLabel labelinc;
     public static javax.swing.JLabel labelinc1;
+    public static javax.swing.JLabel labelinc2;
     private javax.swing.JFormattedTextField nomCliente;
     private javax.swing.JFormattedTextField nomCliente1;
+    private javax.swing.JFormattedTextField nomCliente2;
     private javax.swing.JFormattedTextField numTel;
     private javax.swing.JFormattedTextField numTel1;
+    private javax.swing.JFormattedTextField numTel2;
     private javax.swing.JButton regC;
+    private javax.swing.JButton regC1;
     private javax.swing.JTable tablaC;
     // End of variables declaration//GEN-END:variables
 }

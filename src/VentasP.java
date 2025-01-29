@@ -69,6 +69,7 @@ public class VentasP extends javax.swing.JPanel {
         labelinc = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         tablaCli = new javax.swing.JTable();
+        Reg = new javax.swing.JButton();
         prodPocosDialog = new javax.swing.JDialog();
         panelProdPoc = new javax.swing.JPanel();
         labelinc1 = new javax.swing.JLabel();
@@ -100,7 +101,6 @@ public class VentasP extends javax.swing.JPanel {
         ventaDialog.setAlwaysOnTop(true);
         ventaDialog.setMinimumSize(new java.awt.Dimension(400, 300));
         ventaDialog.setModal(true);
-        ventaDialog.setPreferredSize(new java.awt.Dimension(400, 300));
         ventaDialog.setResizable(false);
         ventaDialog.setSize(new java.awt.Dimension(400, 300));
         ventaDialog.getContentPane().setLayout(new java.awt.CardLayout());
@@ -215,7 +215,6 @@ public class VentasP extends javax.swing.JPanel {
         ventaDialog.setLocationRelativeTo(null);
 
         regVentaDialog.setTitle("Venta");
-        regVentaDialog.setAlwaysOnTop(true);
         regVentaDialog.setMinimumSize(new java.awt.Dimension(500, 500));
         regVentaDialog.setModal(true);
         regVentaDialog.setResizable(false);
@@ -294,6 +293,20 @@ public class VentasP extends javax.swing.JPanel {
         gridBagConstraints.gridwidth = 2;
         panelRegVenta.add(jScrollPane3, gridBagConstraints);
 
+        Reg.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        Reg.setForeground(new java.awt.Color(78, 150, 150));
+        Reg.setText("Registrar nuevo cliente");
+        Reg.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RegActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        panelRegVenta.add(Reg, gridBagConstraints);
+
         regVentaDialog.getContentPane().add(panelRegVenta, "card2");
 
         regVentaDialog.setLocationRelativeTo(null);
@@ -302,7 +315,6 @@ public class VentasP extends javax.swing.JPanel {
         prodPocosDialog.setAlwaysOnTop(true);
         prodPocosDialog.setMinimumSize(new java.awt.Dimension(550, 450));
         prodPocosDialog.setModal(true);
-        prodPocosDialog.setPreferredSize(new java.awt.Dimension(550, 450));
         prodPocosDialog.setResizable(false);
         prodPocosDialog.setSize(new java.awt.Dimension(550, 450));
         prodPocosDialog.getContentPane().setLayout(new java.awt.CardLayout());
@@ -810,6 +822,11 @@ public class VentasP extends javax.swing.JPanel {
         prodPocosDialog.setVisible(false);
     }//GEN-LAST:event_hechoAct1ActionPerformed
     
+    private void RegActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegActionPerformed
+        // TODO add your handling code here:
+        ClientesP.Registro.setVisible(true);
+    }//GEN-LAST:event_RegActionPerformed
+    
     public Double cambioT(String palabra){
         totalCT.setText("" + precT);
         Double cambioNum = Double.valueOf(palabra);
@@ -852,6 +869,9 @@ public class VentasP extends javax.swing.JPanel {
             System.out.println("Error en la tabla de busqueda de productos");
         }
     }
+    public void llamar(){
+        mostrarClientes("");
+    }
     
     public void mostrarClientes(String instruccion){
         if(instruccion.equals("")){
@@ -889,6 +909,7 @@ public class VentasP extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField Busc;
+    private javax.swing.JButton Reg;
     private javax.swing.JButton actB;
     private javax.swing.JFormattedTextField cambCT;
     private javax.swing.JButton cancelarB;
