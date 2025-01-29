@@ -11,7 +11,6 @@ import javax.swing.table.DefaultTableModel;
  * @author 76905
  */
 public class ClientesP extends javax.swing.JPanel {
-
     String idCli = "";
     DefaultTableModel modelo = new DefaultTableModel();
     ConexionBD conect = new ConexionBD();
@@ -653,7 +652,6 @@ public class ClientesP extends javax.swing.JPanel {
         } else{
             labelinc2.setText("Debe llenar todos los campos");
         }
-        dialog.llamar();
         Registro.setVisible(false);
         
     }//GEN-LAST:event_regC1ActionPerformed

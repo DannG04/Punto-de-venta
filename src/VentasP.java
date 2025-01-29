@@ -815,7 +815,7 @@ public class VentasP extends javax.swing.JPanel {
 
     private void curpClienteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_curpClienteKeyReleased
         String pal = curpCliente.getText();
-        mostrarClientes("SELECT * FROM cliente WHERE estatus='Activo' AND id_cliente LIKE '% " + pal +"%';");
+        mostrarClientes("SELECT * FROM cliente WHERE estatus='Activo' AND id_cliente LIKE '%" + pal +"%';");
     }//GEN-LAST:event_curpClienteKeyReleased
 
     private void hechoAct1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoAct1ActionPerformed
@@ -869,9 +869,6 @@ public class VentasP extends javax.swing.JPanel {
             System.out.println("Error en la tabla de busqueda de productos");
         }
     }
-    public void llamar(){
-        mostrarClientes("");
-    }
     
     public void mostrarClientes(String instruccion){
         if(instruccion.equals("")){
@@ -883,8 +880,10 @@ public class VentasP extends javax.swing.JPanel {
             while(rs.next()){
                 modeloCli.addRow( new Object[]{rs.getString("id_cliente"), rs.getString("nombre")});
             }
+            // Notificar a la tabla que los datos han cambiado
+            modeloCli.fireTableDataChanged();
         }catch(java.sql.SQLException e){
-            System.out.println("Error al mostrar la tabal de clientes");
+            System.out.println("Error al mostrar la tabla de clientes");
         }
     }
     
