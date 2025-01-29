@@ -54,6 +54,7 @@ public class Interfaz extends javax.swing.JFrame {
         initComponents();
         Hora fecha = new Hora();
         fecha.start();
+        comboUsuarios();
     }
 
     /**
@@ -71,6 +72,7 @@ public class Interfaz extends javax.swing.JFrame {
         opcion1 = new javax.swing.JMenuItem();
         opcion2 = new javax.swing.JMenuItem();
         opcion3 = new javax.swing.JMenuItem();
+        opcion4 = new javax.swing.JMenuItem();
         adminPM = new javax.swing.JPopupMenu();
         comp1 = new javax.swing.JMenuItem();
         emp2 = new javax.swing.JMenuItem();
@@ -118,6 +120,9 @@ public class Interfaz extends javax.swing.JFrame {
 
         opcion3.setText("jMenuItem1");
         popupMenu.add(opcion3);
+
+        opcion4.setText("jMenuItem1");
+        popupMenu.add(opcion4);
 
         comp1.setText("Compras");
         comp1.addActionListener(new java.awt.event.ActionListener() {
@@ -687,47 +692,33 @@ public class Interfaz extends javax.swing.JFrame {
     public void iniciarSesion(){
         us = usuarioBox.getSelectedItem().toString();
         String c = contraF1.getText();
-        if(!us.isEmpty() || !c.isEmpty()){
-            if(empPanel.userC.containsKey(us)){
-                if(!empPanel.userC.get(us).equals(c)){
-                    contInc.setText("Contraseña incorrecta");
+        if(c.isEmpty()){
+            contInc.setText("Debe ingresar una contraseña");
+        } else{
+            String[] datos = conect.idEmpleado(us, c);
+            if(datos[0] != null){
+                idVendedor = datos[0];
+                Mise.JOption("Bienvenido, " + datos[1], "Inicio de sesión", javax.swing.JOptionPane.PLAIN_MESSAGE);
+                userActivo = true;
+                if(datos[2].equals("Gerente")){
+                    admActivo = true;
                 }
-                else{
-                    idVendedor = conect.idEmpleado(us);
-                    if(idVendedor.equals("")){
-                        contInc.setText("Error al iniciar sesión");
-                    } else{
-                        Mise.JOption("Bienvenido " + us, "Inicio de sesión", javax.swing.JOptionPane.PLAIN_MESSAGE);
-                        userActivo = true;
-                        if(us.equals(empPanel.administrador)){
-                            admActivo = true;
-                        }
-                        opcion2.setText("Curp: " + idVendedor);
 
-                        opcion1.setText("Nombre: " + us);
-                        if(admActivo){
-                            opcion3.setText("Puesto: Gerente");
-                        } else {
-                            opcion3.setText("Puesto: Vendedor");
-                        }
+                opcion1.setText("Nombre: " + datos[1]);
+                opcion2.setText("Curp: " + idVendedor);
+                opcion3.setText("Puesto: " + datos[2]);
+                opcion4.setText("Telefono: " + datos[3]);
 
-                        boton0.setForeground(Color.BLACK);
-                        boton0.setSelected(true);
-                        iniSession.setVisible(false);
-                        botonesVis();
-                        botones.setVisible(true);
-                        panelPrin.setVisible(true);
-                        horaPanel.setVisible(true);
-                        this.setSize(tamanio.width, tamanio.height-20);
-                        this.setLocationRelativeTo(null);
-                    }
-                }
+                boton0.setForeground(Color.BLACK);
+                boton0.setSelected(true);
+                iniSession.setVisible(false);
+                botonesVis();
+                botones.setVisible(true);
+                panelPrin.setVisible(true);
+                horaPanel.setVisible(true);
+                this.setSize(tamanio.width, tamanio.height-20);
+                this.setLocationRelativeTo(null);
             }
-            else{
-                contInc.setText("Datos érroneos, intentelo de nuevo");
-            }
-        } else {
-            contInc.setText("Debe llenar todos los campos");
         }
     }
     
@@ -858,6 +849,19 @@ public class Interfaz extends javax.swing.JFrame {
             boton5.setVisible(true);
         }
     }
+    
+    public void comboUsuarios(){
+        java.util.ArrayList<String> users = new java.util.ArrayList<>();
+        java.sql.ResultSet rs = conect.query("SELECT usuario FROM empleado");
+        try{
+            while(rs.next()){
+                users.add(rs.getString("usuario"));
+            }
+        } catch(java.sql.SQLException e){
+            System.out.println("Ocurrio un error al conectar con la base de datos");
+        }
+        usuarioBox.setModel(new javax.swing.DefaultComboBoxModel<>(users.toArray(new String[users.size()])));
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPopupMenu adminPM;
@@ -892,6 +896,7 @@ public class Interfaz extends javax.swing.JFrame {
     private javax.swing.JMenuItem opcion1;
     private javax.swing.JMenuItem opcion2;
     private javax.swing.JMenuItem opcion3;
+    private javax.swing.JMenuItem opcion4;
     private javax.swing.JPanel panelPrin;
     private javax.swing.JButton perfil;
     private javax.swing.JPopupMenu popupMenu;

@@ -50,20 +50,25 @@ public class ConexionBD {
     }
 
     // FUNCION DE LA TABLA EMPLEADO
-    public String idEmpleado(String nom) {
-        String idem = "";
+    public String[] idEmpleado(String uss, String paswor) {
+        String[] dates = new String[4];
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            CallableStatement cstm = conexion.prepareCall("{call ide_emp(?)}");
-            cstm.registerOutParameter(1, Types.VARCHAR);
-            cstm.setString(1, nom);
-            cstm.execute();
-            idem = cstm.getString(1);
+            CallableStatement cstm = conexion.prepareCall("{call ide_emp(?,?)}");
+            cstm.setString(1, uss);
+            cstm.setString(2, paswor);
+            ResultSet rs = cstm.executeQuery();
+            while(rs.next()){
+                dates[0] = rs.getString("ide");
+                dates[1] = rs.getString("neim");
+                dates[2] = rs.getString("pues");
+                dates[3] = rs.getString("tel");
+            }
             conexion.close();
-        } catch (Exception e) {
-            System.out.println("Error al ejecutar el procedure");
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
-        return idem;
+        return dates;
     }
 
     // FUNCIONES DE LA TABLA PRODUCTO
