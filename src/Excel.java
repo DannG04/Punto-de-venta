@@ -125,8 +125,13 @@ public class Excel {
             celdaFecha.setCellValue("Balance general del " + dia + " de " + mes2 + " del año " + anio);
 
             sheet.setZoom(150);
+            String directoryName = "BalancesGenerales";
+            File directory = new File(directoryName);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
             String fileName = "balanceGeneral" + dia + "_" + mes + "_" + anio;
-            File file = new File("BalancesGenerales" + "/" + fileName + ".xlsx");
+            File file = new File(directoryName + "/" + fileName + ".xlsx");
             FileOutputStream fileOut = new FileOutputStream(file);
             book.write(fileOut);
             fileOut.close();
@@ -482,8 +487,13 @@ public class Excel {
             celdaUtilidadDelEjercicio5.setCellFormula("F20-F21");
 
             sheet.setZoom(150);
+            String directoryName = "Estados de resultados";
+            File directory = new File(directoryName);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
             String fileName = "estadodeResultados" + dia + "_" + mes + "_" + anio;
-            File file = new File("Estados de resultados/" + fileName + ".xlsx");
+            File file = new File(directoryName + "/" + fileName + ".xlsx");
             FileOutputStream fileOut = new FileOutputStream(file);
             book.write(fileOut);
             fileOut.close();
@@ -496,6 +506,11 @@ public class Excel {
     }
     
     public static void reporteDiario(String nombreRD){
+        //Obtenemos la fecha
+        LocalDate fecha = LocalDate.now();
+        String dia = String.valueOf(fecha.getDayOfMonth());
+        String mes = String.valueOf(fecha.getMonthValue());
+        String anio = String.valueOf(fecha.getYear());
         //Crear un libro de Excel
         Workbook book = new XSSFWorkbook();
         //Crear una hoja
@@ -624,9 +639,17 @@ public class Excel {
         
         //Guardar el archivo Excel
         try {
-            FileOutputStream fos = new FileOutputStream(nombreRD);
-            book.write(fos);
-            System.out.println("Archivo Excel creado");
+            String directoryName = "Reportes de ventas";
+            File directory = new File(directoryName);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            String fileName = nombreRD + dia + "_" + mes + "_" + anio;
+            File file = new File(directoryName + "/" + fileName + ".xlsx");
+            FileOutputStream fileOut = new FileOutputStream(file);
+            book.write(fileOut);
+            fileOut.close();
+            Desktop.getDesktop().open(file);
         } catch(Exception e) {
             System.out.println("Error al guardar el excel");
         }
@@ -661,7 +684,7 @@ public class Excel {
         CellStyle estilo = buk.createCellStyle();
         
         //Color de Fondo
-        estilo.setFillForegroundColor(IndexedColors.ROSE.getIndex());
+        estilo.setFillForegroundColor(IndexedColors.AQUA.getIndex());
         estilo.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         
         //Bordes
@@ -706,29 +729,7 @@ public class Excel {
         return estilo;
     }
     
-    public static void abrirExcel(String nombreXLSX){
-        try {
-            // Crear un objeto File con la ruta del archivo
-            File archivoExcel = new File(nombreXLSX);
-
-            // Verificar si el escritorio soporta la acción de apertura
-            if (Desktop.isDesktopSupported()) {
-                Desktop desktop = Desktop.getDesktop();
-
-                // Abrir el archivo en el programa predeterminado (Excel)
-                if (archivoExcel.exists()) {
-                    desktop.open(archivoExcel);
-                    System.out.println("Archivo Excel fue abierto exitosamente.");
-                } else {
-                    System.out.println("El archivo " + nombreXLSX + " no existe");
-                }
-            } else {
-                System.out.println("El entorno no soporta abrir aplicaciones.");
-            }
-        } catch (Exception e) {
-            System.out.println("Error al abrir el archivo");
-        }
-    }
+    
 
     public static String cambiarmes(String mes) {
         switch (mes) {

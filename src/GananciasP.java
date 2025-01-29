@@ -68,7 +68,7 @@ public class GananciasP extends javax.swing.JPanel {
 
         labelGanID.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         labelGanID.setForeground(new java.awt.Color(78, 150, 150));
-        labelGanID.setText("Ganancia :");
+        labelGanID.setText("ID Ganancia :");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -100,7 +100,11 @@ public class GananciasP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel3.add(jLabel5, gridBagConstraints);
 
+        jScrollPane3.setMinimumSize(new java.awt.Dimension(200, 50));
+
         desF1.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        desF1.setMaximumSize(new java.awt.Dimension(200, 50));
+        desF1.setMinimumSize(new java.awt.Dimension(200, 50));
         desF1.setPreferredSize(new java.awt.Dimension(200, 50));
         desF1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -115,6 +119,7 @@ public class GananciasP extends javax.swing.JPanel {
         jPanel3.add(jScrollPane3, gridBagConstraints);
 
         monF1.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        monF1.setMinimumSize(new java.awt.Dimension(200, 35));
         monF1.setPreferredSize(new java.awt.Dimension(200, 35));
         monF1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -136,7 +141,7 @@ public class GananciasP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel3.add(actG1, gridBagConstraints);
@@ -145,10 +150,11 @@ public class GananciasP extends javax.swing.JPanel {
         labelinc1.setForeground(new java.awt.Color(204, 0, 51));
         labelinc1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelinc1.setText(" ");
+        labelinc1.setMaximumSize(new java.awt.Dimension(20, 17));
+        labelinc1.setMinimumSize(new java.awt.Dimension(20, 17));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
         jPanel3.add(labelinc1, gridBagConstraints);
 
         actualizarDialog.getContentPane().add(jPanel3, "card2");
@@ -163,7 +169,7 @@ public class GananciasP extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Ganancia", "Descripción", "Monto", "Fecha"
+                "ID Ganancia", "Descripción", "Monto", "Fecha"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -174,6 +180,7 @@ public class GananciasP extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
+        tablaOG.setRowHeight(40);
         jScrollPane1.setViewportView(tablaOG);
 
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -476,7 +483,7 @@ public class GananciasP extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel labelGanID;
     public static javax.swing.JLabel labelinc;
-    public static javax.swing.JLabel labelinc1;
+    private javax.swing.JLabel labelinc1;
     private javax.swing.JFormattedTextField monF;
     private javax.swing.JFormattedTextField monF1;
     private javax.swing.JTable tablaOG;

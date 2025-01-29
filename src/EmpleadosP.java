@@ -41,6 +41,10 @@ public class EmpleadosP extends javax.swing.JPanel {
         tablaEmp = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        panelBotones = new javax.swing.JPanel();
+        agB = new javax.swing.JButton();
+        eliB = new javax.swing.JButton();
+        actB = new javax.swing.JButton();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -78,7 +82,67 @@ public class EmpleadosP extends javax.swing.JPanel {
         jPanel1.add(jLabel1, gridBagConstraints);
 
         add(jPanel1, java.awt.BorderLayout.NORTH);
+
+        panelBotones.setLayout(new java.awt.GridBagLayout());
+
+        agB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        agB.setForeground(new java.awt.Color(78, 150, 150));
+        agB.setText("Agregar");
+        agB.setPreferredSize(new java.awt.Dimension(125, 33));
+        agB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                agBActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 30, 10, 30);
+        panelBotones.add(agB, gridBagConstraints);
+
+        eliB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        eliB.setForeground(new java.awt.Color(78, 150, 150));
+        eliB.setText("Eliminar");
+        eliB.setPreferredSize(new java.awt.Dimension(125, 33));
+        eliB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                eliBActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(10, 30, 10, 30);
+        panelBotones.add(eliB, gridBagConstraints);
+
+        actB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        actB.setForeground(new java.awt.Color(78, 150, 150));
+        actB.setText("Actualizar");
+        actB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actBActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(10, 30, 10, 30);
+        panelBotones.add(actB, gridBagConstraints);
+
+        add(panelBotones, java.awt.BorderLayout.EAST);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void agBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agBActionPerformed
+
+    }//GEN-LAST:event_agBActionPerformed
+
+    private void eliBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliBActionPerformed
+
+    }//GEN-LAST:event_eliBActionPerformed
+
+    private void actBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actBActionPerformed
+
+    }//GEN-LAST:event_actBActionPerformed
 
     public void mostrarTablaEmp(){
         Mise.limpiarTabla(modeloEmp);
@@ -108,9 +172,13 @@ public class EmpleadosP extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton actB;
+    private javax.swing.JButton agB;
+    private javax.swing.JButton eliB;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    public javax.swing.JPanel panelBotones;
     private javax.swing.JTable tablaEmp;
     // End of variables declaration//GEN-END:variables
 }

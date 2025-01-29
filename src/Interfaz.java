@@ -639,8 +639,7 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_estR6ActionPerformed
 
     private void vtasHoy7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vtasHoy7ActionPerformed
-        Excel.reporteDiario("Reporte_Diario.xlsx");
-        Excel.abrirExcel("Reporte_Diario.xlsx");
+        Excel.reporteDiario("Reporte_Diario");
     }//GEN-LAST:event_vtasHoy7ActionPerformed
 
     private void perfilMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_perfilMouseEntered
