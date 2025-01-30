@@ -15,15 +15,10 @@ public class EmpleadosP extends javax.swing.JPanel {
     
     ConexionBD conect = new ConexionBD();
     
-    //USUARIOS
-    public String administrador = "Daniel Gonzalez";
-    public java.util.HashMap<String,String> userC = new java.util.HashMap<>();
-    
     DefaultTableModel modeloEmp = new DefaultTableModel();
     
     public EmpleadosP() {
         initComponents();
-        usuariosRegistrados();
         modeloEmp = (DefaultTableModel)tablaEmp.getModel();
     }
 
@@ -37,7 +32,7 @@ public class EmpleadosP extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        RegistroE = new javax.swing.JDialog();
+        regDialog = new javax.swing.JDialog();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -45,14 +40,28 @@ public class EmpleadosP extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        botonEReg = new javax.swing.JButton();
         errorContraseña = new javax.swing.JLabel();
-        Contra1 = new javax.swing.JPasswordField();
-        Contra2 = new javax.swing.JPasswordField();
-        NombreE = new javax.swing.JFormattedTextField();
-        CURPE = new javax.swing.JFormattedTextField();
-        numE = new javax.swing.JFormattedTextField();
-        userE = new javax.swing.JFormattedTextField();
+        contra1EReg = new javax.swing.JPasswordField();
+        contra2EReg = new javax.swing.JPasswordField();
+        nomEReg = new javax.swing.JFormattedTextField();
+        curpEReg = new javax.swing.JFormattedTextField();
+        telEReg = new javax.swing.JFormattedTextField();
+        userEReg = new javax.swing.JFormattedTextField();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        puestoEReg = new javax.swing.JComboBox<>();
+        errorUsuario = new javax.swing.JLabel();
+        actuDialog = new javax.swing.JDialog();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        actEBoton = new javax.swing.JButton();
+        nomEAct = new javax.swing.JFormattedTextField();
+        curpEAct = new javax.swing.JFormattedTextField();
+        telEAct = new javax.swing.JFormattedTextField();
+        puestoEAct = new javax.swing.JComboBox<>();
+        jLabel19 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaEmp = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
@@ -62,10 +71,14 @@ public class EmpleadosP extends javax.swing.JPanel {
         eliB = new javax.swing.JButton();
         actB = new javax.swing.JButton();
 
-        RegistroE.setMinimumSize(new java.awt.Dimension(460, 540));
-        RegistroE.setPreferredSize(new java.awt.Dimension(460, 540));
-        RegistroE.getContentPane().setLayout(new java.awt.GridBagLayout());
-        RegistroE.setLocationRelativeTo(null);
+        regDialog.setTitle("Registrar Empleado");
+        regDialog.setAlwaysOnTop(true);
+        regDialog.setMinimumSize(new java.awt.Dimension(420, 580));
+        regDialog.setModal(true);
+        regDialog.setPreferredSize(new java.awt.Dimension(420, 580));
+        regDialog.setSize(new java.awt.Dimension(420, 580));
+        regDialog.getContentPane().setLayout(new java.awt.GridBagLayout());
+        regDialog.setLocationRelativeTo(null);
 
         jLabel2.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(78, 150, 150));
@@ -74,130 +87,296 @@ public class EmpleadosP extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(jLabel2, gridBagConstraints);
+        regDialog.getContentPane().add(jLabel2, gridBagConstraints);
 
         jLabel3.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(78, 150, 150));
         jLabel3.setText("Nombre de Empleado");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(jLabel3, gridBagConstraints);
+        regDialog.getContentPane().add(jLabel3, gridBagConstraints);
 
         jLabel4.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(78, 150, 150));
         jLabel4.setText("CURP de Empleado");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(jLabel4, gridBagConstraints);
+        regDialog.getContentPane().add(jLabel4, gridBagConstraints);
 
         jLabel5.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(78, 150, 150));
-        jLabel5.setText("No. Telefónico");
+        jLabel5.setText("Puesto a asignar");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(jLabel5, gridBagConstraints);
+        regDialog.getContentPane().add(jLabel5, gridBagConstraints);
 
         jLabel6.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(78, 150, 150));
         jLabel6.setText("Nombre de usuario");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 11;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(jLabel6, gridBagConstraints);
+        regDialog.getContentPane().add(jLabel6, gridBagConstraints);
 
         jLabel7.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(78, 150, 150));
-        jLabel7.setText("Datos de inicio de sesion");
+        jLabel7.setText("Datos de inicio de sesión");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 9;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(jLabel7, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(20, 5, 5, 5);
+        regDialog.getContentPane().add(jLabel7, gridBagConstraints);
 
         jLabel8.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(78, 150, 150));
-        jLabel8.setText("Contraseña");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 13;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(jLabel8, gridBagConstraints);
-
-        jButton1.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(78, 150, 150));
-        jButton1.setText("Registrar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 17;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(jButton1, gridBagConstraints);
-
-        errorContraseña.setText(" ");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 16;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(errorContraseña, gridBagConstraints);
-
-        Contra1.setMinimumSize(new java.awt.Dimension(150, 25));
-        Contra1.setPreferredSize(new java.awt.Dimension(150, 25));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 14;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(Contra1, gridBagConstraints);
-
-        Contra2.setMinimumSize(new java.awt.Dimension(150, 25));
-        Contra2.setPreferredSize(new java.awt.Dimension(150, 25));
+        jLabel8.setText("Confirmar contraseña");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 15;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        RegistroE.getContentPane().add(Contra2, gridBagConstraints);
+        regDialog.getContentPane().add(jLabel8, gridBagConstraints);
 
-        NombreE.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
-        NombreE.setMinimumSize(new java.awt.Dimension(150, 25));
-        NombreE.setPreferredSize(new java.awt.Dimension(150, 25));
+        botonEReg.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        botonEReg.setForeground(new java.awt.Color(78, 150, 150));
+        botonEReg.setText("Registrar");
+        botonEReg.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonERegActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        RegistroE.getContentPane().add(NombreE, gridBagConstraints);
+        gridBagConstraints.gridy = 18;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        regDialog.getContentPane().add(botonEReg, gridBagConstraints);
 
-        CURPE.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
-        CURPE.setMinimumSize(new java.awt.Dimension(150, 25));
-        CURPE.setPreferredSize(new java.awt.Dimension(150, 25));
+        errorContraseña.setFont(new java.awt.Font("Noto Serif", 0, 10)); // NOI18N
+        errorContraseña.setForeground(new java.awt.Color(204, 0, 51));
+        errorContraseña.setText(" ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 17;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        regDialog.getContentPane().add(errorContraseña, gridBagConstraints);
+
+        contra1EReg.setMinimumSize(new java.awt.Dimension(150, 25));
+        contra1EReg.setPreferredSize(new java.awt.Dimension(300, 25));
+        contra1EReg.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                contra1ERegKeyTyped(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 14;
+        regDialog.getContentPane().add(contra1EReg, gridBagConstraints);
+
+        contra2EReg.setMinimumSize(new java.awt.Dimension(150, 25));
+        contra2EReg.setPreferredSize(new java.awt.Dimension(300, 25));
+        contra2EReg.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                contra2ERegKeyTyped(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 16;
+        regDialog.getContentPane().add(contra2EReg, gridBagConstraints);
+
+        nomEReg.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        nomEReg.setMinimumSize(new java.awt.Dimension(150, 25));
+        nomEReg.setPreferredSize(new java.awt.Dimension(300, 25));
+        nomEReg.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                nomERegKeyTyped(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        regDialog.getContentPane().add(nomEReg, gridBagConstraints);
+
+        curpEReg.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        curpEReg.setMinimumSize(new java.awt.Dimension(150, 25));
+        curpEReg.setPreferredSize(new java.awt.Dimension(300, 25));
+        curpEReg.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                curpERegKeyTyped(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        regDialog.getContentPane().add(curpEReg, gridBagConstraints);
+
+        telEReg.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        telEReg.setMinimumSize(new java.awt.Dimension(150, 25));
+        telEReg.setPreferredSize(new java.awt.Dimension(300, 25));
+        telEReg.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                telERegKeyTyped(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        regDialog.getContentPane().add(telEReg, gridBagConstraints);
+
+        userEReg.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        userEReg.setMinimumSize(new java.awt.Dimension(150, 25));
+        userEReg.setPreferredSize(new java.awt.Dimension(300, 25));
+        userEReg.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                userERegKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                userERegKeyTyped(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 11;
+        regDialog.getContentPane().add(userEReg, gridBagConstraints);
+
+        jLabel9.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel9.setText("Contraseña");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 13;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        regDialog.getContentPane().add(jLabel9, gridBagConstraints);
+
+        jLabel18.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel18.setText("No. Telefónico");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
-        RegistroE.getContentPane().add(CURPE, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        regDialog.getContentPane().add(jLabel18, gridBagConstraints);
 
-        numE.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
-        numE.setMinimumSize(new java.awt.Dimension(150, 25));
-        numE.setPreferredSize(new java.awt.Dimension(150, 25));
+        puestoEReg.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        puestoEReg.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Vendedor", "Gerente" }));
+        puestoEReg.setPreferredSize(new java.awt.Dimension(300, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
-        RegistroE.getContentPane().add(numE, gridBagConstraints);
+        gridBagConstraints.gridy = 8;
+        regDialog.getContentPane().add(puestoEReg, gridBagConstraints);
 
-        userE.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
-        userE.setMinimumSize(new java.awt.Dimension(150, 25));
-        userE.setPreferredSize(new java.awt.Dimension(150, 25));
+        errorUsuario.setFont(new java.awt.Font("Noto Serif", 0, 10)); // NOI18N
+        errorUsuario.setForeground(new java.awt.Color(204, 0, 51));
+        errorUsuario.setText(" ");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 12;
-        RegistroE.getContentPane().add(userE, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        regDialog.getContentPane().add(errorUsuario, gridBagConstraints);
+
+        actuDialog.setTitle("Actualizar Empleado");
+        actuDialog.setAlwaysOnTop(true);
+        actuDialog.setMinimumSize(new java.awt.Dimension(420, 340));
+        actuDialog.setModal(true);
+        actuDialog.setPreferredSize(new java.awt.Dimension(420, 340));
+        actuDialog.setSize(new java.awt.Dimension(420, 340));
+        actuDialog.getContentPane().setLayout(new java.awt.GridBagLayout());
+        actuDialog.setLocationRelativeTo(null);
+
+        jLabel11.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel11.setText("Nombre de Empleado");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        actuDialog.getContentPane().add(jLabel11, gridBagConstraints);
+
+        jLabel12.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel12.setText("CURP de Empleado");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        actuDialog.getContentPane().add(jLabel12, gridBagConstraints);
+
+        jLabel13.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel13.setText("No. Telefónico");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        actuDialog.getContentPane().add(jLabel13, gridBagConstraints);
+
+        actEBoton.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        actEBoton.setForeground(new java.awt.Color(78, 150, 150));
+        actEBoton.setText("Actualizar");
+        actEBoton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actEBotonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 5, 5);
+        actuDialog.getContentPane().add(actEBoton, gridBagConstraints);
+
+        nomEAct.setEditable(false);
+        nomEAct.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        nomEAct.setMinimumSize(new java.awt.Dimension(150, 25));
+        nomEAct.setPreferredSize(new java.awt.Dimension(300, 25));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        actuDialog.getContentPane().add(nomEAct, gridBagConstraints);
+
+        curpEAct.setEditable(false);
+        curpEAct.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        curpEAct.setMinimumSize(new java.awt.Dimension(150, 25));
+        curpEAct.setPreferredSize(new java.awt.Dimension(300, 25));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        actuDialog.getContentPane().add(curpEAct, gridBagConstraints);
+
+        telEAct.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        telEAct.setMinimumSize(new java.awt.Dimension(150, 25));
+        telEAct.setPreferredSize(new java.awt.Dimension(300, 25));
+        telEAct.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                telEActKeyTyped(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        actuDialog.getContentPane().add(telEAct, gridBagConstraints);
+
+        puestoEAct.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        puestoEAct.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Vendedor", "Gerente" }));
+        puestoEAct.setPreferredSize(new java.awt.Dimension(300, 25));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 7;
+        actuDialog.getContentPane().add(puestoEAct, gridBagConstraints);
+
+        jLabel19.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel19.setText("Puesto");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        actuDialog.getContentPane().add(jLabel19, gridBagConstraints);
 
         setLayout(new java.awt.BorderLayout());
 
@@ -286,7 +465,7 @@ public class EmpleadosP extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void agBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agBActionPerformed
-        RegistroE.setVisible(true);
+        regDialog.setVisible(true);
     }//GEN-LAST:event_agBActionPerformed
 
     private void eliBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliBActionPerformed
@@ -294,17 +473,129 @@ public class EmpleadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_eliBActionPerformed
 
     private void actBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actBActionPerformed
-
+        if(tablaEmp.getSelectedRow() != -1){
+            curpEAct.setText("" + tablaEmp.getValueAt(tablaEmp.getSelectedRow(), 0));
+            nomEAct.setText("" + tablaEmp.getValueAt(tablaEmp.getSelectedRow(), 1));
+            telEAct.setText("" + tablaEmp.getValueAt(tablaEmp.getSelectedRow(), 3));
+            puestoEAct.setSelectedItem("" + tablaEmp.getValueAt(tablaEmp.getSelectedRow(), 2));
+            actuDialog.setVisible(true);
+        } else{
+            Mise.JOption("Seleccione la fila que desea actualizar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_actBActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+    private void botonERegActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonERegActionPerformed
+        if(nomEReg.getText().isEmpty() || curpEReg.getText().isEmpty() || telEReg.getText().isEmpty() || userEReg.getText().isEmpty() || contra1EReg.getText().isEmpty() || contra2EReg.getText().isEmpty()){
+            
+        }
+    }//GEN-LAST:event_botonERegActionPerformed
+
+    private void actEBotonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actEBotonActionPerformed
+        if(telEAct.getText().isEmpty()){
+            Mise.JOption("Llene todos los campos", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } else{
+            String[] campos = {"" + puestoEAct.getSelectedItem(), telEAct.getText()};
+            if(conect.actualizarEmpleado(campos, curpEAct.getText())){
+                actuDialog.setVisible(false);
+            }
+        }
+    }//GEN-LAST:event_actEBotonActionPerformed
+
+    private void curpERegKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_curpERegKeyTyped
+        char letra = evt.getKeyChar();
+        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra)){
+            evt.consume();
+        }
+
+        if(Cake.tamaño(curpEReg.getText(), 18)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_curpERegKeyTyped
+
+    private void nomERegKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nomERegKeyTyped
+        char letra = evt.getKeyChar();
+        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra) && !Cake.letrasMinus(letra) && !(Cake.inicioEspacios(letra))){
+            evt.consume();
+        }
+
+        if(!(nomEReg.getText().isEmpty())){
+            if(Cake.espacios(nomEReg.getText(), letra)){
+                evt.consume();
+            }
+        }
+        else{
+            if(Cake.inicioEspacios(letra)){
+                evt.consume();
+            }
+        }
+
+        if(Cake.tamaño(nomEReg.getText(), 50)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_nomERegKeyTyped
+
+    private void telERegKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_telERegKeyTyped
+        char letra = evt.getKeyChar();
+        if(!Cake.numeros(letra)){
+            evt.consume();
+        }
         
-    }//GEN-LAST:event_jButton1ActionPerformed
+        if(Cake.tamaño(telEReg.getText(), 10)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_telERegKeyTyped
+
+    private void telEActKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_telEActKeyTyped
+        char letra = evt.getKeyChar();
+        if(!Cake.numeros(letra)){
+            evt.consume();
+        }
+        
+        if(Cake.tamaño(telEAct.getText(), 10)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_telEActKeyTyped
+
+    private void userERegKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_userERegKeyTyped
+        char letra = evt.getKeyChar();
+        if(!Cake.letrasMayus(letra) && !Cake.letrasMinus(letra) && !Cake.numeros(letra)){
+            evt.consume();
+        }
+
+        if(Cake.tamaño(userEReg.getText(), 10)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_userERegKeyTyped
+
+    private void contra1ERegKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_contra1ERegKeyTyped
+        char letra = evt.getKeyChar();
+        if(!Cake.letrasMayus(letra) && !Cake.letrasMinus(letra) && !Cake.numeros(letra)){
+            evt.consume();
+        }
+
+        if(Cake.tamaño(contra1EReg.getText(), 10)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_contra1ERegKeyTyped
+
+    private void contra2ERegKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_contra2ERegKeyTyped
+        char letra = evt.getKeyChar();
+        if(!Cake.letrasMayus(letra) && !Cake.letrasMinus(letra) && !Cake.numeros(letra)){
+            evt.consume();
+        }
+
+        if(Cake.tamaño(contra2EReg.getText(), 10)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_contra2ERegKeyTyped
+
+    private void userERegKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_userERegKeyReleased
+        
+    }//GEN-LAST:event_userERegKeyReleased
 
     public void mostrarTablaEmp(){
         Mise.limpiarTabla(modeloEmp);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM empleado");
+        java.sql.ResultSet rs = conect.query("SELECT * FROM empleado WHERE estatus='Activo'");
         try{
             while(rs.next()){
                 modeloEmp.addRow(new Object[]{rs.getString("id_empleado"), rs.getString("nombre"), rs.getString("puesto"), rs.getString("telefono")});
@@ -314,33 +605,26 @@ public class EmpleadosP extends javax.swing.JPanel {
         }
     }
     
-    public final void usuariosRegistrados (){
-        //Admin
-        String contraU = "183";
-        userC.put(administrador, contraU);
-        
-        //Demas usuarios
-        String user = "Elisa Sánchez";
-        contraU = "123";
-        userC.put(user, contraU);
-        
-        user = "Gael Eduardo García";
-        contraU = "321";
-        userC.put(user, contraU);
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JFormattedTextField CURPE;
-    private javax.swing.JPasswordField Contra1;
-    private javax.swing.JPasswordField Contra2;
-    private javax.swing.JFormattedTextField NombreE;
-    private javax.swing.JDialog RegistroE;
     private javax.swing.JButton actB;
+    private javax.swing.JButton actEBoton;
+    private javax.swing.JDialog actuDialog;
     private javax.swing.JButton agB;
+    private javax.swing.JButton botonEReg;
+    private javax.swing.JPasswordField contra1EReg;
+    private javax.swing.JPasswordField contra2EReg;
+    private javax.swing.JFormattedTextField curpEAct;
+    private javax.swing.JFormattedTextField curpEReg;
     private javax.swing.JButton eliB;
     private javax.swing.JLabel errorContraseña;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel errorUsuario;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -348,11 +632,18 @@ public class EmpleadosP extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JFormattedTextField numE;
+    private javax.swing.JFormattedTextField nomEAct;
+    private javax.swing.JFormattedTextField nomEReg;
     public javax.swing.JPanel panelBotones;
+    private javax.swing.JComboBox<String> puestoEAct;
+    private javax.swing.JComboBox<String> puestoEReg;
+    private javax.swing.JDialog regDialog;
     private javax.swing.JTable tablaEmp;
-    private javax.swing.JFormattedTextField userE;
+    private javax.swing.JFormattedTextField telEAct;
+    private javax.swing.JFormattedTextField telEReg;
+    private javax.swing.JFormattedTextField userEReg;
     // End of variables declaration//GEN-END:variables
 }

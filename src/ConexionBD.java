@@ -50,6 +50,57 @@ public class ConexionBD {
     }
 
     // FUNCION DE LA TABLA EMPLEADO
+    public boolean insertarEmpleado(String[] campos) {
+        boolean band = false;
+        String columnas = "cliente(id_cliente, nombre, telefono)";
+        String instruccion = "INSERT INTO " + columnas + " VALUES(?,?,?);";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, campos[0]);
+            pstm.setString(2, campos[1]);
+            pstm.setString(3, campos[2])
+            pstm.executeUpdate();
+            conexion.close();
+            band = true;
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return band;
+    }
+
+    public boolean actualizarEmpleado(String[] campos, String idEm) {
+        boolean band = false;
+        String columnas = "SET puesto=?, telefono=?";
+        String instruccion = "UPDATE empleado " + columnas + " WHERE id_empleado=?;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, campos[0]);
+            pstm.setString(2, campos[1]);
+            pstm.setString(3, idEm);
+            pstm.executeUpdate();
+            conexion.close();
+            band = true;
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return band;
+    }
+
+    public void inactivarEmpleado(String idEm, boolean act) {
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            CallableStatement cstm = conexion.prepareCall("{call inactivar_cliente(?::curp_dominio,?)}");
+            cstm.setString(1, idEm)
+            cstm.setBoolean(2, act);
+            cstm.execute();
+            conexion.close();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
     public String[] idEmpleado(String uss, String paswor) {
         String[] dates = new String[4];
         try {
