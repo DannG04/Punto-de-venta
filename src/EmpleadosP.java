@@ -478,11 +478,13 @@ public class EmpleadosP extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void agBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agBActionPerformed
+        //Abre el diálogo para registrar a un empleado
         bandAux = false;
         regDialog.setVisible(true);
     }//GEN-LAST:event_agBActionPerformed
 
     private void eliBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliBActionPerformed
+        //Elimina a un empleado
         if(tablaEmp.getSelectedRow() != -1){
             int res = Mise.JOptionYesNo("¿Está seguro que desea dar de baja a este empleado?", "Empleado");
             if(res == 0){
@@ -496,6 +498,7 @@ public class EmpleadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_eliBActionPerformed
 
     private void actBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actBActionPerformed
+        //Actualiza a un empleado
         if(tablaEmp.getSelectedRow() != -1){
             curpEAct.setText("" + tablaEmp.getValueAt(tablaEmp.getSelectedRow(), 0));
             nomEAct.setText("" + tablaEmp.getValueAt(tablaEmp.getSelectedRow(), 1));
@@ -508,6 +511,7 @@ public class EmpleadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_actBActionPerformed
 
     private void botonERegActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonERegActionPerformed
+        //Registra a un empleado
         if(nomEReg.getText().isEmpty() || curpEReg.getText().isEmpty() || telEReg.getText().isEmpty() || userEReg.getText().isEmpty() || contra1EReg.getText().isEmpty() || contra2EReg.getText().isEmpty()){
             Mise.JOption("Debe llenar todos los campos", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         } else{
@@ -533,6 +537,7 @@ public class EmpleadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_botonERegActionPerformed
 
     private void actEBotonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actEBotonActionPerformed
+        //Actualiza los datos de un empleado
         if(telEAct.getText().isEmpty()){
             Mise.JOption("Llene todos los campos", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         } else{
@@ -545,6 +550,7 @@ public class EmpleadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_actEBotonActionPerformed
 
     private void curpERegKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_curpERegKeyTyped
+        //Verifica que la CURP no tenga más de 18 caracteres
         char letra = evt.getKeyChar();
         if(!Cake.letrasMayus(letra) && !Cake.numeros(letra)){
             evt.consume();
@@ -556,6 +562,7 @@ public class EmpleadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_curpERegKeyTyped
 
     private void nomERegKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nomERegKeyTyped
+        //Verifica que el nombre no tenga más de 50 caracteres
         char letra = evt.getKeyChar();
         if(!Cake.letrasMayus(letra) && !Cake.numeros(letra) && !Cake.letrasMinus(letra) && !(Cake.inicioEspacios(letra))){
             evt.consume();
@@ -578,6 +585,7 @@ public class EmpleadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_nomERegKeyTyped
 
     private void telERegKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_telERegKeyTyped
+        //Verifica que el teléfono sea de diez dígitos
         char letra = evt.getKeyChar();
         if(!Cake.numeros(letra)){
             evt.consume();
@@ -589,6 +597,7 @@ public class EmpleadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_telERegKeyTyped
 
     private void telEActKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_telEActKeyTyped
+        //Verifica que el teléfono sea de diez dígitos
         char letra = evt.getKeyChar();
         if(!Cake.numeros(letra)){
             evt.consume();
@@ -600,6 +609,7 @@ public class EmpleadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_telEActKeyTyped
 
     private void userERegKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_userERegKeyTyped
+        //Verifica que el nombre de usuario sea de al menos cinco caracteres
         char letra = evt.getKeyChar();
         if(!Cake.letrasMayus(letra) && !Cake.letrasMinus(letra) && !Cake.numeros(letra)){
             evt.consume();
@@ -611,6 +621,7 @@ public class EmpleadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_userERegKeyTyped
 
     private void contra1ERegKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_contra1ERegKeyTyped
+        //Verifica que la contraseña sea de al menos tres caracteres
         char letra = evt.getKeyChar();
         if(!Cake.letrasMayus(letra) && !Cake.letrasMinus(letra) && !Cake.numeros(letra)){
             evt.consume();
@@ -622,6 +633,7 @@ public class EmpleadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_contra1ERegKeyTyped
 
     private void contra2ERegKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_contra2ERegKeyTyped
+        //Verifica que la contraseña sea de al menos tres caracteres
         char letra = evt.getKeyChar();
         if(!Cake.letrasMayus(letra) && !Cake.letrasMinus(letra) && !Cake.numeros(letra)){
             evt.consume();
@@ -633,6 +645,7 @@ public class EmpleadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_contra2ERegKeyTyped
 
     private void userERegKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_userERegKeyReleased
+        //Verifica si el nombre de usuario ya existe
         if(userEReg.getText().length() <= 4){
             errorUsuario.setText("El nombre de usuario debe ser mayor a cuatro caracteres");
         } else{
@@ -646,6 +659,7 @@ public class EmpleadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_userERegKeyReleased
 
     private void activarEmpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_activarEmpActionPerformed
+        //Vuelve a registrar a un empleado que ya se ha registrado antes
         String cuur = Mise.JOptionInput("Ingresa la CURP del empleado:", "Registrar empleado");
         if(conect.inactivarEmpleado(cuur, false)){
             mostrarTablaEmp();
@@ -654,7 +668,7 @@ public class EmpleadosP extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_activarEmpActionPerformed
 
-    public void mostrarTablaEmp(){
+    public void mostrarTablaEmp(){//Muestra la tabla de empleados
         Mise.limpiarTabla(modeloEmp);
         java.sql.ResultSet rs = conect.query("SELECT * FROM empleado WHERE estatus='Activo'");
         try{

@@ -14,7 +14,7 @@ public class Excel {
     public static double utilidadDelEjercicio;
     static ConexionBD conect = new ConexionBD();
     
-    public static void balanceGeneral() {
+    public static void balanceGeneral() {//Método que genera el balance general
 
         Workbook book = new XSSFWorkbook();
         Sheet sheet = book.createSheet("Reporte");
@@ -151,7 +151,7 @@ public class Excel {
 
     }
 
-    public static void estadodeResultados(Double inv_ini) {
+    public static void estadodeResultados(Double inv_ini) {//Método que genera el estado de resultados
         ConexionBD conexion = new ConexionBD();
 
         Workbook book = new XSSFWorkbook();
@@ -510,7 +510,7 @@ public class Excel {
         }
     }
     
-    public static void reporteDiario(String nombreRD){
+    public static void reporteDiario(String nombreRD){//Método que genera el reporte diario
         //Obtenemos la fecha
         LocalDate fecha = LocalDate.now();
         String dia = String.valueOf(fecha.getDayOfMonth());
@@ -668,7 +668,7 @@ public class Excel {
         
     }
     
-    private static CellStyle crearEstiloTitulo(Workbook buk){
+    private static CellStyle crearEstiloTitulo(Workbook buk){//Estilo para el titulo
         CellStyle estilo = buk.createCellStyle();
         
         // Fuente en Negrita
@@ -685,7 +685,7 @@ public class Excel {
         return estilo;
     }
     
-    private static CellStyle crearEstiloEncabezado(Workbook buk){
+    private static CellStyle crearEstiloEncabezado(Workbook buk){//Estilo para el encabezado
         CellStyle estilo = buk.createCellStyle();
         
         //Color de Fondo
@@ -712,7 +712,7 @@ public class Excel {
         return estilo;
     }
     
-    private static CellStyle crearEstiloDatos(Workbook buk){
+    private static CellStyle crearEstiloDatos(Workbook buk){//Estilo para los datos
         CellStyle estilo = buk.createCellStyle();
         
         //Bordes
@@ -736,7 +736,7 @@ public class Excel {
     
     
 
-    public static String cambiarmes(String mes) {
+    public static String cambiarmes(String mes) {//Método que cambia el número del mes a su nombre
         switch (mes) {
             case "1":
                 mes = "Enero";
@@ -780,7 +780,7 @@ public class Excel {
         return mes;
     }
 
-    public static CellStyle estilodeCelda(CellStyle Estilo) {
+    public static CellStyle estilodeCelda(CellStyle Estilo) {//Método que crea el estilo de las celdas
         // Estilos de encabezados
         Estilo.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         Estilo.setBorderBottom(BorderStyle.THIN);
@@ -792,7 +792,7 @@ public class Excel {
         return Estilo;
     }
     
-    public static CellStyle estilodeCeldaOperacion(CellStyle Estilo) {
+    public static CellStyle estilodeCeldaOperacion(CellStyle Estilo) {//Método que crea el estilo de las celdas
         
         Estilo.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         Estilo.setBorderBottom(BorderStyle.MEDIUM);
@@ -804,13 +804,13 @@ public class Excel {
         return Estilo;
     }
     
-    public static String fecha(){
+    public static String fecha(){//Método que obtiene la fecha actual
         java.time.LocalDateTime ahora = java.time.LocalDateTime.now();
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd 'de' MMMM 'del' yyyy", new java.util.Locale("es", "ES"));;
         return ahora.format(formatter);
     }
     
-    public static void obtenerUtilidad(){
+    public static void obtenerUtilidad(){//Método que obtiene la utilidad del ejercicio
         LocalDate fecha = LocalDate.now();
         String dia = String.valueOf(fecha.getDayOfMonth());
         String mes = String.valueOf(fecha.getMonthValue());

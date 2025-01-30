@@ -522,6 +522,7 @@ public class Interfaz extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void contraF1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_contraF1KeyTyped
+        //Verifica que solo se ingresen números y que no se pase de 10 caracteres
         char letra = evt.getKeyChar();
         
         if(evt.getKeyChar()== KeyEvent.VK_ENTER){
@@ -538,10 +539,11 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_contraF1KeyTyped
 
     private void eyeB1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eyeB1ActionPerformed
+        //Muestra la contraseña
         if(eyeB1.isSelected()){
             contraF1.setEchoChar((char)0);
             eyeB1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/eye1.png")));
-        }
+        }//Oculta la contraseña
         else{
             contraF1.setEchoChar('*');
             eyeB1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/eye2.png")));
@@ -578,6 +580,7 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_boton5ActionPerformed
 
     private void initerDiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_initerDiaActionPerformed
+        //Inicia o termina el día
         if(!iniDia){
             Mise.JOption("Día iniciado","Información del día", javax.swing.JOptionPane.PLAIN_MESSAGE);
             initerDia.setText("Terminar día");
@@ -595,6 +598,7 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_initerDiaActionPerformed
 
     private void closeSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeSesionActionPerformed
+        //Cierra la sesión
         if(!iniDia){
             Mise.JOption("Hasta luego", "Salir", javax.swing.JOptionPane.PLAIN_MESSAGE);
             userActivo = false;
@@ -638,6 +642,7 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_balG5ActionPerformed
 
     private void estR6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_estR6ActionPerformed
+        //Muestra el estado de resultados
         String res = Mise.JOptionInput("Ingrese el inventario inicial", "Estado de Resultados");
         try{
             Double invini = Double.valueOf(res);
@@ -652,6 +657,7 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_vtasHoy7ActionPerformed
 
     private void perfilMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_perfilMouseEntered
+        //Muestra los datos del usuario
         popupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
     }//GEN-LAST:event_perfilMouseEntered
 
@@ -668,6 +674,7 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_boton8ActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        //Cierra la ventana una vez que pregunta si se desea cerrar
         int res = Mise.JOptionYesNo("Seguro que desea cerrar la ventana?", "Cerrar Ventana");
         if(res == 0){
             System.exit(0);
@@ -693,7 +700,7 @@ public class Interfaz extends javax.swing.JFrame {
         });
     }
     
-    public void iniciarSesion(){
+    public void iniciarSesion(){//Inicia la sesión
         userBD = usuarioBox.getSelectedItem().toString();
         passwordBD = contraF1.getText();
         if(passwordBD.isEmpty()){
@@ -726,7 +733,7 @@ public class Interfaz extends javax.swing.JFrame {
         }
     }
     
-    public void visibilidad(int a, int b){
+    public void visibilidad(int a, int b){//Muestra los paneles
         panelPrin.setVisible(false);
         invPanel.setVisible(false);
         ventPanel.setVisible(false);
@@ -789,7 +796,7 @@ public class Interfaz extends javax.swing.JFrame {
         }
     }
     
-    public void panelesAdm(int b){
+    public void panelesAdm(int b){//Muestra los paneles de administración
         comPanel.setVisible(false);
         empPanel.setVisible(false);
         docsPanel.setVisible(false);
@@ -815,7 +822,7 @@ public class Interfaz extends javax.swing.JFrame {
         }
     }
     
-    public void botonesFore(int x){
+    public void botonesFore(int x){//Cambia el color de los botones
         boton0.setForeground(pred);
         boton1.setForeground(pred);
         boton2.setForeground(pred);
@@ -844,7 +851,7 @@ public class Interfaz extends javax.swing.JFrame {
         }
     }
     
-    public void botonesVis(){
+    public void botonesVis(){//Muestra los botones
         if(userActivo){
             boton0.setVisible(true);
             boton1.setVisible(true);
@@ -854,7 +861,7 @@ public class Interfaz extends javax.swing.JFrame {
         }
     }
     
-    public final void comboUsuarios(){
+    public final void comboUsuarios(){//Llena el comboBox con los usuarios activos
         java.util.ArrayList<String> users = new java.util.ArrayList<>();
         java.sql.ResultSet rs = conect.query("SELECT usuario FROM empleado WHERE estatus='Activo'");
         try{
@@ -867,7 +874,7 @@ public class Interfaz extends javax.swing.JFrame {
         usuarioBox.setModel(new javax.swing.DefaultComboBoxModel<>(users.toArray(new String[users.size()])));
     }
     
-    public void inicializarPanels(){
+    public void inicializarPanels(){//Inicializa los paneles
         //Paneles
         invPanel = new InventarioP();
         ventPanel = new VentasP();

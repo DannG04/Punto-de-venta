@@ -13,15 +13,15 @@ import java.time.format.DateTimeFormatter;
  */
 public class ConexionBD {
     //Server credenciales: url: dpg-cucgfkhopnds739808h0-a.oregon-postgres.render.com contrasenia: IdIwMrtXsrYNLKBsoDM7yR4fW6fGHxWP usuario: daniel183 base: tienda_punto_venta_40vd
-    String url = "jdbc:postgresql://localhost:5432/";
-    String nameBD = "tienda_punto_venta";
-    String usuario = "postgres";
-    String contra = "mayraK";
+    String url = "jdbc:postgresql://dpg-cucgfkhopnds739808h0-a.oregon-postgres.render.com:5432/";
+    String nameBD = "tienda_punto_venta_40vd";
+    String usuario = "daniel183";
+    String contra = "IdIwMrtXsrYNLKBsoDM7yR4fW6fGHxWP";
     
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     
     // FUNCIONES GENERALES
-    public boolean inst(String instruccion) {
+    public boolean inst(String instruccion) {//Función para ejecutar instrucciones
         boolean band = true;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -36,7 +36,7 @@ public class ConexionBD {
         return band;
     }
 
-    public ResultSet query(String instruccion) {
+    public ResultSet query(String instruccion) {//Función para obtener un ResultSet
         ResultSet rs = null;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -50,7 +50,7 @@ public class ConexionBD {
     }
 
     // FUNCION DE LA TABLA EMPLEADO
-    public boolean insertarEmpleado(String[] campos) {
+    public boolean insertarEmpleado(String[] campos) {//Función para insertar un empleado
         boolean band = false;
         String columnas = "empleado(id_empleado, nombre, puesto, telefono, usuario, contrasenia)";
         String instruccion = "INSERT INTO " + columnas + " VALUES(?,?,?,?,?,?);";
@@ -72,7 +72,7 @@ public class ConexionBD {
         return band;
     }
 
-    public boolean actualizarEmpleado(String[] campos, String idEm) {
+    public boolean actualizarEmpleado(String[] campos, String idEm) {//Función para actualizar un empleado
         boolean band = false;
         String columnas = "SET puesto=?, telefono=?";
         String instruccion = "UPDATE empleado " + columnas + " WHERE id_empleado=?;";
@@ -91,7 +91,7 @@ public class ConexionBD {
         return band;
     }
 
-    public boolean inactivarEmpleado(String idEm, boolean act) {
+    public boolean inactivarEmpleado(String idEm, boolean act) {//Función para inactivar un empleado
         boolean band = false;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -107,7 +107,7 @@ public class ConexionBD {
         return band;
     }
     
-    public boolean verificarUsuario(String uss) {
+    public boolean verificarUsuario(String uss) {//Función para verificar si un usuario ya existe
         boolean band = false;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -124,7 +124,7 @@ public class ConexionBD {
         return band;
     }
     
-    public String[] idEmpleado(String uss, String paswor) {
+    public String[] idEmpleado(String uss, String paswor) {//Función para obtener los datos de un empleado
         String[] dates = new String[4];
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -146,7 +146,7 @@ public class ConexionBD {
     }
 
     // FUNCIONES DE LA TABLA PRODUCTO
-    public void insertarProducto(String[] datos) {
+    public void insertarProducto(String[] datos) {//Función para insertar un producto
         String columnas = "producto(nombre, cantidad, precio_mayoreo, precio_menudeo)";
         String instruccion = "INSERT INTO " + columnas + " VALUES (?,?,?,?);";
         try {
@@ -163,7 +163,7 @@ public class ConexionBD {
         }
     }
 
-    public void actualizarProducto(String ideprod, String[] datos) {
+    public void actualizarProducto(String ideprod, String[] datos) {//Función para actualizar un producto
         String columnas = "nombre = ?, cantidad = ?, precio_mayoreo = ?, precio_menudeo = ?";
         String instruccion = "UPDATE producto SET " + columnas + " WHERE id_producto = ?;";
         try {
@@ -181,7 +181,7 @@ public class ConexionBD {
         }
     }
 
-    public boolean eliminarProducto(String ideprod) {
+    public boolean eliminarProducto(String ideprod) {//Función para eliminar un producto
         boolean band = false;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -196,7 +196,7 @@ public class ConexionBD {
         return band;
     }
 
-    public boolean hayPocosProductos() {
+    public boolean hayPocosProductos() {//Función para verificar si hay pocos productos
         boolean hay = false;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -213,7 +213,7 @@ public class ConexionBD {
     }
 
     // FUNCIONES DE LA TABLA DE VENTA TEMPORAL
-    public void insertarVentaTemp(String[] campos, boolean acum) {
+    public void insertarVentaTemp(String[] campos, boolean acum) {//Función para insertar una venta temporal
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             CallableStatement cstm = conexion.prepareCall("{call set_venta_temp(?::id_producto_dominio,?,?)}");
@@ -227,7 +227,7 @@ public class ConexionBD {
         }
     }
 
-    public void eliminarVentaTemp(String ide) {
+    public void eliminarVentaTemp(String ide) {//Función para eliminar una venta temporal
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             CallableStatement cstm = conexion.prepareCall("{call eliminar_prod(?::id_producto_dominio)}");
@@ -239,7 +239,7 @@ public class ConexionBD {
         }
     }
 
-    public Double sumaVentaTemp() {
+    public Double sumaVentaTemp() {//Función para obtener la suma de la venta temporal
         Double sum = 0.0;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -256,7 +256,7 @@ public class ConexionBD {
     }
 
     // FUNCIONES DE LA TABLA VENTA
-    public String registrarVenta(String idEmp, String idCli) {
+    public String registrarVenta(String idEmp, String idCli) {//Función para registrar una venta
         String idVenta = "";
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -274,7 +274,7 @@ public class ConexionBD {
     }
 
     // FUNCIONES DE LA TABLA COMPRAS
-    public String insertarCompra(String[] campos) {
+    public String insertarCompra(String[] campos) {//Función para insertar una compra
         String idCompra = "";
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -292,7 +292,7 @@ public class ConexionBD {
         return idCompra;
     }
 
-    public void actualizarCompra(String[] campos) {
+    public void actualizarCompra(String[] campos) {//Función para actualizar una compra
         String columnas = "descripcion=?, monto=?";
         String instruccion = "UPDATE compras SET " + columnas + " WHERE id_compra=?;";
         try {
@@ -308,7 +308,7 @@ public class ConexionBD {
         }
     }
 
-    public void eliminarCompra(String idCom) {
+    public void eliminarCompra(String idCom) {//Función para eliminar una compra
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             CallableStatement cstm = conexion.prepareCall("{call elim_compra(?)}");
@@ -321,7 +321,7 @@ public class ConexionBD {
     }
 
     // FUNCIONES EN LA TABLA COMPRA PRODUCTOS
-    public void insertarProdCompra(String[] campos, boolean ac) {
+    public void insertarProdCompra(String[] campos, boolean ac) {//Función para insertar un producto en una compra
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             CallableStatement cstm = conexion.prepareCall("{call reg_compra_prod(?,?::id_producto_dominio,?,?,?)}");
@@ -337,7 +337,7 @@ public class ConexionBD {
         }
     }
 
-    public void eliminarProdCompra(String[] campos) {
+    public void eliminarProdCompra(String[] campos) {//Función para eliminar un producto de una compra
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             CallableStatement cstm = conexion.prepareCall("{call elim_compra_prod(?,?::id_producto_dominio)}");
@@ -351,7 +351,7 @@ public class ConexionBD {
     }
 
     // FUNCIONES DE LA TABLA CLIENTE
-    public boolean insertarCliente(String[] campos) {
+    public boolean insertarCliente(String[] campos) {//Función para insertar un cliente
         boolean band = false;
         String columnas = "cliente(id_cliente, nombre, telefono)";
         String instruccion = "INSERT INTO " + columnas + " VALUES(?,?,?);";
@@ -370,7 +370,7 @@ public class ConexionBD {
         return band;
     }
 
-    public void actualizarCliente(String[] campos, String idC) {
+    public void actualizarCliente(String[] campos, String idC) {//Función para actualizar un cliente
         String columnas = "SET id_cliente=?, nombre=?, telefono=?";
         String instruccion = "UPDATE cliente " + columnas + " WHERE id_cliente=?;";
         try {
@@ -387,7 +387,7 @@ public class ConexionBD {
         }
     }
 
-    public void inactivarCliente(String idC, boolean act) {
+    public void inactivarCliente(String idC, boolean act) {//Función para inactivar un cliente
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             CallableStatement cstm = conexion.prepareCall("{call inactivar_cliente(?::curp_dominio,?)}");
@@ -401,7 +401,7 @@ public class ConexionBD {
     }
 
     // FUNCIONES DE LA TABLA DE DEVOLUCIONES
-    public String insertarDevolucion(String[] campos) {
+    public String insertarDevolucion(String[] campos) {//Función para insertar una devolución
         String idDev = "";
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -418,7 +418,7 @@ public class ConexionBD {
         return idDev;
     }
 
-    public void eliminarDevolucion(String idDev) {
+    public void eliminarDevolucion(String idDev) {//Función para eliminar una devolución
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             CallableStatement cstm = conexion.prepareCall("{call elim_devolucion(?)}");
@@ -431,7 +431,7 @@ public class ConexionBD {
     }
 
     // FUNCIONES PARA LA TABLA DE DEVOLUCION DETALLE
-    public void insertarProdDevolucion(String[] campos, boolean ac) {
+    public void insertarProdDevolucion(String[] campos, boolean ac) {//Función para insertar un producto en una devolución
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             CallableStatement cstm = conexion.prepareCall("{call reg_devolucion_prod(?,?,?::id_producto_dominio,?,?)}");
@@ -447,7 +447,7 @@ public class ConexionBD {
         }
     }
 
-    public void eliminarProdDevolucion(String[] campos) {
+    public void eliminarProdDevolucion(String[] campos) {//Función para eliminar un producto de una devolución
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             CallableStatement cstm = conexion.prepareCall("{call elim_devolucion_prod(?,?::id_producto_dominio)}");
@@ -461,7 +461,7 @@ public class ConexionBD {
     }
 
     // FUNCIONES PARA LA TABLA APARTADO
-    public String insertarApartado(String[] campos) {
+    public String insertarApartado(String[] campos) {//Función para insertar un apartado
         String idAp = "";
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -478,7 +478,7 @@ public class ConexionBD {
         return idAp;
     }
     
-    public boolean actualizarApartado(String idAp, Double cantPag){
+    public boolean actualizarApartado(String idAp, Double cantPag){//Función para actualizar un apartado
         boolean band = false;
         try{
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -494,7 +494,7 @@ public class ConexionBD {
         return band;
     }
 
-    public void eliminarApartado(String idAp) {
+    public void eliminarApartado(String idAp) {//Función para eliminar un apartado
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             CallableStatement cstm = conexion.prepareCall("{call elim_apartado(?)}");
@@ -506,7 +506,7 @@ public class ConexionBD {
         }
     }
 
-    public void revisarApartado() {
+    public void revisarApartado() {//Función para revisar los apartados
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             CallableStatement cstm = conexion.prepareCall("{call ap_vigentes()}");
@@ -517,7 +517,7 @@ public class ConexionBD {
         }
     }
 
-    public double cantidadCancelarApartado(String idAp) {
+    public double cantidadCancelarApartado(String idAp) {// Función para obtener la cantidad a cancelar de un apartado
         double monto = 0.0;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -534,7 +534,7 @@ public class ConexionBD {
         return monto;
     }
 
-    public void cancelarApartado(String idAp) {
+    public void cancelarApartado(String idAp) {//Función para cancelar un apartado
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             CallableStatement cstm = conexion.prepareCall("{call cancelar_ap(?)}");
@@ -546,7 +546,7 @@ public class ConexionBD {
         }
     }
 
-    public void entregarApartado(String idAp) {
+    public void entregarApartado(String idAp) {//Función para entregar un apartado
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             CallableStatement cstm = conexion.prepareCall("{call entregar_ap(?)}");
@@ -559,7 +559,7 @@ public class ConexionBD {
 }
 
     // FUNCIONES PARA LA TABLA APARTADO DETALLE
-    public void insertarProdApartado(String[] campos, boolean ac) {
+    public void insertarProdApartado(String[] campos, boolean ac) {//Función para insertar un producto en un apartado
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             CallableStatement cstm = conexion.prepareCall("{call reg_apdet(?,?::id_producto_dominio,?,?)}");
@@ -574,7 +574,7 @@ public class ConexionBD {
         }
     }
 
-    public void eliminarProdApartado(String[] campos) {
+    public void eliminarProdApartado(String[] campos) {//Función para eliminar un producto de un apartado
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             CallableStatement cstm = conexion.prepareCall("{call elim_apdet(?,?::id_producto_dominio)}");
@@ -588,7 +588,7 @@ public class ConexionBD {
     }
 
     // FUNCIONES PARA LA TABLA GASTOS
-    public void insertarGasto(String[] campos) {
+    public void insertarGasto(String[] campos) {//Función para insertar un gasto
         String columnas = "gastos(id_empleado, descripcion, monto)";
         String instruccion = "INSERT INTO " + columnas + " VALUES(?,?,?);";
         try {
@@ -604,7 +604,7 @@ public class ConexionBD {
         }
     }
 
-    public void actualizarGasto(String idGasto, String[] campos) {
+    public void actualizarGasto(String idGasto, String[] campos) {//Función para actualizar un gasto
         String columnas = "SET descripcion=?, monto=?";
         String instruccion = "UPDATE gastos " + columnas + " WHERE id_gasto=?;";
         try {
@@ -621,7 +621,7 @@ public class ConexionBD {
     }
 
     // FUNCIONES PARA LA TABLA OTRAS GANANCIAS
-    public void insertarOtraGanancia(String[] campos) {
+    public void insertarOtraGanancia(String[] campos) {//Función para insertar otra ganancia
         String columnas = "otras_ganancias(descripcion, monto)";
         String instruccion = "INSERT INTO " + columnas + " VALUES(?,?);";
         try {
@@ -636,7 +636,7 @@ public class ConexionBD {
         }
     }
 
-    public void actualizarOtraGanancia(String[] campos) {
+    public void actualizarOtraGanancia(String[] campos) {//Función para actualizar otra ganancia
         String columnas = "SET descripcion=?, monto=?";
         String instruccion = "UPDATE otras_ganancias " + columnas + " WHERE id_otras_ganancias=?;";
         try {
@@ -652,7 +652,7 @@ public class ConexionBD {
         }
     }
 
-    public double ObtenerDato(String nombreCol) {
+    public double ObtenerDato(String nombreCol) {//Función para obtener un dato de la base de datos
         double total = 0;
         Connection conn = null;
         PreparedStatement ps = null;
@@ -685,7 +685,7 @@ public class ConexionBD {
         return total;
     }
 
-    public ResultSet reporte_diario() {
+    public ResultSet reporte_diario() {//Función para obtener el reporte diario
         ResultSet rs = null;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -713,7 +713,7 @@ public class ConexionBD {
 
     }
 
-    public ResultSet seleccionarVendedor(String idVendedor) {
+    public ResultSet seleccionarVendedor(String idVendedor) {//Función para seleccionar un vendedor
         ResultSet resultado = null;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -726,7 +726,7 @@ public class ConexionBD {
         return resultado;
     }
 
-    public ResultSet seleccionarProductos(String idApartado) {
+    public ResultSet seleccionarProductos(String idApartado) {//Función para seleccionar los productos de un apartado
         ResultSet resultado = null;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
