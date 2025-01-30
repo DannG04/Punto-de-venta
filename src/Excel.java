@@ -11,6 +11,7 @@ import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Excel {
+    public static double utilidadDelEjercicio;
     static ConexionBD conect = new ConexionBD();
     
     public static void balanceGeneral() {
@@ -123,6 +124,10 @@ public class Excel {
             sheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 5));
             String mes2 = cambiarmes(mes);
             celdaFecha.setCellValue("Balance general del " + dia + " de " + mes2 + " del año " + anio);
+
+            BalGeneral bg = new BalGeneral(sheet, 6);
+            obtenerUtilidad();
+            bg.llenarBalance(datosEstilo,utilidadDelEjercicio);
 
             sheet.setZoom(150);
             String directoryName = "BalancesGenerales";
@@ -803,5 +808,32 @@ public class Excel {
         java.time.LocalDateTime ahora = java.time.LocalDateTime.now();
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd 'de' MMMM 'del' yyyy", new java.util.Locale("es", "ES"));;
         return ahora.format(formatter);
+    }
+    
+    public static void obtenerUtilidad(){
+        LocalDate fecha = LocalDate.now();
+        String dia = String.valueOf(fecha.getDayOfMonth());
+        String mes = String.valueOf(fecha.getMonthValue());
+        String anio = String.valueOf(fecha.getYear());
+        String fileName = "/estadodeResultados" + dia + "_" + mes + "_" + anio;
+
+        String filePath = "Estados de resultados"+fileName+".xlsx"; // Cambia esto a la ruta de tu archivo Excel
+        try (FileInputStream fis = new FileInputStream(filePath);
+            Workbook workbook = new XSSFWorkbook(fis)) {
+
+            Sheet sheet = workbook.getSheetAt(0); // Obtén la primera hoja
+            Cell cell = sheet.getRow(21).getCell(5); // Obtén la celda F21 (índice 20 para la fila y 5 para la columna)
+
+            FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+            CellValue cellValue = evaluator.evaluate(cell);
+
+            utilidadDelEjercicio = cellValue.getNumberValue(); // Guarda el valor en una variable
+
+            System.out.println("Utilidad del ejercicio: " + utilidadDelEjercicio);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
