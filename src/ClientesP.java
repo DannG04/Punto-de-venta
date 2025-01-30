@@ -17,6 +17,7 @@ public class ClientesP extends javax.swing.JPanel {
     DefaultTableModel modelo = new DefaultTableModel();
     ConexionBD conect = new ConexionBD();
     VentasP dialog=new VentasP();
+    
     public ClientesP() {
         initComponents();
         modelo=(DefaultTableModel)tablaC.getModel();
@@ -493,7 +494,6 @@ public class ClientesP extends javax.swing.JPanel {
             }
         } else{
             Mise.JOption("Seleccione la fila que desea dar de baja", "Error",JOptionPane.ERROR_MESSAGE );
-            
         }
     }//GEN-LAST:event_elimC1ActionPerformed
 

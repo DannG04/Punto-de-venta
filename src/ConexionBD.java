@@ -16,10 +16,10 @@ public class ConexionBD {
     String url = "jdbc:postgresql://localhost:5432/";
     String nameBD = "tienda_punto_venta";
     String usuario = "postgres";
-    String contra = "Daniel183.";
+    String contra = "mayraK";
     
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
+    
     // FUNCIONES GENERALES
     public boolean inst(String instruccion) {
         boolean band = true;
@@ -52,14 +52,17 @@ public class ConexionBD {
     // FUNCION DE LA TABLA EMPLEADO
     public boolean insertarEmpleado(String[] campos) {
         boolean band = false;
-        String columnas = "cliente(id_cliente, nombre, telefono)";
-        String instruccion = "INSERT INTO " + columnas + " VALUES(?,?,?);";
+        String columnas = "empleado(id_empleado, nombre, puesto, telefono, usuario, contrasenia)";
+        String instruccion = "INSERT INTO " + columnas + " VALUES(?,?,?,?,?,?);";
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setString(1, campos[0]);
             pstm.setString(2, campos[1]);
-            pstm.setString(3, campos[2])
+            pstm.setObject(3, campos[2], Types.OTHER);
+            pstm.setString(4, campos[3]);
+            pstm.setString(5, campos[4]);
+            pstm.setString(6, campos[5]);
             pstm.executeUpdate();
             conexion.close();
             band = true;
@@ -76,7 +79,7 @@ public class ConexionBD {
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setString(1, campos[0]);
+            pstm.setObject(1, campos[0], Types.OTHER);
             pstm.setString(2, campos[1]);
             pstm.setString(3, idEm);
             pstm.executeUpdate();
@@ -88,17 +91,37 @@ public class ConexionBD {
         return band;
     }
 
-    public void inactivarEmpleado(String idEm, boolean act) {
+    public boolean inactivarEmpleado(String idEm, boolean act) {
+        boolean band = false;
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            CallableStatement cstm = conexion.prepareCall("{call inactivar_cliente(?::curp_dominio,?)}");
-            cstm.setString(1, idEm)
+            CallableStatement cstm = conexion.prepareCall("{call inactivar_empleado(?::curp_dominio,?)}");
+            cstm.setString(1, idEm);
             cstm.setBoolean(2, act);
             cstm.execute();
+            conexion.close();
+            band = true;
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return band;
+    }
+    
+    public boolean verificarUsuario(String uss) {
+        boolean band = false;
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            CallableStatement cstm = conexion.prepareCall("{call verif_user(?)}");
+            cstm.setString(1, uss);
+            ResultSet rs = cstm.executeQuery();
+            while(rs.next()){
+                band = rs.getBoolean(1);
+            }
             conexion.close();
         } catch (SQLException e) {
             Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
+        return band;
     }
     
     public String[] idEmpleado(String uss, String paswor) {

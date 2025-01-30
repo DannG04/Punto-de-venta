@@ -17,6 +17,8 @@ public class EmpleadosP extends javax.swing.JPanel {
     
     DefaultTableModel modeloEmp = new DefaultTableModel();
     
+    boolean bandAux;
+    
     public EmpleadosP() {
         initComponents();
         modeloEmp = (DefaultTableModel)tablaEmp.getModel();
@@ -52,6 +54,7 @@ public class EmpleadosP extends javax.swing.JPanel {
         jLabel18 = new javax.swing.JLabel();
         puestoEReg = new javax.swing.JComboBox<>();
         errorUsuario = new javax.swing.JLabel();
+        activarEmp = new javax.swing.JButton();
         actuDialog = new javax.swing.JDialog();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
@@ -73,10 +76,10 @@ public class EmpleadosP extends javax.swing.JPanel {
 
         regDialog.setTitle("Registrar Empleado");
         regDialog.setAlwaysOnTop(true);
-        regDialog.setMinimumSize(new java.awt.Dimension(420, 580));
+        regDialog.setMinimumSize(new java.awt.Dimension(440, 640));
         regDialog.setModal(true);
-        regDialog.setPreferredSize(new java.awt.Dimension(420, 580));
-        regDialog.setSize(new java.awt.Dimension(420, 580));
+        regDialog.setPreferredSize(new java.awt.Dimension(440, 640));
+        regDialog.setSize(new java.awt.Dimension(440, 640));
         regDialog.getContentPane().setLayout(new java.awt.GridBagLayout());
         regDialog.setLocationRelativeTo(null);
 
@@ -159,7 +162,7 @@ public class EmpleadosP extends javax.swing.JPanel {
 
         errorContraseña.setFont(new java.awt.Font("Noto Serif", 0, 10)); // NOI18N
         errorContraseña.setForeground(new java.awt.Color(204, 0, 51));
-        errorContraseña.setText(" ");
+        errorContraseña.setText("La contraseña debe ser de al menos tres caracteres");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 17;
@@ -273,12 +276,22 @@ public class EmpleadosP extends javax.swing.JPanel {
 
         errorUsuario.setFont(new java.awt.Font("Noto Serif", 0, 10)); // NOI18N
         errorUsuario.setForeground(new java.awt.Color(204, 0, 51));
-        errorUsuario.setText(" ");
+        errorUsuario.setText("El nombre de usuario debe ser mayor a cuatro caracteres");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 12;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         regDialog.getContentPane().add(errorUsuario, gridBagConstraints);
+
+        activarEmp.setFont(new java.awt.Font("Noto Serif", 1, 13)); // NOI18N
+        activarEmp.setText("*");
+        activarEmp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                activarEmpActionPerformed(evt);
+            }
+        });
+        regDialog.getContentPane().add(activarEmp, new java.awt.GridBagConstraints());
+        activarEmp.setToolTipText("Registrar a un empleado que ya se ha registrado antes");
 
         actuDialog.setTitle("Actualizar Empleado");
         actuDialog.setAlwaysOnTop(true);
@@ -465,11 +478,21 @@ public class EmpleadosP extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void agBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agBActionPerformed
+        bandAux = false;
         regDialog.setVisible(true);
     }//GEN-LAST:event_agBActionPerformed
 
     private void eliBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliBActionPerformed
-
+        if(tablaEmp.getSelectedRow() != -1){
+            int res = Mise.JOptionYesNo("¿Está seguro que desea dar de baja a este empleado?", "Empleado");
+            if(res == 0){
+                String cuur = "" + tablaEmp.getValueAt(tablaEmp.getSelectedRow(), 0);
+                conect.inactivarEmpleado(cuur, true);
+                mostrarTablaEmp();
+            }
+        } else{
+            Mise.JOption("Seleccione la fila que desea eliminar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_eliBActionPerformed
 
     private void actBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actBActionPerformed
@@ -486,7 +509,26 @@ public class EmpleadosP extends javax.swing.JPanel {
 
     private void botonERegActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonERegActionPerformed
         if(nomEReg.getText().isEmpty() || curpEReg.getText().isEmpty() || telEReg.getText().isEmpty() || userEReg.getText().isEmpty() || contra1EReg.getText().isEmpty() || contra2EReg.getText().isEmpty()){
-            
+            Mise.JOption("Debe llenar todos los campos", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } else{
+            if(bandAux){
+                if(contra1EReg.getText().length() < 3){
+                    errorContraseña.setText("La contraseña debe ser de al menos tres caracteres");
+                }else{
+                    if(contra1EReg.getText().equals(contra2EReg.getText())){
+                        String[] campos = {curpEReg.getText(), nomEReg.getText(), "" + puestoEReg.getSelectedItem(), telEReg.getText(), userEReg.getText(), contra2EReg.getText()};
+                        if(conect.insertarEmpleado(campos)){
+                            nomEReg.setText(""); curpEReg.setText(""); telEReg.setText(""); userEReg.setText(""); contra1EReg.setText(""); contra2EReg.setText("");
+                            regDialog.setVisible(false);
+                            mostrarTablaEmp();
+                        }
+                    } else{
+                        errorContraseña.setText("La confirmación de contraseña es incorrecta");
+                    }
+                }
+            } else{
+                Mise.JOption("No es posible registrar al empleado con el nombre de usuario que se ingresó", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
         }
     }//GEN-LAST:event_botonERegActionPerformed
 
@@ -497,6 +539,7 @@ public class EmpleadosP extends javax.swing.JPanel {
             String[] campos = {"" + puestoEAct.getSelectedItem(), telEAct.getText()};
             if(conect.actualizarEmpleado(campos, curpEAct.getText())){
                 actuDialog.setVisible(false);
+                mostrarTablaEmp();
             }
         }
     }//GEN-LAST:event_actEBotonActionPerformed
@@ -590,8 +633,26 @@ public class EmpleadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_contra2ERegKeyTyped
 
     private void userERegKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_userERegKeyReleased
-        
+        if(userEReg.getText().length() <= 4){
+            errorUsuario.setText("El nombre de usuario debe ser mayor a cuatro caracteres");
+        } else{
+            if(conect.verificarUsuario(userEReg.getText())){
+                errorUsuario.setText("No es posible utilizar ese nombre");
+            } else{
+                errorUsuario.setText("");
+                bandAux = true;
+            }
+        }
     }//GEN-LAST:event_userERegKeyReleased
+
+    private void activarEmpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_activarEmpActionPerformed
+        String cuur = Mise.JOptionInput("Ingresa la CURP del empleado:", "Registrar empleado");
+        if(conect.inactivarEmpleado(cuur, false)){
+            mostrarTablaEmp();
+            Mise.JOption("Empleado registrado nuevamente", "Empleado", javax.swing.JOptionPane.PLAIN_MESSAGE);
+            regDialog.setVisible(false);
+        }
+    }//GEN-LAST:event_activarEmpActionPerformed
 
     public void mostrarTablaEmp(){
         Mise.limpiarTabla(modeloEmp);
@@ -609,6 +670,7 @@ public class EmpleadosP extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton actB;
     private javax.swing.JButton actEBoton;
+    private javax.swing.JButton activarEmp;
     private javax.swing.JDialog actuDialog;
     private javax.swing.JButton agB;
     private javax.swing.JButton botonEReg;

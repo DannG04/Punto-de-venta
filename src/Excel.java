@@ -816,13 +816,17 @@ public class Excel {
         String mes = String.valueOf(fecha.getMonthValue());
         String anio = String.valueOf(fecha.getYear());
         String fileName = "/estadodeResultados" + dia + "_" + mes + "_" + anio;
-
-        String filePath = "Estados de resultados"+fileName+".xlsx"; // Cambia esto a la ruta de tu archivo Excel
-        try (FileInputStream fis = new FileInputStream(filePath);
-            Workbook workbook = new XSSFWorkbook(fis)) {
+        String filePath;
+       
+        try {
+            filePath = "Estados de resultados" + fileName + ".xlsx";
+            FileInputStream fis = new FileInputStream(filePath);
+        
+            
+            Workbook workbook = new XSSFWorkbook(fis);
 
             Sheet sheet = workbook.getSheetAt(0); // Obtén la primera hoja
-            Cell cell = sheet.getRow(21).getCell(5); // Obtén la celda F21 (índice 20 para la fila y 5 para la columna)
+            Cell cell = sheet.getRow(21).getCell(5); // Obtén la celda F21 
 
             FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
             CellValue cellValue = evaluator.evaluate(cell);

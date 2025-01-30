@@ -19,8 +19,6 @@ import javax.swing.UnsupportedLookAndFeelException;
  * @author rodth
  */
 public class Interfaz extends javax.swing.JFrame {
-
-    static String us = "";
     
     static Boolean admActivo = false;
     static Boolean userActivo = false;
@@ -28,21 +26,25 @@ public class Interfaz extends javax.swing.JFrame {
     java.awt.Color pred = new java.awt.Color(78,150,150);
     
     //Paneles
-    InventarioP invPanel = new InventarioP();
-    VentasP ventPanel = new VentasP();
-    AdministracionP docsPanel = new AdministracionP();
-    ApartadosP apPanel = new ApartadosP();
-    DevolucionesP devPanel = new DevolucionesP();
-    ClientesP cliPanel = new ClientesP();
-    GastosP gastPanel =  new GastosP();
-    GananciasP ganPanel = new GananciasP();
+    InventarioP invPanel;
+    VentasP ventPanel;
+    AdministracionP docsPanel;
+    ApartadosP apPanel;
+    DevolucionesP devPanel;
+    ClientesP cliPanel;
+    GastosP gastPanel;
+    GananciasP ganPanel;
     //Administracion
-    ComprasP comPanel = new ComprasP();
-    EmpleadosP empPanel = new EmpleadosP();
+    ComprasP comPanel;
+    EmpleadosP empPanel;
     
     //Conexion
     ConexionBD conect = new ConexionBD();
+    
+    //Usuario Datos
     static String idVendedor = "";
+    static String userBD = "";
+    static String passwordBD = "";
     
     boolean iniDia = false;
     Dimension tamanio = Toolkit.getDefaultToolkit().getScreenSize();
@@ -55,6 +57,7 @@ public class Interfaz extends javax.swing.JFrame {
         Hora fecha = new Hora();
         fecha.start();
         comboUsuarios();
+        inicializarPanels();
     }
 
     /**
@@ -600,6 +603,7 @@ public class Interfaz extends javax.swing.JFrame {
             contInc.setText("");
             eyeB1.setSelected(false);
             eyeB1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/eye2.png")));
+            comboUsuarios();
             iniSession.setVisible(true);
             botones.setVisible(false);
             panelPrin.setVisible(false);
@@ -690,12 +694,12 @@ public class Interfaz extends javax.swing.JFrame {
     }
     
     public void iniciarSesion(){
-        us = usuarioBox.getSelectedItem().toString();
-        String c = contraF1.getText();
-        if(c.isEmpty()){
+        userBD = usuarioBox.getSelectedItem().toString();
+        passwordBD = contraF1.getText();
+        if(passwordBD.isEmpty()){
             contInc.setText("Debe ingresar una contraseña");
         } else{
-            String[] datos = conect.idEmpleado(us, c);
+            String[] datos = conect.idEmpleado(userBD, passwordBD);
             if(datos[0] != null){
                 idVendedor = datos[0];
                 Mise.JOption("Bienvenido, " + datos[1], "Inicio de sesión", javax.swing.JOptionPane.PLAIN_MESSAGE);
@@ -850,9 +854,9 @@ public class Interfaz extends javax.swing.JFrame {
         }
     }
     
-    public void comboUsuarios(){
+    public final void comboUsuarios(){
         java.util.ArrayList<String> users = new java.util.ArrayList<>();
-        java.sql.ResultSet rs = conect.query("SELECT usuario FROM empleado");
+        java.sql.ResultSet rs = conect.query("SELECT usuario FROM empleado WHERE estatus='Activo'");
         try{
             while(rs.next()){
                 users.add(rs.getString("usuario"));
@@ -861,6 +865,21 @@ public class Interfaz extends javax.swing.JFrame {
             System.out.println("Ocurrio un error al conectar con la base de datos");
         }
         usuarioBox.setModel(new javax.swing.DefaultComboBoxModel<>(users.toArray(new String[users.size()])));
+    }
+    
+    public void inicializarPanels(){
+        //Paneles
+        invPanel = new InventarioP();
+        ventPanel = new VentasP();
+        docsPanel = new AdministracionP();
+        apPanel = new ApartadosP();
+        devPanel = new DevolucionesP();
+        cliPanel = new ClientesP();
+        gastPanel =  new GastosP();
+        ganPanel = new GananciasP();
+        //Administracion
+        comPanel = new ComprasP();
+        empPanel = new EmpleadosP();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
