@@ -1,28 +1,15 @@
 ********************************************        
           COMPROBANTE DE APARTADO                   
-<<<<<<< HEAD
- Folio: A20250122195244                             
- Fecha de emisión : 22/01/2025                      
- Hora: 19:53:04                                     
- Vendedor: Elisa Sánchez                            
- -------------------------------------------        
- Fecha Inicio: 2025-01-22                           
- Fecha Límite de pago: 2025-02-21                   
- Cantidad Dada: 200.0                               
- Cantidad Faltante: 180.0                           
- Cantidad Total: 380.0                              
-=======
- Folio: A20250127212256                             
- Fecha de emisión : 27/01/2025                      
- Hora: 21:23:20                                     
+ Folio: A20250130094050                             
+ Fecha de emisión : 30/01/2025                      
+ Hora: 09:41:16                                     
  Vendedor: Daniel Gonzalez                          
  -------------------------------------------        
- Fecha Inicio: 2025-01-27                           
- Fecha Límite de pago: 2025-02-26                   
- Cantidad Dada: 540.0                               
- Cantidad Faltante: 540.0                           
- Cantidad Total: 1080.0                             
->>>>>>> 09d295e0aa2e2e8cda39d6cfc0f27b6c9bcd1a8c
+ Fecha Inicio: 2025-01-30                           
+ Fecha Límite de pago: 2025-03-01                   
+ Cantidad Dada: 280.0                               
+ Cantidad Faltante: 260.0                           
+ Cantidad Total: 540.0                              
  -------Muchas gracias por su compra.-------        
                                                     
                                                     

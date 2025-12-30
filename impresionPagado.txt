@@ -1,0 +1,13 @@
+********************************************           
+          FACTURA DE ENTREGA                           
+ Fecha de emisión : 29/01/2025                         
+ Hora: 17:16:26                                        
+ -------------------------------------------           
+      Producto         Cant  P.Unit  P.Total           
+ Pantalón azul de mezc  97    180     180.0            
+ -------------------------------------------           
+ Total: 180.0                                          
+ -------Muchas gracias por su compra.-------           
+                                                       
+                                                       
+                                                       

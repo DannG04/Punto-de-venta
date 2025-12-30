@@ -183,7 +183,6 @@ public class ApartadosP extends javax.swing.JPanel {
         prodApartadoDialog.setAlwaysOnTop(true);
         prodApartadoDialog.setMinimumSize(new java.awt.Dimension(1400, 550));
         prodApartadoDialog.setModal(true);
-        prodApartadoDialog.setPreferredSize(new java.awt.Dimension(1400, 550));
         prodApartadoDialog.setSize(new java.awt.Dimension(1000, 460));
         prodApartadoDialog.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -629,9 +628,16 @@ public class ApartadosP extends javax.swing.JPanel {
                 "Apartado", "Empleado", "Cliente", "Inicio", "Limite", "Dado", "Faltante", "Total", "Estado"
             }
         ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.String.class
+            };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false, false, false, false, false
             };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
@@ -643,11 +649,14 @@ public class ApartadosP extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void regApActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regApActionPerformed
+        // Hace visible la ventana de registro de apartados
         mostrarTablaCli();
         regApartDialog.setVisible(true);
     }//GEN-LAST:event_regApActionPerformed
 
     private void saldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saldActionPerformed
+        //Hace la validación de que el apartado este vigente para poder saldarlo
+        if((modeloAp.getValueAt(tablaAp.getSelectedRow(), 8)).equals("Vigente")){
         if(tablaAp.getSelectedRow() != -1){
             idApF.setText("" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 0));
             cantSaldaF.setText("" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 6));
@@ -657,9 +666,13 @@ public class ApartadosP extends javax.swing.JPanel {
         } else{
             Mise.JOption("Seleccione la fila que desea saldar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
+        }else{
+            Mise.JOption("Ese pedido ya no esta vigente", "Pedido", WIDTH);
+        }
     }//GEN-LAST:event_saldActionPerformed
 
     private void hechoB4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoB4ActionPerformed
+        //Hace la validación de que el pago sea mayor o igual a la cantidad mínima a pagar
         if(!cantPagF.getText().isEmpty()){
             double a = Double.parseDouble(cantPagF.getText());
             double b = Double.parseDouble(cantMinF.getText());
@@ -678,6 +691,7 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_hechoB4ActionPerformed
 
     private void regSaldasionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regSaldasionActionPerformed
+        //Hace la validación de que el monto recibido sea mayor o igual a la cantidad con la que se salda
         if(!recSaldF.getText().isEmpty()){
             if(Double.parseDouble(recSaldF.getText()) >= Double.parseDouble(cantSaldaF.getText())){
                 conect.entregarApartado(idApF.getText());
@@ -693,6 +707,7 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_regSaldasionActionPerformed
 
     private void buskApKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buskApKeyReleased
+        //Busca los apartados por ID
         if(!buskAp.getText().isEmpty()){
             mostrarTablaAp("SELECT * FROM apartado WHERE id_apartado LIKE '%" + buskAp.getText() + "%' ORDER BY id_apartado;");
         }
@@ -702,6 +717,7 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_buskApKeyReleased
 
     private void buskApKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buskApKeyTyped
+        //Valida que solo se ingresen letras y números
         char letra = evt.getKeyChar();
         if(!Cake.letrasMayus(letra) && !Cake.letrasMinus(letra) && !Cake.numeros(letra) && !(Cake.inicioEspacios(letra))){
             evt.consume();
@@ -724,6 +740,7 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_buskApKeyTyped
 
     private void recSaldFKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_recSaldFKeyTyped
+        //Valida que solo se ingresen números y un punto
         char letra = evt.getKeyChar();
         if(!Cake.numeros(letra) && !Cake.inicioPunto(letra)){
             evt.consume();
@@ -749,12 +766,14 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_recSaldFKeyTyped
 
     private void recSaldFKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_recSaldFKeyReleased
+        //Calcula el cambio
         if(!recSaldF.getText().isEmpty()){
             cambCT.setText("" + cambioT(recSaldF.getText()));
         }
     }//GEN-LAST:event_recSaldFKeyReleased
 
     private void cantPKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cantPKeyTyped
+        //Valida que solo se ingresen números
         char letra = evt.getKeyChar();
         if(!Cake.numeros(letra)){
             evt.consume();
@@ -766,6 +785,7 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_cantPKeyTyped
 
     private void agPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agPActionPerformed
+        //Agrega un producto al apartado
         if(codP.getText().isEmpty() || cantP.getText().isEmpty()){
             Mise.JOption("Debe llenar todos los campos", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         } else{
@@ -779,6 +799,7 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_agPActionPerformed
 
     private void acPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acPActionPerformed
+        //Actualiza un producto del apartado
         if(tablaProdAp.getSelectedRow() == -1){
             Mise.JOption("Seleccione la fila de la tabla de Productos Apartados que desea actualizar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         } else{
@@ -789,6 +810,7 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_acPActionPerformed
 
     private void elPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elPActionPerformed
+        //Elimina un producto del apartado
         if(tablaProdAp.getSelectedRow() == -1){
             Mise.JOption("Seleccione la fila de la tabla de Productos Apartados que desea eliminar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         } else{
@@ -799,6 +821,7 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_elPActionPerformed
 
     private void prodApartadoDialogWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_prodApartadoDialogWindowClosing
+        //Valida que no se cierre la ventana si no se han registrado productos
         if(modeloProdAp.getRowCount() == 0){
             int res = Mise.JOptionYesNo("No registró ningun producto, ¿seguro que desea cerrar esta ventana?"
                 + "\n(al realizar esta acción el apartado no podrá guardarse)", "Cerrar ventana");
@@ -810,6 +833,7 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_prodApartadoDialogWindowClosing
 
     private void cantPagFKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cantPagFKeyTyped
+        //Valida que solo se ingresen números y un punto
         char letra = evt.getKeyChar();
         if(!Cake.numeros(letra) && !Cake.inicioPunto(letra)){
             evt.consume();
@@ -835,6 +859,7 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_cantPagFKeyTyped
 
     private void guardarApDialogWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_guardarApDialogWindowClosing
+        //Valida que no se cierre la ventana si no se ha registrado el apartado
         if(modeloProdAp.getRowCount() != 0){
             Mise.JOption("No ha registrado el apartado, no es posible cerrar la ventana."
                     + "\nSi desea cancelar el apartado debe registrarlo y depués cancelarlo, o eliminar todos los productos que registró anteriormente.", "Error",
@@ -844,6 +869,7 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_guardarApDialogWindowClosing
 
     private void cancActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancActionPerformed
+        //Cancela un apartado
         if(tablaAp.getSelectedRow() != -1){
             id_apartado = "" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 0);
             double mon = conect.cantidadCancelarApartado(id_apartado);
@@ -859,11 +885,13 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_cancActionPerformed
 
     private void hechoB5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoB5ActionPerformed
+        //Vuelve a la ventana de productos
         guardarApDialog.setVisible(false);
         prodApartadoDialog.setVisible(true);
     }//GEN-LAST:event_hechoB5ActionPerformed
 
     private void hePActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hePActionPerformed
+        //Valida que no se registre un apartado sin productos
         if(modeloProdAp.getRowCount() != 0){
             prodApartadoDialog.setVisible(false);
             datosAp();
@@ -874,6 +902,7 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_hePActionPerformed
 
     private void regCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regCActionPerformed
+        //Registra un apartado
         if(curpCliente.getText().isEmpty()){
             labelinc.setText("Debe rellenar el campo");
         } else{
@@ -890,6 +919,7 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_regCActionPerformed
 
     private void tablaCliMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaCliMouseClicked
+        //Muestra el CURP del cliente seleccionado
         curpCliente.setText("" + tablaCli.getValueAt(tablaCli.getSelectedRow(), 0));
     }//GEN-LAST:event_tablaCliMouseClicked
 
@@ -897,7 +927,7 @@ public class ApartadosP extends javax.swing.JPanel {
         codP.setText("" + tablaProd.getValueAt(tablaProd.getSelectedRow(), 0));
     }//GEN-LAST:event_tablaProdMouseClicked
 
-    public Double cambioT(String palabra){
+    public Double cambioT(String palabra){//Calcula el cambio
         Double precT = Double.valueOf(cantSaldaF.getText());
         Double cambioNum = Double.valueOf(palabra);
         if(cambioNum >= precT){
@@ -908,7 +938,7 @@ public class ApartadosP extends javax.swing.JPanel {
         return cambioNum;
     }
     
-    public void mostrarTablaAp(String instruccion){
+    public void mostrarTablaAp(String instruccion){//Muestra la tabla de apartados
         if(instruccion.equals("")){
             instruccion = "SELECT * FROM apartado ORDER BY id_apartado";
         }
@@ -926,7 +956,7 @@ public class ApartadosP extends javax.swing.JPanel {
         }
     }
     
-    public void mostrarTablaProdA(){
+    public void mostrarTablaProdA(){//Muestra la tabla de productos apartados
         Mise.limpiarTabla(modeloProdAp);
         java.sql.ResultSet rs = conect.query("SELECT * FROM apartado_detalle WHERE id_apartado='" + id_apartado + "';");
         if(rs != null){
@@ -941,7 +971,7 @@ public class ApartadosP extends javax.swing.JPanel {
         }
     }
     
-    public void mostrarTablaPro(){
+    public void mostrarTablaPro(){//Muestra la tabla de productos
         Mise.limpiarTabla(modeloProd);
         java.sql.ResultSet rs = conect.query("SELECT * FROM producto ORDER BY id_producto");
         if(rs != null){
@@ -955,7 +985,7 @@ public class ApartadosP extends javax.swing.JPanel {
         }
     }
     
-    public void mostrarTablaCli(){
+    public void mostrarTablaCli(){//Muestra la tabla de clientes
         Mise.limpiarTabla(modeloCli);
         java.sql.ResultSet rs = conect.query("SELECT * FROM cliente WHERE estatus='Activo'");
         if(rs != null){
@@ -969,7 +999,7 @@ public class ApartadosP extends javax.swing.JPanel {
         }
     }
     
-    public void datosAp(){
+    public void datosAp(){//Muestra los datos del apartado
         java.sql.ResultSet rs = conect.query("SELECT * FROM apartado WHERE id_apartado='" + id_apartado + "';");
         if(rs != null){
             try{

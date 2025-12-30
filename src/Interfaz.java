@@ -19,8 +19,6 @@ import javax.swing.UnsupportedLookAndFeelException;
  * @author rodth
  */
 public class Interfaz extends javax.swing.JFrame {
-
-    static String us = "";
     
     static Boolean admActivo = false;
     static Boolean userActivo = false;
@@ -28,21 +26,25 @@ public class Interfaz extends javax.swing.JFrame {
     java.awt.Color pred = new java.awt.Color(78,150,150);
     
     //Paneles
-    InventarioP invPanel = new InventarioP();
-    VentasP ventPanel = new VentasP();
-    AdministracionP docsPanel = new AdministracionP();
-    ApartadosP apPanel = new ApartadosP();
-    DevolucionesP devPanel = new DevolucionesP();
-    ClientesP cliPanel = new ClientesP();
-    GastosP gastPanel =  new GastosP();
-    GananciasP ganPanel = new GananciasP();
+    InventarioP invPanel;
+    VentasP ventPanel;
+    AdministracionP docsPanel;
+    ApartadosP apPanel;
+    DevolucionesP devPanel;
+    ClientesP cliPanel;
+    GastosP gastPanel;
+    GananciasP ganPanel;
     //Administracion
-    ComprasP comPanel = new ComprasP();
-    EmpleadosP empPanel = new EmpleadosP();
+    ComprasP comPanel;
+    EmpleadosP empPanel;
     
     //Conexion
     ConexionBD conect = new ConexionBD();
+    
+    //Usuario Datos
     static String idVendedor = "";
+    static String userBD = "";
+    static String passwordBD = "";
     
     boolean iniDia = false;
     Dimension tamanio = Toolkit.getDefaultToolkit().getScreenSize();
@@ -54,6 +56,8 @@ public class Interfaz extends javax.swing.JFrame {
         initComponents();
         Hora fecha = new Hora();
         fecha.start();
+        comboUsuarios();
+        inicializarPanels();
     }
 
     /**
@@ -71,6 +75,7 @@ public class Interfaz extends javax.swing.JFrame {
         opcion1 = new javax.swing.JMenuItem();
         opcion2 = new javax.swing.JMenuItem();
         opcion3 = new javax.swing.JMenuItem();
+        opcion4 = new javax.swing.JMenuItem();
         adminPM = new javax.swing.JPopupMenu();
         comp1 = new javax.swing.JMenuItem();
         emp2 = new javax.swing.JMenuItem();
@@ -118,6 +123,9 @@ public class Interfaz extends javax.swing.JFrame {
 
         opcion3.setText("jMenuItem1");
         popupMenu.add(opcion3);
+
+        opcion4.setText("jMenuItem1");
+        popupMenu.add(opcion4);
 
         comp1.setText("Compras");
         comp1.addActionListener(new java.awt.event.ActionListener() {
@@ -514,6 +522,7 @@ public class Interfaz extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void contraF1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_contraF1KeyTyped
+        //Verifica que solo se ingresen números y que no se pase de 10 caracteres
         char letra = evt.getKeyChar();
         
         if(evt.getKeyChar()== KeyEvent.VK_ENTER){
@@ -530,10 +539,11 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_contraF1KeyTyped
 
     private void eyeB1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eyeB1ActionPerformed
+        //Muestra la contraseña
         if(eyeB1.isSelected()){
             contraF1.setEchoChar((char)0);
             eyeB1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/eye1.png")));
-        }
+        }//Oculta la contraseña
         else{
             contraF1.setEchoChar('*');
             eyeB1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/eye2.png")));
@@ -570,6 +580,7 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_boton5ActionPerformed
 
     private void initerDiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_initerDiaActionPerformed
+        //Inicia o termina el día
         if(!iniDia){
             Mise.JOption("Día iniciado","Información del día", javax.swing.JOptionPane.PLAIN_MESSAGE);
             initerDia.setText("Terminar día");
@@ -587,6 +598,7 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_initerDiaActionPerformed
 
     private void closeSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeSesionActionPerformed
+        //Cierra la sesión
         if(!iniDia){
             Mise.JOption("Hasta luego", "Salir", javax.swing.JOptionPane.PLAIN_MESSAGE);
             userActivo = false;
@@ -595,6 +607,7 @@ public class Interfaz extends javax.swing.JFrame {
             contInc.setText("");
             eyeB1.setSelected(false);
             eyeB1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/eye2.png")));
+            comboUsuarios();
             iniSession.setVisible(true);
             botones.setVisible(false);
             panelPrin.setVisible(false);
@@ -629,6 +642,7 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_balG5ActionPerformed
 
     private void estR6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_estR6ActionPerformed
+        //Muestra el estado de resultados
         String res = Mise.JOptionInput("Ingrese el inventario inicial", "Estado de Resultados");
         try{
             Double invini = Double.valueOf(res);
@@ -643,6 +657,7 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_vtasHoy7ActionPerformed
 
     private void perfilMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_perfilMouseEntered
+        //Muestra los datos del usuario
         popupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
     }//GEN-LAST:event_perfilMouseEntered
 
@@ -659,6 +674,7 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_boton8ActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        //Cierra la ventana una vez que pregunta si se desea cerrar
         int res = Mise.JOptionYesNo("Seguro que desea cerrar la ventana?", "Cerrar Ventana");
         if(res == 0){
             System.exit(0);
@@ -684,54 +700,40 @@ public class Interfaz extends javax.swing.JFrame {
         });
     }
     
-    public void iniciarSesion(){
-        us = usuarioBox.getSelectedItem().toString();
-        String c = contraF1.getText();
-        if(!us.isEmpty() || !c.isEmpty()){
-            if(empPanel.userC.containsKey(us)){
-                if(!empPanel.userC.get(us).equals(c)){
-                    contInc.setText("Contraseña incorrecta");
+    public void iniciarSesion(){//Inicia la sesión
+        userBD = usuarioBox.getSelectedItem().toString();
+        passwordBD = contraF1.getText();
+        if(passwordBD.isEmpty()){
+            contInc.setText("Debe ingresar una contraseña");
+        } else{
+            String[] datos = conect.idEmpleado(userBD, passwordBD);
+            if(datos[0] != null){
+                idVendedor = datos[0];
+                Mise.JOption("Bienvenido, " + datos[1], "Inicio de sesión", javax.swing.JOptionPane.PLAIN_MESSAGE);
+                userActivo = true;
+                if(datos[2].equals("Gerente")){
+                    admActivo = true;
                 }
-                else{
-                    idVendedor = conect.idEmpleado(us);
-                    if(idVendedor.equals("")){
-                        contInc.setText("Error al iniciar sesión");
-                    } else{
-                        Mise.JOption("Bienvenido " + us, "Inicio de sesión", javax.swing.JOptionPane.PLAIN_MESSAGE);
-                        userActivo = true;
-                        if(us.equals(empPanel.administrador)){
-                            admActivo = true;
-                        }
-                        opcion2.setText("Curp: " + idVendedor);
 
-                        opcion1.setText("Nombre: " + us);
-                        if(admActivo){
-                            opcion3.setText("Puesto: Gerente");
-                        } else {
-                            opcion3.setText("Puesto: Vendedor");
-                        }
+                opcion1.setText("Nombre: " + datos[1]);
+                opcion2.setText("Curp: " + idVendedor);
+                opcion3.setText("Puesto: " + datos[2]);
+                opcion4.setText("Telefono: " + datos[3]);
 
-                        boton0.setForeground(Color.BLACK);
-                        boton0.setSelected(true);
-                        iniSession.setVisible(false);
-                        botonesVis();
-                        botones.setVisible(true);
-                        panelPrin.setVisible(true);
-                        horaPanel.setVisible(true);
-                        this.setSize(tamanio.width, tamanio.height-20);
-                        this.setLocationRelativeTo(null);
-                    }
-                }
+                boton0.setForeground(Color.BLACK);
+                boton0.setSelected(true);
+                iniSession.setVisible(false);
+                botonesVis();
+                botones.setVisible(true);
+                panelPrin.setVisible(true);
+                horaPanel.setVisible(true);
+                this.setSize(tamanio.width, tamanio.height-20);
+                this.setLocationRelativeTo(null);
             }
-            else{
-                contInc.setText("Datos érroneos, intentelo de nuevo");
-            }
-        } else {
-            contInc.setText("Debe llenar todos los campos");
         }
     }
     
-    public void visibilidad(int a, int b){
+    public void visibilidad(int a, int b){//Muestra los paneles
         panelPrin.setVisible(false);
         invPanel.setVisible(false);
         ventPanel.setVisible(false);
@@ -794,7 +796,7 @@ public class Interfaz extends javax.swing.JFrame {
         }
     }
     
-    public void panelesAdm(int b){
+    public void panelesAdm(int b){//Muestra los paneles de administración
         comPanel.setVisible(false);
         empPanel.setVisible(false);
         docsPanel.setVisible(false);
@@ -820,7 +822,7 @@ public class Interfaz extends javax.swing.JFrame {
         }
     }
     
-    public void botonesFore(int x){
+    public void botonesFore(int x){//Cambia el color de los botones
         boton0.setForeground(pred);
         boton1.setForeground(pred);
         boton2.setForeground(pred);
@@ -849,7 +851,7 @@ public class Interfaz extends javax.swing.JFrame {
         }
     }
     
-    public void botonesVis(){
+    public void botonesVis(){//Muestra los botones
         if(userActivo){
             boton0.setVisible(true);
             boton1.setVisible(true);
@@ -857,6 +859,34 @@ public class Interfaz extends javax.swing.JFrame {
             boton4.setVisible(true);
             boton5.setVisible(true);
         }
+    }
+    
+    public final void comboUsuarios(){//Llena el comboBox con los usuarios activos
+        java.util.ArrayList<String> users = new java.util.ArrayList<>();
+        java.sql.ResultSet rs = conect.query("SELECT usuario FROM empleado WHERE estatus='Activo'");
+        try{
+            while(rs.next()){
+                users.add(rs.getString("usuario"));
+            }
+        } catch(java.sql.SQLException e){
+            System.out.println("Ocurrio un error al conectar con la base de datos");
+        }
+        usuarioBox.setModel(new javax.swing.DefaultComboBoxModel<>(users.toArray(new String[users.size()])));
+    }
+    
+    public void inicializarPanels(){//Inicializa los paneles
+        //Paneles
+        invPanel = new InventarioP();
+        ventPanel = new VentasP();
+        docsPanel = new AdministracionP();
+        apPanel = new ApartadosP();
+        devPanel = new DevolucionesP();
+        cliPanel = new ClientesP();
+        gastPanel =  new GastosP();
+        ganPanel = new GananciasP();
+        //Administracion
+        comPanel = new ComprasP();
+        empPanel = new EmpleadosP();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -892,6 +922,7 @@ public class Interfaz extends javax.swing.JFrame {
     private javax.swing.JMenuItem opcion1;
     private javax.swing.JMenuItem opcion2;
     private javax.swing.JMenuItem opcion3;
+    private javax.swing.JMenuItem opcion4;
     private javax.swing.JPanel panelPrin;
     private javax.swing.JButton perfil;
     private javax.swing.JPopupMenu popupMenu;

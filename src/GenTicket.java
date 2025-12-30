@@ -76,7 +76,7 @@ public class GenTicket {
                 FileInputStream inputStream = null;
                 try {
                     inputStream = new FileInputStream("impresionApartado.txt");
-                    JOptionPane.showMessageDialog(null, "Ticket generado", "Ticket", JOptionPane.PLAIN_MESSAGE);
+                    Mise.JOption("Ticket generado", "Ticket", JOptionPane.PLAIN_MESSAGE);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -157,7 +157,7 @@ public class GenTicket {
             FileInputStream inputStream = null;
             try {
                 inputStream = new FileInputStream("impresionPagado.txt");
-                JOptionPane.showMessageDialog(null, "Ticket generado", "Ticket", JOptionPane.PLAIN_MESSAGE);
+                Mise.JOption("Ticket generado", "Ticket", JOptionPane.PLAIN_MESSAGE);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

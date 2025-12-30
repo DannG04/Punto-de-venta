@@ -164,6 +164,7 @@ public class AdministracionP extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tablaVentasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaVentasMouseClicked
+        //Verifica si se ha seleccionado una fila
         if(tablaVentas.getSelectedRow() != -1){
             labelVentaID.setText("Venta: " + modeloVentas.getValueAt(tablaVentas.getSelectedRow(), 0));
             mostrarTablaVentasDet("" + modeloVentas.getValueAt(tablaVentas.getSelectedRow(), 0));
@@ -172,6 +173,7 @@ public class AdministracionP extends javax.swing.JPanel {
     }//GEN-LAST:event_tablaVentasMouseClicked
 
     public void mostrarTablaVentas(){
+        //Limpia la tabla
         Mise.limpiarTabla(modeloVentas);
         java.sql.ResultSet rs = conect.query("SELECT * FROM venta");
         try{
@@ -183,7 +185,7 @@ public class AdministracionP extends javax.swing.JPanel {
         }
     }
     
-    public void mostrarTablaVentasDet(String id_venta){
+    public void mostrarTablaVentasDet(String id_venta){//Muestra la tabla de ventas detalle
         Mise.limpiarTabla(modeloVenDet);
         java.sql.ResultSet rs = conect.query("SELECT * FROM venta_detalle WHERE id_venta='" + id_venta + "';");
         try{
@@ -195,7 +197,7 @@ public class AdministracionP extends javax.swing.JPanel {
         }
     }
     
-    public void mostrarCierreCaja(){
+    public void mostrarCierreCaja(){//Muestra el cierre de caja
         Mise.limpiarTabla(modeloCaja);
         String fecha = generarFecha("yyyy-MM-dd");
         java.sql.ResultSet rs = conect.query("SELECT * FROM venta WHERE fecha_venta='" + fecha + "';");
@@ -216,7 +218,7 @@ public class AdministracionP extends javax.swing.JPanel {
         }
     }
     
-    public String generarFecha(String formato){
+    public String generarFecha(String formato){//Genera la fecha
         java.time.LocalDateTime ahora = java.time.LocalDateTime.now();
         java.time.format.DateTimeFormatter formateado = java.time.format.DateTimeFormatter.ofPattern(formato);
         return ahora.format(formateado);

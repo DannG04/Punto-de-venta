@@ -3,17 +3,16 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.JOptionPane;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Excel {
+    public static double utilidadDelEjercicio;
     static ConexionBD conect = new ConexionBD();
     
-    public static void balanceGeneral() {
+    public static void balanceGeneral() {//Método que genera el balance general
 
         Workbook book = new XSSFWorkbook();
         Sheet sheet = book.createSheet("Reporte");
@@ -124,6 +123,10 @@ public class Excel {
             String mes2 = cambiarmes(mes);
             celdaFecha.setCellValue("Balance general del " + dia + " de " + mes2 + " del año " + anio);
 
+            BalGeneral bg = new BalGeneral(sheet, 6);
+            obtenerUtilidad();
+            bg.llenarBalance(datosEstilo,utilidadDelEjercicio);
+
             sheet.setZoom(150);
             String directoryName = "BalancesGenerales";
             File directory = new File(directoryName);
@@ -136,7 +139,6 @@ public class Excel {
             book.write(fileOut);
             fileOut.close();
             Desktop.getDesktop().open(file);
-            JOptionPane.showMessageDialog(null, "Reporte Generado");
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Excel.class.getName()).log(Level.SEVERE, null, ex);
@@ -146,7 +148,7 @@ public class Excel {
 
     }
 
-    public static void estadodeResultados(Double inv_ini) {
+    public static void estadodeResultados(Double inv_ini) {//Método que genera el estado de resultados
         ConexionBD conexion = new ConexionBD();
 
         Workbook book = new XSSFWorkbook();
@@ -505,7 +507,7 @@ public class Excel {
         }
     }
     
-    public static void reporteDiario(String nombreRD){
+    public static void reporteDiario(String nombreRD){//Método que genera el reporte diario
         //Obtenemos la fecha
         LocalDate fecha = LocalDate.now();
         String dia = String.valueOf(fecha.getDayOfMonth());
@@ -663,7 +665,7 @@ public class Excel {
         
     }
     
-    private static CellStyle crearEstiloTitulo(Workbook buk){
+    private static CellStyle crearEstiloTitulo(Workbook buk){//Estilo para el titulo
         CellStyle estilo = buk.createCellStyle();
         
         // Fuente en Negrita
@@ -680,7 +682,7 @@ public class Excel {
         return estilo;
     }
     
-    private static CellStyle crearEstiloEncabezado(Workbook buk){
+    private static CellStyle crearEstiloEncabezado(Workbook buk){//Estilo para el encabezado
         CellStyle estilo = buk.createCellStyle();
         
         //Color de Fondo
@@ -707,7 +709,7 @@ public class Excel {
         return estilo;
     }
     
-    private static CellStyle crearEstiloDatos(Workbook buk){
+    private static CellStyle crearEstiloDatos(Workbook buk){//Estilo para los datos
         CellStyle estilo = buk.createCellStyle();
         
         //Bordes
@@ -731,7 +733,7 @@ public class Excel {
     
     
 
-    public static String cambiarmes(String mes) {
+    public static String cambiarmes(String mes) {//Método que cambia el número del mes a su nombre
         switch (mes) {
             case "1":
                 mes = "Enero";
@@ -775,7 +777,7 @@ public class Excel {
         return mes;
     }
 
-    public static CellStyle estilodeCelda(CellStyle Estilo) {
+    public static CellStyle estilodeCelda(CellStyle Estilo) {//Método que crea el estilo de las celdas
         // Estilos de encabezados
         Estilo.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         Estilo.setBorderBottom(BorderStyle.THIN);
@@ -787,7 +789,7 @@ public class Excel {
         return Estilo;
     }
     
-    public static CellStyle estilodeCeldaOperacion(CellStyle Estilo) {
+    public static CellStyle estilodeCeldaOperacion(CellStyle Estilo) {//Método que crea el estilo de las celdas
         
         Estilo.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         Estilo.setBorderBottom(BorderStyle.MEDIUM);
@@ -799,9 +801,40 @@ public class Excel {
         return Estilo;
     }
     
-    public static String fecha(){
+    public static String fecha(){//Método que obtiene la fecha actual
         java.time.LocalDateTime ahora = java.time.LocalDateTime.now();
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd 'de' MMMM 'del' yyyy", new java.util.Locale("es", "ES"));;
         return ahora.format(formatter);
+    }
+    
+    public static void obtenerUtilidad(){//Método que obtiene la utilidad del ejercicio
+        LocalDate fecha = LocalDate.now();
+        String dia = String.valueOf(fecha.getDayOfMonth());
+        String mes = String.valueOf(fecha.getMonthValue());
+        String anio = String.valueOf(fecha.getYear());
+        String fileName = "/estadodeResultados" + dia + "_" + mes + "_" + anio;
+        String filePath;
+       
+        try {
+            filePath = "Estados de resultados" + fileName + ".xlsx";
+            FileInputStream fis = new FileInputStream(filePath);
+        
+            
+            Workbook workbook = new XSSFWorkbook(fis);
+
+            Sheet sheet = workbook.getSheetAt(0); // Obtén la primera hoja
+            Cell cell = sheet.getRow(21).getCell(5); // Obtén la celda F21 
+
+            FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+            CellValue cellValue = evaluator.evaluate(cell);
+
+            utilidadDelEjercicio = cellValue.getNumberValue(); // Guarda el valor en una variable
+
+            System.out.println("Utilidad del ejercicio: " + utilidadDelEjercicio);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
