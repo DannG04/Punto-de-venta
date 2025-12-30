@@ -267,7 +267,7 @@ public class EmpleadosP extends javax.swing.JPanel {
         regDialog.getContentPane().add(jLabel18, gridBagConstraints);
 
         puestoEReg.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
-        puestoEReg.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Vendedor", "Gerente" }));
+        puestoEReg.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "vendedor", "gerente" }));
         puestoEReg.setPreferredSize(new java.awt.Dimension(300, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -375,7 +375,7 @@ public class EmpleadosP extends javax.swing.JPanel {
         actuDialog.getContentPane().add(telEAct, gridBagConstraints);
 
         puestoEAct.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
-        puestoEAct.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Vendedor", "Gerente" }));
+        puestoEAct.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "vendedor", "gerente" }));
         puestoEAct.setPreferredSize(new java.awt.Dimension(300, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

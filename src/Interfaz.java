@@ -522,14 +522,15 @@ public class Interfaz extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void contraF1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_contraF1KeyTyped
-        //Verifica que solo se ingresen números y que no se pase de 10 caracteres
+        //Verifica que solo se ingresen letras y números y que no se pase de 10 caracteres
         char letra = evt.getKeyChar();
         
         if(evt.getKeyChar()== KeyEvent.VK_ENTER){
             iniciarSesion();
         }
         
-        if(!Cake.numeros(letra)){
+        // Permite letras (mayúsculas y minúsculas) y números
+        if(!Cake.numeros(letra) && !Cake.letrasMayus(letra) && !Cake.letrasMinus(letra)){
             evt.consume();
         }
 
@@ -711,7 +712,7 @@ public class Interfaz extends javax.swing.JFrame {
                 idVendedor = datos[0];
                 Mise.JOption("Bienvenido, " + datos[1], "Inicio de sesión", javax.swing.JOptionPane.PLAIN_MESSAGE);
                 userActivo = true;
-                if(datos[2].equals("Gerente")){
+                if(datos[2].equals("gerente")){
                     admActivo = true;
                 }
 
