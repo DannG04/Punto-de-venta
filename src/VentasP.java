@@ -780,7 +780,7 @@ public class VentasP extends javax.swing.JPanel {
     private void BuscKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_BuscKeyReleased
         String palabra = Busc.getText();
         Mise.limpiarTabla(modeloBusc);
-        String instruccion = "SELECT * FROM producto WHERE nombre LIKE '%" + palabra + "%' ORDER BY id_producto;";
+        String instruccion = "SELECT * FROM producto WHERE nombre LIKE '%" + palabra + "%' OR CAST(id_producto AS TEXT) LIKE '%" + palabra + "%' ORDER BY id_producto;";
         mostrarBusqueda(instruccion);
     }//GEN-LAST:event_BuscKeyReleased
 

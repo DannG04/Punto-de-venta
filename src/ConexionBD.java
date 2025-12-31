@@ -162,6 +162,24 @@ public class ConexionBD {
             Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+    public void insertarProductoConCodigo(String[] datos) {//Función para insertar un producto con código personalizado
+        String columnas = "producto(id_producto, nombre, cantidad, precio_mayoreo, precio_menudeo)";
+        String instruccion = "INSERT INTO " + columnas + " VALUES (?,?,?,?,?);";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, datos[0]); // id_producto (código personalizado)
+            pstm.setString(2, datos[1]); // nombre
+            pstm.setInt(3, Integer.parseInt(datos[2])); // cantidad
+            pstm.setDouble(4, Double.parseDouble(datos[3])); // precio_mayoreo
+            pstm.setDouble(5, Double.parseDouble(datos[4])); // precio_menudeo
+            pstm.executeUpdate();
+            conexion.close();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     public void actualizarProducto(String ideprod, String[] datos) {//Función para actualizar un producto
         String columnas = "nombre = ?, cantidad = ?, precio_mayoreo = ?, precio_menudeo = ?";

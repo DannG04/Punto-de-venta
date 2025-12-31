@@ -1,6 +1,9 @@
 
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
+import com.google.zxing.BarcodeFormat;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -45,6 +48,9 @@ public class InventarioP extends javax.swing.JPanel {
         precMay = new javax.swing.JFormattedTextField();
         jLabel6 = new javax.swing.JLabel();
         cadd = new javax.swing.JFormattedTextField();
+        jLabel7 = new javax.swing.JLabel();
+        codigoProvField = new javax.swing.JFormattedTextField();
+        checkGenerarCodigo = new javax.swing.JCheckBox();
         labelinc = new javax.swing.JLabel();
         hechoIns = new javax.swing.JButton();
         hechoAct = new javax.swing.JButton();
@@ -62,10 +68,10 @@ public class InventarioP extends javax.swing.JPanel {
         tablaVentas = new javax.swing.JTable();
 
         jDialog1.setAlwaysOnTop(true);
-        jDialog1.setMinimumSize(new java.awt.Dimension(510, 420));
+        jDialog1.setMinimumSize(new java.awt.Dimension(550, 520));
         jDialog1.setModal(true);
-        jDialog1.setPreferredSize(new java.awt.Dimension(510, 420));
-        jDialog1.setSize(new java.awt.Dimension(510, 420));
+        jDialog1.setPreferredSize(new java.awt.Dimension(550, 520));
+        jDialog1.setSize(new java.awt.Dimension(550, 520));
         jDialog1.getContentPane().setLayout(new java.awt.GridBagLayout());
 
         leibel.setFont(new java.awt.Font("Noto Serif", 1, 17)); // NOI18N
@@ -166,13 +172,48 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(cadd, gridBagConstraints);
 
+        jLabel7.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel7.setText("Código del Proveedor:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.ipadx = 16;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jDialog1.getContentPane().add(jLabel7, gridBagConstraints);
+
+        codigoProvField.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        codigoProvField.setPreferredSize(new java.awt.Dimension(200, 35));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jDialog1.getContentPane().add(codigoProvField, gridBagConstraints);
+
+        checkGenerarCodigo.setFont(new java.awt.Font("Noto Serif", 0, 14)); // NOI18N
+        checkGenerarCodigo.setText("Generar código propio");
+        checkGenerarCodigo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkGenerarCodigoActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
+        jDialog1.getContentPane().add(checkGenerarCodigo, gridBagConstraints);
+
         labelinc.setFont(new java.awt.Font("Noto Serif", 0, 12)); // NOI18N
         labelinc.setForeground(new java.awt.Color(204, 0, 51));
         labelinc.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelinc.setText(" ");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.gridwidth = 2;
         jDialog1.getContentPane().add(labelinc, gridBagConstraints);
 
@@ -186,7 +227,7 @@ public class InventarioP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(30, 10, 10, 10);
         jDialog1.getContentPane().add(hechoIns, gridBagConstraints);
@@ -202,7 +243,7 @@ public class InventarioP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(30, 10, 10, 10);
         jDialog1.getContentPane().add(hechoAct, gridBagConstraints);
@@ -346,6 +387,20 @@ public class InventarioP extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(tablaVentas);
 
+        // Agregar listener para clic en la columna ID (columna 0)
+        tablaVentas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int column = tablaVentas.getColumnModel().getColumnIndexAtX(evt.getX());
+                int row = evt.getPoint().y / tablaVentas.getRowHeight();
+                
+                // Si hizo clic en la columna 0 (ID) y hay una fila seleccionada
+                if (row < tablaVentas.getRowCount() && row >= 0 && column == 0) {
+                    String idProducto = "" + modelo.getValueAt(row, 0);
+                    mostrarCodigoBarras(idProducto);
+                }
+            }
+        });
+
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -374,6 +429,13 @@ public class InventarioP extends javax.swing.JPanel {
         precMay.setText("");
         cadd.setText("");
         labelinc.setText("");
+        codigoProvField.setText("");
+        checkGenerarCodigo.setSelected(false);
+        
+        // Habilitar campos de código al agregar
+        codigoProvField.setEnabled(true);
+        checkGenerarCodigo.setEnabled(true);
+        
         hechoIns.setVisible(true);
         hechoAct.setVisible(false);
         jDialog1.setVisible(true);
@@ -388,6 +450,11 @@ public class InventarioP extends javax.swing.JPanel {
             int a = tablaVentas.getSelectedRow();
             hechoIns.setVisible(false);
             hechoAct.setVisible(true);
+            
+            // Deshabilitar campos de código al actualizar
+            codigoProvField.setEnabled(false);
+            checkGenerarCodigo.setEnabled(false);
+            
             //MOSTRAR LOS DATOS EN EL FIELD
             mostrarDAct(a);
             jDialog1.setVisible(true);
@@ -423,12 +490,35 @@ public class InventarioP extends javax.swing.JPanel {
         if(nom.getText().isEmpty() || precMen.getText().isEmpty() || precMay.getText().isEmpty() || cadd.getText().isEmpty()){
             labelinc.setText("Todos los campos deben ser completados");
         } else{
+            // Validar código
+            if(!checkGenerarCodigo.isSelected() && codigoProvField.getText().isEmpty()){
+                labelinc.setText("Debe ingresar un código del proveedor o marcar generar código propio");
+                return;
+            }
+            
             if(Double.parseDouble(precMay.getText()) < Double.parseDouble(precMen.getText())){
                 if(aux == false){
                     aux = true;
-                    String campos[] = {nom.getText(), cadd.getText(), precMay.getText(), precMen.getText()};
-                    conect.insertarProducto(campos);
+                    
+                    // Determinar el código a usar
+                    String codigoProducto;
+                    if(checkGenerarCodigo.isSelected()){
+                        // Generar código automático en formato CODE_128
+                        codigoProducto = GeneradorCodigoBarras.generarCodigoAutomatico();
+                    } else {
+                        // Usar código del proveedor
+                        codigoProducto = codigoProvField.getText();
+                    }
+                    
+                    String campos[] = {codigoProducto, nom.getText(), cadd.getText(), precMay.getText(), precMen.getText()};
+                    conect.insertarProductoConCodigo(campos);
                     mostrarTabla("");
+                    
+                    // Limpiar campos
+                    codigoProvField.setText("");
+                    checkGenerarCodigo.setSelected(false);
+                    codigoProvField.setEnabled(true);
+                    
                     jDialog1.setVisible(false);
                 }
             } else {
@@ -457,6 +547,18 @@ public class InventarioP extends javax.swing.JPanel {
             }
         }
     }//GEN-LAST:event_hechoActActionPerformed
+
+    private void checkGenerarCodigoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkGenerarCodigoActionPerformed
+        if (checkGenerarCodigo.isSelected()) {
+            // Deshabilitar campo de código del proveedor
+            codigoProvField.setEnabled(false);
+            codigoProvField.setText("");
+        } else {
+            // Habilitar campo para ingresar código del proveedor
+            codigoProvField.setEnabled(true);
+            codigoProvField.requestFocus();
+        }
+    }//GEN-LAST:event_checkGenerarCodigoActionPerformed
 
     private void precMenKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_precMenKeyTyped
         char letra = evt.getKeyChar();
@@ -520,7 +622,8 @@ public class InventarioP extends javax.swing.JPanel {
     }//GEN-LAST:event_precMayKeyTyped
 
     private void buskProdKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buskProdKeyReleased
-        String instruccion = "SELECT * FROM producto WHERE nombre LIKE '%" + buskProd.getText() + "%' ORDER BY id_producto;";
+        String busqueda = buskProd.getText();
+        String instruccion = "SELECT * FROM producto WHERE nombre LIKE '%" + busqueda + "%' OR CAST(id_producto AS TEXT) LIKE '%" + busqueda + "%' ORDER BY id_producto;";
         if(!buskProd.getText().isEmpty()){
             mostrarTabla(instruccion);
         }
@@ -564,11 +667,12 @@ public class InventarioP extends javax.swing.JPanel {
         java.sql.ResultSet rs = conect.query(instruccion);
         try{
             while(rs.next()){
+                // Incluir código de barras en la tabla (opcional, puede no mostrarse en la tabla visual)
                 modelo.addRow( new Object[]{rs.getString("id_producto"), rs.getString("nombre"), rs.getInt("cantidad"), 
                     rs.getDouble("precio_mayoreo"), rs.getDouble("precio_menudeo")});
             }
         }catch(java.sql.SQLException e){
-            System.out.println("Error al mostrar el inventario");
+            System.out.println("Error al mostrar el inventario: " + e.getMessage());
         }
     }
     
@@ -579,6 +683,166 @@ public class InventarioP extends javax.swing.JPanel {
         cadd.setText("" + modelo.getValueAt(a, 2));
         precMay.setText("" + modelo.getValueAt(a, 3));
         precMen.setText("" + modelo.getValueAt(a, 4));
+        
+        // Mostrar el código actual en el campo (solo lectura)
+        codigoProvField.setText(elemento);
+        checkGenerarCodigo.setSelected(false);
+    }
+    
+    // Método para mostrar código de barras en un diálogo
+    private void mostrarCodigoBarras(String idProducto){
+        // Crear diálogo
+        javax.swing.JDialog dialogCodigo = new javax.swing.JDialog();
+        dialogCodigo.setTitle("Código de Barras - Producto " + idProducto);
+        dialogCodigo.setModal(true);
+        dialogCodigo.setSize(450, 300);
+        dialogCodigo.setLocationRelativeTo(this);
+        dialogCodigo.setLayout(new java.awt.BorderLayout());
+        
+        // Generar código de barras con el ID del producto
+        BufferedImage imagen = GeneradorCodigoBarras.generarCODE128(idProducto, 350, 120);
+        
+        if(imagen != null){
+            javax.swing.JLabel labelImagen = new javax.swing.JLabel(new ImageIcon(imagen));
+            labelImagen.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+            dialogCodigo.add(labelImagen, java.awt.BorderLayout.CENTER);
+            
+            // Label con el ID
+            javax.swing.JLabel labelTexto = new javax.swing.JLabel("ID: " + idProducto);
+            labelTexto.setFont(new java.awt.Font("Noto Serif", java.awt.Font.BOLD, 16));
+            labelTexto.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+            labelTexto.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            dialogCodigo.add(labelTexto, java.awt.BorderLayout.NORTH);
+            
+            // Panel de botones inferior
+            javax.swing.JPanel panelBotones = new javax.swing.JPanel();
+            panelBotones.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 10));
+            
+            // Botón Guardar
+            javax.swing.JButton btnGuardar = new javax.swing.JButton("💾 Guardar");
+            btnGuardar.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 12));
+            btnGuardar.addActionListener(e -> {
+                guardarCodigoBarras(idProducto, imagen);
+            });
+            
+            // Botón Imprimir
+            javax.swing.JButton btnImprimir = new javax.swing.JButton("🖨️ Imprimir");
+            btnImprimir.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 12));
+            btnImprimir.addActionListener(e -> {
+                imprimirCodigoBarras(idProducto, imagen);
+            });
+            
+            // Botón Cerrar
+            javax.swing.JButton btnCerrar = new javax.swing.JButton("Cerrar");
+            btnCerrar.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 12));
+            btnCerrar.addActionListener(e -> dialogCodigo.dispose());
+            
+            panelBotones.add(btnGuardar);
+            panelBotones.add(btnImprimir);
+            panelBotones.add(btnCerrar);
+            
+            dialogCodigo.add(panelBotones, java.awt.BorderLayout.SOUTH);
+            
+            dialogCodigo.setVisible(true);
+        } else {
+            Mise.JOption("Error al generar código de barras", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    // Método para guardar el código de barras como imagen
+    private void guardarCodigoBarras(String idProducto, BufferedImage imagen){
+        javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+        fileChooser.setDialogTitle("Guardar Código de Barras");
+        
+        // Establecer nombre por defecto
+        String nombreArchivo = "codigo_barras_" + idProducto + ".png";
+        fileChooser.setSelectedFile(new java.io.File(nombreArchivo));
+        
+        // Filtro para solo archivos PNG
+        javax.swing.filechooser.FileNameExtensionFilter filter = 
+            new javax.swing.filechooser.FileNameExtensionFilter("Imágenes PNG", "png");
+        fileChooser.setFileFilter(filter);
+        
+        int resultado = fileChooser.showSaveDialog(this);
+        
+        if(resultado == javax.swing.JFileChooser.APPROVE_OPTION){
+            try {
+                java.io.File archivo = fileChooser.getSelectedFile();
+                
+                // Asegurar extensión .png
+                String rutaArchivo = archivo.getAbsolutePath();
+                if(!rutaArchivo.toLowerCase().endsWith(".png")){
+                    rutaArchivo += ".png";
+                    archivo = new java.io.File(rutaArchivo);
+                }
+                
+                // Guardar imagen
+                javax.imageio.ImageIO.write(imagen, "png", archivo);
+                
+                Mise.JOption("Código de barras guardado exitosamente en:\n" + archivo.getAbsolutePath(), 
+                            "Guardado", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            } catch(java.io.IOException ex){
+                Mise.JOption("Error al guardar el archivo: " + ex.getMessage(), 
+                            "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    // Método para imprimir el código de barras
+    private void imprimirCodigoBarras(String idProducto, BufferedImage imagen){
+        try {
+            // Crear un componente imprimible personalizado
+            java.awt.print.PrinterJob job = java.awt.print.PrinterJob.getPrinterJob();
+            job.setJobName("Código de Barras - " + idProducto);
+            
+            job.setPrintable(new java.awt.print.Printable() {
+                @Override
+                public int print(java.awt.Graphics graphics, java.awt.print.PageFormat pageFormat, int pageIndex) {
+                    if (pageIndex > 0) {
+                        return NO_SUCH_PAGE;
+                    }
+                    
+                    java.awt.Graphics2D g2d = (java.awt.Graphics2D) graphics;
+                    
+                    // Trasladar al área imprimible
+                    g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+                    
+                    // Calcular escala para centrar la imagen
+                    int anchoDisponible = (int) pageFormat.getImageableWidth();
+                    int altoDisponible = (int) pageFormat.getImageableHeight();
+                    
+                    // Dibujar título
+                    g2d.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 16));
+                    String titulo = "Código de Barras - Producto: " + idProducto;
+                    java.awt.FontMetrics fm = g2d.getFontMetrics();
+                    int anchoTitulo = fm.stringWidth(titulo);
+                    g2d.drawString(titulo, (anchoDisponible - anchoTitulo) / 2, 50);
+                    
+                    // Dibujar imagen del código de barras centrada
+                    int x = (anchoDisponible - imagen.getWidth()) / 2;
+                    int y = 100;
+                    g2d.drawImage(imagen, x, y, null);
+                    
+                    // Dibujar el código debajo de la imagen
+                    g2d.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 14));
+                    fm = g2d.getFontMetrics();
+                    int anchoCodigo = fm.stringWidth(idProducto);
+                    g2d.drawString(idProducto, (anchoDisponible - anchoCodigo) / 2, y + imagen.getHeight() + 30);
+                    
+                    return PAGE_EXISTS;
+                }
+            });
+            
+            // Mostrar diálogo de impresión
+            if (job.printDialog()) {
+                job.print();
+                Mise.JOption("Código de barras enviado a impresora", 
+                            "Imprimir", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (java.awt.print.PrinterException ex) {
+            Mise.JOption("Error al imprimir: " + ex.getMessage(), 
+                        "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }
     
     
@@ -588,6 +852,8 @@ public class InventarioP extends javax.swing.JPanel {
     private javax.swing.JButton agB;
     private javax.swing.JFormattedTextField buskProd;
     private javax.swing.JFormattedTextField cadd;
+    private javax.swing.JCheckBox checkGenerarCodigo;
+    private javax.swing.JFormattedTextField codigoProvField;
     private javax.swing.JButton eliB;
     private javax.swing.JButton hechoAct;
     private javax.swing.JButton hechoIns;
@@ -597,6 +863,7 @@ public class InventarioP extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

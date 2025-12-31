@@ -707,12 +707,13 @@ public class ApartadosP extends javax.swing.JPanel {
     }//GEN-LAST:event_regSaldasionActionPerformed
 
     private void buskApKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buskApKeyReleased
-        //Busca los apartados por ID
+        //Busca los apartados por ID de apartado, ID de cliente o ID de empleado
+        String busqueda = buskAp.getText();
         if(!buskAp.getText().isEmpty()){
-            mostrarTablaAp("SELECT * FROM apartado WHERE id_apartado LIKE '%" + buskAp.getText() + "%' ORDER BY id_apartado;");
+            mostrarTablaAp("SELECT * FROM apartado WHERE CAST(id_apartado AS TEXT) LIKE '%" + busqueda + "%' OR CAST(id_cliente AS TEXT) LIKE '%" + busqueda + "%' OR CAST(id_empleado AS TEXT) LIKE '%" + busqueda + "%' ORDER BY id_apartado;");
         }
         if(evt.getKeyChar() == java.awt.event.KeyEvent.VK_BACK_SPACE){
-            mostrarTablaAp("SELECT * FROM apartado WHERE id_apartado LIKE '%" + buskAp.getText() + "%' ORDER BY id_apartado;");
+            mostrarTablaAp("SELECT * FROM apartado WHERE CAST(id_apartado AS TEXT) LIKE '%" + busqueda + "%' OR CAST(id_cliente AS TEXT) LIKE '%" + busqueda + "%' OR CAST(id_empleado AS TEXT) LIKE '%" + busqueda + "%' ORDER BY id_apartado;");
         }
     }//GEN-LAST:event_buskApKeyReleased
 
