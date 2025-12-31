@@ -80,7 +80,6 @@ public class Interfaz extends javax.swing.JFrame {
         comp1 = new javax.swing.JMenuItem();
         emp2 = new javax.swing.JMenuItem();
         regV3 = new javax.swing.JMenuItem();
-        regCont = new javax.swing.JMenu();
         balG5 = new javax.swing.JMenuItem();
         estR6 = new javax.swing.JMenuItem();
         vtasHoy7 = new javax.swing.JMenuItem();
@@ -151,15 +150,13 @@ public class Interfaz extends javax.swing.JFrame {
         });
         adminPM.add(regV3);
 
-        regCont.setText("Registros Contables");
-
         balG5.setText("Balance General");
         balG5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 balG5ActionPerformed(evt);
             }
         });
-        regCont.add(balG5);
+        adminPM.add(balG5);
 
         estR6.setText("Estado de Resultados");
         estR6.addActionListener(new java.awt.event.ActionListener() {
@@ -167,7 +164,7 @@ public class Interfaz extends javax.swing.JFrame {
                 estR6ActionPerformed(evt);
             }
         });
-        regCont.add(estR6);
+        adminPM.add(estR6);
 
         vtasHoy7.setText("Reporte Diario");
         vtasHoy7.addActionListener(new java.awt.event.ActionListener() {
@@ -175,9 +172,7 @@ public class Interfaz extends javax.swing.JFrame {
                 vtasHoy7ActionPerformed(evt);
             }
         });
-        regCont.add(vtasHoy7);
-
-        adminPM.add(regCont);
+        adminPM.add(vtasHoy7);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Punto de Ventas");
@@ -317,8 +312,8 @@ public class Interfaz extends javax.swing.JFrame {
         boton3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         boton3.setMaximumSize(new java.awt.Dimension(300, 400));
         boton3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                boton3MouseClicked(evt);
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                boton3MousePressed(evt);
             }
         });
         botones.add(boton3);
@@ -621,10 +616,10 @@ public class Interfaz extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_closeSesionActionPerformed
 
-    private void boton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton3MouseClicked
+    private void boton3MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton3MousePressed
         botonesFore(3);
         adminPM.show(evt.getComponent(), evt.getX(), evt.getY());
-    }//GEN-LAST:event_boton3MouseClicked
+    }//GEN-LAST:event_boton3MousePressed
 
     private void boton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton6ActionPerformed
         visibilidad(6, 0);
@@ -927,7 +922,6 @@ public class Interfaz extends javax.swing.JFrame {
     private javax.swing.JPanel panelPrin;
     private javax.swing.JButton perfil;
     private javax.swing.JPopupMenu popupMenu;
-    private javax.swing.JMenu regCont;
     private javax.swing.JMenuItem regV3;
     private javax.swing.JComboBox<String> usuarioBox;
     private javax.swing.JButton veriB1;
