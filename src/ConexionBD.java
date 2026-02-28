@@ -16,7 +16,7 @@ public class ConexionBD {
     String url = "jdbc:postgresql://localhost:5432/";
     String nameBD = "punto_de_venta";
     String usuario = "postgres";
-    String contra = "root";
+    String contra = "Daniel183.";
     
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     
