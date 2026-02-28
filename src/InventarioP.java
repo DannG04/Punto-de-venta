@@ -287,7 +287,8 @@ public class InventarioP extends javax.swing.JPanel {
         jPanel1.add(jLabel1, gridBagConstraints);
 
         buskProd.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
-        buskProd.setPreferredSize(new java.awt.Dimension(1300, 30));
+        buskProd.setMinimumSize(new java.awt.Dimension(200, 30));
+        buskProd.setPreferredSize(new java.awt.Dimension(400, 30));
         buskProd.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 buskProdKeyReleased(evt);
@@ -299,8 +300,9 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel1.add(buskProd, gridBagConstraints);
 
         sumLabel.setBackground(new java.awt.Color(255, 255, 255));
