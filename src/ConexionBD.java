@@ -670,6 +670,92 @@ public class ConexionBD {
         }
     }
 
+    // FUNCIONES DE LA TABLA PROVEEDOR
+    public boolean insertarProveedor(String nombre, String telefono, String email, String direccion) {//Función para insertar un proveedor
+        boolean band = false;
+        String instruccion = "INSERT INTO proveedor(nombre, telefono, email, direccion) VALUES(?,?,?,?);";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, nombre);
+            pstm.setString(2, telefono.isEmpty() ? null : telefono);
+            pstm.setString(3, email.isEmpty() ? null : email);
+            pstm.setString(4, direccion.isEmpty() ? null : direccion);
+            pstm.executeUpdate();
+            conexion.close();
+            band = true;
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return band;
+    }
+
+    public boolean editarProveedor(int id, String nombre, String telefono, String email, String direccion) {//Función para editar un proveedor
+        boolean band = false;
+        String instruccion = "UPDATE proveedor SET nombre=?, telefono=?, email=?, direccion=? WHERE id_proveedor=?;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, nombre);
+            pstm.setString(2, telefono.isEmpty() ? null : telefono);
+            pstm.setString(3, email.isEmpty() ? null : email);
+            pstm.setString(4, direccion.isEmpty() ? null : direccion);
+            pstm.setInt(5, id);
+            pstm.executeUpdate();
+            conexion.close();
+            band = true;
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return band;
+    }
+
+    public boolean cambiarEstatusProveedor(int id, String estatus) {//Función para cambiar el estatus de un proveedor
+        boolean band = false;
+        String instruccion = "UPDATE proveedor SET estatus=? WHERE id_proveedor=?;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, estatus);
+            pstm.setInt(2, id);
+            pstm.executeUpdate();
+            conexion.close();
+            band = true;
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return band;
+    }
+
+    public ResultSet obtenerProveedores() {//Función para obtener proveedores activos
+        return query("SELECT id_proveedor, nombre FROM proveedor WHERE estatus='Activo' ORDER BY nombre");
+    }
+
+    public String insertarCompraConProveedor(String[] campos, int idProveedor) {//Función para insertar una compra con proveedor
+        String idCompra = "";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            String instruccion = "INSERT INTO compras(id_empleado, descripcion, monto, id_proveedor) VALUES(?::curp_dominio, ?, ?::numeric, ?) RETURNING id_compra;";
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, campos[0]);
+            pstm.setString(2, campos[1]);
+            pstm.setString(3, campos[2]);
+            if(idProveedor > 0){
+                pstm.setInt(4, idProveedor);
+            } else {
+                pstm.setNull(4, Types.INTEGER);
+            }
+            ResultSet rs = pstm.executeQuery();
+            if(rs.next()){
+                idCompra = rs.getString("id_compra");
+            }
+            conexion.close();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return idCompra;
+    }
+
     public double ObtenerDato(String nombreCol) {//Función para obtener un dato de la base de datos
         double total = 0;
         Connection conn = null;

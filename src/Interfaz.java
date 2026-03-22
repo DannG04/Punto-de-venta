@@ -37,6 +37,7 @@ public class Interfaz extends javax.swing.JFrame {
     //Administracion
     ComprasP comPanel;
     EmpleadosP empPanel;
+    ProveedoresP provPanel;
     
     //Conexion
     ConexionBD conect = new ConexionBD();
@@ -83,6 +84,7 @@ public class Interfaz extends javax.swing.JFrame {
         balG5 = new javax.swing.JMenuItem();
         estR6 = new javax.swing.JMenuItem();
         vtasHoy7 = new javax.swing.JMenuItem();
+        prov4 = new javax.swing.JMenuItem();
         panelPrin = new javax.swing.JPanel();
         perfil = new javax.swing.JButton();
         closeSesion = new javax.swing.JButton();
@@ -141,6 +143,14 @@ public class Interfaz extends javax.swing.JFrame {
             }
         });
         adminPM.add(emp2);
+
+        prov4.setText("Proveedores");
+        prov4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                prov4ActionPerformed(evt);
+            }
+        });
+        adminPM.add(prov4);
 
         regV3.setText("Registro de Ventas");
         regV3.addActionListener(new java.awt.event.ActionListener() {
@@ -633,6 +643,10 @@ public class Interfaz extends javax.swing.JFrame {
         visibilidad(3, 2);
     }//GEN-LAST:event_emp2ActionPerformed
 
+    private void prov4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prov4ActionPerformed
+        visibilidad(3, 4);
+    }//GEN-LAST:event_prov4ActionPerformed
+
     private void balG5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_balG5ActionPerformed
         Excel.balanceGeneral();
     }//GEN-LAST:event_balG5ActionPerformed
@@ -795,6 +809,7 @@ public class Interfaz extends javax.swing.JFrame {
     public void panelesAdm(int b){//Muestra los paneles de administración
         comPanel.setVisible(false);
         empPanel.setVisible(false);
+        provPanel.setVisible(false);
         docsPanel.setVisible(false);
         switch(b){
             case 1://Panel de Compras
@@ -814,6 +829,12 @@ public class Interfaz extends javax.swing.JFrame {
                 this.add(docsPanel);
                 docsPanel.mostrarTablaVentas();
                 docsPanel.setVisible(true);
+                break;
+            case 4://Panel de Proveedores
+                getContentPane().add(provPanel, java.awt.BorderLayout.CENTER);
+                this.add(provPanel);
+                provPanel.mostrarTabla("");
+                provPanel.setVisible(true);
                 break;
         }
     }
@@ -883,6 +904,7 @@ public class Interfaz extends javax.swing.JFrame {
         //Administracion
         comPanel = new ComprasP();
         empPanel = new EmpleadosP();
+        provPanel = new ProveedoresP();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -922,6 +944,7 @@ public class Interfaz extends javax.swing.JFrame {
     private javax.swing.JPanel panelPrin;
     private javax.swing.JButton perfil;
     private javax.swing.JPopupMenu popupMenu;
+    private javax.swing.JMenuItem prov4;
     private javax.swing.JMenuItem regV3;
     private javax.swing.JComboBox<String> usuarioBox;
     private javax.swing.JButton veriB1;
