@@ -86,6 +86,11 @@ public class ProveedoresP extends javax.swing.JPanel {
 
         nomProvR.setFont(new java.awt.Font("Noto Serif", 0, 18));
         nomProvR.setPreferredSize(new java.awt.Dimension(250, 30));
+        nomProvR.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                nomProvRKeyTyped(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -148,6 +153,11 @@ public class ProveedoresP extends javax.swing.JPanel {
 
         dirProvR.setFont(new java.awt.Font("Noto Serif", 0, 18));
         dirProvR.setPreferredSize(new java.awt.Dimension(250, 30));
+        dirProvR.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                dirProvRKeyTyped(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
@@ -205,6 +215,11 @@ public class ProveedoresP extends javax.swing.JPanel {
 
         nomProvE.setFont(new java.awt.Font("Noto Serif", 0, 18));
         nomProvE.setPreferredSize(new java.awt.Dimension(250, 30));
+        nomProvE.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                nomProvEKeyTyped(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -267,6 +282,11 @@ public class ProveedoresP extends javax.swing.JPanel {
 
         dirProvE.setFont(new java.awt.Font("Noto Serif", 0, 18));
         dirProvE.setPreferredSize(new java.awt.Dimension(250, 30));
+        dirProvE.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                dirProvEKeyTyped(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
@@ -453,23 +473,36 @@ public class ProveedoresP extends javax.swing.JPanel {
     }//GEN-LAST:event_buscarBtnActionPerformed
 
     private void regProvBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regProvBtnActionPerformed
-        if(nomProvR.getText().trim().isEmpty()){
+        String nombre = nomProvR.getText().trim();
+        String email  = emailProvR.getText().trim();
+        if (nombre.isEmpty()) {
             labelincR.setText("El nombre es obligatorio");
-        } else {
-            if(conect.insertarProveedor(nomProvR.getText().trim(), telProvR.getText().trim(),
-                    emailProvR.getText().trim(), dirProvR.getText().trim())){
-                mostrarTabla("");
-                registroDialog.setVisible(false);
-            }
+            return;
+        }
+        if (!email.isEmpty() && (!email.contains("@") || !email.contains("."))) {
+            labelincR.setText("El email no tiene un formato válido");
+            return;
+        }
+        if (conect.insertarProveedor(nombre, telProvR.getText().trim(), email, dirProvR.getText().trim())) {
+            mostrarTabla("");
+            registroDialog.setVisible(false);
         }
     }//GEN-LAST:event_regProvBtnActionPerformed
 
     private void editProvBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editProvBtnActionPerformed
-        if(nomProvE.getText().trim().isEmpty()){
+        String nombre = nomProvE.getText().trim();
+        String email  = emailProvE.getText().trim();
+        if (nombre.isEmpty()) {
             labelincE.setText("El nombre es obligatorio");
-        } else {
-            if(conect.editarProveedor(idProv, nomProvE.getText().trim(), telProvE.getText().trim(),
-                    emailProvE.getText().trim(), dirProvE.getText().trim())){
+            return;
+        }
+        if (!email.isEmpty() && (!email.contains("@") || !email.contains("."))) {
+            labelincE.setText("El email no tiene un formato válido");
+            return;
+        }
+        int conf = Mise.JOptionYesNo("¿Confirmar los cambios al proveedor?", "Editar Proveedor");
+        if (conf == 0) {
+            if (conect.editarProveedor(idProv, nombre, telProvE.getText().trim(), email, dirProvE.getText().trim())) {
                 mostrarTabla("");
                 editarDialog.setVisible(false);
             }
@@ -495,6 +528,40 @@ public class ProveedoresP extends javax.swing.JPanel {
             evt.consume();
         }
     }//GEN-LAST:event_telProvEKeyTyped
+
+    private void nomProvRKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nomProvRKeyTyped
+        char letra = evt.getKeyChar();
+        if (!Cake.letrasMayus(letra) && !Cake.letrasMinus(letra) && !Cake.numeros(letra) && !Cake.inicioEspacios(letra)) {
+            evt.consume();
+        }
+        if (nomProvR.getText().isEmpty()) {
+            if (Cake.inicioEspacios(letra)) evt.consume();
+        } else {
+            if (Cake.espacios(nomProvR.getText(), letra)) evt.consume();
+        }
+        if (Cake.tamaño(nomProvR.getText(), 150)) evt.consume();
+    }//GEN-LAST:event_nomProvRKeyTyped
+
+    private void nomProvEKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nomProvEKeyTyped
+        char letra = evt.getKeyChar();
+        if (!Cake.letrasMayus(letra) && !Cake.letrasMinus(letra) && !Cake.numeros(letra) && !Cake.inicioEspacios(letra)) {
+            evt.consume();
+        }
+        if (nomProvE.getText().isEmpty()) {
+            if (Cake.inicioEspacios(letra)) evt.consume();
+        } else {
+            if (Cake.espacios(nomProvE.getText(), letra)) evt.consume();
+        }
+        if (Cake.tamaño(nomProvE.getText(), 150)) evt.consume();
+    }//GEN-LAST:event_nomProvEKeyTyped
+
+    private void dirProvRKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_dirProvRKeyTyped
+        if (Cake.tamaño(dirProvR.getText(), 300)) evt.consume();
+    }//GEN-LAST:event_dirProvRKeyTyped
+
+    private void dirProvEKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_dirProvEKeyTyped
+        if (Cake.tamaño(dirProvE.getText(), 300)) evt.consume();
+    }//GEN-LAST:event_dirProvEKeyTyped
 
     public void mostrarTabla(String filtro){
         Mise.limpiarTabla(modelo);
