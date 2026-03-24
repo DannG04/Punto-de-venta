@@ -37,6 +37,7 @@ public class Interfaz extends javax.swing.JFrame {
     //Administracion
     ComprasP comPanel;
     EmpleadosP empPanel;
+    CategoriasP catPanel;
     
     //Conexion
     ConexionBD conect = new ConexionBD();
@@ -80,6 +81,7 @@ public class Interfaz extends javax.swing.JFrame {
         comp1 = new javax.swing.JMenuItem();
         emp2 = new javax.swing.JMenuItem();
         regV3 = new javax.swing.JMenuItem();
+        cat5 = new javax.swing.JMenuItem();
         balG5 = new javax.swing.JMenuItem();
         estR6 = new javax.swing.JMenuItem();
         vtasHoy7 = new javax.swing.JMenuItem();
@@ -149,6 +151,14 @@ public class Interfaz extends javax.swing.JFrame {
             }
         });
         adminPM.add(regV3);
+
+        cat5.setText("Categorías");
+        cat5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cat5ActionPerformed(evt);
+            }
+        });
+        adminPM.add(cat5);
 
         balG5.setText("Balance General");
         balG5.addActionListener(new java.awt.event.ActionListener() {
@@ -658,6 +668,10 @@ public class Interfaz extends javax.swing.JFrame {
         visibilidad(3, 3);
     }//GEN-LAST:event_regV3ActionPerformed
 
+    private void cat5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cat5ActionPerformed
+        visibilidad(3, 4);
+    }//GEN-LAST:event_cat5ActionPerformed
+
     private void boton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton7ActionPerformed
         visibilidad(7, 0);
     }//GEN-LAST:event_boton7ActionPerformed
@@ -793,6 +807,7 @@ public class Interfaz extends javax.swing.JFrame {
         comPanel.setVisible(false);
         empPanel.setVisible(false);
         docsPanel.setVisible(false);
+        catPanel.setVisible(false);
         switch(b){
             case 1://Panel de Compras
                 getContentPane().add(comPanel, java.awt.BorderLayout.CENTER);
@@ -811,6 +826,12 @@ public class Interfaz extends javax.swing.JFrame {
                 this.add(docsPanel);
                 docsPanel.mostrarTablaVentas();
                 docsPanel.setVisible(true);
+                break;
+            case 4://Panel de Categorías
+                getContentPane().add(catPanel, java.awt.BorderLayout.CENTER);
+                this.add(catPanel);
+                catPanel.mostrarTabla();
+                catPanel.setVisible(true);
                 break;
         }
     }
@@ -880,11 +901,13 @@ public class Interfaz extends javax.swing.JFrame {
         //Administracion
         comPanel = new ComprasP();
         empPanel = new EmpleadosP();
+        catPanel = new CategoriasP();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPopupMenu adminPM;
     private javax.swing.JMenuItem balG5;
+    private javax.swing.JMenuItem cat5;
     private javax.swing.JToggleButton boton0;
     private javax.swing.JToggleButton boton1;
     private javax.swing.JToggleButton boton2;
