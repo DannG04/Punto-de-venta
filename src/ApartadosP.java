@@ -588,7 +588,8 @@ public class ApartadosP extends javax.swing.JPanel {
         jPanel1.add(jLabel7, gridBagConstraints);
 
         buskAp.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
-        buskAp.setPreferredSize(new java.awt.Dimension(1300, 30));
+        buskAp.setMinimumSize(new java.awt.Dimension(200, 30));
+        buskAp.setPreferredSize(new java.awt.Dimension(400, 30));
         buskAp.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 buskApKeyReleased(evt);
@@ -600,8 +601,9 @@ public class ApartadosP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel1.add(buskAp, gridBagConstraints);
 
         sumLabel.setBackground(new java.awt.Color(255, 255, 255));

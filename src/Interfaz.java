@@ -200,67 +200,64 @@ public class Interfaz extends javax.swing.JFrame {
 
         perfil.setBackground(new java.awt.Color(204, 226, 249));
         perfil.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/usuariu1.png"))); // NOI18N
-        perfil.setMaximumSize(new java.awt.Dimension(90, 90));
-        perfil.setMinimumSize(new java.awt.Dimension(90, 90));
-        perfil.setPreferredSize(new java.awt.Dimension(160, 160));
+        perfil.setMinimumSize(new java.awt.Dimension(80, 80));
+        perfil.setPreferredSize(new java.awt.Dimension(120, 120));
         perfil.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 perfilMouseEntered(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 12, 12, 0);
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 12, 12);
         panelPrin.add(perfil, gridBagConstraints);
 
-        closeSesion.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        closeSesion.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
         closeSesion.setForeground(new java.awt.Color(78, 150, 150));
         closeSesion.setText("Cerrar sesión");
-        closeSesion.setMaximumSize(new java.awt.Dimension(115, 25));
-        closeSesion.setMinimumSize(new java.awt.Dimension(115, 25));
-        closeSesion.setPreferredSize(new java.awt.Dimension(160, 60));
+        closeSesion.setMinimumSize(new java.awt.Dimension(120, 40));
+        closeSesion.setPreferredSize(new java.awt.Dimension(140, 50));
         closeSesion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeSesionActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 12);
         panelPrin.add(closeSesion, gridBagConstraints);
 
-        initerDia.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        initerDia.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
         initerDia.setForeground(new java.awt.Color(78, 150, 150));
         initerDia.setText("Iniciar día");
-        initerDia.setMaximumSize(new java.awt.Dimension(115, 25));
-        initerDia.setMinimumSize(new java.awt.Dimension(115, 25));
-        initerDia.setPreferredSize(new java.awt.Dimension(160, 60));
+        initerDia.setMinimumSize(new java.awt.Dimension(120, 40));
+        initerDia.setPreferredSize(new java.awt.Dimension(140, 50));
         initerDia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 initerDiaActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 12);
         panelPrin.add(initerDia, gridBagConstraints);
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/fondo.jpg"))); // NOI18N
         jLabel3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jLabel3.setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
-        jLabel3.setMinimumSize(new java.awt.Dimension(1620, 990));
-        jLabel3.setPreferredSize(new java.awt.Dimension(1620, 990));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridheight = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
         panelPrin.add(jLabel3, gridBagConstraints);
 
         getContentPane().add(panelPrin, java.awt.BorderLayout.CENTER);
