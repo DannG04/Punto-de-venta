@@ -14,12 +14,15 @@ public class ComprasP extends javax.swing.JPanel {
 
     String id_compra = "";
     ConexionBD conect = new ConexionBD();
-    
+
     DefaultTableModel modeloCom = new DefaultTableModel();
     DefaultTableModel modeloProdCom = new DefaultTableModel();
     DefaultTableModel modeloProd = new DefaultTableModel();
-    
+
     boolean ins = true;
+
+    // Proveedor
+    private java.util.ArrayList<Integer> proveedorIds = new java.util.ArrayList<>();
 
     /**
      * Creates new form ComprasP
@@ -43,6 +46,8 @@ public class ComprasP extends javax.swing.JPanel {
 
         comDialog = new javax.swing.JDialog();
         panelRegCompra = new javax.swing.JPanel();
+        jLabelProv = new javax.swing.JLabel();
+        proveedorCombo = new javax.swing.JComboBox<>();
         jLabel4 = new javax.swing.JLabel();
         hechoB1 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -76,19 +81,39 @@ public class ComprasP extends javax.swing.JPanel {
 
         comDialog.setTitle("Compras");
         comDialog.setAlwaysOnTop(true);
-        comDialog.setMinimumSize(new java.awt.Dimension(550, 260));
+        comDialog.setMinimumSize(new java.awt.Dimension(550, 320));
         comDialog.setModal(true);
-        comDialog.setSize(new java.awt.Dimension(550, 260));
+        comDialog.setSize(new java.awt.Dimension(550, 320));
         comDialog.getContentPane().setLayout(new java.awt.CardLayout());
 
         panelRegCompra.setLayout(new java.awt.GridBagLayout());
+
+        jLabelProv.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabelProv.setForeground(new java.awt.Color(78, 150, 150));
+        jLabelProv.setText("Proveedor:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.insets = new java.awt.Insets(20, 20, 10, 10);
+        panelRegCompra.add(jLabelProv, gridBagConstraints);
+
+        proveedorCombo.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        proveedorCombo.setPreferredSize(new java.awt.Dimension(250, 30));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(20, 10, 10, 20);
+        panelRegCompra.add(proveedorCombo, gridBagConstraints);
 
         jLabel4.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(78, 150, 150));
         jLabel4.setText("Descripcion:");
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
+        gridBagConstraints.insets = new java.awt.Insets(10, 20, 20, 10);
         panelRegCompra.add(jLabel4, gridBagConstraints);
 
         hechoB1.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
@@ -102,7 +127,7 @@ public class ComprasP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         panelRegCompra.add(hechoB1, gridBagConstraints);
@@ -119,6 +144,8 @@ public class ComprasP extends javax.swing.JPanel {
         jScrollPane2.setViewportView(rasF);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         panelRegCompra.add(jScrollPane2, gridBagConstraints);
 
@@ -374,6 +401,7 @@ public class ComprasP extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void agreCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agreCompraActionPerformed
+        cargarProveedores();
         comDialog.setVisible(true);
     }//GEN-LAST:event_agreCompraActionPerformed
 
@@ -393,7 +421,12 @@ public class ComprasP extends javax.swing.JPanel {
             Mise.JOption("El campo debe ser completado", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         } else {
             String[] campos = {Interfaz.idVendedor, rasF.getText(), "0"};
-            id_compra = conect.insertarCompra(campos);
+            int idProvSeleccionado = -1;
+            int idx = proveedorCombo.getSelectedIndex();
+            if(idx > 0 && idx <= proveedorIds.size()){
+                idProvSeleccionado = proveedorIds.get(idx - 1);
+            }
+            id_compra = conect.insertarCompraConProveedor(campos, idProvSeleccionado);
             mostrarTablaProd();
             mostrarTablaProdCom();
             //Se hace visible el dialog
@@ -530,6 +563,23 @@ public class ComprasP extends javax.swing.JPanel {
         codP.setText("" + tablaProd.getValueAt(tablaProd.getSelectedRow(), 0));
     }//GEN-LAST:event_tablaProdMouseClicked
     
+    public void cargarProveedores(){
+        proveedorIds.clear();
+        proveedorCombo.removeAllItems();
+        proveedorCombo.addItem("-- Sin proveedor --");
+        java.sql.ResultSet rs = conect.obtenerProveedores();
+        if(rs != null){
+            try{
+                while(rs.next()){
+                    proveedorIds.add(rs.getInt("id_proveedor"));
+                    proveedorCombo.addItem(rs.getString("nombre"));
+                }
+            } catch(java.sql.SQLException e){
+                System.out.println("Error al cargar proveedores");
+            }
+        }
+    }
+
     public void mostrarTablaCom(){
         Mise.limpiarTabla(modeloCom);
         java.sql.ResultSet rs = conect.query("SELECT * FROM compras");
@@ -586,6 +636,7 @@ public class ComprasP extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabelProv;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -597,6 +648,7 @@ public class ComprasP extends javax.swing.JPanel {
     private javax.swing.JPanel panelRegProdC;
     private javax.swing.JFormattedTextField precP;
     private javax.swing.JDialog prodComDialog;
+    private javax.swing.JComboBox<String> proveedorCombo;
     private javax.swing.JTextPane rasF;
     private javax.swing.JTable tablaCompras;
     private javax.swing.JTable tablaProd;
