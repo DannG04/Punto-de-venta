@@ -19,13 +19,19 @@ public class InventarioP extends javax.swing.JPanel {
     static DefaultTableModel modelo = new DefaultTableModel();
     boolean aux = false;
     ConexionBD conect = new ConexionBD();
-    
+
+    // Categoría - IDs para mapeo en combos
+    private java.util.ArrayList<Integer> categoriaIds = new java.util.ArrayList<>();
+    private java.util.ArrayList<Integer> filtroCategoriaIds = new java.util.ArrayList<>();
+    private boolean cargandoFiltro = false; // evita que el listener se dispare al poblar el combo
+
     /**
      * Creates new form Inventario
      */
     public InventarioP() {
         initComponents();
         modelo=(DefaultTableModel)tablaVentas.getModel();
+        cargarFiltroCategorias();
         mostrarTabla("");
     }
 
@@ -51,6 +57,8 @@ public class InventarioP extends javax.swing.JPanel {
         jLabel7 = new javax.swing.JLabel();
         codigoProvField = new javax.swing.JFormattedTextField();
         checkGenerarCodigo = new javax.swing.JCheckBox();
+        jLabelCategoria = new javax.swing.JLabel();
+        categoriaCombo = new javax.swing.JComboBox<>();
         labelinc = new javax.swing.JLabel();
         hechoIns = new javax.swing.JButton();
         hechoAct = new javax.swing.JButton();
@@ -60,6 +68,8 @@ public class InventarioP extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         buskProd = new javax.swing.JFormattedTextField();
         sumLabel = new javax.swing.JLabel();
+        filtroCategoriaLabel = new javax.swing.JLabel();
+        filtroCategoria = new javax.swing.JComboBox<>();
         panelBotones = new javax.swing.JPanel();
         agB = new javax.swing.JButton();
         eliB = new javax.swing.JButton();
@@ -68,10 +78,10 @@ public class InventarioP extends javax.swing.JPanel {
         tablaVentas = new javax.swing.JTable();
 
         jDialog1.setAlwaysOnTop(true);
-        jDialog1.setMinimumSize(new java.awt.Dimension(550, 520));
+        jDialog1.setMinimumSize(new java.awt.Dimension(550, 580));
         jDialog1.setModal(true);
-        jDialog1.setPreferredSize(new java.awt.Dimension(550, 520));
-        jDialog1.setSize(new java.awt.Dimension(550, 520));
+        jDialog1.setPreferredSize(new java.awt.Dimension(550, 580));
+        jDialog1.setSize(new java.awt.Dimension(550, 580));
         jDialog1.getContentPane().setLayout(new java.awt.GridBagLayout());
 
         leibel.setFont(new java.awt.Font("Noto Serif", 1, 17)); // NOI18N
@@ -207,13 +217,33 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
         jDialog1.getContentPane().add(checkGenerarCodigo, gridBagConstraints);
 
+        jLabelCategoria.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        jLabelCategoria.setForeground(new java.awt.Color(78, 150, 150));
+        jLabelCategoria.setText("Categoría:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.ipadx = 16;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jDialog1.getContentPane().add(jLabelCategoria, gridBagConstraints);
+
+        categoriaCombo.setFont(new java.awt.Font("Noto Serif", 0, 16));
+        categoriaCombo.setPreferredSize(new java.awt.Dimension(200, 35));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jDialog1.getContentPane().add(categoriaCombo, gridBagConstraints);
+
         labelinc.setFont(new java.awt.Font("Noto Serif", 0, 12)); // NOI18N
         labelinc.setForeground(new java.awt.Color(204, 0, 51));
         labelinc.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelinc.setText(" ");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.gridwidth = 2;
         jDialog1.getContentPane().add(labelinc, gridBagConstraints);
 
@@ -227,7 +257,7 @@ public class InventarioP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(30, 10, 10, 10);
         jDialog1.getContentPane().add(hechoIns, gridBagConstraints);
@@ -243,7 +273,7 @@ public class InventarioP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(30, 10, 10, 10);
         jDialog1.getContentPane().add(hechoAct, gridBagConstraints);
@@ -287,7 +317,8 @@ public class InventarioP extends javax.swing.JPanel {
         jPanel1.add(jLabel1, gridBagConstraints);
 
         buskProd.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
-        buskProd.setPreferredSize(new java.awt.Dimension(1300, 30));
+        buskProd.setMinimumSize(new java.awt.Dimension(200, 30));
+        buskProd.setPreferredSize(new java.awt.Dimension(400, 30));
         buskProd.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 buskProdKeyReleased(evt);
@@ -299,8 +330,9 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel1.add(buskProd, gridBagConstraints);
 
         sumLabel.setBackground(new java.awt.Color(255, 255, 255));
@@ -315,6 +347,30 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel1.add(sumLabel, gridBagConstraints);
+
+        filtroCategoriaLabel.setFont(new java.awt.Font("Noto Serif", 1, 16));
+        filtroCategoriaLabel.setForeground(new java.awt.Color(78, 150, 150));
+        filtroCategoriaLabel.setText("Categoría:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
+        jPanel1.add(filtroCategoriaLabel, gridBagConstraints);
+
+        filtroCategoria.setFont(new java.awt.Font("Noto Serif", 0, 16));
+        filtroCategoria.setPreferredSize(new java.awt.Dimension(300, 30));
+        filtroCategoria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filtroCategoriaActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 0);
+        jPanel1.add(filtroCategoria, gridBagConstraints);
 
         add(jPanel1, java.awt.BorderLayout.NORTH);
 
@@ -374,11 +430,11 @@ public class InventarioP extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Código", "Producto", "Cantidad", "Precio Mayoreo", "Precio Menudeo"
+                "Código", "Producto", "Cantidad", "Precio Mayoreo", "Precio Menudeo", "Categoría"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -436,6 +492,9 @@ public class InventarioP extends javax.swing.JPanel {
         codigoProvField.setEnabled(true);
         checkGenerarCodigo.setEnabled(true);
         
+        // Cargar categorías activas en combo
+        cargarCategoriasCombo();
+
         hechoIns.setVisible(true);
         hechoAct.setVisible(false);
         jDialog1.setVisible(true);
@@ -455,6 +514,9 @@ public class InventarioP extends javax.swing.JPanel {
             codigoProvField.setEnabled(false);
             checkGenerarCodigo.setEnabled(false);
             
+            // Cargar categorías activas en combo
+            cargarCategoriasCombo();
+
             //MOSTRAR LOS DATOS EN EL FIELD
             mostrarDAct(a);
             jDialog1.setVisible(true);
@@ -511,7 +573,8 @@ public class InventarioP extends javax.swing.JPanel {
                     }
                     
                     String campos[] = {codigoProducto, nom.getText(), cadd.getText(), precMay.getText(), precMen.getText()};
-                    conect.insertarProductoConCodigo(campos);
+                    Integer idCat = getSelectedCategoriaId();
+                    conect.insertarProductoConCodigoYCategoria(campos, idCat);
                     mostrarTabla("");
                     
                     // Limpiar campos
@@ -538,7 +601,8 @@ public class InventarioP extends javax.swing.JPanel {
                     int a = tablaVentas.getSelectedRow();
                     String elemento = "" + modelo.getValueAt(a, 0);
                     String[] campos = {nom.getText(), cadd.getText(), precMay.getText(), precMen.getText()};
-                    conect.actualizarProducto(elemento, campos);
+                    Integer idCat = getSelectedCategoriaId();
+                    conect.actualizarProductoConCategoria(elemento, campos, idCat);
                     mostrarTabla("");
                     jDialog1.setVisible(false);
                 }
@@ -623,7 +687,7 @@ public class InventarioP extends javax.swing.JPanel {
 
     private void buskProdKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buskProdKeyReleased
         String busqueda = buskProd.getText();
-        String instruccion = "SELECT * FROM producto WHERE nombre LIKE '%" + busqueda + "%' OR CAST(id_producto AS TEXT) LIKE '%" + busqueda + "%' ORDER BY id_producto;";
+        String instruccion = "SELECT p.*, c.nombre AS categoria_nombre FROM producto p LEFT JOIN categoria c ON p.id_categoria = c.id_categoria WHERE p.nombre LIKE '%" + busqueda + "%' OR CAST(p.id_producto AS TEXT) LIKE '%" + busqueda + "%' ORDER BY p.id_producto;";
         if(!buskProd.getText().isEmpty()){
             mostrarTabla(instruccion);
         }
@@ -658,18 +722,25 @@ public class InventarioP extends javax.swing.JPanel {
     public final void mostrarTabla(String inst){
         Mise.limpiarTabla(modelo);
         if(inst.isEmpty()){
-            inst = "SELECT * FROM producto ORDER BY id_producto";
+            inst = "SELECT p.*, c.nombre AS categoria_nombre FROM producto p LEFT JOIN categoria c ON p.id_categoria = c.id_categoria ORDER BY p.id_producto";
         }
-        llenarTabla(inst);
+        java.sql.ResultSet rs = conect.query(inst);
+        if (rs == null) {
+            // Fallback: la tabla categoria puede no existir aún
+            rs = conect.query("SELECT *, '' AS categoria_nombre FROM producto ORDER BY id_producto");
+        }
+        llenarTabla(rs);
     }
     
-    public void llenarTabla(String instruccion){
-        java.sql.ResultSet rs = conect.query(instruccion);
+    public void llenarTabla(java.sql.ResultSet rs){
+        if (rs == null) return;
         try{
             while(rs.next()){
-                // Incluir código de barras en la tabla (opcional, puede no mostrarse en la tabla visual)
-                modelo.addRow( new Object[]{rs.getString("id_producto"), rs.getString("nombre"), rs.getInt("cantidad"), 
-                    rs.getDouble("precio_mayoreo"), rs.getDouble("precio_menudeo")});
+                String catNombre = "";
+                try { catNombre = rs.getString("categoria_nombre"); } catch(Exception ex) { /* columna no existe en query */ }
+                if (catNombre == null) catNombre = "";
+                modelo.addRow( new Object[]{rs.getString("id_producto"), rs.getString("nombre"), rs.getInt("cantidad"),
+                    rs.getDouble("precio_mayoreo"), rs.getDouble("precio_menudeo"), catNombre});
             }
         }catch(java.sql.SQLException e){
             System.out.println("Error al mostrar el inventario: " + e.getMessage());
@@ -687,6 +758,19 @@ public class InventarioP extends javax.swing.JPanel {
         // Mostrar el código actual en el campo (solo lectura)
         codigoProvField.setText(elemento);
         checkGenerarCodigo.setSelected(false);
+
+        // Seleccionar la categoría actual en el combo
+        String catActual = "" + modelo.getValueAt(a, 5);
+        if (catActual != null && !catActual.isEmpty()) {
+            for (int i = 0; i < categoriaCombo.getItemCount(); i++) {
+                if (categoriaCombo.getItemAt(i).equals(catActual)) {
+                    categoriaCombo.setSelectedIndex(i);
+                    break;
+                }
+            }
+        } else {
+            categoriaCombo.setSelectedIndex(0); // "Sin categoría"
+        }
     }
     
     // Método para mostrar código de barras en un diálogo
@@ -845,16 +929,82 @@ public class InventarioP extends javax.swing.JPanel {
         }
     }
     
-    
+    // ── Métodos de categoría ─────────────────────────────────────────
+
+    /** Carga las categorías activas en el combo del diálogo agregar/editar producto */
+    private void cargarCategoriasCombo() {
+        categoriaCombo.removeAllItems();
+        categoriaIds.clear();
+        categoriaCombo.addItem("Sin categoría");
+        categoriaIds.add(0);
+        java.sql.ResultSet rs = conect.obtenerCategorias();
+        if (rs != null) {
+            try {
+                while (rs.next()) {
+                    categoriaIds.add(rs.getInt("id_categoria"));
+                    categoriaCombo.addItem(rs.getString("nombre"));
+                }
+            } catch (java.sql.SQLException e) {
+                System.out.println("Error al cargar categorías: " + e.getMessage());
+            }
+        }
+    }
+
+    /** Carga las categorías en el combo filtro encima de la tabla */
+    public void cargarFiltroCategorias() {
+        cargandoFiltro = true;
+        filtroCategoria.removeAllItems();
+        filtroCategoriaIds.clear();
+        filtroCategoria.addItem("Todas");
+        filtroCategoriaIds.add(0);
+        java.sql.ResultSet rs = conect.obtenerCategorias();
+        if (rs != null) {
+            try {
+                while (rs.next()) {
+                    filtroCategoriaIds.add(rs.getInt("id_categoria"));
+                    filtroCategoria.addItem(rs.getString("nombre"));
+                }
+            } catch (java.sql.SQLException e) {
+                System.out.println("Error al cargar filtro categorías: " + e.getMessage());
+            }
+        }
+        cargandoFiltro = false;
+    }
+
+    /** Obtiene el ID de la categoría seleccionada en el combo del diálogo, null si "Sin categoría" */
+    private Integer getSelectedCategoriaId() {
+        int idx = categoriaCombo.getSelectedIndex();
+        if (idx <= 0) return null;
+        return categoriaIds.get(idx);
+    }
+
+    /** Acción del combo filtro de categoría */
+    private void filtroCategoriaActionPerformed(java.awt.event.ActionEvent evt) {
+        if (cargandoFiltro) return;
+        int idx = filtroCategoria.getSelectedIndex();
+        if (idx <= 0) {
+            // "Todas" – mostrar todo
+            mostrarTabla("");
+        } else {
+            int idCat = filtroCategoriaIds.get(idx);
+            String inst = "SELECT p.*, c.nombre AS categoria_nombre FROM producto p LEFT JOIN categoria c ON p.id_categoria = c.id_categoria WHERE p.id_categoria = " + idCat + " ORDER BY p.id_producto";
+            mostrarTabla(inst);
+        }
+    }
+
+
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton actB;
     private javax.swing.JButton agB;
     private javax.swing.JFormattedTextField buskProd;
     private javax.swing.JFormattedTextField cadd;
+    private javax.swing.JComboBox<String> categoriaCombo;
     private javax.swing.JCheckBox checkGenerarCodigo;
     private javax.swing.JFormattedTextField codigoProvField;
     private javax.swing.JButton eliB;
+    private javax.swing.JComboBox<String> filtroCategoria;
+    private javax.swing.JLabel filtroCategoriaLabel;
     private javax.swing.JButton hechoAct;
     private javax.swing.JButton hechoIns;
     private javax.swing.JDialog jDialog1;
@@ -864,6 +1014,7 @@ public class InventarioP extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabelCategoria;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

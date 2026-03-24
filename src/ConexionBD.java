@@ -16,7 +16,7 @@ public class ConexionBD {
     String url = "jdbc:postgresql://localhost:5432/";
     String nameBD = "punto_de_venta";
     String usuario = "postgres";
-    String contra = "root";
+    String contra = "Daniel183.";
     
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     
@@ -842,5 +842,125 @@ public class ConexionBD {
             System.out.println("Error: " + e.toString());
         }
         return resultado;
+    }
+
+    // FUNCIONES DE LA TABLA CATEGORIA
+    public boolean insertarCategoria(String nombre, String descripcion) {//Función para insertar una categoría
+        boolean band = false;
+        String instruccion = "INSERT INTO categoria(nombre, descripcion) VALUES(?,?);";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, nombre);
+            pstm.setString(2, descripcion.isEmpty() ? null : descripcion);
+            pstm.executeUpdate();
+            conexion.close();
+            band = true;
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return band;
+    }
+
+    public boolean editarCategoria(int id, String nombre, String descripcion) {//Función para editar una categoría
+        boolean band = false;
+        String instruccion = "UPDATE categoria SET nombre=?, descripcion=? WHERE id_categoria=?;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, nombre);
+            pstm.setString(2, descripcion.isEmpty() ? null : descripcion);
+            pstm.setInt(3, id);
+            pstm.executeUpdate();
+            conexion.close();
+            band = true;
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return band;
+    }
+
+    public boolean cambiarEstatusCategoria(int id, String estatus) {//Función para cambiar estatus de una categoría
+        boolean band = false;
+        String instruccion = "UPDATE categoria SET estatus=? WHERE id_categoria=?;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, estatus);
+            pstm.setInt(2, id);
+            pstm.executeUpdate();
+            conexion.close();
+            band = true;
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return band;
+    }
+
+    public ResultSet obtenerCategorias() {//Función para obtener categorías activas
+        return query("SELECT id_categoria, nombre FROM categoria WHERE estatus='Activo' ORDER BY nombre");
+    }
+
+    public ResultSet obtenerTodasCategorias() {//Función para obtener todas las categorías
+        return query("SELECT id_categoria, nombre, descripcion, estatus FROM categoria ORDER BY id_categoria");
+    }
+
+    public ResultSet buscarCategoriasPorNombre(String filtro) {//Función para buscar categorías por nombre
+        ResultSet rs = null;
+        String instruccion = "SELECT id_categoria, nombre, descripcion, estatus FROM categoria WHERE nombre ILIKE ? ORDER BY id_categoria";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, "%" + filtro + "%");
+            rs = pstm.executeQuery();
+        } catch (SQLException e) {
+            System.out.println("Error al buscar categorías: " + e.getMessage());
+        }
+        return rs;
+    }
+
+    // FUNCIONES DE PRODUCTO CON CATEGORÍA
+    public void insertarProductoConCodigoYCategoria(String[] datos, Integer idCategoria) {//Función para insertar un producto con código y categoría
+        String instruccion = "INSERT INTO producto(id_producto, nombre, cantidad, precio_mayoreo, precio_menudeo, id_categoria) VALUES (?,?,?,?,?,?);";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, datos[0]);
+            pstm.setString(2, datos[1]);
+            pstm.setInt(3, Integer.parseInt(datos[2]));
+            pstm.setDouble(4, Double.parseDouble(datos[3]));
+            pstm.setDouble(5, Double.parseDouble(datos[4]));
+            if (idCategoria != null && idCategoria > 0) {
+                pstm.setInt(6, idCategoria);
+            } else {
+                pstm.setNull(6, Types.INTEGER);
+            }
+            pstm.executeUpdate();
+            conexion.close();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void actualizarProductoConCategoria(String ideprod, String[] datos, Integer idCategoria) {//Función para actualizar un producto con categoría
+        String instruccion = "UPDATE producto SET nombre=?, cantidad=?, precio_mayoreo=?, precio_menudeo=?, id_categoria=? WHERE id_producto=?;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, datos[0]);
+            pstm.setInt(2, Integer.parseInt(datos[1]));
+            pstm.setDouble(3, Double.parseDouble(datos[2]));
+            pstm.setDouble(4, Double.parseDouble(datos[3]));
+            if (idCategoria != null && idCategoria > 0) {
+                pstm.setInt(5, idCategoria);
+            } else {
+                pstm.setNull(5, Types.INTEGER);
+            }
+            pstm.setString(6, ideprod);
+            pstm.executeUpdate();
+            conexion.close();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

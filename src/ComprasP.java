@@ -156,10 +156,10 @@ public class ComprasP extends javax.swing.JPanel {
         prodComDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         prodComDialog.setTitle("Compras");
         prodComDialog.setAlwaysOnTop(true);
-        prodComDialog.setMinimumSize(new java.awt.Dimension(1400, 550));
+        prodComDialog.setMinimumSize(new java.awt.Dimension(800, 450));
         prodComDialog.setModal(true);
-        prodComDialog.setPreferredSize(new java.awt.Dimension(1400, 435));
-        prodComDialog.setSize(new java.awt.Dimension(1400, 550));
+        prodComDialog.setPreferredSize(new java.awt.Dimension(1000, 500));
+        prodComDialog.setSize(new java.awt.Dimension(1000, 500));
         prodComDialog.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 prodComDialogWindowClosing(evt);
