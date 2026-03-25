@@ -673,35 +673,34 @@ public class Interfaz extends javax.swing.JFrame {
     }// GEN-LAST:event_estR6ActionPerformed
 
     private void vtasHoy7ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_vtasHoy7ActionPerformed
-        java.util.Date hoy = new java.util.Date();
-        javax.swing.SpinnerDateModel modeloFecha = new javax.swing.SpinnerDateModel(
-            hoy, null, hoy, java.util.Calendar.DAY_OF_MONTH
-        );
-        javax.swing.JSpinner spinner = new javax.swing.JSpinner(modeloFecha);
-        javax.swing.JSpinner.DateEditor editor =
-            new javax.swing.JSpinner.DateEditor(spinner, "dd/MM/yyyy");
-        spinner.setEditor(editor);
-        spinner.setFont(new java.awt.Font("Noto Serif", java.awt.Font.PLAIN, 14));
+        CalendarioPanel calPanel = new CalendarioPanel();
 
-        javax.swing.JPanel panel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 4));
-        panel.add(new javax.swing.JLabel("Fecha:"));
-        panel.add(spinner);
+        javax.swing.JButton btnGenerar  = new javax.swing.JButton("Generar Reporte");
+        javax.swing.JButton btnCancelar = new javax.swing.JButton("Cancelar");
+        javax.swing.JPanel btnPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 6, 0));
+        btnPanel.add(btnCancelar);
+        btnPanel.add(btnGenerar);
 
-        Object[] botones = {"Generar Reporte", "Cancelar"};
-        int resultado = javax.swing.JOptionPane.showOptionDialog(
-            this, panel,
-            "Seleccionar fecha del reporte",
-            javax.swing.JOptionPane.DEFAULT_OPTION,
-            javax.swing.JOptionPane.PLAIN_MESSAGE,
-            null, botones, botones[0]
-        );
+        javax.swing.JPanel contenido = new javax.swing.JPanel(new java.awt.BorderLayout(0, 10));
+        contenido.setBorder(javax.swing.BorderFactory.createEmptyBorder(12, 12, 8, 12));
+        contenido.add(new javax.swing.JLabel("Seleccione la fecha del reporte:"), java.awt.BorderLayout.NORTH);
+        contenido.add(calPanel, java.awt.BorderLayout.CENTER);
+        contenido.add(btnPanel, java.awt.BorderLayout.SOUTH);
 
-        if (resultado == 0) {
-            java.util.Date seleccionada = (java.util.Date) spinner.getValue();
-            java.time.LocalDate fecha = seleccionada.toInstant()
-                .atZone(java.time.ZoneId.systemDefault())
-                .toLocalDate();
-            Excel.reporteDiario("Reporte_Diario", fecha);
+        javax.swing.JDialog dialog = new javax.swing.JDialog(this, "Reporte Diario", true);
+        dialog.setContentPane(contenido);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setAlwaysOnTop(true);
+
+        boolean[] confirmado = {false};
+        btnGenerar.addActionListener(e -> { confirmado[0] = true; dialog.dispose(); });
+        btnCancelar.addActionListener(e -> dialog.dispose());
+
+        dialog.setVisible(true);
+
+        if (confirmado[0]) {
+            Excel.reporteDiario("Reporte_Diario", calPanel.getFechaSeleccionada());
         }
     }// GEN-LAST:event_vtasHoy7ActionPerformed
 
