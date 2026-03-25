@@ -47,6 +47,7 @@ public class Interfaz extends javax.swing.JFrame {
     static String passwordBD = "";
 
     boolean iniDia = false;
+    javax.swing.Timer timerDia = null;
     Dimension tamanio = Toolkit.getDefaultToolkit().getScreenSize();
 
     /**
@@ -613,24 +614,26 @@ public class Interfaz extends javax.swing.JFrame {
 
     private void closeSesionActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_closeSesionActionPerformed
         // Cierra la sesión
-        if (!iniDia) {
-            Mise.JOption("Hasta luego", "Salir", javax.swing.JOptionPane.PLAIN_MESSAGE);
-            userActivo = false;
-            admActivo = false;
-            contraF1.setText("");
-            contInc.setText("");
-            eyeB1.setSelected(false);
-            eyeB1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/eye2.png")));
-            comboUsuarios();
-            iniSession.setVisible(true);
-            botones.setVisible(false);
-            panelPrin.setVisible(false);
-            horaPanel.setVisible(false);
-            this.setSize(430, 400);
-            this.setLocationRelativeTo(null);
-        } else {
-            Mise.JOption(null, "Debe terminar el día para cerrar sesión", javax.swing.JOptionPane.WARNING_MESSAGE);
+        if (timerDia != null) {
+            timerDia.stop();
+            timerDia = null;
         }
+        iniDia = false;
+        boton2.setVisible(false);
+        Mise.JOption("Hasta luego", "Salir", javax.swing.JOptionPane.PLAIN_MESSAGE);
+        userActivo = false;
+        admActivo = false;
+        contraF1.setText("");
+        contInc.setText("");
+        eyeB1.setSelected(false);
+        eyeB1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/eye2.png")));
+        comboUsuarios();
+        iniSession.setVisible(true);
+        botones.setVisible(false);
+        panelPrin.setVisible(false);
+        horaPanel.setVisible(false);
+        this.setSize(430, 400);
+        this.setLocationRelativeTo(null);
     }// GEN-LAST:event_closeSesionActionPerformed
 
     private void boton3MousePressed(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_boton3MousePressed
@@ -670,7 +673,36 @@ public class Interfaz extends javax.swing.JFrame {
     }// GEN-LAST:event_estR6ActionPerformed
 
     private void vtasHoy7ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_vtasHoy7ActionPerformed
-        Excel.reporteDiario("Reporte_Diario");
+        java.util.Date hoy = new java.util.Date();
+        javax.swing.SpinnerDateModel modeloFecha = new javax.swing.SpinnerDateModel(
+            hoy, null, hoy, java.util.Calendar.DAY_OF_MONTH
+        );
+        javax.swing.JSpinner spinner = new javax.swing.JSpinner(modeloFecha);
+        javax.swing.JSpinner.DateEditor editor =
+            new javax.swing.JSpinner.DateEditor(spinner, "dd/MM/yyyy");
+        spinner.setEditor(editor);
+        spinner.setFont(new java.awt.Font("Noto Serif", java.awt.Font.PLAIN, 14));
+
+        javax.swing.JPanel panel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 8, 4));
+        panel.add(new javax.swing.JLabel("Fecha:"));
+        panel.add(spinner);
+
+        Object[] botones = {"Generar Reporte", "Cancelar"};
+        int resultado = javax.swing.JOptionPane.showOptionDialog(
+            this, panel,
+            "Seleccionar fecha del reporte",
+            javax.swing.JOptionPane.DEFAULT_OPTION,
+            javax.swing.JOptionPane.PLAIN_MESSAGE,
+            null, botones, botones[0]
+        );
+
+        if (resultado == 0) {
+            java.util.Date seleccionada = (java.util.Date) spinner.getValue();
+            java.time.LocalDate fecha = seleccionada.toInstant()
+                .atZone(java.time.ZoneId.systemDefault())
+                .toLocalDate();
+            Excel.reporteDiario("Reporte_Diario", fecha);
+        }
     }// GEN-LAST:event_vtasHoy7ActionPerformed
 
     private void perfilMouseEntered(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_perfilMouseEntered
@@ -750,7 +782,35 @@ public class Interfaz extends javax.swing.JFrame {
                 horaPanel.setVisible(true);
                 this.setSize(tamanio.width, tamanio.height - 20);
                 this.setLocationRelativeTo(null);
+
+                initerDia.setVisible(false);
+                java.time.LocalTime ahora = java.time.LocalTime.now();
+                if (!(ahora.getHour() == 23 && ahora.getMinute() == 59)) {
+                    iniDia = true;
+                    boton2.setVisible(true);
+                }
+                if (timerDia == null) {
+                    timerDia = new javax.swing.Timer(30000, e -> verificarEstadoDia());
+                    timerDia.start();
+                }
             }
+        }
+    }
+
+    private void verificarEstadoDia() {
+        if (!userActivo) return;
+        java.time.LocalTime ahora = java.time.LocalTime.now();
+        boolean esHoraFin = ahora.getHour() == 23 && ahora.getMinute() == 59;
+
+        if (iniDia && esHoraFin) {
+            docsPanel.mostrarCierreCaja();
+            docsPanel.cierreCajaDialog.setVisible(true);
+            iniDia = false;
+            boton2.setVisible(false);
+            ventPanel.setVisible(false);
+        } else if (!iniDia && !esHoraFin) {
+            iniDia = true;
+            boton2.setVisible(true);
         }
     }
 
