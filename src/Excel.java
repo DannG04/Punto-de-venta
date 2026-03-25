@@ -507,9 +507,8 @@ public class Excel {
         }
     }
     
-    public static void reporteDiario(String nombreRD){//Método que genera el reporte diario
+    public static void reporteDiario(String nombreRD, java.time.LocalDate fecha){//Método que genera el reporte diario
         //Obtenemos la fecha
-        LocalDate fecha = LocalDate.now();
         String dia = String.valueOf(fecha.getDayOfMonth());
         String mes = String.valueOf(fecha.getMonthValue());
         String anio = String.valueOf(fecha.getYear());
@@ -545,7 +544,7 @@ public class Excel {
         filasOcup++;
         
         //Obtener la tabla
-        java.sql.ResultSet rs = conect.reporte_diario();
+        java.sql.ResultSet rs = conect.reporte_diario(fecha);
         Double[] datos = new Double[5];
         try{
             while(rs.next()){
