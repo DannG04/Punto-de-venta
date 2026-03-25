@@ -801,6 +801,20 @@ public class ConexionBD {
         }
         return rs;
     }
+
+    public ResultSet reporte_diario(java.time.LocalDate fecha) {//Función para obtener el reporte diario por fecha
+        ResultSet rs = null;
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            CallableStatement cstm = conexion.prepareCall("{call reporte_diario(?)}");
+            cstm.setDate(1, java.sql.Date.valueOf(fecha));
+            rs = cstm.executeQuery();
+            conexion.close();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return rs;
+    }
     
     public ResultSet seleccionarApartado(String idap) {
         ResultSet resultado = null;
