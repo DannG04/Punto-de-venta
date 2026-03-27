@@ -49,6 +49,7 @@ public class Interfaz extends javax.swing.JFrame {
     boolean iniDia = false;
     javax.swing.Timer timerDia = null;
     Dimension tamanio = Toolkit.getDefaultToolkit().getScreenSize();
+    Dimension tamanioMin = new Dimension(430, 430);
 
     /**
      * Creates new form Interfaz
@@ -59,6 +60,8 @@ public class Interfaz extends javax.swing.JFrame {
         fecha.start();
         comboUsuarios();
         inicializarPanels();
+        this.setSize(tamanioMin);
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -68,7 +71,7 @@ public class Interfaz extends javax.swing.JFrame {
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated
-    // Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
@@ -78,32 +81,13 @@ public class Interfaz extends javax.swing.JFrame {
         opcion2 = new javax.swing.JMenuItem();
         opcion3 = new javax.swing.JMenuItem();
         opcion4 = new javax.swing.JMenuItem();
-        adminPM = new javax.swing.JPopupMenu();
-        comp1 = new javax.swing.JMenuItem();
-        emp2 = new javax.swing.JMenuItem();
-        regV3 = new javax.swing.JMenuItem();
-        cat5 = new javax.swing.JMenuItem();
-        balG5 = new javax.swing.JMenuItem();
-        estR6 = new javax.swing.JMenuItem();
-        vtasHoy7 = new javax.swing.JMenuItem();
-        prov4 = new javax.swing.JMenuItem();
         panelPrin = new javax.swing.JPanel();
         perfil = new javax.swing.JButton();
         closeSesion = new javax.swing.JButton();
         initerDia = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
         botones = new javax.swing.JPanel();
-        boton0 = new javax.swing.JToggleButton();
-        boton1 = new javax.swing.JToggleButton();
-        boton2 = new javax.swing.JToggleButton();
-        boton3 = new javax.swing.JToggleButton();
-        boton4 = new javax.swing.JToggleButton();
-        boton5 = new javax.swing.JToggleButton();
-        boton6 = new javax.swing.JToggleButton();
-        boton7 = new javax.swing.JToggleButton();
-        boton8 = new javax.swing.JToggleButton();
         iniSession = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
+        fotoUserPrin = new javax.swing.JLabel();
         etiquetaN1 = new javax.swing.JLabel();
         etiquetaC1 = new javax.swing.JLabel();
         contraF1 = new javax.swing.JPasswordField();
@@ -114,6 +98,25 @@ public class Interfaz extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
         horaPanel = new javax.swing.JPanel();
         labelHora = new javax.swing.JLabel();
+        menuBar = new javax.swing.JMenuBar();
+        inicioButton = new javax.swing.JMenu();
+        inventButton = new javax.swing.JMenu();
+        ventasButton = new javax.swing.JMenu();
+        apartaButton = new javax.swing.JMenu();
+        clientesButton = new javax.swing.JMenu();
+        devolButton = new javax.swing.JMenu();
+        reportesButton = new javax.swing.JMenu();
+        gastosButton = new javax.swing.JMenuItem();
+        gananciasButton = new javax.swing.JMenuItem();
+        balgenButton = new javax.swing.JMenuItem();
+        estresultButton = new javax.swing.JMenuItem();
+        repdiarioButton = new javax.swing.JMenuItem();
+        administrButton = new javax.swing.JMenu();
+        comprasButton = new javax.swing.JMenuItem();
+        empleadosButton = new javax.swing.JMenuItem();
+        proveButton = new javax.swing.JMenuItem();
+        categButton = new javax.swing.JMenuItem();
+        regventasButton = new javax.swing.JMenuItem();
 
         popupMenu.setToolTipText("");
 
@@ -130,70 +133,6 @@ public class Interfaz extends javax.swing.JFrame {
         opcion4.setText("jMenuItem1");
         popupMenu.add(opcion4);
 
-        comp1.setText("Compras");
-        comp1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                comp1ActionPerformed(evt);
-            }
-        });
-        adminPM.add(comp1);
-
-        emp2.setText("Empleados");
-        emp2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                emp2ActionPerformed(evt);
-            }
-        });
-        adminPM.add(emp2);
-
-        prov4.setText("Proveedores");
-        prov4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                prov4ActionPerformed(evt);
-            }
-        });
-        adminPM.add(prov4);
-
-        regV3.setText("Registro de Ventas");
-        regV3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                regV3ActionPerformed(evt);
-            }
-        });
-        adminPM.add(regV3);
-
-        cat5.setText("Categorías");
-        cat5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cat5ActionPerformed(evt);
-            }
-        });
-        adminPM.add(cat5);
-
-        balG5.setText("Balance General");
-        balG5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                balG5ActionPerformed(evt);
-            }
-        });
-        adminPM.add(balG5);
-
-        estR6.setText("Estado de Resultados");
-        estR6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                estR6ActionPerformed(evt);
-            }
-        });
-        adminPM.add(estR6);
-
-        vtasHoy7.setText("Reporte Diario");
-        vtasHoy7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                vtasHoy7ActionPerformed(evt);
-            }
-        });
-        adminPM.add(vtasHoy7);
-
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Punto de Ventas");
         setMinimumSize(new java.awt.Dimension(430, 400));
@@ -209,208 +148,66 @@ public class Interfaz extends javax.swing.JFrame {
         panelPrin.setLayout(new java.awt.GridBagLayout());
 
         perfil.setBackground(new java.awt.Color(204, 226, 249));
-        perfil.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/usuariu1.png"))); // NOI18N
-        perfil.setMinimumSize(new java.awt.Dimension(80, 80));
-        perfil.setPreferredSize(new java.awt.Dimension(120, 120));
+        perfil.setMaximumSize(new java.awt.Dimension(90, 90));
+        perfil.setMinimumSize(new java.awt.Dimension(90, 90));
+        perfil.setPreferredSize(new java.awt.Dimension(160, 160));
+        perfil.setIcon(SvgIcon.load("/icons/userImagePrin.svg", 175));
         perfil.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 perfilMouseEntered(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 12, 12, 12);
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 12, 0);
         panelPrin.add(perfil, gridBagConstraints);
 
-        closeSesion.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        closeSesion.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         closeSesion.setForeground(new java.awt.Color(78, 150, 150));
         closeSesion.setText("Cerrar sesión");
-        closeSesion.setMinimumSize(new java.awt.Dimension(120, 40));
-        closeSesion.setPreferredSize(new java.awt.Dimension(140, 50));
+        closeSesion.setMaximumSize(new java.awt.Dimension(115, 25));
+        closeSesion.setMinimumSize(new java.awt.Dimension(115, 25));
+        closeSesion.setPreferredSize(new java.awt.Dimension(160, 60));
         closeSesion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeSesionActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 12);
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
         panelPrin.add(closeSesion, gridBagConstraints);
 
-        initerDia.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        initerDia.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         initerDia.setForeground(new java.awt.Color(78, 150, 150));
         initerDia.setText("Iniciar día");
-        initerDia.setMinimumSize(new java.awt.Dimension(120, 40));
-        initerDia.setPreferredSize(new java.awt.Dimension(140, 50));
+        initerDia.setMaximumSize(new java.awt.Dimension(115, 25));
+        initerDia.setMinimumSize(new java.awt.Dimension(115, 25));
+        initerDia.setPreferredSize(new java.awt.Dimension(160, 60));
         initerDia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 initerDiaActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 12);
-        panelPrin.add(initerDia, gridBagConstraints);
-
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/fondo.jpg"))); // NOI18N
-        jLabel3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        panelPrin.add(jLabel3, gridBagConstraints);
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
+        panelPrin.add(initerDia, gridBagConstraints);
 
         getContentPane().add(panelPrin, java.awt.BorderLayout.CENTER);
         panelPrin.setVisible(false);
 
         botones.setBackground(new java.awt.Color(204, 226, 249));
         botones.setLayout(new javax.swing.BoxLayout(botones, javax.swing.BoxLayout.Y_AXIS));
-
-        botonGrup.add(boton0);
-        boton0.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        boton0.setForeground(new java.awt.Color(78, 150, 150));
-        boton0.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/jom.png"))); // NOI18N
-        boton0.setText("Principal");
-        boton0.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        boton0.setMaximumSize(new java.awt.Dimension(300, 400));
-        boton0.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                boton0ActionPerformed(evt);
-            }
-        });
-        botones.add(boton0);
-        boton0.setVisible(false);
-
-        botonGrup.add(boton1);
-        boton1.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        boton1.setForeground(new java.awt.Color(78, 150, 150));
-        boton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/inv.png"))); // NOI18N
-        boton1.setText("Inventario");
-        boton1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        boton1.setMaximumSize(new java.awt.Dimension(300, 400));
-        boton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                boton1ActionPerformed(evt);
-            }
-        });
-        botones.add(boton1);
-        boton1.setVisible(false);
-
-        botonGrup.add(boton2);
-        boton2.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        boton2.setForeground(new java.awt.Color(78, 150, 150));
-        boton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/ventA.png"))); // NOI18N
-        boton2.setText("Ventas");
-        boton2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        boton2.setMaximumSize(new java.awt.Dimension(300, 400));
-        boton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                boton2ActionPerformed(evt);
-            }
-        });
-        botones.add(boton2);
-        boton2.setVisible(false);
-
-        botonGrup.add(boton3);
-        boton3.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        boton3.setForeground(new java.awt.Color(78, 150, 150));
-        boton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/carp.png"))); // NOI18N
-        boton3.setText("Administración");
-        boton3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        boton3.setMaximumSize(new java.awt.Dimension(300, 400));
-        boton3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                boton3MousePressed(evt);
-            }
-        });
-        botones.add(boton3);
-        boton3.setVisible(false);
-
-        botonGrup.add(boton4);
-        boton4.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        boton4.setForeground(new java.awt.Color(78, 150, 150));
-        boton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/doc.png"))); // NOI18N
-        boton4.setText("Sistema de Apartados");
-        boton4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        boton4.setMaximumSize(new java.awt.Dimension(300, 400));
-        boton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                boton4ActionPerformed(evt);
-            }
-        });
-        botones.add(boton4);
-        boton4.setVisible(false);
-
-        botonGrup.add(boton5);
-        boton5.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        boton5.setForeground(new java.awt.Color(78, 150, 150));
-        boton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/usuario.png"))); // NOI18N
-        boton5.setText("Registro de Clientes");
-        boton5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        boton5.setMaximumSize(new java.awt.Dimension(300, 400));
-        boton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                boton5ActionPerformed(evt);
-            }
-        });
-        botones.add(boton5);
-        boton5.setVisible(false);
-
-        botonGrup.add(boton6);
-        boton6.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        boton6.setForeground(new java.awt.Color(78, 150, 150));
-        boton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/dev.png"))); // NOI18N
-        boton6.setText("Devoluciones");
-        boton6.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        boton6.setMaximumSize(new java.awt.Dimension(300, 400));
-        boton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                boton6ActionPerformed(evt);
-            }
-        });
-        botones.add(boton6);
-        boton3.setVisible(false);
-
-        botonGrup.add(boton7);
-        boton7.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        boton7.setForeground(new java.awt.Color(78, 150, 150));
-        boton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/gtos.png"))); // NOI18N
-        boton7.setText("Gastos");
-        boton7.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        boton7.setMaximumSize(new java.awt.Dimension(300, 400));
-        boton7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                boton7ActionPerformed(evt);
-            }
-        });
-        botones.add(boton7);
-        boton3.setVisible(false);
-
-        botonGrup.add(boton8);
-        boton8.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        boton8.setForeground(new java.awt.Color(78, 150, 150));
-        boton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/gansias.png"))); // NOI18N
-        boton8.setText("Ganancias");
-        boton8.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        boton8.setMaximumSize(new java.awt.Dimension(300, 400));
-        boton8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                boton8ActionPerformed(evt);
-            }
-        });
-        botones.add(boton8);
-        boton3.setVisible(false);
-
         getContentPane().add(botones, java.awt.BorderLayout.WEST);
         botones.setVisible(false);
 
@@ -419,19 +216,20 @@ public class Interfaz extends javax.swing.JFrame {
         iniSession.setPreferredSize(new java.awt.Dimension(430, 400));
         iniSession.setLayout(new java.awt.GridBagLayout());
 
-        jLabel2.setFont(new java.awt.Font("Berlin Sans FB", 0, 36)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/usuariu1.png"))); // NOI18N
+        fotoUserPrin.setFont(new java.awt.Font("Berlin Sans FB", 0, 36)); // NOI18N
+        fotoUserPrin.setForeground(new java.awt.Color(102, 102, 102));
+        fotoUserPrin.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        fotoUserPrin.setIcon(SvgIcon.load("/icons/userImagePrin.svg", 175));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 25, 10);
-        iniSession.add(jLabel2, gridBagConstraints);
+        iniSession.add(fotoUserPrin, gridBagConstraints);
 
         etiquetaN1.setFont(new java.awt.Font("Noto Serif", 1, 12)); // NOI18N
         etiquetaN1.setForeground(new java.awt.Color(78, 150, 150));
+        etiquetaN1.setIcon(SvgIcon.load("/icons/userIcon.svg", SvgIcon.MEDIUM));
         etiquetaN1.setText("Nombre de Usuario:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -442,6 +240,7 @@ public class Interfaz extends javax.swing.JFrame {
 
         etiquetaC1.setFont(new java.awt.Font("Noto Serif", 1, 12)); // NOI18N
         etiquetaC1.setForeground(new java.awt.Color(78, 150, 150));
+        etiquetaC1.setIcon(SvgIcon.load("/icons/passwordIcon.svg", SvgIcon.MEDIUM));
         etiquetaC1.setText("Contraseña:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -452,6 +251,7 @@ public class Interfaz extends javax.swing.JFrame {
 
         contraF1.setFont(new java.awt.Font("Noto Serif", 0, 12)); // NOI18N
         contraF1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        contraF1.setMinimumSize(new java.awt.Dimension(180, 25));
         contraF1.setPreferredSize(new java.awt.Dimension(180, 25));
         contraF1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -462,11 +262,11 @@ public class Interfaz extends javax.swing.JFrame {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
         iniSession.add(contraF1, gridBagConstraints);
 
         eyeB1.setBackground(new java.awt.Color(255, 255, 254));
-        eyeB1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/eye2.png"))); // NOI18N
+        eyeB1.setIcon(SvgIcon.load("/icons/closeEye.svg", SvgIcon.LARGE));
         eyeB1.setBorderPainted(false);
         eyeB1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -504,16 +304,18 @@ public class Interfaz extends javax.swing.JFrame {
         iniSession.add(veriB1, gridBagConstraints);
 
         usuarioBox.setFont(new java.awt.Font("Noto Serif", 0, 12)); // NOI18N
-        usuarioBox.setModel(new javax.swing.DefaultComboBoxModel<>(
-                new String[] { "Daniel Gonzalez", "Gael Eduardo García", "Elisa Sánchez" }));
+        usuarioBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Daniel Gonzalez", "Gael Eduardo García", "Elisa Sánchez" }));
         usuarioBox.setPreferredSize(new java.awt.Dimension(180, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 10);
         iniSession.add(usuarioBox, gridBagConstraints);
-        iniSession.add(jSeparator1, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 0;
+        iniSession.add(jSeparator1, gridBagConstraints);
 
         getContentPane().add(iniSession, java.awt.BorderLayout.PAGE_START);
 
@@ -530,139 +332,204 @@ public class Interfaz extends javax.swing.JFrame {
         getContentPane().add(horaPanel, java.awt.BorderLayout.SOUTH);
         horaPanel.setVisible(false);
 
+        inicioButton.setText("Inicio");
+        inicioButton.setIcon(SvgIcon.load("/icons/home.svg"));
+        inicioButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                inicioButtonMouseClicked(evt);
+            }
+        });
+        menuBar.add(inicioButton);
+
+        inventButton.setText("Inventario");
+        inventButton.setIcon(SvgIcon.load("/icons/products.svg"));
+        inventButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                inventButtonMouseClicked(evt);
+            }
+        });
+        menuBar.add(inventButton);
+
+        ventasButton.setText("Ventas");
+        ventasButton.setIcon(SvgIcon.load("/icons/shopping.svg"));
+        ventasButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ventasButtonMouseClicked(evt);
+            }
+        });
+        menuBar.add(ventasButton);
+
+        apartaButton.setText("Apartados");
+        apartaButton.setIcon(SvgIcon.load("/icons/apartadosBook.svg"));
+        apartaButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                apartaButtonMouseClicked(evt);
+            }
+        });
+        menuBar.add(apartaButton);
+
+        clientesButton.setText("Clientes");
+        clientesButton.setIcon(SvgIcon.load("/icons/clients.svg"));
+        clientesButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                clientesButtonMouseClicked(evt);
+            }
+        });
+        menuBar.add(clientesButton);
+
+        devolButton.setText("Devoluciones");
+        devolButton.setIcon(SvgIcon.load("/icons/devolucion.svg"));
+        devolButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                devolButtonMouseClicked(evt);
+            }
+        });
+        menuBar.add(devolButton);
+
+        reportesButton.setText("Reportes");
+        reportesButton.setIcon(SvgIcon.load("/icons/reports.svg"));
+
+        gastosButton.setText("Gastos");
+        gastosButton.setIcon(SvgIcon.load("/icons/gastos.svg"));;
+        gastosButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gastosButtonActionPerformed(evt);
+            }
+        });
+        reportesButton.add(gastosButton);
+
+        gananciasButton.setText("Ganancias");
+        gananciasButton.setIcon(SvgIcon.load("/icons/ganancia.svg"));
+        gananciasButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gananciasButtonActionPerformed(evt);
+            }
+        });
+        reportesButton.add(gananciasButton);
+
+        balgenButton.setText("Bal. General");
+        balgenButton.setIcon(SvgIcon.load("/icons/balanGeneral.svg"));
+        balgenButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                balgenButtonActionPerformed(evt);
+            }
+        });
+        reportesButton.add(balgenButton);
+
+        estresultButton.setText("Est. Resultados");
+        estresultButton.setIcon(SvgIcon.load("/icons/estadResultados.svg"));
+        estresultButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                estresultButtonActionPerformed(evt);
+            }
+        });
+        reportesButton.add(estresultButton);
+
+        repdiarioButton.setText("Rep. Diario");
+        repdiarioButton.setIcon(SvgIcon.load("/icons/reporteDiario.svg"));
+        repdiarioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                repdiarioButtonActionPerformed(evt);
+            }
+        });
+        reportesButton.add(repdiarioButton);
+
+        menuBar.add(reportesButton);
+
+        administrButton.setText("Administración");
+        administrButton.setIcon(SvgIcon.load("/icons/admin.svg"));
+
+        comprasButton.setText("Compras");
+        comprasButton.setIcon(SvgIcon.load("/icons/compras.svg"));
+        comprasButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comprasButtonActionPerformed(evt);
+            }
+        });
+        administrButton.add(comprasButton);
+
+        empleadosButton.setText("Empleados");
+        empleadosButton.setIcon(SvgIcon.load("/icons/empleados.svg"));
+        empleadosButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                empleadosButtonActionPerformed(evt);
+            }
+        });
+        administrButton.add(empleadosButton);
+
+        proveButton.setText("Proveedores");
+        proveButton.setIcon(SvgIcon.load("/icons/proveedor.svg"));
+        proveButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                proveButtonActionPerformed(evt);
+            }
+        });
+        administrButton.add(proveButton);
+
+        categButton.setText("Categorías");
+        categButton.setIcon(SvgIcon.load("/icons/categorias.svg"));
+        categButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                categButtonActionPerformed(evt);
+            }
+        });
+        administrButton.add(categButton);
+
+        regventasButton.setText("Reg. Ventas");
+        regventasButton.setIcon(SvgIcon.load("/icons/sales.svg"));
+        regventasButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                regventasButtonActionPerformed(evt);
+            }
+        });
+        administrButton.add(regventasButton);
+
+        menuBar.add(administrButton);
+
+        setJMenuBar(menuBar);
+        menuBar.setVisible(false);
+
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void contraF1KeyTyped(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_contraF1KeyTyped
-        // Verifica que solo se ingresen letras y números y que no se pase de 10
-        // caracteres
-        char letra = evt.getKeyChar();
-
-        if (evt.getKeyChar() == KeyEvent.VK_ENTER) {
-            iniciarSesion();
-        }
-
-        // Permite letras (mayúsculas y minúsculas) y números
-        if (!Cake.numeros(letra) && !Cake.letrasMayus(letra) && !Cake.letrasMinus(letra)) {
-            evt.consume();
-        }
-
-        if (Cake.tamaño(contraF1.getText(), 10)) {
-            evt.consume();
-        }
-    }// GEN-LAST:event_contraF1KeyTyped
-
-    private void eyeB1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_eyeB1ActionPerformed
-        // Muestra la contraseña
-        if (eyeB1.isSelected()) {
-            contraF1.setEchoChar((char) 0);
-            eyeB1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/eye1.png")));
-        } // Oculta la contraseña
-        else {
-            contraF1.setEchoChar('*');
-            eyeB1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/eye2.png")));
-        }
-    }// GEN-LAST:event_eyeB1ActionPerformed
-
-    private void veriB1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_veriB1ActionPerformed
-        iniciarSesion();
-    }// GEN-LAST:event_veriB1ActionPerformed
-
-    private void boton0ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_boton0ActionPerformed
-        botonesFore(0);
+    private void inicioButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_inicioButtonMouseClicked
         visibilidad(0, 0);
-    }// GEN-LAST:event_boton0ActionPerformed
+    }//GEN-LAST:event_inicioButtonMouseClicked
 
-    private void boton1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_boton1ActionPerformed
-        botonesFore(1);
+    private void inventButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_inventButtonMouseClicked
         visibilidad(1, 0);
-    }// GEN-LAST:event_boton1ActionPerformed
+    }//GEN-LAST:event_inventButtonMouseClicked
 
-    private void boton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_boton2ActionPerformed
-        botonesFore(2);
+    private void ventasButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ventasButtonMouseClicked
         visibilidad(2, 0);
-    }// GEN-LAST:event_boton2ActionPerformed
+    }//GEN-LAST:event_ventasButtonMouseClicked
 
-    private void boton4ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_boton4ActionPerformed
-        botonesFore(4);
+    private void apartaButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_apartaButtonMouseClicked
         visibilidad(4, 0);
-    }// GEN-LAST:event_boton4ActionPerformed
+    }//GEN-LAST:event_apartaButtonMouseClicked
 
-    private void boton5ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_boton5ActionPerformed
-        botonesFore(5);
+    private void clientesButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clientesButtonMouseClicked
         visibilidad(5, 0);
-    }// GEN-LAST:event_boton5ActionPerformed
+    }//GEN-LAST:event_clientesButtonMouseClicked
 
-    private void initerDiaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_initerDiaActionPerformed
-        // Inicia o termina el día
-        if (!iniDia) {
-            Mise.JOption("Día iniciado", "Información del día", javax.swing.JOptionPane.PLAIN_MESSAGE);
-            initerDia.setText("Terminar día");
-            iniDia = true;
-            boton2.setVisible(true);
-        } else {
-            docsPanel.mostrarCierreCaja();
-            docsPanel.cierreCajaDialog.setVisible(true);
-            Mise.JOption("Día terminado. Se han guardado las ventas del día", "Cierre de caja",
-                    javax.swing.JOptionPane.PLAIN_MESSAGE);
-            initerDia.setText("Ïniciar día");
-            iniDia = false;
-            boton2.setVisible(false);
-        }
-    }// GEN-LAST:event_initerDiaActionPerformed
-
-    private void closeSesionActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_closeSesionActionPerformed
-        // Cierra la sesión
-        if (timerDia != null) {
-            timerDia.stop();
-            timerDia = null;
-        }
-        iniDia = false;
-        boton2.setVisible(false);
-        Mise.JOption("Hasta luego", "Salir", javax.swing.JOptionPane.PLAIN_MESSAGE);
-        userActivo = false;
-        admActivo = false;
-        contraF1.setText("");
-        contInc.setText("");
-        eyeB1.setSelected(false);
-        eyeB1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/eye2.png")));
-        comboUsuarios();
-        iniSession.setVisible(true);
-        botones.setVisible(false);
-        panelPrin.setVisible(false);
-        horaPanel.setVisible(false);
-        this.setSize(430, 400);
-        this.setLocationRelativeTo(null);
-    }// GEN-LAST:event_closeSesionActionPerformed
-
-    private void boton3MousePressed(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_boton3MousePressed
-        botonesFore(3);
-        adminPM.show(evt.getComponent(), evt.getX(), evt.getY());
-    }// GEN-LAST:event_boton3MousePressed
-
-    private void boton6ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_boton6ActionPerformed
+    private void devolButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_devolButtonMouseClicked
         visibilidad(6, 0);
-    }// GEN-LAST:event_boton6ActionPerformed
+    }//GEN-LAST:event_devolButtonMouseClicked
 
-    private void comp1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_comp1ActionPerformed
-        visibilidad(3, 1);
-    }// GEN-LAST:event_comp1ActionPerformed
+    private void gananciasButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gananciasButtonActionPerformed
+        visibilidad(8, 0);
+    }//GEN-LAST:event_gananciasButtonActionPerformed
 
-    private void emp2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_emp2ActionPerformed
-        visibilidad(3, 2);
-    }// GEN-LAST:event_emp2ActionPerformed
+    private void gastosButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gastosButtonActionPerformed
+        visibilidad(7, 0);
+    }//GEN-LAST:event_gastosButtonActionPerformed
 
-    private void prov4ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_prov4ActionPerformed
-        visibilidad(3, 4);
-    }// GEN-LAST:event_prov4ActionPerformed
-
-    private void balG5ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_balG5ActionPerformed
+    private void balgenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_balgenButtonActionPerformed
         Excel.balanceGeneral();
-    }// GEN-LAST:event_balG5ActionPerformed
+    }//GEN-LAST:event_balgenButtonActionPerformed
 
-    private void estR6ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_estR6ActionPerformed
-        // Muestra el estado de resultados
+    private void estresultButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_estresultButtonActionPerformed
         String res = Mise.JOptionInput("Ingrese el inventario inicial", "Estado de Resultados");
         try {
             Double invini = Double.valueOf(res);
@@ -670,9 +537,9 @@ public class Interfaz extends javax.swing.JFrame {
         } catch (NumberFormatException e) {
             Mise.JOption("Debe ingresar un numero", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
-    }// GEN-LAST:event_estR6ActionPerformed
+    }//GEN-LAST:event_estresultButtonActionPerformed
 
-    private void vtasHoy7ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_vtasHoy7ActionPerformed
+    private void repdiarioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_repdiarioButtonActionPerformed
         CalendarioPanel calPanel = new CalendarioPanel();
 
         javax.swing.JButton btnGenerar  = new javax.swing.JButton("Generar Reporte");
@@ -702,28 +569,106 @@ public class Interfaz extends javax.swing.JFrame {
         if (confirmado[0]) {
             Excel.reporteDiario("Reporte_Diario", calPanel.getFechaSeleccionada());
         }
-    }// GEN-LAST:event_vtasHoy7ActionPerformed
+    }//GEN-LAST:event_repdiarioButtonActionPerformed
+
+    private void comprasButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comprasButtonActionPerformed
+        visibilidad(3, 1);
+    }//GEN-LAST:event_comprasButtonActionPerformed
+
+    private void empleadosButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_empleadosButtonActionPerformed
+        visibilidad(3, 2);
+    }//GEN-LAST:event_empleadosButtonActionPerformed
+
+    private void proveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proveButtonActionPerformed
+        visibilidad(3, 4);
+    }//GEN-LAST:event_proveButtonActionPerformed
+
+    private void categButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_categButtonActionPerformed
+        visibilidad(3, 5);
+    }//GEN-LAST:event_categButtonActionPerformed
+
+    private void regventasButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regventasButtonActionPerformed
+        visibilidad(3, 3);
+    }//GEN-LAST:event_regventasButtonActionPerformed
+
+    private void initerDiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_initerDiaActionPerformed
+        // Inicia o termina el día
+        if (!iniDia) {
+            Mise.JOption("Día iniciado", "Información del día", javax.swing.JOptionPane.PLAIN_MESSAGE);
+            initerDia.setText("Terminar día");
+            iniDia = true;
+        } else {
+            docsPanel.mostrarCierreCaja();
+            docsPanel.cierreCajaDialog.setVisible(true);
+            Mise.JOption("Día terminado. Se han guardado las ventas del día", "Cierre de caja",
+                    javax.swing.JOptionPane.PLAIN_MESSAGE);
+            initerDia.setText("Ïniciar día");
+            iniDia = false;
+        }
+    }//GEN-LAST:event_initerDiaActionPerformed
+
+    private void closeSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeSesionActionPerformed
+        if (timerDia != null) {
+            timerDia.stop();
+            timerDia = null;
+        }
+        iniDia = false;
+        Mise.JOption("Hasta luego", "Salir", javax.swing.JOptionPane.PLAIN_MESSAGE);
+        userActivo = false;
+        admActivo = false;
+        contraF1.setText("");
+        contInc.setText("");
+        eyeB1.setSelected(false);
+        eyeB1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/eye2.png")));
+        comboUsuarios();
+        iniSession.setVisible(true);
+        botones.setVisible(false);
+        panelPrin.setVisible(false);
+        horaPanel.setVisible(false);
+        menuBar.setVisible(false);
+        this.setSize(tamanioMin);
+        this.setLocationRelativeTo(null);
+    }//GEN-LAST:event_closeSesionActionPerformed
+
+    private void eyeB1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eyeB1ActionPerformed
+        if (eyeB1.isSelected()) {
+            contraF1.setEchoChar((char) 0);
+            eyeB1.setIcon(SvgIcon.load("/icons/openEye.svg", SvgIcon.LARGE));
+        } // Oculta la contraseña
+        else {
+            contraF1.setEchoChar('*');
+            eyeB1.setIcon(SvgIcon.load("/icons/closeEye.svg", SvgIcon.LARGE));
+        }
+    }//GEN-LAST:event_eyeB1ActionPerformed
+
+    private void contraF1KeyTyped(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_contraF1KeyTyped
+        // Verifica que solo se ingresen letras y números y que no se pase de 10
+        // caracteres
+        char letra = evt.getKeyChar();
+
+        if (evt.getKeyChar() == KeyEvent.VK_ENTER) {
+            iniciarSesion();
+        }
+
+        // Permite letras (mayúsculas y minúsculas) y números
+        if (!Cake.numeros(letra) && !Cake.letrasMayus(letra) && !Cake.letrasMinus(letra)) {
+            evt.consume();
+        }
+
+        if (Cake.tamaño(contraF1.getText(), 10)) {
+            evt.consume();
+        }
+    }// GEN-LAST:event_contraF1KeyTyped
+
+    private void veriB1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_veriB1ActionPerformed
+        iniciarSesion();
+    }// GEN-LAST:event_veriB1ActionPerformed
 
     private void perfilMouseEntered(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_perfilMouseEntered
         // Muestra los datos del usuario
         popupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
     }// GEN-LAST:event_perfilMouseEntered
 
-    private void regV3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_regV3ActionPerformed
-        visibilidad(3, 3);
-    }// GEN-LAST:event_regV3ActionPerformed
-
-    private void cat5ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cat5ActionPerformed
-        visibilidad(3, 5);
-    }// GEN-LAST:event_cat5ActionPerformed
-
-    private void boton7ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_boton7ActionPerformed
-        visibilidad(7, 0);
-    }// GEN-LAST:event_boton7ActionPerformed
-
-    private void boton8ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_boton8ActionPerformed
-        visibilidad(8, 0);
-    }// GEN-LAST:event_boton8ActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {// GEN-FIRST:event_formWindowClosing
         // Cierra la ventana una vez que pregunta si se desea cerrar
@@ -772,8 +717,6 @@ public class Interfaz extends javax.swing.JFrame {
                 opcion3.setText("Puesto: " + datos[2]);
                 opcion4.setText("Telefono: " + datos[3]);
 
-                boton0.setForeground(Color.BLACK);
-                boton0.setSelected(true);
                 iniSession.setVisible(false);
                 botonesVis();
                 botones.setVisible(true);
@@ -781,12 +724,12 @@ public class Interfaz extends javax.swing.JFrame {
                 horaPanel.setVisible(true);
                 this.setSize(tamanio.width, tamanio.height - 20);
                 this.setLocationRelativeTo(null);
+                menuBar.setVisible(true);
 
                 initerDia.setVisible(false);
                 java.time.LocalTime ahora = java.time.LocalTime.now();
                 if (!(ahora.getHour() == 23 && ahora.getMinute() == 59)) {
                     iniDia = true;
-                    boton2.setVisible(true);
                 }
                 if (timerDia == null) {
                     timerDia = new javax.swing.Timer(30000, e -> verificarEstadoDia());
@@ -805,11 +748,9 @@ public class Interfaz extends javax.swing.JFrame {
             docsPanel.mostrarCierreCaja();
             docsPanel.cierreCajaDialog.setVisible(true);
             iniDia = false;
-            boton2.setVisible(false);
             ventPanel.setVisible(false);
         } else if (!iniDia && !esHoraFin) {
             iniDia = true;
-            boton2.setVisible(true);
         }
     }
 
@@ -916,42 +857,9 @@ public class Interfaz extends javax.swing.JFrame {
         }
     }
 
-    public void botonesFore(int x) {// Cambia el color de los botones
-        boton0.setForeground(pred);
-        boton1.setForeground(pred);
-        boton2.setForeground(pred);
-        boton3.setForeground(pred);
-        boton4.setForeground(pred);
-        boton5.setForeground(pred);
-        switch (x) {
-            case 0:
-                boton0.setForeground(Color.BLACK);
-                break;
-            case 1:
-                boton1.setForeground(Color.BLACK);
-                break;
-            case 2:
-                boton2.setForeground(Color.BLACK);
-                break;
-            case 3:
-                boton3.setForeground(Color.BLACK);
-                break;
-            case 4:
-                boton4.setForeground(Color.BLACK);
-                break;
-            case 5:
-                boton5.setForeground(Color.BLACK);
-                break;
-        }
-    }
-
     public void botonesVis() {// Muestra los botones
         if (userActivo) {
-            boton0.setVisible(true);
-            boton1.setVisible(true);
-            boton3.setVisible(admActivo);
-            boton4.setVisible(true);
-            boton5.setVisible(true);
+            administrButton.setVisible(admActivo);
         }
     }
 
@@ -986,36 +894,34 @@ public class Interfaz extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPopupMenu adminPM;
-    private javax.swing.JMenuItem balG5;
-    private javax.swing.JMenuItem cat5;
-    private javax.swing.JToggleButton boton0;
-    private javax.swing.JToggleButton boton1;
-    private javax.swing.JToggleButton boton2;
-    public javax.swing.JToggleButton boton3;
-    private javax.swing.JToggleButton boton4;
-    private javax.swing.JToggleButton boton5;
-    private javax.swing.JToggleButton boton6;
-    private javax.swing.JToggleButton boton7;
-    private javax.swing.JToggleButton boton8;
+    private javax.swing.JMenu administrButton;
+    private javax.swing.JMenu apartaButton;
+    private javax.swing.JMenuItem balgenButton;
     private javax.swing.ButtonGroup botonGrup;
     private javax.swing.JPanel botones;
+    private javax.swing.JMenuItem categButton;
+    private javax.swing.JMenu clientesButton;
     private javax.swing.JButton closeSesion;
-    private javax.swing.JMenuItem comp1;
+    private javax.swing.JMenuItem comprasButton;
     public static javax.swing.JLabel contInc;
     public static javax.swing.JPasswordField contraF1;
-    private javax.swing.JMenuItem emp2;
-    private javax.swing.JMenuItem estR6;
+    private javax.swing.JMenu devolButton;
+    private javax.swing.JMenuItem empleadosButton;
+    private javax.swing.JMenuItem estresultButton;
     private javax.swing.JLabel etiquetaC1;
     private javax.swing.JLabel etiquetaN1;
     public static javax.swing.JToggleButton eyeB1;
+    public static javax.swing.JLabel fotoUserPrin;
+    private javax.swing.JMenuItem gananciasButton;
+    private javax.swing.JMenuItem gastosButton;
     public static javax.swing.JPanel horaPanel;
     private javax.swing.JPanel iniSession;
+    private javax.swing.JMenu inicioButton;
     private javax.swing.JButton initerDia;
-    public static javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JMenu inventButton;
     private javax.swing.JSeparator jSeparator1;
     public static javax.swing.JLabel labelHora;
+    private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem opcion1;
     private javax.swing.JMenuItem opcion2;
     private javax.swing.JMenuItem opcion3;
@@ -1023,10 +929,12 @@ public class Interfaz extends javax.swing.JFrame {
     private javax.swing.JPanel panelPrin;
     private javax.swing.JButton perfil;
     private javax.swing.JPopupMenu popupMenu;
-    private javax.swing.JMenuItem prov4;
-    private javax.swing.JMenuItem regV3;
+    private javax.swing.JMenuItem proveButton;
+    private javax.swing.JMenuItem regventasButton;
+    private javax.swing.JMenuItem repdiarioButton;
+    private javax.swing.JMenu reportesButton;
     private javax.swing.JComboBox<String> usuarioBox;
+    private javax.swing.JMenu ventasButton;
     private javax.swing.JButton veriB1;
-    private javax.swing.JMenuItem vtasHoy7;
     // End of variables declaration//GEN-END:variables
 }
