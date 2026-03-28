@@ -44,7 +44,7 @@ public class ConexionBD {
             rs = s.executeQuery(instruccion);
             conexion.close();
         } catch (Exception e) {
-            System.out.println("Error al obtener el Result Set");
+            System.out.println("Error al obtener el Result Set: " + e.getMessage());
         }
         return rs;
     }
@@ -289,6 +289,53 @@ public class ConexionBD {
             Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
         return idVenta;
+    }
+
+    public String registrarVentaConFormaPago(String idEmp, String idCli, String formaPago) {//Función para registrar una venta con forma de pago
+        String idVenta = registrarVenta(idEmp, idCli);
+        if (!idVenta.isEmpty()) {
+            String instruccion = "UPDATE venta SET forma_pago=? WHERE id_venta=?";
+            try {
+                Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+                PreparedStatement pstm = conexion.prepareStatement(instruccion);
+                pstm.setString(1, formaPago);
+                pstm.setString(2, idVenta);
+                pstm.executeUpdate();
+                conexion.close();
+            } catch (SQLException e) {
+                Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        return idVenta;
+    }
+
+    public ResultSet corteDiario(java.time.LocalDate fecha) {//Función para obtener las ventas del día con forma de pago y empleado
+        ResultSet rs = null;
+        String instruccion =
+            "SELECT v.id_venta, " +
+            "CAST(v.fecha_venta AS VARCHAR) AS hora, " +
+            "COALESCE(e.nombre, v.id_empleado) AS empleado, " +
+            "COALESCE((SELECT SUM(vd.precio_total) FROM venta_detalle vd WHERE vd.id_venta = v.id_venta), 0) AS subtotal, " +
+            "GREATEST(0, COALESCE((SELECT SUM(vd.precio_total) FROM venta_detalle vd WHERE vd.id_venta = v.id_venta), 0) - v.total_venta) AS descuento, " +
+            "v.total_venta, " +
+            "COALESCE(v.forma_pago, 'Efectivo') AS forma_pago " +
+            "FROM venta v " +
+            "LEFT JOIN empleado e ON v.id_empleado = e.id_empleado " +
+            "WHERE v.fecha_venta = ? " +
+            "ORDER BY v.id_venta";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setDate(1, java.sql.Date.valueOf(fecha));
+            rs = pstm.executeQuery();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return rs;
+    }
+
+    public ResultSet totalesDia(java.time.LocalDate fecha) {//Función para obtener los 5 totales del día
+        return reporte_diario(fecha);
     }
 
     // FUNCIONES DE LA TABLA COMPRAS
