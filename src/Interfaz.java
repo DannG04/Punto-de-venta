@@ -1,5 +1,6 @@
 
 import com.jtattoo.plaf.mcwin.McWinLookAndFeel;
+import fi.iki.elonen.NanoHTTPD;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.Toolkit;
@@ -51,6 +52,11 @@ public class Interfaz extends javax.swing.JFrame {
     Dimension tamanio = Toolkit.getDefaultToolkit().getScreenSize();
     Dimension tamanioMin = new Dimension(430, 430);
 
+    // Servidor web para inventario móvil
+    private WebInventario servidorWeb = null;
+    private javax.swing.JButton btnServidor;
+    private javax.swing.JLabel lblUrlServidor;
+
     /**
      * Creates new form Interfaz
      */
@@ -60,6 +66,7 @@ public class Interfaz extends javax.swing.JFrame {
         fecha.start();
         comboUsuarios();
         inicializarPanels();
+        configurarBotonServidor();
         this.setSize(tamanioMin);
         this.setLocationRelativeTo(null);
     }
@@ -612,6 +619,12 @@ public class Interfaz extends javax.swing.JFrame {
             timerDia.stop();
             timerDia = null;
         }
+        if (servidorWeb != null && servidorWeb.isAlive()) {
+            servidorWeb.stop();
+            servidorWeb = null;
+            lblUrlServidor.setVisible(false);
+            btnServidor.setText("Servidor móvil");
+        }
         iniDia = false;
         Mise.JOption("Hasta luego", "Salir", javax.swing.JOptionPane.PLAIN_MESSAGE);
         userActivo = false;
@@ -674,6 +687,9 @@ public class Interfaz extends javax.swing.JFrame {
         // Cierra la ventana una vez que pregunta si se desea cerrar
         int res = Mise.JOptionYesNo("Seguro que desea cerrar la ventana?", "Cerrar Ventana");
         if (res == 0) {
+            if (servidorWeb != null && servidorWeb.isAlive()) {
+                servidorWeb.stop();
+            }
             System.exit(0);
         }
     }// GEN-LAST:event_formWindowClosing
@@ -874,6 +890,63 @@ public class Interfaz extends javax.swing.JFrame {
             System.out.println("Ocurrio un error al conectar con la base de datos");
         }
         usuarioBox.setModel(new javax.swing.DefaultComboBoxModel<>(users.toArray(new String[users.size()])));
+    }
+
+    private void configurarBotonServidor() {
+        btnServidor = new javax.swing.JButton("Servidor móvil");
+        btnServidor.setFont(new java.awt.Font("Noto Serif", 1, 15));
+        btnServidor.setForeground(new java.awt.Color(78, 150, 150));
+        btnServidor.setMaximumSize(new java.awt.Dimension(115, 25));
+        btnServidor.setMinimumSize(new java.awt.Dimension(115, 25));
+        btnServidor.setPreferredSize(new java.awt.Dimension(160, 60));
+        btnServidor.addActionListener(e -> toggleServidor());
+
+        lblUrlServidor = new javax.swing.JLabel();
+        lblUrlServidor.setFont(new java.awt.Font("Noto Serif", 0, 11));
+        lblUrlServidor.setForeground(new java.awt.Color(78, 150, 150));
+        lblUrlServidor.setVisible(false);
+
+        java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gbc.anchor = java.awt.GridBagConstraints.WEST;
+        gbc.insets = new java.awt.Insets(5, 5, 2, 0);
+        panelPrin.add(btnServidor, gbc);
+
+        java.awt.GridBagConstraints gbcUrl = new java.awt.GridBagConstraints();
+        gbcUrl.gridx = 0;
+        gbcUrl.gridy = 4;
+        gbcUrl.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gbcUrl.anchor = java.awt.GridBagConstraints.WEST;
+        gbcUrl.insets = new java.awt.Insets(0, 10, 5, 0);
+        panelPrin.add(lblUrlServidor, gbcUrl);
+    }
+
+    private void toggleServidor() {
+        if (servidorWeb == null || !servidorWeb.isAlive()) {
+            // Iniciar servidor
+            try {
+                servidorWeb = new WebInventario();
+                servidorWeb.start(NanoHTTPD.SOCKET_READ_TIMEOUT, true);
+                String ip = WebInventario.obtenerIPLocal();
+                String url = "https://" + ip + ":" + WebInventario.PUERTO;
+                lblUrlServidor.setText("<html><a href=''>" + url + "</a></html>");
+                lblUrlServidor.setVisible(true);
+                btnServidor.setText("Detener servidor");
+                Mise.JOption("Servidor activo en:\n" + url, "Servidor móvil",
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            } catch (java.io.IOException ex) {
+                Mise.JOption("No se pudo iniciar el servidor:\n" + ex.getMessage(),
+                        "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            // Detener servidor
+            servidorWeb.stop();
+            servidorWeb = null;
+            lblUrlServidor.setVisible(false);
+            btnServidor.setText("Servidor móvil");
+        }
     }
 
     public void inicializarPanels() {// Inicializa los paneles
