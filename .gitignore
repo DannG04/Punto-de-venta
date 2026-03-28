@@ -14,3 +14,7 @@
 # Sistema operativo
 .DS_Store
 Thumbs.db
+
+#IDEs
+.claude/
+.vscode/
