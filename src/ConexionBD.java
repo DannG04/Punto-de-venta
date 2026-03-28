@@ -934,8 +934,8 @@ public class ConexionBD {
     }
 
     // FUNCIONES DE PRODUCTO CON CATEGORÍA
-    public void insertarProductoConCodigoYCategoria(String[] datos, Integer idCategoria, double maxDescuento) {//Función para insertar un producto con código y categoría
-        String instruccion = "INSERT INTO producto(id_producto, nombre, cantidad, precio_mayoreo, precio_menudeo, id_categoria, max_descuento) VALUES (?,?,?,?,?,?,?);";
+    public void insertarProductoConCodigoYCategoria(String[] datos, Integer idCategoria) {//Función para insertar un producto con código y categoría
+        String instruccion = "INSERT INTO producto(id_producto, nombre, cantidad, precio_mayoreo, precio_menudeo, id_categoria) VALUES (?,?,?,?,?,?);";
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
@@ -949,7 +949,6 @@ public class ConexionBD {
             } else {
                 pstm.setNull(6, Types.INTEGER);
             }
-            pstm.setDouble(7, maxDescuento);
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
@@ -957,8 +956,8 @@ public class ConexionBD {
         }
     }
 
-    public void actualizarProductoConCategoria(String ideprod, String[] datos, Integer idCategoria, double maxDescuento) {//Función para actualizar un producto con categoría
-        String instruccion = "UPDATE producto SET nombre=?, cantidad=?, precio_mayoreo=?, precio_menudeo=?, id_categoria=?, max_descuento=? WHERE id_producto=?;";
+    public void actualizarProductoConCategoria(String ideprod, String[] datos, Integer idCategoria) {//Función para actualizar un producto con categoría
+        String instruccion = "UPDATE producto SET nombre=?, cantidad=?, precio_mayoreo=?, precio_menudeo=?, id_categoria=? WHERE id_producto=?;";
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
@@ -971,76 +970,11 @@ public class ConexionBD {
             } else {
                 pstm.setNull(5, Types.INTEGER);
             }
-            pstm.setDouble(6, maxDescuento);
-            pstm.setString(7, ideprod);
+            pstm.setString(6, ideprod);
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
             Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    // FUNCIONES DE DESCUENTOS
-    public double obtenerMaxDescuento(String idProducto) {//Función para obtener el descuento máximo de un producto
-        double maxDesc = 100.0;
-        String instruccion = "SELECT max_descuento FROM producto WHERE id_producto = ?;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setString(1, idProducto);
-            ResultSet rs = pstm.executeQuery();
-            if (rs.next()) {
-                maxDesc = rs.getDouble("max_descuento");
-            }
-            conexion.close();
-        } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-        return maxDesc;
-    }
-
-    public void actualizarDescuentoTemp(String idProducto, double descuento) {//Función para actualizar el descuento en venta_temp
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            CallableStatement cstm = conexion.prepareCall("{call actualizar_desc_temp(?::id_producto_dominio, ?::numeric)}");
-            cstm.setString(1, idProducto);
-            cstm.setDouble(2, descuento);
-            cstm.execute();
-            conexion.close();
-        } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    public void actualizarDescuentoVenta(String idVenta, String idProducto, double descuento) {//Función para guardar descuento en venta_detalle
-        String instruccion = "UPDATE venta_detalle SET descuento_pct = ? WHERE id_venta = ? AND id_producto = ?;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setDouble(1, descuento);
-            pstm.setString(2, idVenta);
-            pstm.setString(3, idProducto);
-            pstm.executeUpdate();
-            conexion.close();
-        } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    public double obtenerMinMaxDescuentoTemp() {//Función para obtener el menor max_descuento entre los productos del carrito
-        double minMax = 100.0;
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            Statement s = conexion.createStatement();
-            ResultSet rs = s.executeQuery(
-                "SELECT COALESCE(MIN(p.max_descuento), 100) FROM venta_temp vt JOIN producto p ON vt.id_producto = p.id_producto;");
-            if (rs.next()) {
-                minMax = rs.getDouble(1);
-            }
-            conexion.close();
-        } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-        return minMax;
     }
 }

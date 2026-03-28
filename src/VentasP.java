@@ -157,6 +157,8 @@ public class VentasP extends javax.swing.JPanel {
         recCT = new javax.swing.JFormattedTextField();
         jLabel8 = new javax.swing.JLabel();
         cambCT = new javax.swing.JFormattedTextField();
+        jLabelFormaPago = new javax.swing.JLabel();
+        cmbFormaPago = new javax.swing.JComboBox<>();
         cancelarB = new javax.swing.JButton();
         hechoCamb = new javax.swing.JButton();
         regVentaDialog = new javax.swing.JDialog();
@@ -243,7 +245,7 @@ public class VentasP extends javax.swing.JPanel {
 
         ventaDialog.getContentPane().add(panelAct, "card2");
 
-        panelCamb.setLayout(new java.awt.GridLayout(4, 2));
+        panelCamb.setLayout(new java.awt.GridLayout(5, 2));
 
         jLabel5.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(78, 150, 150));
@@ -284,6 +286,17 @@ public class VentasP extends javax.swing.JPanel {
         cambCT.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         cambCT.setPreferredSize(new java.awt.Dimension(200, 35));
         panelCamb.add(cambCT);
+
+        jLabelFormaPago.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabelFormaPago.setForeground(new java.awt.Color(78, 150, 150));
+        jLabelFormaPago.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelFormaPago.setText("Forma de Pago:");
+        panelCamb.add(jLabelFormaPago);
+
+        cmbFormaPago.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        cmbFormaPago.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Efectivo", "Transferencia", "Tarjeta", "Otro" }));
+        cmbFormaPago.setPreferredSize(new java.awt.Dimension(200, 35));
+        panelCamb.add(cmbFormaPago);
 
         cancelarB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         cancelarB.setForeground(new java.awt.Color(78, 150, 150));
@@ -770,7 +783,8 @@ public class VentasP extends javax.swing.JPanel {
                     if (dct > 0) descuentos.put(idProd, dct);
                 }
 
-                idTemV = conect.registrarVenta(Interfaz.idVendedor, id_cliente);
+                String formaPago = (String) cmbFormaPago.getSelectedItem();
+                idTemV = conect.registrarVentaConFormaPago(Interfaz.idVendedor,  id_cliente, formaPago);
 
                 // Persistir descuentos en venta_detalle
                 for (java.util.Map.Entry<String, Double> entry : descuentos.entrySet()) {
@@ -1069,6 +1083,7 @@ public class VentasP extends javax.swing.JPanel {
     private javax.swing.JButton actB;
     private javax.swing.JFormattedTextField cambCT;
     private javax.swing.JButton cancelarB;
+    private javax.swing.JComboBox<String> cmbFormaPago;
     private javax.swing.JFormattedTextField cantP;
     private javax.swing.JFormattedTextField cantidadProd;
     private javax.swing.JFormattedTextField codigoProd;
@@ -1089,6 +1104,7 @@ public class VentasP extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabelFormaPago;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

@@ -10,18 +10,23 @@ import javax.swing.table.DefaultTableModel;
  * @author 76905
  */
 public class AdministracionP extends javax.swing.JPanel {
-    
+
     ConexionBD conect = new ConexionBD();
-    
+
     static DefaultTableModel modeloVentas = new DefaultTableModel();
     static DefaultTableModel modeloVenDet = new DefaultTableModel();
-    DefaultTableModel modeloCaja = new DefaultTableModel();
-    
+    DefaultTableModel modeloCorteDia = new DefaultTableModel();
+
     public AdministracionP() {
         initComponents();
         modeloVentas = (DefaultTableModel)tablaVentas.getModel();
         modeloVenDet = (DefaultTableModel)tablaVenDet.getModel();
-        modeloCaja = (DefaultTableModel)tablaCierreCaja.getModel();
+        modeloCorteDia = (DefaultTableModel)tablaCorteDia.getModel();
+        // Inicializar spinner de fecha con hoy
+        spnFechaCierre.setModel(new javax.swing.SpinnerDateModel());
+        javax.swing.JSpinner.DateEditor dateEditor = new javax.swing.JSpinner.DateEditor(spnFechaCierre, "yyyy-MM-dd");
+        spnFechaCierre.setEditor(dateEditor);
+        spnFechaCierre.setPreferredSize(new java.awt.Dimension(160, 35));
     }
 
     /**
@@ -39,9 +44,27 @@ public class AdministracionP extends javax.swing.JPanel {
         jPanel2 = new javax.swing.JPanel();
         labelVentaID = new javax.swing.JLabel();
         cierreCajaDialog = new javax.swing.JDialog();
+        pnlCierreTitulo = new javax.swing.JPanel();
+        lblCierreTitulo = new javax.swing.JLabel();
+        pnlCierreMain = new javax.swing.JPanel();
+        pnlCierreCtrl = new javax.swing.JPanel();
+        lblFechaCierre = new javax.swing.JLabel();
+        spnFechaCierre = new javax.swing.JSpinner();
+        btnConsultarCierre = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
-        tablaCierreCaja = new javax.swing.JTable();
-        sumLabel = new javax.swing.JLabel();
+        tablaCorteDia = new javax.swing.JTable();
+        pnlTotales = new javax.swing.JPanel();
+        pnlTotalesGrid = new javax.swing.JPanel();
+        lblTotalVentas = new javax.swing.JLabel();
+        lblTotalDev = new javax.swing.JLabel();
+        lblTotalNeto = new javax.swing.JLabel();
+        lblEfectivo = new javax.swing.JLabel();
+        lblTransferencia = new javax.swing.JLabel();
+        lblTarjeta = new javax.swing.JLabel();
+        lblTotalGastos = new javax.swing.JLabel();
+        lblTotalCompras = new javax.swing.JLabel();
+        lblUtilidad = new javax.swing.JLabel();
+        btnExportarCierre = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane5 = new javax.swing.JScrollPane();
@@ -57,7 +80,6 @@ public class AdministracionP extends javax.swing.JPanel {
         tablaVenDet.setFont(new java.awt.Font("Noto Serif", 0, 14)); // NOI18N
         tablaVenDet.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
             },
             new String [] {
                 "Producto", "Cantidad", "Precio Dado", "Precio Total", "Tipo Venta"
@@ -66,80 +88,169 @@ public class AdministracionP extends javax.swing.JPanel {
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false
             };
-
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
         jScrollPane3.setViewportView(tablaVenDet);
-
         ventaDetDialog.getContentPane().add(jScrollPane3, java.awt.BorderLayout.CENTER);
 
         jPanel2.setLayout(new java.awt.BorderLayout());
-
         labelVentaID.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         labelVentaID.setForeground(new java.awt.Color(78, 150, 150));
         labelVentaID.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelVentaID.setText("Venta: ");
         jPanel2.add(labelVentaID, java.awt.BorderLayout.CENTER);
-
         ventaDetDialog.getContentPane().add(jPanel2, java.awt.BorderLayout.NORTH);
-
         ventaDetDialog.setLocationRelativeTo(null);
 
-        cierreCajaDialog.setTitle("CIERRE DE CAJA");
-        cierreCajaDialog.setMinimumSize(new java.awt.Dimension(550, 450));
-        cierreCajaDialog.setLocationRelativeTo(null);
+        // --- cierreCajaDialog ---
+        cierreCajaDialog.setTitle("CORTE DE CAJA");
+        cierreCajaDialog.setAlwaysOnTop(true);
+        cierreCajaDialog.setMinimumSize(new java.awt.Dimension(1000, 700));
+        cierreCajaDialog.setModal(true);
         cierreCajaDialog.setResizable(false);
-        cierreCajaDialog.setSize(new java.awt.Dimension(550, 450));
+        cierreCajaDialog.setSize(new java.awt.Dimension(1000, 700));
 
-        tablaCierreCaja.setFont(new java.awt.Font("Liberation Serif", 0, 18)); // NOI18N
-        tablaCierreCaja.setModel(new javax.swing.table.DefaultTableModel(
+        // North: title
+        pnlCierreTitulo.setLayout(new java.awt.FlowLayout());
+        lblCierreTitulo.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
+        lblCierreTitulo.setForeground(new java.awt.Color(78, 150, 150));
+        lblCierreTitulo.setText("Corte de Caja");
+        pnlCierreTitulo.add(lblCierreTitulo);
+        cierreCajaDialog.getContentPane().add(pnlCierreTitulo, java.awt.BorderLayout.NORTH);
+
+        // Center: main panel
+        pnlCierreMain.setLayout(new java.awt.BorderLayout());
+
+        // Controls row
+        pnlCierreCtrl.setLayout(new java.awt.FlowLayout());
+        lblFechaCierre.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        lblFechaCierre.setForeground(new java.awt.Color(78, 150, 150));
+        lblFechaCierre.setText("Fecha:");
+        pnlCierreCtrl.add(lblFechaCierre);
+
+        pnlCierreCtrl.add(spnFechaCierre);
+
+        btnConsultarCierre.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        btnConsultarCierre.setForeground(new java.awt.Color(78, 150, 150));
+        btnConsultarCierre.setText("Consultar");
+        btnConsultarCierre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConsultarCierreActionPerformed(evt);
+            }
+        });
+        pnlCierreCtrl.add(btnConsultarCierre);
+        pnlCierreMain.add(pnlCierreCtrl, java.awt.BorderLayout.NORTH);
+
+        // Table
+        tablaCorteDia.setFont(new java.awt.Font("Noto Serif", 0, 14)); // NOI18N
+        tablaCorteDia.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
             },
             new String [] {
-                "Venta", "Total", "Fecha"
+                "Folio", "Hora", "Empleado", "Subtotal", "Descuento", "Total", "Forma de Pago"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false, false, false, false, false, false
             };
-
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane4.setViewportView(tablaCierreCaja);
+        jScrollPane4.setViewportView(tablaCorteDia);
+        pnlCierreMain.add(jScrollPane4, java.awt.BorderLayout.CENTER);
 
-        cierreCajaDialog.getContentPane().add(jScrollPane4, java.awt.BorderLayout.CENTER);
+        // Totals panel
+        pnlTotales.setBorder(javax.swing.BorderFactory.createTitledBorder("Resumen del D\u00eda"));
+        pnlTotales.setLayout(new java.awt.BorderLayout());
 
-        sumLabel.setBackground(new java.awt.Color(255, 255, 255));
-        sumLabel.setFont(new java.awt.Font("Noto Serif", 1, 24)); // NOI18N
-        sumLabel.setForeground(new java.awt.Color(78, 150, 150));
-        sumLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        sumLabel.setText("Suma: ");
-        sumLabel.setPreferredSize(new java.awt.Dimension(81, 40));
-        cierreCajaDialog.getContentPane().add(sumLabel, java.awt.BorderLayout.PAGE_END);
+        pnlTotalesGrid.setLayout(new java.awt.GridLayout(3, 3));
 
-        cierreCajaDialog.setAlwaysOnTop(true);
+        lblTotalVentas.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        lblTotalVentas.setForeground(new java.awt.Color(78, 150, 150));
+        lblTotalVentas.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTotalVentas.setText("Total Ventas: $0.00");
+        pnlTotalesGrid.add(lblTotalVentas);
+
+        lblTotalDev.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        lblTotalDev.setForeground(new java.awt.Color(78, 150, 150));
+        lblTotalDev.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTotalDev.setText("Devoluciones: $0.00");
+        pnlTotalesGrid.add(lblTotalDev);
+
+        lblTotalNeto.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        lblTotalNeto.setForeground(new java.awt.Color(78, 150, 150));
+        lblTotalNeto.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTotalNeto.setText("Total Neto: $0.00");
+        pnlTotalesGrid.add(lblTotalNeto);
+
+        lblEfectivo.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        lblEfectivo.setForeground(new java.awt.Color(78, 150, 150));
+        lblEfectivo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblEfectivo.setText("Efectivo: $0.00");
+        pnlTotalesGrid.add(lblEfectivo);
+
+        lblTransferencia.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        lblTransferencia.setForeground(new java.awt.Color(78, 150, 150));
+        lblTransferencia.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTransferencia.setText("Transferencia: $0.00");
+        pnlTotalesGrid.add(lblTransferencia);
+
+        lblTarjeta.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        lblTarjeta.setForeground(new java.awt.Color(78, 150, 150));
+        lblTarjeta.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTarjeta.setText("Tarjeta: $0.00");
+        pnlTotalesGrid.add(lblTarjeta);
+
+        lblTotalGastos.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        lblTotalGastos.setForeground(new java.awt.Color(78, 150, 150));
+        lblTotalGastos.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTotalGastos.setText("Total Gastos: $0.00");
+        pnlTotalesGrid.add(lblTotalGastos);
+
+        lblTotalCompras.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        lblTotalCompras.setForeground(new java.awt.Color(78, 150, 150));
+        lblTotalCompras.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTotalCompras.setText("Total Compras: $0.00");
+        pnlTotalesGrid.add(lblTotalCompras);
+
+        lblUtilidad.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
+        lblUtilidad.setForeground(new java.awt.Color(78, 150, 150));
+        lblUtilidad.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblUtilidad.setText("Utilidad est.: $0.00");
+        pnlTotalesGrid.add(lblUtilidad);
+
+        pnlTotales.add(pnlTotalesGrid, java.awt.BorderLayout.CENTER);
+
+        btnExportarCierre.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        btnExportarCierre.setForeground(new java.awt.Color(78, 150, 150));
+        btnExportarCierre.setText("Exportar a Excel");
+        btnExportarCierre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExportarCierreActionPerformed(evt);
+            }
+        });
+        pnlTotales.add(btnExportarCierre, java.awt.BorderLayout.SOUTH);
+
+        pnlCierreMain.add(pnlTotales, java.awt.BorderLayout.SOUTH);
+        cierreCajaDialog.getContentPane().add(pnlCierreMain, java.awt.BorderLayout.CENTER);
+        cierreCajaDialog.setLocationRelativeTo(null);
 
         setLayout(new java.awt.BorderLayout());
 
         jPanel1.setLayout(new java.awt.BorderLayout());
-
         jLabel2.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(78, 150, 150));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Ventas");
         jPanel1.add(jLabel2, java.awt.BorderLayout.CENTER);
-
         add(jPanel1, java.awt.BorderLayout.NORTH);
 
         tablaVentas.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
         tablaVentas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
             },
             new String [] {
                 "Venta", "Empleado", "Cliente", "Monto", "Fecha"
@@ -148,7 +259,6 @@ public class AdministracionP extends javax.swing.JPanel {
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false
             };
-
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
@@ -159,12 +269,10 @@ public class AdministracionP extends javax.swing.JPanel {
             }
         });
         jScrollPane5.setViewportView(tablaVentas);
-
         add(jScrollPane5, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     private void tablaVentasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaVentasMouseClicked
-        //Verifica si se ha seleccionado una fila
         if(tablaVentas.getSelectedRow() != -1){
             labelVentaID.setText("Venta: " + modeloVentas.getValueAt(tablaVentas.getSelectedRow(), 0));
             mostrarTablaVentasDet("" + modeloVentas.getValueAt(tablaVentas.getSelectedRow(), 0));
@@ -172,8 +280,17 @@ public class AdministracionP extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_tablaVentasMouseClicked
 
+    private void btnConsultarCierreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarCierreActionPerformed
+        consultarCierreCaja();
+    }//GEN-LAST:event_btnConsultarCierreActionPerformed
+
+    private void btnExportarCierreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarCierreActionPerformed
+        java.util.Date fechaDate = (java.util.Date) spnFechaCierre.getValue();
+        java.time.LocalDate fecha = fechaDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+        Excel.reporteDiario("Reporte_Diario", fecha);
+    }//GEN-LAST:event_btnExportarCierreActionPerformed
+
     public void mostrarTablaVentas(){
-        //Limpia la tabla
         Mise.limpiarTabla(modeloVentas);
         java.sql.ResultSet rs = conect.query("SELECT * FROM venta");
         try{
@@ -184,8 +301,8 @@ public class AdministracionP extends javax.swing.JPanel {
             System.out.println("Error al mostrar la tabla de ventas");
         }
     }
-    
-    public void mostrarTablaVentasDet(String id_venta){//Muestra la tabla de ventas detalle
+
+    public void mostrarTablaVentasDet(String id_venta){
         Mise.limpiarTabla(modeloVenDet);
         java.sql.ResultSet rs = conect.query("SELECT * FROM venta_detalle WHERE id_venta='" + id_venta + "';");
         try{
@@ -196,35 +313,75 @@ public class AdministracionP extends javax.swing.JPanel {
             System.out.println("Error al mostrar la tabla de venta detalle");
         }
     }
-    
-    public void mostrarCierreCaja(){//Muestra el cierre de caja
-        Mise.limpiarTabla(modeloCaja);
-        String fecha = generarFecha("yyyy-MM-dd");
-        java.sql.ResultSet rs = conect.query("SELECT * FROM venta WHERE fecha_venta='" + fecha + "';");
+
+    public void mostrarCierreCaja(){
+        consultarCierreCaja();
+        cierreCajaDialog.setVisible(true);
+    }
+
+    private void consultarCierreCaja(){
+        java.util.Date fechaDate = (java.util.Date) spnFechaCierre.getValue();
+        java.time.LocalDate fecha = fechaDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+
+        Mise.limpiarTabla(modeloCorteDia);
+        double efectivo = 0, transferencia = 0, tarjeta = 0;
+        java.sql.ResultSet rs = conect.corteDiario(fecha);
         try{
             while(rs.next()){
-                modeloCaja.addRow(new Object[]{rs.getString("id_venta"), rs.getDouble("total_venta"), rs.getDate("fecha_venta")});
-            }
-            java.sql.ResultSet rsSum =conect.query("SELECT SUM(total_venta) FROM venta WHERE fecha_venta='" + fecha + "';");
-            try{
-                while(rsSum.next()){
-                    sumLabel.setText("Total: " + rsSum.getDouble(1));
-                }
-            }catch(Exception e){
-                System.out.println("Error al sumar los totales");
+                double subtotal = rs.getDouble("subtotal");
+                double total = rs.getDouble("total_venta");
+                double descuento = rs.getDouble("descuento");
+                String fp = rs.getString("forma_pago");
+                modeloCorteDia.addRow(new Object[]{
+                    rs.getString("id_venta"),
+                    rs.getString("hora"),
+                    rs.getString("empleado"),
+                    String.format("$%.2f", subtotal),
+                    String.format("$%.2f", descuento),
+                    String.format("$%.2f", total),
+                    fp
+                });
+                if("Efectivo".equals(fp)) efectivo += total;
+                else if("Transferencia".equals(fp)) transferencia += total;
+                else if("Tarjeta".equals(fp)) tarjeta += total;
             }
         } catch(java.sql.SQLException e){
-            System.out.println("Error al mostrar el cierre de caja");
+            System.out.println("Error al cargar corte diario: " + e.getMessage());
+        }
+
+        java.sql.ResultSet rsTotales = conect.totalesDia(fecha);
+        try{
+            if(rsTotales != null && rsTotales.next()){
+                double ventas = rsTotales.getDouble("total_ventas");
+                double devoluciones = rsTotales.getDouble("total_devoluciones");
+                double compras = rsTotales.getDouble("total_compras");
+                double gastos = rsTotales.getDouble("total_gastos");
+                double neto = ventas - devoluciones;
+                double utilidad = neto - gastos - compras;
+                lblTotalVentas.setText(String.format("Total Ventas: $%.2f", ventas));
+                lblTotalDev.setText(String.format("Devoluciones: $%.2f", devoluciones));
+                lblTotalNeto.setText(String.format("Total Neto: $%.2f", neto));
+                lblEfectivo.setText(String.format("Efectivo: $%.2f", efectivo));
+                lblTransferencia.setText(String.format("Transferencia: $%.2f", transferencia));
+                lblTarjeta.setText(String.format("Tarjeta: $%.2f", tarjeta));
+                lblTotalGastos.setText(String.format("Total Gastos: $%.2f", gastos));
+                lblTotalCompras.setText(String.format("Total Compras: $%.2f", compras));
+                lblUtilidad.setText(String.format("Utilidad est.: $%.2f", utilidad));
+            }
+        } catch(java.sql.SQLException e){
+            System.out.println("Error al cargar totales: " + e.getMessage());
         }
     }
-    
-    public String generarFecha(String formato){//Genera la fecha
+
+    public String generarFecha(String formato){
         java.time.LocalDateTime ahora = java.time.LocalDateTime.now();
         java.time.format.DateTimeFormatter formateado = java.time.format.DateTimeFormatter.ofPattern(formato);
         return ahora.format(formateado);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnConsultarCierre;
+    private javax.swing.JButton btnExportarCierre;
     public javax.swing.JDialog cierreCajaDialog;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
@@ -233,8 +390,24 @@ public class AdministracionP extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JLabel labelVentaID;
-    private javax.swing.JLabel sumLabel;
-    private javax.swing.JTable tablaCierreCaja;
+    private javax.swing.JLabel lblCierreTitulo;
+    private javax.swing.JLabel lblEfectivo;
+    private javax.swing.JLabel lblFechaCierre;
+    private javax.swing.JLabel lblTarjeta;
+    private javax.swing.JLabel lblTotalCompras;
+    private javax.swing.JLabel lblTotalDev;
+    private javax.swing.JLabel lblTotalGastos;
+    private javax.swing.JLabel lblTotalNeto;
+    private javax.swing.JLabel lblTotalVentas;
+    private javax.swing.JLabel lblTransferencia;
+    private javax.swing.JLabel lblUtilidad;
+    private javax.swing.JPanel pnlCierreCtrl;
+    private javax.swing.JPanel pnlCierreMain;
+    private javax.swing.JPanel pnlCierreTitulo;
+    private javax.swing.JPanel pnlTotales;
+    private javax.swing.JPanel pnlTotalesGrid;
+    private javax.swing.JSpinner spnFechaCierre;
+    private javax.swing.JTable tablaCorteDia;
     private javax.swing.JTable tablaVenDet;
     private javax.swing.JTable tablaVentas;
     public static javax.swing.JDialog ventaDetDialog;

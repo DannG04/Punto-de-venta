@@ -25,10 +25,6 @@ public class InventarioP extends javax.swing.JPanel {
     private java.util.ArrayList<Integer> filtroCategoriaIds = new java.util.ArrayList<>();
     private boolean cargandoFiltro = false; // evita que el listener se dispare al poblar el combo
 
-    // Campo max_descuento (manejado fuera del form editor)
-    private javax.swing.JLabel jLabelMaxDesc = new javax.swing.JLabel("Desc. máximo (%):");
-    private javax.swing.JFormattedTextField maxDescuento = new javax.swing.JFormattedTextField();
-
     /**
      * Creates new form Inventario
      */
@@ -37,34 +33,6 @@ public class InventarioP extends javax.swing.JPanel {
         modelo=(DefaultTableModel)tablaVentas.getModel();
         cargarFiltroCategorias();
         mostrarTabla("");
-
-        // Agregar campo "Descuento máximo (%)" al diálogo de producto (gridy=8, empujando labelinc y botones)
-        java.awt.GridBagConstraints gbcMaxDesc = new java.awt.GridBagConstraints();
-        jLabelMaxDesc.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        jLabelMaxDesc.setForeground(new java.awt.Color(78, 150, 150));
-        gbcMaxDesc.gridx = 0; gbcMaxDesc.gridy = 10;
-        gbcMaxDesc.ipadx = 16;
-        gbcMaxDesc.anchor = java.awt.GridBagConstraints.WEST;
-        gbcMaxDesc.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabelMaxDesc, gbcMaxDesc);
-
-        maxDescuento.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        maxDescuento.setPreferredSize(new java.awt.Dimension(200, 35));
-        maxDescuento.setText("100");
-        maxDescuento.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                char c = evt.getKeyChar();
-                if (!Cake.numeros(c) && !Cake.inicioPunto(c)) evt.consume();
-                if (Cake.tamaño(maxDescuento.getText(), 5)) evt.consume();
-            }
-        });
-        gbcMaxDesc = new java.awt.GridBagConstraints();
-        gbcMaxDesc.gridx = 1; gbcMaxDesc.gridy = 10;
-        gbcMaxDesc.anchor = java.awt.GridBagConstraints.WEST;
-        gbcMaxDesc.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(maxDescuento, gbcMaxDesc);
-        jDialog1.setMinimumSize(new java.awt.Dimension(550, 660));
-        jDialog1.setSize(new java.awt.Dimension(550, 660));
     }
 
     /**
@@ -589,38 +557,31 @@ public class InventarioP extends javax.swing.JPanel {
                 labelinc.setText("Debe ingresar un código del proveedor o marcar generar código propio");
                 return;
             }
-
+            
             if(Double.parseDouble(precMay.getText()) < Double.parseDouble(precMen.getText())){
                 if(aux == false){
                     aux = true;
-
-                    // Validar y obtener max_descuento
-                    double maxDesc = 100.0;
-                    if (!maxDescuento.getText().isEmpty()) {
-                        maxDesc = Double.parseDouble(maxDescuento.getText());
-                        if (maxDesc < 0) maxDesc = 0;
-                        if (maxDesc > 100) maxDesc = 100;
-                    }
-
+                    
                     // Determinar el código a usar
                     String codigoProducto;
                     if(checkGenerarCodigo.isSelected()){
+                        // Generar código automático en formato CODE_128
                         codigoProducto = GeneradorCodigoBarras.generarCodigoAutomatico();
                     } else {
+                        // Usar código del proveedor
                         codigoProducto = codigoProvField.getText();
                     }
-
+                    
                     String campos[] = {codigoProducto, nom.getText(), cadd.getText(), precMay.getText(), precMen.getText()};
                     Integer idCat = getSelectedCategoriaId();
-                    conect.insertarProductoConCodigoYCategoria(campos, idCat, maxDesc);
+                    conect.insertarProductoConCodigoYCategoria(campos, idCat);
                     mostrarTabla("");
-
+                    
                     // Limpiar campos
                     codigoProvField.setText("");
                     checkGenerarCodigo.setSelected(false);
                     codigoProvField.setEnabled(true);
-                    maxDescuento.setText("100");
-
+                    
                     jDialog1.setVisible(false);
                 }
             } else {
@@ -630,6 +591,7 @@ public class InventarioP extends javax.swing.JPanel {
     }//GEN-LAST:event_hechoInsActionPerformed
 
     private void hechoActActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoActActionPerformed
+        // TODO add your handling code here:
         if(nom.getText().isEmpty() || precMen.getText().isEmpty() || precMay.getText().isEmpty() || cadd.getText().isEmpty()){
             labelinc.setText("Todos los campos deben ser completados");
         } else{
@@ -638,18 +600,9 @@ public class InventarioP extends javax.swing.JPanel {
                     aux = true;
                     int a = tablaVentas.getSelectedRow();
                     String elemento = "" + modelo.getValueAt(a, 0);
-
-                    // Validar y obtener max_descuento
-                    double maxDesc = 100.0;
-                    if (!maxDescuento.getText().isEmpty()) {
-                        maxDesc = Double.parseDouble(maxDescuento.getText());
-                        if (maxDesc < 0) maxDesc = 0;
-                        if (maxDesc > 100) maxDesc = 100;
-                    }
-
                     String[] campos = {nom.getText(), cadd.getText(), precMay.getText(), precMen.getText()};
                     Integer idCat = getSelectedCategoriaId();
-                    conect.actualizarProductoConCategoria(elemento, campos, idCat, maxDesc);
+                    conect.actualizarProductoConCategoria(elemento, campos, idCat);
                     mostrarTabla("");
                     jDialog1.setVisible(false);
                 }
@@ -801,14 +754,10 @@ public class InventarioP extends javax.swing.JPanel {
         cadd.setText("" + modelo.getValueAt(a, 2));
         precMay.setText("" + modelo.getValueAt(a, 3));
         precMen.setText("" + modelo.getValueAt(a, 4));
-
+        
         // Mostrar el código actual en el campo (solo lectura)
         codigoProvField.setText(elemento);
         checkGenerarCodigo.setSelected(false);
-
-        // Cargar max_descuento actual desde la base de datos
-        double maxDesc = conect.obtenerMaxDescuento(elemento);
-        maxDescuento.setText("" + maxDesc);
 
         // Seleccionar la categoría actual en el combo
         String catActual = "" + modelo.getValueAt(a, 5);
