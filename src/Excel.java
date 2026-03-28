@@ -664,6 +664,89 @@ public class Excel {
         
     }
     
+    public static void reporteKardex(String idProducto, String nombreProducto, java.time.LocalDate desde, java.time.LocalDate hasta) {//Método que genera el reporte de kardex de un producto
+        String dia = String.valueOf(hasta.getDayOfMonth());
+        String mes = String.valueOf(hasta.getMonthValue());
+        String anio = String.valueOf(hasta.getYear());
+
+        Workbook book = new XSSFWorkbook();
+        Sheet sheet = book.createSheet("Kardex");
+
+        CellStyle tituloEstilo = crearEstiloTitulo(book);
+        CellStyle encabezadoEstilo = crearEstiloEncabezado(book);
+        CellStyle datosEstilo = crearEstiloDatos(book);
+
+        int fila = 0;
+
+        // Título
+        CellRangeAddress fusT = new CellRangeAddress(fila, fila, 0, 6);
+        sheet.addMergedRegion(fusT);
+        Row rowTitulo = sheet.createRow(fila++);
+        Cell cTitulo = rowTitulo.createCell(0);
+        cTitulo.setCellValue("KARDEX — " + nombreProducto + " (" + idProducto + ")");
+        cTitulo.setCellStyle(tituloEstilo);
+
+        // Periodo
+        CellRangeAddress fusP = new CellRangeAddress(fila, fila, 0, 6);
+        sheet.addMergedRegion(fusP);
+        Row rowPeriodo = sheet.createRow(fila++);
+        Cell cPeriodo = rowPeriodo.createCell(0);
+        cPeriodo.setCellValue("Periodo: " + desde + " al " + hasta);
+        cPeriodo.setCellStyle(tituloEstilo);
+
+        // Encabezados
+        String[] columnas = {"Fecha", "Tipo", "Cantidad", "Exist. Anterior", "Exist. Posterior", "Referencia", "Empleado"};
+        Row rowEnc = sheet.createRow(fila++);
+        for (int i = 0; i < columnas.length; i++) {
+            Cell c = rowEnc.createCell(i);
+            c.setCellValue(columnas[i]);
+            c.setCellStyle(encabezadoEstilo);
+        }
+
+        // Datos
+        java.sql.ResultSet rs = conect.kardexProducto(idProducto, desde, hasta);
+        try {
+            while (rs != null && rs.next()) {
+                Row rowD = sheet.createRow(fila++);
+                String[] vals = {
+                    rs.getString("fecha"),
+                    rs.getString("tipo_movimiento"),
+                    String.valueOf(rs.getInt("cantidad")),
+                    String.valueOf(rs.getInt("existencia_anterior")),
+                    String.valueOf(rs.getInt("existencia_posterior")),
+                    rs.getString("referencia") != null ? rs.getString("referencia") : "",
+                    rs.getString("empleado") != null ? rs.getString("empleado") : ""
+                };
+                for (int i = 0; i < vals.length; i++) {
+                    Cell c = rowD.createCell(i);
+                    c.setCellValue(vals[i]);
+                    c.setCellStyle(datosEstilo);
+                }
+            }
+        } catch (java.sql.SQLException e) {
+            System.out.println("Error generando kardex Excel: " + e.getMessage());
+        }
+
+        for (int i = 0; i < columnas.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        try {
+            String directoryName = "Reportes de ventas";
+            new java.io.File(directoryName).mkdirs();
+            String fileName = "Kardex_" + idProducto + "_" + dia + "_" + mes + "_" + anio + ".xlsx";
+            java.io.File file = new java.io.File(directoryName + "/" + fileName);
+            java.io.FileOutputStream fileOut = new java.io.FileOutputStream(file);
+            book.write(fileOut);
+            fileOut.close();
+            java.awt.Desktop.getDesktop().open(file);
+        } catch (Exception e) {
+            System.out.println("Error al guardar kardex Excel: " + e.getMessage());
+        }
+
+        try { book.close(); } catch (Exception e) { System.out.println("Error al cerrar libro"); }
+    }
+
     private static CellStyle crearEstiloTitulo(Workbook buk){//Estilo para el titulo
         CellStyle estilo = buk.createCellStyle();
         
