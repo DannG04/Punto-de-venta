@@ -44,7 +44,7 @@ public class ConexionBD {
             rs = s.executeQuery(instruccion);
             conexion.close();
         } catch (Exception e) {
-            System.out.println("Error al obtener el Result Set: " + e.getMessage());
+            System.out.println("Error al obtener el Result Set");
         }
         return rs;
     }
@@ -294,13 +294,31 @@ public class ConexionBD {
     public String registrarVentaConFormaPago(String idEmp, String idCli, String formaPago) {//Función para registrar una venta con forma de pago
         String idVenta = registrarVenta(idEmp, idCli);
         if (!idVenta.isEmpty()) {
-            String instruccion = "UPDATE venta SET forma_pago=? WHERE id_venta=?";
             try {
                 Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-                PreparedStatement pstm = conexion.prepareStatement(instruccion);
+                // Actualizar forma de pago
+                PreparedStatement pstm = conexion.prepareStatement("UPDATE venta SET forma_pago=? WHERE id_venta=?");
                 pstm.setString(1, formaPago);
                 pstm.setString(2, idVenta);
                 pstm.executeUpdate();
+                // Retroalimentar referencia y empleado en kardex para los productos de esta venta
+                // (el trigger kardex se dispara al agregar al carrito, antes de que exista el id_venta)
+                String sqlKardex =
+                    "UPDATE kardex SET referencia = ?, id_empleado = ?::CHAR(18) " +
+                    "WHERE id_kardex IN (" +
+                    "  SELECT DISTINCT ON (vd.id_producto) k.id_kardex " +
+                    "  FROM venta_detalle vd " +
+                    "  JOIN kardex k ON k.id_producto = vd.id_producto " +
+                    "  WHERE vd.id_venta = ? " +
+                    "  AND k.referencia IS NULL " +
+                    "  AND k.tipo_movimiento = 'Venta' " +
+                    "  ORDER BY vd.id_producto, k.id_kardex DESC" +
+                    ")";
+                PreparedStatement psKardex = conexion.prepareStatement(sqlKardex);
+                psKardex.setString(1, idVenta);
+                psKardex.setString(2, idEmp);
+                psKardex.setString(3, idVenta);
+                psKardex.executeUpdate();
                 conexion.close();
             } catch (SQLException e) {
                 Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -336,6 +354,47 @@ public class ConexionBD {
 
     public ResultSet totalesDia(java.time.LocalDate fecha) {//Función para obtener los 5 totales del día
         return reporte_diario(fecha);
+    }
+
+    public ResultSet buscarProductoKardex(String filtro) {//Función para buscar productos por nombre o código
+        ResultSet rs = null;
+        String instruccion = "SELECT id_producto, nombre, cantidad FROM producto " +
+            "WHERE LOWER(nombre) LIKE LOWER(?) OR LOWER(id_producto) LIKE LOWER(?) " +
+            "ORDER BY nombre LIMIT 20";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, "%" + filtro + "%");
+            pstm.setString(2, "%" + filtro + "%");
+            rs = pstm.executeQuery();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return rs;
+    }
+
+    public ResultSet kardexProducto(String idProducto, java.time.LocalDate desde, java.time.LocalDate hasta) {//Función para obtener el kardex de un producto filtrado por fechas
+        ResultSet rs = null;
+        String instruccion =
+            "SELECT k.fecha, k.tipo_movimiento, k.cantidad, " +
+            "k.existencia_anterior, k.existencia_posterior, k.referencia, " +
+            "COALESCE(e.nombre, k.id_empleado) AS empleado " +
+            "FROM kardex k " +
+            "LEFT JOIN empleado e ON k.id_empleado = e.id_empleado " +
+            "WHERE k.id_producto = ? " +
+            "AND k.fecha::date >= ? AND k.fecha::date <= ? " +
+            "ORDER BY k.fecha DESC";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, idProducto);
+            pstm.setDate(2, java.sql.Date.valueOf(desde));
+            pstm.setDate(3, java.sql.Date.valueOf(hasta));
+            rs = pstm.executeQuery();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return rs;
     }
 
     // FUNCIONES DE LA TABLA COMPRAS
@@ -389,6 +448,18 @@ public class ConexionBD {
     public void insertarProdCompra(String[] campos, boolean ac) {//Función para insertar un producto en una compra
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            // Obtener id_empleado de la compra para el kardex
+            String idEmpCompra = "";
+            PreparedStatement psEmp = conexion.prepareStatement("SELECT id_empleado FROM compras WHERE id_compra = ?");
+            psEmp.setString(1, campos[0]);
+            ResultSet rsEmp = psEmp.executeQuery();
+            if (rsEmp.next()) idEmpCompra = rsEmp.getString(1);
+            // Establecer variables de sesión para el trigger kardex
+            Statement stmtSet = conexion.createStatement();
+            stmtSet.execute("SET kardex.tipo = 'Compra'");
+            stmtSet.execute("SET kardex.referencia = '" + campos[0] + "'");
+            if (!idEmpCompra.isEmpty())
+                stmtSet.execute("SET kardex.empleado = '" + idEmpCompra + "'");
             CallableStatement cstm = conexion.prepareCall("{call reg_compra_prod(?,?::id_producto_dominio,?,?,?)}");
             cstm.setString(1, campos[0]);
             cstm.setString(2, campos[1]);
@@ -499,6 +570,21 @@ public class ConexionBD {
     public void insertarProdDevolucion(String[] campos, boolean ac) {//Función para insertar un producto en una devolución
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            // Obtener id_empleado de la venta original para el kardex
+            String idEmpDev = "";
+            PreparedStatement psEmp = conexion.prepareStatement(
+                "SELECT v.id_empleado FROM devolucion_ventas dv " +
+                "JOIN venta v ON v.id_venta = dv.id_venta " +
+                "WHERE dv.id_devolucion = ?");
+            psEmp.setString(1, campos[0]);
+            ResultSet rsEmp = psEmp.executeQuery();
+            if (rsEmp.next()) idEmpDev = rsEmp.getString(1);
+            // Establecer variables de sesión para el trigger kardex
+            Statement stmtSet = conexion.createStatement();
+            stmtSet.execute("SET kardex.tipo = 'Devolucion'");
+            stmtSet.execute("SET kardex.referencia = '" + campos[0] + "'");
+            if (!idEmpDev.isEmpty())
+                stmtSet.execute("SET kardex.empleado = '" + idEmpDev + "'");
             CallableStatement cstm = conexion.prepareCall("{call reg_devolucion_prod(?,?,?::id_producto_dominio,?,?)}");
             cstm.setString(1, campos[0]);
             cstm.setString(2, campos[1]);
