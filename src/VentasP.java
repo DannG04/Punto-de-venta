@@ -14,26 +14,123 @@ import javax.swing.table.DefaultTableModel;
 public class VentasP extends javax.swing.JPanel {
 
     String id_cliente="";
-    
+
     static Double precT = 0.0;
     DefaultTableModel modelo = new DefaultTableModel();
     DefaultTableModel modeloBusc = new DefaultTableModel();
     DefaultTableModel modeloCli = new DefaultTableModel();
     DefaultTableModel modeloProdP = new DefaultTableModel();
-    
+
     ConexionBD conect = new ConexionBD();
     String idTemV = "";
+
+    // Campos de descuento (manejados fuera del form editor)
+    private javax.swing.JLabel jLabelDctProd = new javax.swing.JLabel("Desc. producto (%):");
+    private javax.swing.JFormattedTextField dctProd = new javax.swing.JFormattedTextField();
+    private javax.swing.JLabel jLabelDctGlobal = new javax.swing.JLabel("Desc. global (%):");
+    private javax.swing.JFormattedTextField dctGlobal = new javax.swing.JFormattedTextField();
+    private javax.swing.JLabel dctPActLabel = new javax.swing.JLabel("Descuento (%):");
+    private javax.swing.JFormattedTextField dctPAct = new javax.swing.JFormattedTextField();
     
     /**
      * Creates new form Ventas
      */
     public VentasP() {
         initComponents();
-        modelo = (DefaultTableModel)tablaVentas.getModel();
+
+        // Reemplazar el modelo de tablaVentas para agregar columna "Dct%"
+        DefaultTableModel nuevoModelo = new DefaultTableModel(
+            new Object[][]{},
+            new String[]{"Codigo", "Producto", "Cantidad", "Tipo de Venta", "Precio Dado", "Precio Total", "Dct%"}
+        ) {
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) { return false; }
+        };
+        tablaVentas.setModel(nuevoModelo);
+        modelo = nuevoModelo;
+
         modeloBusc = (DefaultTableModel)tablaBusc.getModel();
         modeloCli = (DefaultTableModel)tablaCli.getModel();
         modeloProdP = (DefaultTableModel)tablaProdPocos.getModel();
         totalLabel.setText("Total: " + precT);
+
+        // --- Descuento por producto en jPanel2 (gridy=1, entre totalLabel y Código) ---
+        java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
+        jLabelDctProd.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        jLabelDctProd.setForeground(new java.awt.Color(78, 150, 150));
+        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.ipadx = 16;
+        gbc.anchor = java.awt.GridBagConstraints.WEST;
+        gbc.insets = new java.awt.Insets(5, 10, 5, 10);
+        jPanel2.add(jLabelDctProd, gbc);
+
+        dctProd.setFont(new java.awt.Font("Noto Serif", 0, 18));
+        dctProd.setPreferredSize(new java.awt.Dimension(150, 30));
+        dctProd.setText("0");
+        dctProd.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char c = evt.getKeyChar();
+                if (!Cake.numeros(c) && !Cake.inicioPunto(c)) evt.consume();
+                if (Cake.tamaño(dctProd.getText(), 5)) evt.consume();
+            }
+        });
+        gbc = new java.awt.GridBagConstraints();
+        gbc.gridx = 1; gbc.gridy = 1;
+        gbc.anchor = java.awt.GridBagConstraints.WEST;
+        gbc.insets = new java.awt.Insets(5, 10, 5, 10);
+        jPanel2.add(dctProd, gbc);
+
+        // --- Descuento global en jPanel2 (gridy=8, después de ventaReali) ---
+        jLabelDctGlobal.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        jLabelDctGlobal.setForeground(new java.awt.Color(78, 150, 150));
+        gbc = new java.awt.GridBagConstraints();
+        gbc.gridx = 0; gbc.gridy = 8;
+        gbc.ipadx = 16;
+        gbc.anchor = java.awt.GridBagConstraints.WEST;
+        gbc.insets = new java.awt.Insets(10, 10, 5, 10);
+        jPanel2.add(jLabelDctGlobal, gbc);
+
+        dctGlobal.setFont(new java.awt.Font("Noto Serif", 0, 18));
+        dctGlobal.setPreferredSize(new java.awt.Dimension(150, 30));
+        dctGlobal.setText("0");
+        dctGlobal.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char c = evt.getKeyChar();
+                if (!Cake.numeros(c) && !Cake.inicioPunto(c)) evt.consume();
+                if (Cake.tamaño(dctGlobal.getText(), 5)) evt.consume();
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                aplicarDescuentoGlobal();
+            }
+        });
+        gbc = new java.awt.GridBagConstraints();
+        gbc.gridx = 1; gbc.gridy = 8;
+        gbc.anchor = java.awt.GridBagConstraints.WEST;
+        gbc.insets = new java.awt.Insets(10, 10, 5, 10);
+        jPanel2.add(dctGlobal, gbc);
+
+        // --- Descuento en panelAct (diálogo de actualizar item) ---
+        // Reordenar: remover hechoAct, agregar campos de descuento, re-agregar hechoAct
+        panelAct.remove(hechoAct);
+
+        dctPActLabel.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        dctPActLabel.setForeground(new java.awt.Color(78, 150, 150));
+        dctPActLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        panelAct.add(dctPActLabel);
+
+        dctPAct.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        dctPAct.setPreferredSize(new java.awt.Dimension(200, 35));
+        dctPAct.setText("0");
+        dctPAct.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char c = evt.getKeyChar();
+                if (!Cake.numeros(c) && !Cake.inicioPunto(c)) evt.consume();
+                if (Cake.tamaño(dctPAct.getText(), 5)) evt.consume();
+            }
+        });
+        panelAct.add(dctPAct);
+
+        panelAct.add(hechoAct);
     }
 
     /**
@@ -625,10 +722,18 @@ public class VentasP extends javax.swing.JPanel {
     private void hechoActActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoActActionPerformed
         if(codp.getText().isEmpty() || cantP.getText().isEmpty()){
             Mise.JOption("Todos los campos deben ser completados", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-        else{
-            String[] datos = {codp.getText(), cantP.getText()};
-            conect.insertarVentaTemp(datos, false); //Se actualizan los datos en la venta temporal
+        } else {
+            String idProd = codp.getText();
+            double descuento = dctPAct.getText().isEmpty() ? 0.0 : Double.parseDouble(dctPAct.getText());
+            double maxDesc = conect.obtenerMaxDescuento(idProd);
+            if (descuento > maxDesc) {
+                Mise.JOption("El descuento máximo para este producto es " + maxDesc + "%.\nSe aplicará ese límite.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                descuento = maxDesc;
+                dctPAct.setText("" + maxDesc);
+            }
+            String[] datos = {idProd, cantP.getText()};
+            conect.insertarVentaTemp(datos, false);
+            conect.actualizarDescuentoTemp(idProd, descuento);
             mostrarTablaVentaT();
             mostrarBusqueda("");
             ventaDialog.setVisible(false);
@@ -668,15 +773,29 @@ public class VentasP extends javax.swing.JPanel {
             Double b = Double.valueOf(totalCT.getText());
             if(a < b){
                 Mise.JOption("Lo recibido no debe ser menor que el total", "Error", JOptionPane.ERROR_MESSAGE);
-            } else{
+            } else {
+                // Guardar descuentos del carrito antes de registrar la venta
+                java.util.Map<String, Double> descuentos = new java.util.HashMap<>();
+                for (int i = 0; i < modelo.getRowCount(); i++) {
+                    String idProd = "" + modelo.getValueAt(i, 0);
+                    Object dctObj = modelo.getValueAt(i, 6);
+                    double dct = (dctObj != null && !dctObj.toString().isEmpty()) ? Double.parseDouble(dctObj.toString()) : 0.0;
+                    if (dct > 0) descuentos.put(idProd, dct);
+                }
+
                 String formaPago = (String) cmbFormaPago.getSelectedItem();
-                idTemV = conect.registrarVentaConFormaPago(Interfaz.idVendedor, id_cliente, formaPago); //Se registra la venta
-                //generarTicket(); //Se genera el ticket
-                Mise.limpiarTabla(modelo); //Se limpia el modelo
+                idTemV = conect.registrarVentaConFormaPago(Interfaz.idVendedor,  id_cliente, formaPago);
+
+                // Persistir descuentos en venta_detalle
+                for (java.util.Map.Entry<String, Double> entry : descuentos.entrySet()) {
+                    conect.actualizarDescuentoVenta(idTemV, entry.getKey(), entry.getValue());
+                }
+
+                Mise.limpiarTabla(modelo);
                 precT = 0.0;
                 totalLabel.setText("Total: " + precT);
+                dctGlobal.setText("0");
                 ventaDialog.setVisible(false);
-                //EN ESTA PARTE DEBERIA MOSTRAR LA ALERTAA SI HAY POCOS PRODUCTOS
                 if(conect.hayPocosProductos()){
                     mostrarProdPocos();
                     prodPocosDialog.setVisible(true);
@@ -754,12 +873,21 @@ public class VentasP extends javax.swing.JPanel {
 
     private void regActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regActionPerformed
         if(!codigoProd.getText().isEmpty() && !cantidadProd.getText().isEmpty()){
-            String[] datos = {codigoProd.getText(), cantidadProd.getText()};
-            conect.insertarVentaTemp(datos, true); //Se inserta el producto en la tabla
+            String idProd = codigoProd.getText();
+            double descuento = dctProd.getText().isEmpty() ? 0.0 : Double.parseDouble(dctProd.getText());
+            double maxDesc = conect.obtenerMaxDescuento(idProd);
+            if (descuento > maxDesc) {
+                Mise.JOption("El descuento máximo para este producto es " + maxDesc + "%.\nSe aplicará ese límite.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                descuento = maxDesc;
+                dctProd.setText("" + maxDesc);
+            }
+            String[] datos = {idProd, cantidadProd.getText()};
+            conect.insertarVentaTemp(datos, true);
+            conect.actualizarDescuentoTemp(idProd, descuento);
             mostrarTablaVentaT();
-            //Se limpian los campos de texto
             codigoProd.setText("");
             cantidadProd.setText("");
+            dctProd.setText("0");
             Busc.setText("");
             mostrarBusqueda("");
         } else{
@@ -857,13 +985,14 @@ public class VentasP extends javax.swing.JPanel {
         java.sql.ResultSet rs = conect.query("SELECT * FROM venta_temp");
         try{
             while(rs.next()){
-                modelo.addRow( new Object[]{rs.getString("id_producto"), rs.getString("nombre_p"), rs.getInt("cantidad_prod"), 
-                    rs.getString("tipo_venta"), rs.getDouble("precio_dado"), rs.getDouble("precio_total")});
+                double dct = 0.0;
+                try { dct = rs.getDouble("descuento_pct"); } catch(java.sql.SQLException ex) { /* columna aún no existe */ }
+                modelo.addRow(new Object[]{rs.getString("id_producto"), rs.getString("nombre_p"), rs.getInt("cantidad_prod"),
+                    rs.getString("tipo_venta"), rs.getDouble("precio_dado"), rs.getDouble("precio_total"), dct});
             }
         }catch(java.sql.SQLException e){
             System.out.println("Error al tratar de llenar la tabla venta temporal");
         }
-        //Se actualiza la suma total
         precT = conect.sumaVentaTemp();
         totalLabel.setText("Total: " + precT);
     }
@@ -916,8 +1045,36 @@ public class VentasP extends javax.swing.JPanel {
     public void mostrarDAct(int a){
         String elemento = "" + modelo.getValueAt(a, 0);
         String canti = "" + modelo.getValueAt(a, 2);
+        Object dctObj = modelo.getValueAt(a, 6);
+        String dct = (dctObj != null) ? dctObj.toString() : "0";
         codp.setText(elemento);
         cantP.setText(canti);
+        dctPAct.setText(dct);
+    }
+
+    private void aplicarDescuentoGlobal() {
+        if (modelo.getRowCount() == 0) return;
+        String texto = dctGlobal.getText();
+        if (texto.isEmpty()) return;
+        double dctGlobalVal;
+        try { dctGlobalVal = Double.parseDouble(texto); } catch (NumberFormatException e) { return; }
+        if (dctGlobalVal < 0 || dctGlobalVal > 100) return;
+
+        double minMax = conect.obtenerMinMaxDescuentoTemp();
+        if (dctGlobalVal > minMax) {
+            Mise.JOption("El descuento máximo permitido para los productos del carrito es " + minMax
+                + "%.\nSe aplicará ese límite.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            dctGlobalVal = minMax;
+            dctGlobal.setText("" + minMax);
+        }
+
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            String idProd = "" + modelo.getValueAt(i, 0);
+            double maxDescProd = conect.obtenerMaxDescuento(idProd);
+            double dctAplicar = Math.min(dctGlobalVal, maxDescProd);
+            conect.actualizarDescuentoTemp(idProd, dctAplicar);
+        }
+        mostrarTablaVentaT();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
