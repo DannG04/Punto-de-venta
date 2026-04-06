@@ -231,6 +231,10 @@ public class ConexionBD {
     }
 
     // FUNCIONES DE LA TABLA DE VENTA TEMPORAL
+    public void limpiarVentaTemp() {//Función para limpiar la tabla de venta temporal
+        inst("DELETE FROM venta_temp;");
+    }
+
     public void insertarVentaTemp(String[] campos, boolean acum) {//Función para insertar una venta temporal
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
@@ -1152,6 +1156,76 @@ public class ConexionBD {
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setDouble(1, descuento);
             pstm.setString(2, idVenta);
+            pstm.setString(3, idProducto);
+            pstm.executeUpdate();
+            conexion.close();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // FUNCIONES DE LISTA DE PRECIOS
+    public ResultSet obtenerListas() {//Función para obtener las listas de precios activas
+        return query("SELECT id_lista, nombre FROM lista_precios WHERE estatus='Activo' ORDER BY id_lista");
+    }
+
+    public double obtenerPrecioEnLista(String idProducto, int idLista) {//Función para obtener el precio de un producto en una lista (-1 si no existe)
+        double precio = -1.0;
+        String instruccion = "SELECT precio FROM producto_precio WHERE id_producto=? AND id_lista=?;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, idProducto);
+            pstm.setInt(2, idLista);
+            ResultSet rs = pstm.executeQuery();
+            if (rs.next()) {
+                precio = rs.getDouble("precio");
+            }
+            conexion.close();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return precio;
+    }
+
+    public void actualizarPrecioEnLista(String idProducto, int idLista, double precio) {//Función para actualizar el precio de un producto en una lista
+        String instruccion = "UPDATE producto_precio SET precio=? WHERE id_producto=? AND id_lista=?;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setDouble(1, precio);
+            pstm.setString(2, idProducto);
+            pstm.setInt(3, idLista);
+            pstm.executeUpdate();
+            conexion.close();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void insertarPrecioEnLista(String idProducto, int idLista, double precio) {//Función para insertar o actualizar el precio de un producto en una lista
+        String instruccion = "INSERT INTO producto_precio(id_producto, id_lista, precio) VALUES(?,?,?) " +
+                             "ON CONFLICT (id_producto, id_lista) DO UPDATE SET precio = EXCLUDED.precio;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, idProducto);
+            pstm.setInt(2, idLista);
+            pstm.setDouble(3, precio);
+            pstm.executeUpdate();
+            conexion.close();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void actualizarPrecioListaTemp(String idProducto, double nuevoPrecio, String nombreLista) {//Función para sobreescribir el precio en venta_temp con el de la lista activa
+        String instruccion = "UPDATE venta_temp SET precio_dado=?, precio_total=?*cantidad_prod WHERE id_producto=?;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setDouble(1, nuevoPrecio);
+            pstm.setDouble(2, nuevoPrecio);
             pstm.setString(3, idProducto);
             pstm.executeUpdate();
             conexion.close();

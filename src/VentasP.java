@@ -31,12 +31,20 @@ public class VentasP extends javax.swing.JPanel {
     private javax.swing.JFormattedTextField dctGlobal = new javax.swing.JFormattedTextField();
     private javax.swing.JLabel dctPActLabel = new javax.swing.JLabel("Descuento (%):");
     private javax.swing.JFormattedTextField dctPAct = new javax.swing.JFormattedTextField();
+
+    // Selector de lista de precios (manejado fuera del form editor)
+    private javax.swing.JLabel jLabelLista = new javax.swing.JLabel("Lista de precios activa:");
+    private javax.swing.JComboBox<String> cmbListaPrecios = new javax.swing.JComboBox<>();
+    private java.util.ArrayList<Integer> listaIds = new java.util.ArrayList<>();
     
     /**
      * Creates new form Ventas
      */
     public VentasP() {
         initComponents();
+
+        // Limpiar residuos de sesiones anteriores
+        conect.limpiarVentaTemp();
 
         // Reemplazar el modelo de tablaVentas para agregar columna "Dct%"
         DefaultTableModel nuevoModelo = new DefaultTableModel(
@@ -131,6 +139,26 @@ public class VentasP extends javax.swing.JPanel {
         panelAct.add(dctPAct);
 
         panelAct.add(hechoAct);
+
+        // --- Lista de precios en jPanel2 (gridy=9, después de descuento global) ---
+        java.awt.GridBagConstraints gbcLista = new java.awt.GridBagConstraints();
+        jLabelLista.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        jLabelLista.setForeground(new java.awt.Color(78, 150, 150));
+        gbcLista.gridx = 0; gbcLista.gridy = 9;
+        gbcLista.ipadx = 16;
+        gbcLista.anchor = java.awt.GridBagConstraints.WEST;
+        gbcLista.insets = new java.awt.Insets(10, 10, 5, 10);
+        jPanel2.add(jLabelLista, gbcLista);
+
+        cmbListaPrecios.setFont(new java.awt.Font("Noto Serif", 0, 16));
+        cmbListaPrecios.setPreferredSize(new java.awt.Dimension(150, 30));
+        gbcLista = new java.awt.GridBagConstraints();
+        gbcLista.gridx = 1; gbcLista.gridy = 9;
+        gbcLista.anchor = java.awt.GridBagConstraints.WEST;
+        gbcLista.insets = new java.awt.Insets(10, 10, 5, 10);
+        jPanel2.add(cmbListaPrecios, gbcLista);
+
+        cargarListasPrecios();
     }
 
     /**
@@ -734,6 +762,7 @@ public class VentasP extends javax.swing.JPanel {
             String[] datos = {idProd, cantP.getText()};
             conect.insertarVentaTemp(datos, false);
             conect.actualizarDescuentoTemp(idProd, descuento);
+            aplicarPrecioLista(idProd);
             mostrarTablaVentaT();
             mostrarBusqueda("");
             ventaDialog.setVisible(false);
@@ -791,6 +820,7 @@ public class VentasP extends javax.swing.JPanel {
                     conect.actualizarDescuentoVenta(idTemV, entry.getKey(), entry.getValue());
                 }
 
+                conect.limpiarVentaTemp();
                 Mise.limpiarTabla(modelo);
                 precT = 0.0;
                 totalLabel.setText("Total: " + precT);
@@ -884,6 +914,7 @@ public class VentasP extends javax.swing.JPanel {
             String[] datos = {idProd, cantidadProd.getText()};
             conect.insertarVentaTemp(datos, true);
             conect.actualizarDescuentoTemp(idProd, descuento);
+            aplicarPrecioLista(idProd);
             mostrarTablaVentaT();
             codigoProd.setText("");
             cantidadProd.setText("");
@@ -1050,6 +1081,41 @@ public class VentasP extends javax.swing.JPanel {
         codp.setText(elemento);
         cantP.setText(canti);
         dctPAct.setText(dct);
+    }
+
+    private void cargarListasPrecios() {
+        cmbListaPrecios.removeAllItems();
+        listaIds.clear();
+        java.sql.ResultSet rs = conect.obtenerListas();
+        if (rs != null) {
+            try {
+                while (rs.next()) {
+                    listaIds.add(rs.getInt("id_lista"));
+                    cmbListaPrecios.addItem(rs.getString("nombre"));
+                }
+            } catch (java.sql.SQLException e) {
+                System.out.println("Error al cargar listas de precios: " + e.getMessage());
+            }
+        }
+        if (cmbListaPrecios.getItemCount() == 0) {
+            listaIds.add(1);
+            cmbListaPrecios.addItem("Menudeo");
+        }
+    }
+
+    private void aplicarPrecioLista(String idProd) {
+        if (listaIds.isEmpty()) return;
+        int idx = cmbListaPrecios.getSelectedIndex();
+        if (idx < 0) return;
+        int idLista = listaIds.get(idx);
+        String nombreLista = (String) cmbListaPrecios.getSelectedItem();
+        double precioLista = conect.obtenerPrecioEnLista(idProd, idLista);
+        if (precioLista < 0) {
+            Mise.JOption("El producto no tiene precio en la lista \"" + nombreLista +
+                "\". Se usará el precio de Menudeo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        } else {
+            conect.actualizarPrecioListaTemp(idProd, precioLista, nombreLista);
+        }
     }
 
     private void aplicarDescuentoGlobal() {
