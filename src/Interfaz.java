@@ -38,6 +38,7 @@ public class Interfaz extends javax.swing.JFrame {
     EmpleadosP empPanel;
     ProveedoresP provPanel;
     CategoriasP catPanel;
+    KardexP kardexPanel;
 
     // Conexion
     ConexionBD conect = new ConexionBD();
@@ -62,6 +63,11 @@ public class Interfaz extends javax.swing.JFrame {
      */
     public Interfaz() {
         initComponents();
+        ConfigApp.cargar();
+        setTitle(ConfigApp.getNombreEmpresa());
+        if (ConfigApp.getIcono() != null) {
+            setIconImage(ConfigApp.getIcono());
+        }
         Hora fecha = new Hora();
         fecha.start();
         comboUsuarios();
@@ -124,6 +130,7 @@ public class Interfaz extends javax.swing.JFrame {
         proveButton = new javax.swing.JMenuItem();
         categButton = new javax.swing.JMenuItem();
         regventasButton = new javax.swing.JMenuItem();
+        kardexButton = new javax.swing.JMenuItem();
 
         popupMenu.setToolTipText("");
 
@@ -491,6 +498,14 @@ public class Interfaz extends javax.swing.JFrame {
         });
         administrButton.add(regventasButton);
 
+        kardexButton.setText("Kardex");
+        kardexButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                kardexButtonActionPerformed(evt);
+            }
+        });
+        administrButton.add(kardexButton);
+
         menuBar.add(administrButton);
 
         setJMenuBar(menuBar);
@@ -597,6 +612,10 @@ public class Interfaz extends javax.swing.JFrame {
     private void regventasButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regventasButtonActionPerformed
         visibilidad(3, 3);
     }//GEN-LAST:event_regventasButtonActionPerformed
+
+    private void kardexButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kardexButtonActionPerformed
+        visibilidad(3, 6);
+    }//GEN-LAST:event_kardexButtonActionPerformed
 
     private void initerDiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_initerDiaActionPerformed
         // Inicia o termina el día
@@ -780,6 +799,7 @@ public class Interfaz extends javax.swing.JFrame {
         devPanel.setVisible(false);
         gastPanel.setVisible(false);
         ganPanel.setVisible(false);
+        kardexPanel.setVisible(false);
         panelesAdm(b);
         switch (a) {
             case 0:// Panel Principal
@@ -839,6 +859,7 @@ public class Interfaz extends javax.swing.JFrame {
         provPanel.setVisible(false);
         docsPanel.setVisible(false);
         catPanel.setVisible(false);
+        kardexPanel.setVisible(false);
         switch (b) {
             case 1:// Panel de Compras
                 getContentPane().add(comPanel, java.awt.BorderLayout.CENTER);
@@ -869,6 +890,11 @@ public class Interfaz extends javax.swing.JFrame {
                 this.add(catPanel);
                 catPanel.mostrarTabla();
                 catPanel.setVisible(true);
+                break;
+            case 6:// Panel de Kardex
+                getContentPane().add(kardexPanel, java.awt.BorderLayout.CENTER);
+                this.add(kardexPanel);
+                kardexPanel.setVisible(true);
                 break;
         }
     }
@@ -964,6 +990,7 @@ public class Interfaz extends javax.swing.JFrame {
         empPanel = new EmpleadosP();
         provPanel = new ProveedoresP();
         catPanel = new CategoriasP();
+        kardexPanel = new KardexP();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -990,6 +1017,7 @@ public class Interfaz extends javax.swing.JFrame {
     public static javax.swing.JPanel horaPanel;
     private javax.swing.JPanel iniSession;
     private javax.swing.JMenu inicioButton;
+    private javax.swing.JMenuItem kardexButton;
     private javax.swing.JButton initerDia;
     private javax.swing.JMenu inventButton;
     private javax.swing.JSeparator jSeparator1;

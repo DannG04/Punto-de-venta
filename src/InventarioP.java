@@ -29,6 +29,12 @@ public class InventarioP extends javax.swing.JPanel {
     private javax.swing.JLabel jLabelMaxDesc = new javax.swing.JLabel("Desc. máximo (%):");
     private javax.swing.JFormattedTextField maxDescuento = new javax.swing.JFormattedTextField();
 
+    // Tabla de precios por lista (manejada fuera del form editor)
+    private javax.swing.JLabel jLabelListaPrecios = new javax.swing.JLabel("Precios por lista:");
+    private javax.swing.JTable tblListaPrecios;
+    private javax.swing.JScrollPane jScrollPaneListaPrecios;
+    private java.util.ArrayList<Integer> precioListaIds = new java.util.ArrayList<>();
+
     /**
      * Creates new form Inventario
      */
@@ -63,8 +69,42 @@ public class InventarioP extends javax.swing.JPanel {
         gbcMaxDesc.anchor = java.awt.GridBagConstraints.WEST;
         gbcMaxDesc.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(maxDescuento, gbcMaxDesc);
-        jDialog1.setMinimumSize(new java.awt.Dimension(550, 660));
-        jDialog1.setSize(new java.awt.Dimension(550, 660));
+
+        // --- Tabla "Precios por lista" al final del diálogo (gridy=11 y 12) ---
+        jLabelListaPrecios.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        jLabelListaPrecios.setForeground(new java.awt.Color(78, 150, 150));
+        java.awt.GridBagConstraints gbcTblLista = new java.awt.GridBagConstraints();
+        gbcTblLista.gridx = 0; gbcTblLista.gridy = 11;
+        gbcTblLista.gridwidth = 2;
+        gbcTblLista.anchor = java.awt.GridBagConstraints.WEST;
+        gbcTblLista.insets = new java.awt.Insets(14, 10, 4, 10);
+        jDialog1.getContentPane().add(jLabelListaPrecios, gbcTblLista);
+
+        tblListaPrecios = new javax.swing.JTable(new javax.swing.table.DefaultTableModel(
+            new Object[][]{},
+            new String[]{"Lista", "Precio"}
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int col) { return col == 1; }
+            @Override
+            public Class<?> getColumnClass(int col) { return col == 1 ? Double.class : String.class; }
+        });
+        tblListaPrecios.setFont(new java.awt.Font("Noto Serif", 0, 16));
+        tblListaPrecios.setRowHeight(28);
+        tblListaPrecios.getTableHeader().setFont(new java.awt.Font("Noto Serif", 1, 15));
+
+        jScrollPaneListaPrecios = new javax.swing.JScrollPane(tblListaPrecios);
+        jScrollPaneListaPrecios.setPreferredSize(new java.awt.Dimension(480, 100));
+
+        gbcTblLista = new java.awt.GridBagConstraints();
+        gbcTblLista.gridx = 0; gbcTblLista.gridy = 12;
+        gbcTblLista.gridwidth = 2;
+        gbcTblLista.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gbcTblLista.insets = new java.awt.Insets(0, 10, 14, 10);
+        jDialog1.getContentPane().add(jScrollPaneListaPrecios, gbcTblLista);
+
+        jDialog1.setMinimumSize(new java.awt.Dimension(550, 820));
+        jDialog1.setSize(new java.awt.Dimension(550, 820));
     }
 
     /**
@@ -519,13 +559,16 @@ public class InventarioP extends javax.swing.JPanel {
         labelinc.setText("");
         codigoProvField.setText("");
         checkGenerarCodigo.setSelected(false);
-        
+
         // Habilitar campos de código al agregar
         codigoProvField.setEnabled(true);
         checkGenerarCodigo.setEnabled(true);
-        
+
         // Cargar categorías activas en combo
         cargarCategoriasCombo();
+
+        // Inicializar tabla de precios con todas las listas en 0
+        limpiarPreciosLista();
 
         hechoIns.setVisible(true);
         hechoAct.setVisible(false);
@@ -613,6 +656,10 @@ public class InventarioP extends javax.swing.JPanel {
                     String campos[] = {codigoProducto, nom.getText(), cadd.getText(), precMay.getText(), precMen.getText()};
                     Integer idCat = getSelectedCategoriaId();
                     conect.insertarProductoConCodigoYCategoria(campos, idCat, maxDesc);
+
+                    // Guardar precios por lista
+                    guardarPreciosLista(codigoProducto);
+
                     mostrarTabla("");
 
                     // Limpiar campos
@@ -650,6 +697,10 @@ public class InventarioP extends javax.swing.JPanel {
                     String[] campos = {nom.getText(), cadd.getText(), precMay.getText(), precMen.getText()};
                     Integer idCat = getSelectedCategoriaId();
                     conect.actualizarProductoConCategoria(elemento, campos, idCat, maxDesc);
+
+                    // Guardar precios por lista
+                    guardarPreciosLista(elemento);
+
                     mostrarTabla("");
                     jDialog1.setVisible(false);
                 }
@@ -822,6 +873,9 @@ public class InventarioP extends javax.swing.JPanel {
         } else {
             categoriaCombo.setSelectedIndex(0); // "Sin categoría"
         }
+
+        // Cargar precios actuales por lista
+        cargarPreciosLista(elemento);
     }
     
     // Método para mostrar código de barras en un diálogo
@@ -980,6 +1034,67 @@ public class InventarioP extends javax.swing.JPanel {
         }
     }
     
+    // ── Métodos de lista de precios ──────────────────────────────────
+
+    /** Carga los precios del producto en la tabla tblListaPrecios */
+    private void cargarPreciosLista(String idProducto) {
+        javax.swing.table.DefaultTableModel m = (javax.swing.table.DefaultTableModel) tblListaPrecios.getModel();
+        m.setRowCount(0);
+        precioListaIds.clear();
+        java.sql.ResultSet rs = conect.obtenerListas();
+        if (rs != null) {
+            try {
+                while (rs.next()) {
+                    int idLista = rs.getInt("id_lista");
+                    String nombre = rs.getString("nombre");
+                    double precio = conect.obtenerPrecioEnLista(idProducto, idLista);
+                    if (precio < 0) precio = 0.0;
+                    m.addRow(new Object[]{nombre, precio});
+                    precioListaIds.add(idLista);
+                }
+            } catch (java.sql.SQLException e) {
+                System.out.println("Error al cargar precios por lista: " + e.getMessage());
+            }
+        }
+    }
+
+    /** Carga todas las listas con precio 0 (para producto nuevo) */
+    private void limpiarPreciosLista() {
+        javax.swing.table.DefaultTableModel m = (javax.swing.table.DefaultTableModel) tblListaPrecios.getModel();
+        m.setRowCount(0);
+        precioListaIds.clear();
+        java.sql.ResultSet rs = conect.obtenerListas();
+        if (rs != null) {
+            try {
+                while (rs.next()) {
+                    precioListaIds.add(rs.getInt("id_lista"));
+                    m.addRow(new Object[]{rs.getString("nombre"), 0.0});
+                }
+            } catch (java.sql.SQLException e) {
+                System.out.println("Error al cargar listas: " + e.getMessage());
+            }
+        }
+    }
+
+    /** Persiste en producto_precio los precios editados en la tabla */
+    private void guardarPreciosLista(String idProducto) {
+        javax.swing.table.DefaultTableModel m = (javax.swing.table.DefaultTableModel) tblListaPrecios.getModel();
+        // Confirmar cualquier edición en curso
+        if (tblListaPrecios.isEditing()) {
+            tblListaPrecios.getCellEditor().stopCellEditing();
+        }
+        for (int i = 0; i < m.getRowCount(); i++) {
+            if (i >= precioListaIds.size()) break;
+            int idLista = precioListaIds.get(i);
+            Object val = m.getValueAt(i, 1);
+            double precio = 0.0;
+            if (val != null) {
+                try { precio = Double.parseDouble(val.toString()); } catch (NumberFormatException ex) { /* ignorar */ }
+            }
+            conect.insertarPrecioEnLista(idProducto, idLista, precio);
+        }
+    }
+
     // ── Métodos de categoría ─────────────────────────────────────────
 
     /** Carga las categorías activas en el combo del diálogo agregar/editar producto */
