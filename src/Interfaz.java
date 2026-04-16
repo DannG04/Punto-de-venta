@@ -63,6 +63,11 @@ public class Interfaz extends javax.swing.JFrame {
      */
     public Interfaz() {
         initComponents();
+        ConfigApp.cargar();
+        setTitle(ConfigApp.getNombreEmpresa());
+        if (ConfigApp.getIcono() != null) {
+            setIconImage(ConfigApp.getIcono());
+        }
         Hora fecha = new Hora();
         fecha.start();
         comboUsuarios();
