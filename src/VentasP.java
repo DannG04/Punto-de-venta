@@ -594,7 +594,7 @@ public class VentasP extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 120, 10);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(totalLabel, gridBagConstraints);
 
         reg.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
@@ -625,7 +625,7 @@ public class VentasP extends javax.swing.JPanel {
         gridBagConstraints.gridy = 7;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-        gridBagConstraints.insets = new java.awt.Insets(50, 10, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(ventaReali, gridBagConstraints);
 
         elim.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N

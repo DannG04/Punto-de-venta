@@ -39,6 +39,7 @@ public class Interfaz extends javax.swing.JFrame {
     ProveedoresP provPanel;
     CategoriasP catPanel;
     KardexP kardexPanel;
+    EmpresaP empresaPanel;
 
     // Conexion
     ConexionBD conect = new ConexionBD();
@@ -131,6 +132,7 @@ public class Interfaz extends javax.swing.JFrame {
         categButton = new javax.swing.JMenuItem();
         regventasButton = new javax.swing.JMenuItem();
         kardexButton = new javax.swing.JMenuItem();
+        empresaButton = new javax.swing.JMenuItem();
 
         popupMenu.setToolTipText("");
 
@@ -506,6 +508,14 @@ public class Interfaz extends javax.swing.JFrame {
         });
         administrButton.add(kardexButton);
 
+        empresaButton.setText("Empresa");
+        empresaButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                empresaButtonActionPerformed(evt);
+            }
+        });
+        administrButton.add(empresaButton);
+
         menuBar.add(administrButton);
 
         setJMenuBar(menuBar);
@@ -616,6 +626,15 @@ public class Interfaz extends javax.swing.JFrame {
     private void kardexButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kardexButtonActionPerformed
         visibilidad(3, 6);
     }//GEN-LAST:event_kardexButtonActionPerformed
+
+    private void empresaButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        if (admActivo) {
+            visibilidad(3, 7);
+        } else {
+            Mise.JOption("Solo el administrador puede acceder.", "Acceso denegado",
+                    javax.swing.JOptionPane.WARNING_MESSAGE);
+        }
+    }
 
     private void initerDiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_initerDiaActionPerformed
         // Inicia o termina el día
@@ -800,6 +819,7 @@ public class Interfaz extends javax.swing.JFrame {
         gastPanel.setVisible(false);
         ganPanel.setVisible(false);
         kardexPanel.setVisible(false);
+        empresaPanel.setVisible(false);
         panelesAdm(b);
         switch (a) {
             case 0:// Panel Principal
@@ -860,6 +880,7 @@ public class Interfaz extends javax.swing.JFrame {
         docsPanel.setVisible(false);
         catPanel.setVisible(false);
         kardexPanel.setVisible(false);
+        empresaPanel.setVisible(false);
         switch (b) {
             case 1:// Panel de Compras
                 getContentPane().add(comPanel, java.awt.BorderLayout.CENTER);
@@ -895,6 +916,12 @@ public class Interfaz extends javax.swing.JFrame {
                 getContentPane().add(kardexPanel, java.awt.BorderLayout.CENTER);
                 this.add(kardexPanel);
                 kardexPanel.setVisible(true);
+                break;
+            case 7:// Panel de Empresa
+                getContentPane().add(empresaPanel, java.awt.BorderLayout.CENTER);
+                this.add(empresaPanel);
+                empresaPanel.cargarDatos();
+                empresaPanel.setVisible(true);
                 break;
         }
     }
@@ -991,6 +1018,7 @@ public class Interfaz extends javax.swing.JFrame {
         provPanel = new ProveedoresP();
         catPanel = new CategoriasP();
         kardexPanel = new KardexP();
+        empresaPanel = new EmpresaP();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1018,6 +1046,7 @@ public class Interfaz extends javax.swing.JFrame {
     private javax.swing.JPanel iniSession;
     private javax.swing.JMenu inicioButton;
     private javax.swing.JMenuItem kardexButton;
+    private javax.swing.JMenuItem empresaButton;
     private javax.swing.JButton initerDia;
     private javax.swing.JMenu inventButton;
     private javax.swing.JSeparator jSeparator1;
