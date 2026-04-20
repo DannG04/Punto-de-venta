@@ -22,9 +22,17 @@ public class Excel {
         String mes = String.valueOf(fecha.getMonthValue());
         String anio = String.valueOf(fecha.getYear());
         try {
-            InputStream is = new FileInputStream("src/img/Mega.png");
+            String[] empBGData = obtenerDatosEmpresa();
+            String logoBG = empBGData[3];
+            boolean usarLogoBG = !logoBG.isEmpty() && new java.io.File(logoBG).exists()
+                    && (logoBG.toLowerCase().endsWith(".png") || logoBG.toLowerCase().endsWith(".jpg")
+                        || logoBG.toLowerCase().endsWith(".jpeg"));
+            String logoPathBG = usarLogoBG ? logoBG : "src/img/Mega.png";
+            int pictTypeBG = logoPathBG.toLowerCase().endsWith(".png")
+                    ? Workbook.PICTURE_TYPE_PNG : Workbook.PICTURE_TYPE_JPEG;
+            InputStream is = new FileInputStream(logoPathBG);
             byte[] bytes = IOUtils.toByteArray(is);
-            int imgIndex = book.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
+            int imgIndex = book.addPicture(bytes, pictTypeBG);
             is.close();
 
             CreationHelper help = book.getCreationHelper();
@@ -118,7 +126,8 @@ public class Excel {
             Row filaFecha = sheet.createRow(3);
             Cell celdaFecha = filaFecha.createCell(1);
             celdaFecha.setCellStyle(fechaEstilo);
-            celdaTitulo.setCellValue("Mega Mix S.A.");
+            String[] empBG = obtenerDatosEmpresa();
+            celdaTitulo.setCellValue(empBG[0] + (empBG[1].isEmpty() ? "" : "  RFC: " + empBG[1]));
             sheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 5));
             String mes2 = cambiarmes(mes);
             celdaFecha.setCellValue("Balance general del " + dia + " de " + mes2 + " del año " + anio);
@@ -158,9 +167,17 @@ public class Excel {
         String mes = String.valueOf(fecha.getMonthValue());
         String anio = String.valueOf(fecha.getYear());
         try {
-            InputStream is = new FileInputStream("src/img/Mega.png");
+            String[] empERData = obtenerDatosEmpresa();
+            String logoER = empERData[3];
+            boolean usarLogoER = !logoER.isEmpty() && new java.io.File(logoER).exists()
+                    && (logoER.toLowerCase().endsWith(".png") || logoER.toLowerCase().endsWith(".jpg")
+                        || logoER.toLowerCase().endsWith(".jpeg"));
+            String logoPathER = usarLogoER ? logoER : "src/img/Mega.png";
+            int pictTypeER = logoPathER.toLowerCase().endsWith(".png")
+                    ? Workbook.PICTURE_TYPE_PNG : Workbook.PICTURE_TYPE_JPEG;
+            InputStream is = new FileInputStream(logoPathER);
             byte[] bytes = IOUtils.toByteArray(is);
-            int imgIndex = book.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
+            int imgIndex = book.addPicture(bytes, pictTypeER);
             is.close();
 
             CreationHelper help = book.getCreationHelper();
@@ -212,7 +229,8 @@ public class Excel {
             Row filaFecha = sheet.createRow(3);
             Cell celdaFecha = filaFecha.createCell(1);
             celdaFecha.setCellStyle(fechaEstilo);
-            celdaTitulo.setCellValue("Mega Mix Store S.A.");
+            String[] empER = obtenerDatosEmpresa();
+            celdaTitulo.setCellValue(empER[0] + (empER[1].isEmpty() ? "" : "  RFC: " + empER[1]));
             sheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 5));
             String mes2 = cambiarmes(mes);
             celdaFecha.setCellValue("Estado de resultados del " + dia + " de " + mes2 + " del año " + anio);
@@ -525,8 +543,18 @@ public class Excel {
         //Filas ocupadas
         int filasOcup = 0;
         
+        //Empresa
+        String[] empRD = obtenerDatosEmpresa();
+        sheet.addMergedRegion(new CellRangeAddress(filasOcup, filasOcup, 0, 2));
+        Row filaEmpresa = sheet.createRow(filasOcup++);
+        Cell celdaEmpresa = filaEmpresa.createCell(0);
+        celdaEmpresa.setCellValue(empRD[0]
+                + (empRD[1].isEmpty() ? "" : "  RFC: " + empRD[1])
+                + (empRD[2].isEmpty() ? "" : "  " + empRD[2]));
+        celdaEmpresa.setCellStyle(tituloEstilo);
+
         //Titulo
-        CellRangeAddress celdaFusionT = new CellRangeAddress(0, 0, 0, 2);//Se fusionan 3 celdas
+        CellRangeAddress celdaFusionT = new CellRangeAddress(filasOcup, filasOcup, 0, 2);//Se fusionan 3 celdas
         sheet.addMergedRegion(celdaFusionT);
         Row filaTitulo = sheet.createRow(filasOcup);//Celda creada en la region fusionada
         Cell celdaTitulo = filaTitulo.createCell(0);
@@ -535,7 +563,7 @@ public class Excel {
         filasOcup++;
         
         //Fecha
-        CellRangeAddress celdaFusionF = new CellRangeAddress(1, 1, 0, 2);
+        CellRangeAddress celdaFusionF = new CellRangeAddress(filasOcup, filasOcup, 0, 2);
         sheet.addMergedRegion(celdaFusionF);
         Row filaFecha = sheet.createRow(filasOcup);
         Cell celdaFecha = filaFecha.createCell(0);
@@ -889,6 +917,28 @@ public class Excel {
         return ahora.format(formatter);
     }
     
+    private static String[] obtenerDatosEmpresa() {
+        String nombre = "Mi Empresa", rfc = "", direccion = "", logoRuta = "";
+        try {
+            java.sql.ResultSet rs = conect.obtenerEmpresa();
+            if (rs != null && rs.next()) {
+                String n = rs.getString("nombre");
+                if (n != null && !n.isEmpty()) nombre = n;
+                String r = rs.getString("rfc");
+                if (r != null) rfc = r;
+                String dir = rs.getString("direccion");
+                String ciudad = rs.getString("ciudad");
+                if (dir != null && !dir.isEmpty())
+                    direccion = ciudad != null && !ciudad.isEmpty() ? dir + ", " + ciudad : dir;
+                else if (ciudad != null)
+                    direccion = ciudad;
+                String lr = rs.getString("logo_ruta");
+                if (lr != null && !lr.isEmpty()) logoRuta = lr;
+            }
+        } catch (Exception ignored) {}
+        return new String[]{nombre, rfc, direccion, logoRuta};
+    }
+
     public static void obtenerUtilidad(){//Método que obtiene la utilidad del ejercicio
         LocalDate fecha = LocalDate.now();
         String dia = String.valueOf(fecha.getDayOfMonth());

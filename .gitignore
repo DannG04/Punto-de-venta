@@ -21,3 +21,6 @@ Thumbs.db
 
 # Archivos accidentales de Windows
 nul
+
+#Ignora la carpeta del instalador
+/installer/

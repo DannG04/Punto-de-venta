@@ -29,6 +29,20 @@ public class GenTicket {
 
     public static void generarTicketApartado(ResultSet resultado) {
         try {
+            String nomEmpresa = "", telEmpresa = "", dirEmpresa = "", msgTicket = "Muchas gracias por su compra.";
+            try {
+                ResultSet emp = con.obtenerEmpresa();
+                if (emp != null && emp.next()) {
+                    nomEmpresa = nvl(emp.getString("nombre"));
+                    telEmpresa = nvl(emp.getString("telefono"));
+                    String dir = nvl(emp.getString("direccion"));
+                    String ciudad = nvl(emp.getString("ciudad"));
+                    dirEmpresa = dir.isEmpty() ? ciudad : (ciudad.isEmpty() ? dir : dir + ", " + ciudad);
+                    String msg = nvl(emp.getString("mensaje_ticket"));
+                    if (!msg.isEmpty()) msgTicket = msg;
+                }
+            } catch (Exception ignored) {}
+
             if (resultado.next()) {
                 String idApartado = resultado.getString("id_apartado");
                 String idEmpleado = resultado.getString("id_empleado");
@@ -53,23 +67,50 @@ public class GenTicket {
                 Extenso e = new Extenso();
                 e.setNumber(cantidadTotal);
 
-                int totalRows = 15; // Ajusta según el contenido del ticket
+                int totalRows = 18; // Ajusta según el contenido del ticket
 
                 printer.setOutSize(totalRows, 52); // Ajusta el ancho según sea necesario
 
-                printer.printCharAtCol(1, 1, 44, "*");
-                printer.printTextWrap(1, 2, 10, 52, "COMPROBANTE DE APARTADO");
-                printer.printTextWrap(2, 3, 1, 52, "Folio: " + idApartado);
-                printer.printTextWrap(3, 3, 1, 52, "Fecha de emisión : " + fechaActual);
-                printer.printTextWrap(4, 3, 1, 52, "Hora: " + formatoHora.format(date));
-                printer.printTextWrap(5, 3, 1, 52, "Vendedor: " + nombre);
-                printer.printTextWrap(6, 3, 1, 52, "-------------------------------------------");
-                printer.printTextWrap(7, 3, 1, 52, "Fecha Inicio: " + fechaInicio);
-                printer.printTextWrap(8, 3, 1, 52, "Fecha Límite de pago: " + fechaLimite);
-                printer.printTextWrap(9, 3, 1, 52, "Cantidad Dada: " + cantidadDada);
-                printer.printTextWrap(10, 3, 1, 52, "Cantidad Faltante: " + cantidadFaltante);
-                printer.printTextWrap(11, 3, 1, 52, "Cantidad Total: " + cantidadTotal);
-                printer.printTextWrap(12, 3, 1, 52, "-------Muchas gracias por su compra.-------");
+                int row = 1;
+                printer.printCharAtCol(row, row, 44, "*");
+                if (!nomEmpresa.isEmpty()) {
+                    row++;
+                    printer.printTextWrap(row, row + 1, 10, 52, nomEmpresa);
+                }
+                if (!telEmpresa.isEmpty()) {
+                    row++;
+                    printer.printTextWrap(row, row + 1, 3, 52, "Tel: " + telEmpresa);
+                }
+                if (!dirEmpresa.isEmpty()) {
+                    row++;
+                    printer.printTextWrap(row, row + 1, 3, 52, dirEmpresa);
+                }
+                row++;
+                printer.printCharAtCol(row, row, 44, "*");
+                row++;
+                printer.printTextWrap(row, row + 1, 10, 52, "COMPROBANTE DE APARTADO");
+                row++;
+                printer.printTextWrap(row, row + 1, 1, 52, "Folio: " + idApartado);
+                row++;
+                printer.printTextWrap(row, row + 1, 1, 52, "Fecha de emisión : " + fechaActual);
+                row++;
+                printer.printTextWrap(row, row + 1, 1, 52, "Hora: " + formatoHora.format(date));
+                row++;
+                printer.printTextWrap(row, row + 1, 1, 52, "Vendedor: " + nombre);
+                row++;
+                printer.printTextWrap(row, row + 1, 1, 52, "-------------------------------------------");
+                row++;
+                printer.printTextWrap(row, row + 1, 1, 52, "Fecha Inicio: " + fechaInicio);
+                row++;
+                printer.printTextWrap(row, row + 1, 1, 52, "Fecha Límite de pago: " + fechaLimite);
+                row++;
+                printer.printTextWrap(row, row + 1, 1, 52, "Cantidad Dada: " + cantidadDada);
+                row++;
+                printer.printTextWrap(row, row + 1, 1, 52, "Cantidad Faltante: " + cantidadFaltante);
+                row++;
+                printer.printTextWrap(row, row + 1, 1, 52, "Cantidad Total: " + cantidadTotal);
+                row++;
+                printer.printTextWrap(row, row + 1, 1, 52, "-------" + msgTicket + "-------");
 
                 printer.toFile("impresionApartado.txt");
 
@@ -109,6 +150,20 @@ public class GenTicket {
 
     public static void generarTicketProductos(ResultSet resultado) {
         try {
+            String nomEmpresa = "", telEmpresa = "", dirEmpresa = "", msgTicket = "Muchas gracias por su compra.";
+            try {
+                ResultSet emp = con.obtenerEmpresa();
+                if (emp != null && emp.next()) {
+                    nomEmpresa = nvl(emp.getString("nombre"));
+                    telEmpresa = nvl(emp.getString("telefono"));
+                    String dir = nvl(emp.getString("direccion"));
+                    String ciudad = nvl(emp.getString("ciudad"));
+                    dirEmpresa = dir.isEmpty() ? ciudad : (ciudad.isEmpty() ? dir : dir + ", " + ciudad);
+                    String msg = nvl(emp.getString("mensaje_ticket"));
+                    if (!msg.isEmpty()) msgTicket = msg;
+                }
+            } catch (Exception ignored) {}
+
             DateFormat formatoHora = new SimpleDateFormat("HH:mm:ss");
             Date date = new Date();
             Date fechahoy = new Date();
@@ -121,18 +176,37 @@ public class GenTicket {
             int rows = resultado.getRow();
             resultado.beforeFirst();
 
-            int totalRows = rows + 12; // Ajusta según el contenido del ticket
+            int totalRows = rows + 16; // Ajusta según el contenido del ticket
 
             printer.setOutSize(totalRows, 55); // Ajusta el ancho según sea necesario
 
-            printer.printCharAtCol(1, 1, 44, "*");
-            printer.printTextWrap(1, 2, 10, 55, "FACTURA DE ENTREGA");
-            printer.printTextWrap(2, 3, 1, 55, "Fecha de emisión : " + fechaActual);
-            printer.printTextWrap(3, 3, 1, 55, "Hora: " + formatoHora.format(date));
-            printer.printTextWrap(4, 3, 1, 55, "-------------------------------------------");
-            printer.printTextWrap(5, 3, 1, 55, "     Producto         Cant  P.Unit  P.Total");
-
-            int rowIndex = 6;
+            int rowIndex = 1;
+            printer.printCharAtCol(rowIndex, rowIndex, 44, "*");
+            if (!nomEmpresa.isEmpty()) {
+                rowIndex++;
+                printer.printTextWrap(rowIndex, rowIndex + 1, 10, 55, nomEmpresa);
+            }
+            if (!telEmpresa.isEmpty()) {
+                rowIndex++;
+                printer.printTextWrap(rowIndex, rowIndex + 1, 3, 55, "Tel: " + telEmpresa);
+            }
+            if (!dirEmpresa.isEmpty()) {
+                rowIndex++;
+                printer.printTextWrap(rowIndex, rowIndex + 1, 3, 55, dirEmpresa);
+            }
+            rowIndex++;
+            printer.printCharAtCol(rowIndex, rowIndex, 44, "*");
+            rowIndex++;
+            printer.printTextWrap(rowIndex, rowIndex + 1, 10, 55, "FACTURA DE ENTREGA");
+            rowIndex++;
+            printer.printTextWrap(rowIndex, rowIndex + 1, 1, 55, "Fecha de emisión : " + fechaActual);
+            rowIndex++;
+            printer.printTextWrap(rowIndex, rowIndex + 1, 1, 55, "Hora: " + formatoHora.format(date));
+            rowIndex++;
+            printer.printTextWrap(rowIndex, rowIndex + 1, 1, 55, "-------------------------------------------");
+            rowIndex++;
+            printer.printTextWrap(rowIndex, rowIndex + 1, 1, 55, "     Producto         Cant  P.Unit  P.Total");
+            rowIndex++;
             double total = 0;
             while (resultado.next()) {
                 String nombre = resultado.getString("nombre");
@@ -150,7 +224,7 @@ public class GenTicket {
 
             printer.printTextWrap(rowIndex, rowIndex + 1, 1, 55, "-------------------------------------------");
             printer.printTextWrap(rowIndex + 1, rowIndex + 2, 1, 55, "Total: " + total);
-            printer.printTextWrap(rowIndex + 2, rowIndex + 3, 1, 55, "-------Muchas gracias por su compra.-------");
+            printer.printTextWrap(rowIndex + 2, rowIndex + 3, 1, 55, "-------" + msgTicket + "-------");
 
             printer.toFile("impresionPagado.txt");
 
@@ -183,5 +257,9 @@ public class GenTicket {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static String nvl(String s) {
+        return s == null ? "" : s;
     }
 }
