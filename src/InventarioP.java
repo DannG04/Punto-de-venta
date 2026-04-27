@@ -550,7 +550,8 @@ public class InventarioP extends javax.swing.JPanel {
                 
                 // Si hizo clic en la columna 0 (ID) y hay una fila seleccionada
                 if (row < tablaVentas.getRowCount() && row >= 0 && column == 0) {
-                    String idProducto = "" + modelo.getValueAt(row, 0);
+                    int modelRow = tablaVentas.convertRowIndexToModel(row);
+                    String idProducto = "" + modelo.getValueAt(modelRow, 0);
                     mostrarCodigoBarras(idProducto);
                 }
             }
@@ -565,7 +566,7 @@ public class InventarioP extends javax.swing.JPanel {
         if(tablaVentas.getSelectedRow() != -1){
             int resp = Mise.JOptionYesNo("¿Seguro que desea eliminar esta fila?", "Eliminar");
             if(resp == 0){
-                int a = tablaVentas.getSelectedRow();
+                int a = tablaVentas.convertRowIndexToModel(tablaVentas.getSelectedRow());
                 if(conect.eliminarProducto("" + modelo.getValueAt(a, 0))){//Si se elimina muestra la nueva tabla
                     mostrarTabla("");
                 }
@@ -608,7 +609,7 @@ public class InventarioP extends javax.swing.JPanel {
         if(tablaVentas.getSelectedRow() != -1){
             jDialog1.setTitle("Actualizar Producto");
             labelinc.setText("");
-            int a = tablaVentas.getSelectedRow();
+            int a = tablaVentas.convertRowIndexToModel(tablaVentas.getSelectedRow());
             hechoIns.setVisible(false);
             hechoAct.setVisible(true);
             
@@ -710,7 +711,7 @@ public class InventarioP extends javax.swing.JPanel {
             if(Double.parseDouble(precMay.getText()) < Double.parseDouble(precMen.getText())){
                 if(aux == false){
                     aux = true;
-                    int a = tablaVentas.getSelectedRow();
+                    int a = tablaVentas.convertRowIndexToModel(tablaVentas.getSelectedRow());
                     String elemento = "" + modelo.getValueAt(a, 0);
 
                     // Validar y obtener max_descuento
