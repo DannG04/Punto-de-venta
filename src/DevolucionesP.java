@@ -569,7 +569,7 @@ public class DevolucionesP extends javax.swing.JPanel {
             new javax.swing.table.TableRowSorter<>(modeloDev);
         tablaD.setRowSorter(sorter);
         if ("Más reciente".equals(sel)) {
-            sorter.setComparator(2, java.util.Comparator.comparing(Object::toString).reversed());
+            sorter.setComparator(2, java.util.Comparator.comparing(Object::toString));
             sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(2, javax.swing.SortOrder.DESCENDING)));
         } else if ("Más antiguo".equals(sel)) {
             sorter.setComparator(2, java.util.Comparator.comparing(Object::toString));

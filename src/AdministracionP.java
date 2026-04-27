@@ -342,7 +342,7 @@ public class AdministracionP extends javax.swing.JPanel {
             new javax.swing.table.TableRowSorter<>(modeloVentas);
         tablaVentas.setRowSorter(sorter);
         if ("Más reciente".equals(sel)) {
-            sorter.setComparator(4, java.util.Comparator.comparing(Object::toString).reversed());
+            sorter.setComparator(4, java.util.Comparator.comparing(Object::toString));
             sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(4, javax.swing.SortOrder.DESCENDING)));
         } else if ("Más antiguo".equals(sel)) {
             sorter.setComparator(4, java.util.Comparator.comparing(Object::toString));

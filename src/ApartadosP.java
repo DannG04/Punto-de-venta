@@ -971,7 +971,7 @@ public class ApartadosP extends javax.swing.JPanel {
             new javax.swing.table.TableRowSorter<>(modeloAp);
         tablaAp.setRowSorter(sorter);
         if ("Más reciente".equals(sel)) {
-            sorter.setComparator(3, java.util.Comparator.comparing(Object::toString).reversed());
+            sorter.setComparator(3, java.util.Comparator.comparing(Object::toString));
             sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(3, javax.swing.SortOrder.DESCENDING)));
         } else if ("Más antiguo".equals(sel)) {
             sorter.setComparator(3, java.util.Comparator.comparing(Object::toString));
