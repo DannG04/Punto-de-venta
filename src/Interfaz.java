@@ -40,6 +40,8 @@ public class Interfaz extends javax.swing.JFrame {
     CategoriasP catPanel;
     KardexP kardexPanel;
     EmpresaP empresaPanel;
+    CotizacionesP cotiPanel;
+    private javax.swing.JMenu cotizButton;
 
     // Conexion
     ConexionBD conect = new ConexionBD();
@@ -820,6 +822,7 @@ public class Interfaz extends javax.swing.JFrame {
         ganPanel.setVisible(false);
         kardexPanel.setVisible(false);
         empresaPanel.setVisible(false);
+        cotiPanel.setVisible(false);
         panelesAdm(b);
         switch (a) {
             case 0:// Panel Principal
@@ -869,6 +872,12 @@ public class Interfaz extends javax.swing.JFrame {
                 this.add(ganPanel);
                 ganPanel.mostrarTablaOG();
                 ganPanel.setVisible(true);
+                break;
+            case 9:// Panel de Cotizaciones
+                getContentPane().add(cotiPanel, java.awt.BorderLayout.CENTER);
+                this.add(cotiPanel);
+                cotiPanel.mostrarTablaCotizaciones("");
+                cotiPanel.setVisible(true);
                 break;
         }
     }
@@ -1012,6 +1021,7 @@ public class Interfaz extends javax.swing.JFrame {
         cliPanel = new ClientesP();
         gastPanel = new GastosP();
         ganPanel = new GananciasP();
+        cotiPanel = new CotizacionesP();
         // Administracion
         comPanel = new ComprasP();
         empPanel = new EmpleadosP();
@@ -1019,6 +1029,15 @@ public class Interfaz extends javax.swing.JFrame {
         catPanel = new CategoriasP();
         kardexPanel = new KardexP();
         empresaPanel = new EmpresaP();
+        // Menú de cotizaciones (se agrega antes de Reportes, posición 6)
+        cotizButton = new javax.swing.JMenu("Cotizaciones");
+        cotizButton.setIcon(SvgIcon.load("/icons/shopping.svg"));
+        cotizButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                visibilidad(9, 0);
+            }
+        });
+        menuBar.add(cotizButton, 6);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
