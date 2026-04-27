@@ -76,13 +76,19 @@ public class WebInventario extends NanoWSD {
         }
     }
 
-    /** Devuelve la IP local de la máquina en la red LAN (excluye link-local 169.254.x.x) */
+    /** Devuelve la IP local de la máquina en la red LAN (excluye VPNs, Docker y bridges) */
     public static String obtenerIPLocal() {
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
                 NetworkInterface ni = interfaces.nextElement();
                 if (ni.isLoopback() || !ni.isUp()) continue;
+                // Excluir VPNs (Tailscale, OpenVPN), Docker bridges y interfaces virtuales
+                if (ni.isPointToPoint()) continue;
+                String nombre = ni.getName().toLowerCase();
+                if (nombre.startsWith("docker") || nombre.startsWith("br-")
+                        || nombre.startsWith("veth") || nombre.startsWith("virbr")
+                        || nombre.startsWith("tun") || nombre.startsWith("tap")) continue;
                 Enumeration<InetAddress> addrs = ni.getInetAddresses();
                 while (addrs.hasMoreElements()) {
                     InetAddress addr = addrs.nextElement();

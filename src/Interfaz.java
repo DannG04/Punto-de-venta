@@ -60,6 +60,7 @@ public class Interfaz extends javax.swing.JFrame {
     private WebInventario servidorWeb = null;
     private javax.swing.JButton btnServidor;
     private javax.swing.JLabel lblUrlServidor;
+    private javax.swing.JLabel lblQrServidor;
 
     /**
      * Creates new form Interfaz
@@ -503,6 +504,7 @@ public class Interfaz extends javax.swing.JFrame {
         administrButton.add(regventasButton);
 
         kardexButton.setText("Kardex");
+        kardexButton.setIcon(SvgIcon.load("/icons/kardex.svg"));
         kardexButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 kardexButtonActionPerformed(evt);
@@ -981,8 +983,18 @@ public class Interfaz extends javax.swing.JFrame {
         gbcUrl.gridy = 4;
         gbcUrl.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gbcUrl.anchor = java.awt.GridBagConstraints.WEST;
-        gbcUrl.insets = new java.awt.Insets(0, 10, 5, 0);
+        gbcUrl.insets = new java.awt.Insets(0, 10, 2, 0);
         panelPrin.add(lblUrlServidor, gbcUrl);
+
+        lblQrServidor = new javax.swing.JLabel();
+        lblQrServidor.setVisible(false);
+        java.awt.GridBagConstraints gbcQr = new java.awt.GridBagConstraints();
+        gbcQr.gridx = 0;
+        gbcQr.gridy = 5;
+        gbcQr.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gbcQr.anchor = java.awt.GridBagConstraints.WEST;
+        gbcQr.insets = new java.awt.Insets(2, 10, 5, 0);
+        panelPrin.add(lblQrServidor, gbcQr);
     }
 
     private void toggleServidor() {
@@ -993,11 +1005,14 @@ public class Interfaz extends javax.swing.JFrame {
                 servidorWeb.start(NanoHTTPD.SOCKET_READ_TIMEOUT, true);
                 String ip = WebInventario.obtenerIPLocal();
                 String url = "https://" + ip + ":" + WebInventario.PUERTO;
-                lblUrlServidor.setText("<html><a href=''>" + url + "</a></html>");
+                lblUrlServidor.setText("<html><font color='#4e9696'>" + url + "</font></html>");
                 lblUrlServidor.setVisible(true);
+                java.awt.image.BufferedImage qrImg = GeneradorCodigoBarras.generarQR(url, 160);
+                if (qrImg != null) {
+                    lblQrServidor.setIcon(new javax.swing.ImageIcon(qrImg));
+                    lblQrServidor.setVisible(true);
+                }
                 btnServidor.setText("Detener servidor");
-                Mise.JOption("Servidor activo en:\n" + url, "Servidor móvil",
-                        javax.swing.JOptionPane.INFORMATION_MESSAGE);
             } catch (java.io.IOException ex) {
                 Mise.JOption("No se pudo iniciar el servidor:\n" + ex.getMessage(),
                         "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -1007,6 +1022,7 @@ public class Interfaz extends javax.swing.JFrame {
             servidorWeb.stop();
             servidorWeb = null;
             lblUrlServidor.setVisible(false);
+            lblQrServidor.setVisible(false);
             btnServidor.setText("Servidor móvil");
         }
     }
