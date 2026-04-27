@@ -1,8 +1,10 @@
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoWSD;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.Socket;
 import java.sql.*;
 import java.util.*;
 import java.security.KeyStore;
@@ -73,6 +75,31 @@ public class WebInventario extends NanoWSD {
             makeSecure(sslFactory, null);
         } catch (Exception e) {
             System.err.println("[WebInventario] No se pudo activar HTTPS: " + e.getMessage());
+        }
+    }
+
+    // InetAddress.getByAddress(host,addr) fija el hostname a la cadena IP sin consulta DNS,
+    // eliminando el timeout de resolución inversa (~10-15 s) en la primera conexión de cada dispositivo.
+    @Override
+    protected ClientHandler createClientHandler(final Socket socket, final InputStream inputStream) {
+        InetAddress original = socket.getInetAddress();
+        if (original == null || original.isLoopbackAddress()) {
+            return super.createClientHandler(socket, inputStream);
+        }
+        try {
+            final InetAddress sinDNS = InetAddress.getByAddress(
+                original.getHostAddress(), original.getAddress());
+            Socket wrapper = new Socket() {
+                @Override public java.io.OutputStream getOutputStream() throws java.io.IOException { return socket.getOutputStream(); }
+                @Override public InetAddress getInetAddress() { return sinDNS; }
+                @Override public boolean isClosed() { return socket.isClosed(); }
+                @Override public void close() throws java.io.IOException { socket.close(); }
+                @Override public boolean isInputShutdown() { return socket.isInputShutdown(); }
+                @Override public boolean isOutputShutdown() { return socket.isOutputShutdown(); }
+            };
+            return super.createClientHandler(wrapper, inputStream);
+        } catch (Exception e) {
+            return super.createClientHandler(socket, inputStream);
         }
     }
 
