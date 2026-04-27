@@ -96,6 +96,8 @@ public class ApartadosP extends javax.swing.JPanel {
         jLabel7 = new javax.swing.JLabel();
         buskAp = new javax.swing.JFormattedTextField();
         sumLabel = new javax.swing.JLabel();
+        lblOrdenAp = new javax.swing.JLabel();
+        cmbOrdenAp = new javax.swing.JComboBox<>();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaAp = new javax.swing.JTable();
 
@@ -619,6 +621,31 @@ public class ApartadosP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel1.add(sumLabel, gridBagConstraints);
 
+        lblOrdenAp.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        lblOrdenAp.setForeground(new java.awt.Color(78, 150, 150));
+        lblOrdenAp.setText("Ordenar:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
+        jPanel1.add(lblOrdenAp, gridBagConstraints);
+
+        cmbOrdenAp.setFont(new java.awt.Font("Noto Serif", 0, 16)); // NOI18N
+        cmbOrdenAp.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {"Sin ordenar", "Más reciente", "Más antiguo", "A-Z (Cliente)", "Z-A (Cliente)", "Mayor total", "Menor total"}));
+        cmbOrdenAp.setPreferredSize(new java.awt.Dimension(300, 30));
+        cmbOrdenAp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbOrdenApActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 0);
+        jPanel1.add(cmbOrdenAp, gridBagConstraints);
+
         add(jPanel1, java.awt.BorderLayout.NORTH);
 
         tablaAp.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
@@ -930,6 +957,43 @@ public class ApartadosP extends javax.swing.JPanel {
         codP.setText("" + tablaProd.getValueAt(tablaProd.getSelectedRow(), 0));
     }//GEN-LAST:event_tablaProdMouseClicked
 
+    private void cmbOrdenApActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbOrdenApActionPerformed
+        aplicarOrdenAp();
+    }//GEN-LAST:event_cmbOrdenApActionPerformed
+
+    private void aplicarOrdenAp() {
+        String sel = (String) cmbOrdenAp.getSelectedItem();
+        if ("Sin ordenar".equals(sel)) {
+            tablaAp.setRowSorter(null);
+            return;
+        }
+        javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter =
+            new javax.swing.table.TableRowSorter<>(modeloAp);
+        tablaAp.setRowSorter(sorter);
+        if ("Más reciente".equals(sel)) {
+            sorter.setComparator(3, java.util.Comparator.comparing(Object::toString).reversed());
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(3, javax.swing.SortOrder.DESCENDING)));
+        } else if ("Más antiguo".equals(sel)) {
+            sorter.setComparator(3, java.util.Comparator.comparing(Object::toString));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(3, javax.swing.SortOrder.ASCENDING)));
+        } else if ("A-Z (Cliente)".equals(sel)) {
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(2, javax.swing.SortOrder.ASCENDING)));
+        } else if ("Z-A (Cliente)".equals(sel)) {
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(2, javax.swing.SortOrder.DESCENDING)));
+        } else if ("Mayor total".equals(sel)) {
+            sorter.setComparator(7, java.util.Comparator.comparingDouble(o -> {
+                try { return Double.parseDouble(o.toString()); } catch (Exception e) { return 0.0; }
+            }));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(7, javax.swing.SortOrder.DESCENDING)));
+        } else if ("Menor total".equals(sel)) {
+            sorter.setComparator(7, java.util.Comparator.comparingDouble(o -> {
+                try { return Double.parseDouble(o.toString()); } catch (Exception e) { return 0.0; }
+            }));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(7, javax.swing.SortOrder.ASCENDING)));
+        }
+        sorter.sort();
+    }
+
     public Double cambioT(String palabra){//Calcula el cambio
         Double precT = Double.valueOf(cantSaldaF.getText());
         Double cambioNum = Double.valueOf(palabra);
@@ -1021,6 +1085,7 @@ public class ApartadosP extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton acP;
     private javax.swing.JButton agP;
+    private javax.swing.JComboBox<String> cmbOrdenAp;
     private javax.swing.JFormattedTextField buskAp;
     private javax.swing.JFormattedTextField cambCT;
     private javax.swing.JButton canc;
@@ -1058,6 +1123,7 @@ public class ApartadosP extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     public static javax.swing.JLabel labelinc;
+    private javax.swing.JLabel lblOrdenAp;
     private javax.swing.JPanel panelApart;
     private javax.swing.JPanel panelApartado;
     private javax.swing.JPanel panelRegAp1;
