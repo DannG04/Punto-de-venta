@@ -55,6 +55,8 @@ public class ClientesP extends javax.swing.JPanel {
         labelinc2 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        lblOrdenClientes = new javax.swing.JLabel();
+        cmbOrdenClientes = new javax.swing.JComboBox<>();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaC = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
@@ -293,11 +295,46 @@ public class ClientesP extends javax.swing.JPanel {
 
         setLayout(new java.awt.BorderLayout());
 
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
         jLabel1.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(78, 150, 150));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Registro de Clientes");
-        jPanel1.add(jLabel1);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.CENTER;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
+        jPanel1.add(jLabel1, gridBagConstraints);
+
+        lblOrdenClientes.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        lblOrdenClientes.setForeground(new java.awt.Color(78, 150, 150));
+        lblOrdenClientes.setText("Ordenar:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 8, 10);
+        jPanel1.add(lblOrdenClientes, gridBagConstraints);
+
+        cmbOrdenClientes.setFont(new java.awt.Font("Noto Serif", 0, 16)); // NOI18N
+        cmbOrdenClientes.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {"Sin ordenar", "A-Z (Nombre)", "Z-A (Nombre)"}));
+        cmbOrdenClientes.setPreferredSize(new java.awt.Dimension(200, 30));
+        cmbOrdenClientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbOrdenClientesActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 8, 10);
+        jPanel1.add(cmbOrdenClientes, gridBagConstraints);
 
         add(jPanel1, java.awt.BorderLayout.NORTH);
 
@@ -572,6 +609,26 @@ public class ClientesP extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_curpCliente2ActionPerformed
 
+    private void cmbOrdenClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbOrdenClientesActionPerformed
+        aplicarOrdenClientes();
+    }//GEN-LAST:event_cmbOrdenClientesActionPerformed
+
+    private void aplicarOrdenClientes() {
+        javax.swing.table.DefaultTableModel m = (javax.swing.table.DefaultTableModel) tablaC.getModel();
+        String sel = (String) cmbOrdenClientes.getSelectedItem();
+        if ("Sin ordenar".equals(sel)) {
+            tablaC.setRowSorter(null);
+            return;
+        }
+        javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter =
+            new javax.swing.table.TableRowSorter<>(m);
+        tablaC.setRowSorter(sorter);
+        javax.swing.SortOrder orden = "A-Z (Nombre)".equals(sel)
+            ? javax.swing.SortOrder.ASCENDING : javax.swing.SortOrder.DESCENDING;
+        sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(1, orden)));
+        sorter.sort();
+    }
+
     public void mostrarTabla(){
         Mise.limpiarTabla(modelo);
         java.sql.ResultSet rs = conect.query("SELECT * FROM cliente");
@@ -592,6 +649,7 @@ public class ClientesP extends javax.swing.JPanel {
     private javax.swing.JButton actC1;
     private javax.swing.JDialog actualizarDialog;
     private javax.swing.JButton alta;
+    private javax.swing.JComboBox<String> cmbOrdenClientes;
     private javax.swing.JFormattedTextField curpCliente1;
     private javax.swing.JFormattedTextField curpCliente2;
     private javax.swing.JButton elimC1;
@@ -607,6 +665,7 @@ public class ClientesP extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     public static javax.swing.JLabel labelinc1;
+    private javax.swing.JLabel lblOrdenClientes;
     public static javax.swing.JLabel labelinc2;
     private javax.swing.JFormattedTextField nomCliente1;
     private javax.swing.JFormattedTextField nomCliente2;

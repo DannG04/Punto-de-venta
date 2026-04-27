@@ -70,9 +70,12 @@ public class ComprasP extends javax.swing.JPanel {
         elP = new javax.swing.JButton();
         heP = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        lblOrdenCompras = new javax.swing.JLabel();
+        cmbOrdenCompras = new javax.swing.JComboBox<>();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaCompras = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
@@ -335,12 +338,49 @@ public class ComprasP extends javax.swing.JPanel {
 
         setLayout(new java.awt.BorderLayout());
 
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
         jLabel3.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(78, 150, 150));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("Compras");
         jLabel3.setPreferredSize(new java.awt.Dimension(163, 70));
-        add(jLabel3, java.awt.BorderLayout.PAGE_START);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.CENTER;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
+        jPanel1.add(jLabel3, gridBagConstraints);
+
+        lblOrdenCompras.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        lblOrdenCompras.setForeground(new java.awt.Color(78, 150, 150));
+        lblOrdenCompras.setText("Ordenar:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 8, 10);
+        jPanel1.add(lblOrdenCompras, gridBagConstraints);
+
+        cmbOrdenCompras.setFont(new java.awt.Font("Noto Serif", 0, 16)); // NOI18N
+        cmbOrdenCompras.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {"Sin ordenar", "Más reciente", "Más antiguo", "Mayor monto", "Menor monto"}));
+        cmbOrdenCompras.setPreferredSize(new java.awt.Dimension(200, 30));
+        cmbOrdenCompras.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbOrdenComprasActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 8, 10);
+        jPanel1.add(cmbOrdenCompras, gridBagConstraints);
+
+        add(jPanel1, java.awt.BorderLayout.NORTH);
 
         jScrollPane1.setPreferredSize(new java.awt.Dimension(540, 402));
 
@@ -562,7 +602,40 @@ public class ComprasP extends javax.swing.JPanel {
     private void tablaProdMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaProdMouseClicked
         codP.setText("" + tablaProd.getValueAt(tablaProd.getSelectedRow(), 0));
     }//GEN-LAST:event_tablaProdMouseClicked
-    
+
+    private void cmbOrdenComprasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbOrdenComprasActionPerformed
+        aplicarOrdenCompras();
+    }//GEN-LAST:event_cmbOrdenComprasActionPerformed
+
+    private void aplicarOrdenCompras() {
+        String sel = (String) cmbOrdenCompras.getSelectedItem();
+        if ("Sin ordenar".equals(sel)) {
+            tablaCompras.setRowSorter(null);
+            return;
+        }
+        javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter =
+            new javax.swing.table.TableRowSorter<>(modeloCom);
+        tablaCompras.setRowSorter(sorter);
+        if ("Más reciente".equals(sel)) {
+            sorter.setComparator(2, java.util.Comparator.comparing(Object::toString));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(2, javax.swing.SortOrder.DESCENDING)));
+        } else if ("Más antiguo".equals(sel)) {
+            sorter.setComparator(2, java.util.Comparator.comparing(Object::toString));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(2, javax.swing.SortOrder.ASCENDING)));
+        } else if ("Mayor monto".equals(sel)) {
+            sorter.setComparator(4, java.util.Comparator.comparingDouble(o -> {
+                try { return Double.parseDouble(o.toString()); } catch (Exception e) { return 0.0; }
+            }));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(4, javax.swing.SortOrder.DESCENDING)));
+        } else if ("Menor monto".equals(sel)) {
+            sorter.setComparator(4, java.util.Comparator.comparingDouble(o -> {
+                try { return Double.parseDouble(o.toString()); } catch (Exception e) { return 0.0; }
+            }));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(4, javax.swing.SortOrder.ASCENDING)));
+        }
+        sorter.sort();
+    }
+
     public void cargarProveedores(){
         proveedorIds.clear();
         proveedorCombo.removeAllItems();
@@ -621,6 +694,7 @@ public class ComprasP extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton acP;
     private javax.swing.JButton actCompra;
+    private javax.swing.JComboBox<String> cmbOrdenCompras;
     private javax.swing.JButton agP;
     private javax.swing.JButton agreCompra;
     private javax.swing.JFormattedTextField cantP;
@@ -637,6 +711,7 @@ public class ComprasP extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelProv;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -648,6 +723,7 @@ public class ComprasP extends javax.swing.JPanel {
     private javax.swing.JPanel panelRegProdC;
     private javax.swing.JFormattedTextField precP;
     private javax.swing.JDialog prodComDialog;
+    private javax.swing.JLabel lblOrdenCompras;
     private javax.swing.JComboBox<String> proveedorCombo;
     private javax.swing.JTextPane rasF;
     private javax.swing.JTable tablaCompras;

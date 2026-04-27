@@ -37,6 +37,7 @@ public class AdministracionP extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         ventaDetDialog = new javax.swing.JDialog();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -67,6 +68,8 @@ public class AdministracionP extends javax.swing.JPanel {
         btnExportarCierre = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
+        lblOrdenAdmin = new javax.swing.JLabel();
+        cmbOrdenAdmin = new javax.swing.JComboBox<>();
         jScrollPane5 = new javax.swing.JScrollPane();
         tablaVentas = new javax.swing.JTable();
 
@@ -240,12 +243,47 @@ public class AdministracionP extends javax.swing.JPanel {
 
         setLayout(new java.awt.BorderLayout());
 
-        jPanel1.setLayout(new java.awt.BorderLayout());
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
         jLabel2.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(78, 150, 150));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Ventas");
-        jPanel1.add(jLabel2, java.awt.BorderLayout.CENTER);
+        jLabel2.setText("Registro de Ventas");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.CENTER;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
+        jPanel1.add(jLabel2, gridBagConstraints);
+
+        lblOrdenAdmin.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        lblOrdenAdmin.setForeground(new java.awt.Color(78, 150, 150));
+        lblOrdenAdmin.setText("Ordenar:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 8, 10);
+        jPanel1.add(lblOrdenAdmin, gridBagConstraints);
+
+        cmbOrdenAdmin.setFont(new java.awt.Font("Noto Serif", 0, 16)); // NOI18N
+        cmbOrdenAdmin.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {"Sin ordenar", "Más reciente", "Más antiguo", "Mayor monto", "Menor monto", "A-Z (Cliente)", "Z-A (Cliente)"}));
+        cmbOrdenAdmin.setPreferredSize(new java.awt.Dimension(200, 30));
+        cmbOrdenAdmin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbOrdenAdminActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 8, 10);
+        jPanel1.add(cmbOrdenAdmin, gridBagConstraints);
+
         add(jPanel1, java.awt.BorderLayout.NORTH);
 
         tablaVentas.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
@@ -289,6 +327,43 @@ public class AdministracionP extends javax.swing.JPanel {
         java.time.LocalDate fecha = fechaDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
         Excel.reporteDiario("Reporte_Diario", fecha);
     }//GEN-LAST:event_btnExportarCierreActionPerformed
+
+    private void cmbOrdenAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbOrdenAdminActionPerformed
+        aplicarOrdenAdmin();
+    }//GEN-LAST:event_cmbOrdenAdminActionPerformed
+
+    private void aplicarOrdenAdmin() {
+        String sel = (String) cmbOrdenAdmin.getSelectedItem();
+        if ("Sin ordenar".equals(sel)) {
+            tablaVentas.setRowSorter(null);
+            return;
+        }
+        javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter =
+            new javax.swing.table.TableRowSorter<>(modeloVentas);
+        tablaVentas.setRowSorter(sorter);
+        if ("Más reciente".equals(sel)) {
+            sorter.setComparator(4, java.util.Comparator.comparing(Object::toString));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(4, javax.swing.SortOrder.DESCENDING)));
+        } else if ("Más antiguo".equals(sel)) {
+            sorter.setComparator(4, java.util.Comparator.comparing(Object::toString));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(4, javax.swing.SortOrder.ASCENDING)));
+        } else if ("Mayor monto".equals(sel)) {
+            sorter.setComparator(3, java.util.Comparator.comparingDouble(o -> {
+                try { return Double.parseDouble(o.toString()); } catch (Exception e) { return 0.0; }
+            }));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(3, javax.swing.SortOrder.DESCENDING)));
+        } else if ("Menor monto".equals(sel)) {
+            sorter.setComparator(3, java.util.Comparator.comparingDouble(o -> {
+                try { return Double.parseDouble(o.toString()); } catch (Exception e) { return 0.0; }
+            }));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(3, javax.swing.SortOrder.ASCENDING)));
+        } else if ("A-Z (Cliente)".equals(sel)) {
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(2, javax.swing.SortOrder.ASCENDING)));
+        } else if ("Z-A (Cliente)".equals(sel)) {
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(2, javax.swing.SortOrder.DESCENDING)));
+        }
+        sorter.sort();
+    }
 
     public void mostrarTablaVentas(){
         Mise.limpiarTabla(modeloVentas);
@@ -382,6 +457,7 @@ public class AdministracionP extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnConsultarCierre;
     private javax.swing.JButton btnExportarCierre;
+    private javax.swing.JComboBox<String> cmbOrdenAdmin;
     public javax.swing.JDialog cierreCajaDialog;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
@@ -391,6 +467,7 @@ public class AdministracionP extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JLabel labelVentaID;
     private javax.swing.JLabel lblCierreTitulo;
+    private javax.swing.JLabel lblOrdenAdmin;
     private javax.swing.JLabel lblEfectivo;
     private javax.swing.JLabel lblFechaCierre;
     private javax.swing.JLabel lblTarjeta;

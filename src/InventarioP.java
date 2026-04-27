@@ -142,6 +142,8 @@ public class InventarioP extends javax.swing.JPanel {
         sumLabel = new javax.swing.JLabel();
         filtroCategoriaLabel = new javax.swing.JLabel();
         filtroCategoria = new javax.swing.JComboBox<>();
+        lblOrdenInv = new javax.swing.JLabel();
+        cmbOrdenInv = new javax.swing.JComboBox<>();
         panelBotones = new javax.swing.JPanel();
         agB = new javax.swing.JButton();
         eliB = new javax.swing.JButton();
@@ -444,6 +446,31 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 0);
         jPanel1.add(filtroCategoria, gridBagConstraints);
 
+        lblOrdenInv.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        lblOrdenInv.setForeground(new java.awt.Color(78, 150, 150));
+        lblOrdenInv.setText("Ordenar:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
+        jPanel1.add(lblOrdenInv, gridBagConstraints);
+
+        cmbOrdenInv.setFont(new java.awt.Font("Noto Serif", 0, 16)); // NOI18N
+        cmbOrdenInv.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {"Sin ordenar", "A-Z (Nombre)", "Z-A (Nombre)", "Mayor existencia", "Menor existencia"}));
+        cmbOrdenInv.setPreferredSize(new java.awt.Dimension(300, 30));
+        cmbOrdenInv.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbOrdenInvActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 0);
+        jPanel1.add(cmbOrdenInv, gridBagConstraints);
+
         add(jPanel1, java.awt.BorderLayout.NORTH);
 
         panelBotones.setLayout(new java.awt.GridBagLayout());
@@ -523,7 +550,8 @@ public class InventarioP extends javax.swing.JPanel {
                 
                 // Si hizo clic en la columna 0 (ID) y hay una fila seleccionada
                 if (row < tablaVentas.getRowCount() && row >= 0 && column == 0) {
-                    String idProducto = "" + modelo.getValueAt(row, 0);
+                    int modelRow = tablaVentas.convertRowIndexToModel(row);
+                    String idProducto = "" + modelo.getValueAt(modelRow, 0);
                     mostrarCodigoBarras(idProducto);
                 }
             }
@@ -538,7 +566,7 @@ public class InventarioP extends javax.swing.JPanel {
         if(tablaVentas.getSelectedRow() != -1){
             int resp = Mise.JOptionYesNo("¿Seguro que desea eliminar esta fila?", "Eliminar");
             if(resp == 0){
-                int a = tablaVentas.getSelectedRow();
+                int a = tablaVentas.convertRowIndexToModel(tablaVentas.getSelectedRow());
                 if(conect.eliminarProducto("" + modelo.getValueAt(a, 0))){//Si se elimina muestra la nueva tabla
                     mostrarTabla("");
                 }
@@ -581,7 +609,7 @@ public class InventarioP extends javax.swing.JPanel {
         if(tablaVentas.getSelectedRow() != -1){
             jDialog1.setTitle("Actualizar Producto");
             labelinc.setText("");
-            int a = tablaVentas.getSelectedRow();
+            int a = tablaVentas.convertRowIndexToModel(tablaVentas.getSelectedRow());
             hechoIns.setVisible(false);
             hechoAct.setVisible(true);
             
@@ -683,7 +711,7 @@ public class InventarioP extends javax.swing.JPanel {
             if(Double.parseDouble(precMay.getText()) < Double.parseDouble(precMen.getText())){
                 if(aux == false){
                     aux = true;
-                    int a = tablaVentas.getSelectedRow();
+                    int a = tablaVentas.convertRowIndexToModel(tablaVentas.getSelectedRow());
                     String elemento = "" + modelo.getValueAt(a, 0);
 
                     // Validar y obtener max_descuento
@@ -815,7 +843,38 @@ public class InventarioP extends javax.swing.JPanel {
             evt.consume();
         }
     }//GEN-LAST:event_nomKeyTyped
-    
+
+    private void cmbOrdenInvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbOrdenInvActionPerformed
+        aplicarOrdenInv();
+    }//GEN-LAST:event_cmbOrdenInvActionPerformed
+
+    private void aplicarOrdenInv() {
+        String sel = (String) cmbOrdenInv.getSelectedItem();
+        if ("Sin ordenar".equals(sel)) {
+            tablaVentas.setRowSorter(null);
+            return;
+        }
+        javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter =
+            new javax.swing.table.TableRowSorter<>(modelo);
+        tablaVentas.setRowSorter(sorter);
+        if ("A-Z (Nombre)".equals(sel)) {
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(1, javax.swing.SortOrder.ASCENDING)));
+        } else if ("Z-A (Nombre)".equals(sel)) {
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(1, javax.swing.SortOrder.DESCENDING)));
+        } else if ("Mayor existencia".equals(sel)) {
+            sorter.setComparator(2, java.util.Comparator.comparingInt(o -> {
+                try { return Integer.parseInt(o.toString()); } catch (Exception e) { return 0; }
+            }));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(2, javax.swing.SortOrder.DESCENDING)));
+        } else if ("Menor existencia".equals(sel)) {
+            sorter.setComparator(2, java.util.Comparator.comparingInt(o -> {
+                try { return Integer.parseInt(o.toString()); } catch (Exception e) { return 0; }
+            }));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(2, javax.swing.SortOrder.ASCENDING)));
+        }
+        sorter.sort();
+    }
+
     //TABLAS
     public final void mostrarTabla(String inst){
         Mise.limpiarTabla(modelo);
@@ -1167,6 +1226,7 @@ public class InventarioP extends javax.swing.JPanel {
     private javax.swing.JFormattedTextField cadd;
     private javax.swing.JComboBox<String> categoriaCombo;
     private javax.swing.JCheckBox checkGenerarCodigo;
+    private javax.swing.JComboBox<String> cmbOrdenInv;
     private javax.swing.JFormattedTextField codigoProvField;
     private javax.swing.JButton eliB;
     private javax.swing.JComboBox<String> filtroCategoria;
@@ -1181,6 +1241,7 @@ public class InventarioP extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabelCategoria;
+    private javax.swing.JLabel lblOrdenInv;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

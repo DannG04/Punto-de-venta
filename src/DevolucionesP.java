@@ -69,6 +69,8 @@ public class DevolucionesP extends javax.swing.JPanel {
         tablaD = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        lblOrdenDev = new javax.swing.JLabel();
+        cmbOrdenDev = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         regC = new javax.swing.JButton();
         labelinc = new javax.swing.JLabel();
@@ -327,11 +329,46 @@ public class DevolucionesP extends javax.swing.JPanel {
 
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
         jLabel1.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(78, 150, 150));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Devoluciones de Venta");
-        jPanel1.add(jLabel1);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.CENTER;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
+        jPanel1.add(jLabel1, gridBagConstraints);
+
+        lblOrdenDev.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        lblOrdenDev.setForeground(new java.awt.Color(78, 150, 150));
+        lblOrdenDev.setText("Ordenar:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 8, 10);
+        jPanel1.add(lblOrdenDev, gridBagConstraints);
+
+        cmbOrdenDev.setFont(new java.awt.Font("Noto Serif", 0, 16)); // NOI18N
+        cmbOrdenDev.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {"Sin ordenar", "Más reciente", "Más antiguo", "Mayor monto", "Menor monto"}));
+        cmbOrdenDev.setPreferredSize(new java.awt.Dimension(200, 30));
+        cmbOrdenDev.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbOrdenDevActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 8, 10);
+        jPanel1.add(cmbOrdenDev, gridBagConstraints);
 
         add(jPanel1, java.awt.BorderLayout.NORTH);
 
@@ -518,6 +555,39 @@ public class DevolucionesP extends javax.swing.JPanel {
         codP.setText("" + modeloVenDet.getValueAt(tablaProdVenta.getSelectedRow(), 0));
     }//GEN-LAST:event_tablaProdVentaMouseClicked
 
+    private void cmbOrdenDevActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbOrdenDevActionPerformed
+        aplicarOrdenDev();
+    }//GEN-LAST:event_cmbOrdenDevActionPerformed
+
+    private void aplicarOrdenDev() {
+        String sel = (String) cmbOrdenDev.getSelectedItem();
+        if ("Sin ordenar".equals(sel)) {
+            tablaD.setRowSorter(null);
+            return;
+        }
+        javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter =
+            new javax.swing.table.TableRowSorter<>(modeloDev);
+        tablaD.setRowSorter(sorter);
+        if ("Más reciente".equals(sel)) {
+            sorter.setComparator(2, java.util.Comparator.comparing(Object::toString));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(2, javax.swing.SortOrder.DESCENDING)));
+        } else if ("Más antiguo".equals(sel)) {
+            sorter.setComparator(2, java.util.Comparator.comparing(Object::toString));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(2, javax.swing.SortOrder.ASCENDING)));
+        } else if ("Mayor monto".equals(sel)) {
+            sorter.setComparator(3, java.util.Comparator.comparingDouble(o -> {
+                try { return Double.parseDouble(o.toString()); } catch (Exception e) { return 0.0; }
+            }));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(3, javax.swing.SortOrder.DESCENDING)));
+        } else if ("Menor monto".equals(sel)) {
+            sorter.setComparator(3, java.util.Comparator.comparingDouble(o -> {
+                try { return Double.parseDouble(o.toString()); } catch (Exception e) { return 0.0; }
+            }));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(3, javax.swing.SortOrder.ASCENDING)));
+        }
+        sorter.sort();
+    }
+
     public double sumaTotalDev(){
         double tot = 0.0;
         java.sql.ResultSet rs = conect.query("SELECT monto FROM devolucion_ventas WHERE id_devolucion='" + id_dev + "';");
@@ -585,6 +655,7 @@ public class DevolucionesP extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton actC;
     private javax.swing.JButton agP;
+    private javax.swing.JComboBox<String> cmbOrdenDev;
     private javax.swing.JFormattedTextField buskVen;
     private javax.swing.JFormattedTextField cantP;
     private javax.swing.JFormattedTextField codP;
@@ -606,6 +677,7 @@ public class DevolucionesP extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     public static javax.swing.JLabel labelinc;
+    private javax.swing.JLabel lblOrdenDev;
     private javax.swing.JComboBox<String> motP;
     private javax.swing.JPanel panelRegProdC;
     private javax.swing.JDialog prodDevDialog;
