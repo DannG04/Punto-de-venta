@@ -65,7 +65,6 @@ public class VentasP extends javax.swing.JPanel {
         // --- Descuento por producto en jPanel2 (gridy=1, entre totalLabel y Código) ---
         java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
         jLabelDctProd.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        jLabelDctProd.setForeground(new java.awt.Color(78, 150, 150));
         gbc.gridx = 0; gbc.gridy = 1;
         gbc.ipadx = 16;
         gbc.anchor = java.awt.GridBagConstraints.WEST;
@@ -90,7 +89,6 @@ public class VentasP extends javax.swing.JPanel {
 
         // --- Descuento global en jPanel2 (gridy=8, después de ventaReali) ---
         jLabelDctGlobal.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        jLabelDctGlobal.setForeground(new java.awt.Color(78, 150, 150));
         gbc = new java.awt.GridBagConstraints();
         gbc.gridx = 0; gbc.gridy = 8;
         gbc.ipadx = 16;
@@ -143,7 +141,6 @@ public class VentasP extends javax.swing.JPanel {
         // --- Lista de precios en jPanel2 (gridy=9, después de descuento global) ---
         java.awt.GridBagConstraints gbcLista = new java.awt.GridBagConstraints();
         jLabelLista.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        jLabelLista.setForeground(new java.awt.Color(78, 150, 150));
         gbcLista.gridx = 0; gbcLista.gridy = 9;
         gbcLista.ipadx = 16;
         gbcLista.anchor = java.awt.GridBagConstraints.WEST;
@@ -528,6 +525,7 @@ public class VentasP extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel1.setIcon(SvgIcon.load("/icons/ventas.svg", SvgIcon.LARGE));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Ventas");
         jPanel1.add(jLabel1);
@@ -537,7 +535,6 @@ public class VentasP extends javax.swing.JPanel {
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
         jLabel3.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(78, 150, 150));
         jLabel3.setText("Código:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -576,7 +573,6 @@ public class VentasP extends javax.swing.JPanel {
         jPanel2.add(cantidadProd, gridBagConstraints);
 
         jLabel4.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(78, 150, 150));
         jLabel4.setText("Cantidad:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -587,7 +583,6 @@ public class VentasP extends javax.swing.JPanel {
         jPanel2.add(jLabel4, gridBagConstraints);
 
         totalLabel.setFont(new java.awt.Font("Noto Serif", 1, 40)); // NOI18N
-        totalLabel.setForeground(new java.awt.Color(78, 150, 150));
         totalLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         totalLabel.setText("Total: ");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -598,8 +593,10 @@ public class VentasP extends javax.swing.JPanel {
         jPanel2.add(totalLabel, gridBagConstraints);
 
         reg.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        reg.setForeground(new java.awt.Color(78, 150, 150));
         reg.setText("Registrar");
+        reg.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
+        reg.setPreferredSize(new java.awt.Dimension(170, 33));
+        reg.setBackground(new java.awt.Color(125, 255, 177));
         reg.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 regActionPerformed(evt);
@@ -613,8 +610,10 @@ public class VentasP extends javax.swing.JPanel {
         jPanel2.add(reg, gridBagConstraints);
 
         ventaReali.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        ventaReali.setForeground(new java.awt.Color(78, 150, 150));
         ventaReali.setText("Venta Hecha");
+        ventaReali.setIcon(SvgIcon.load("/icons/done.svg", SvgIcon.MEDIUM));
+        ventaReali.setPreferredSize(new java.awt.Dimension(170, 33));
+        ventaReali.setBackground(new java.awt.Color(204, 226, 249));
         ventaReali.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ventaRealiActionPerformed(evt);
@@ -629,8 +628,10 @@ public class VentasP extends javax.swing.JPanel {
         jPanel2.add(ventaReali, gridBagConstraints);
 
         elim.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        elim.setForeground(new java.awt.Color(78, 150, 150));
         elim.setText("Eliminar");
+        elim.setIcon(SvgIcon.load("/icons/delete.svg", SvgIcon.MEDIUM));
+        elim.setPreferredSize(new java.awt.Dimension(170, 33));
+        elim.setBackground(new java.awt.Color(252, 149, 149));
         elim.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 elimActionPerformed(evt);
@@ -644,8 +645,10 @@ public class VentasP extends javax.swing.JPanel {
         jPanel2.add(elim, gridBagConstraints);
 
         actB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        actB.setForeground(new java.awt.Color(78, 150, 150));
         actB.setText("Actualizar");
+        actB.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
+        actB.setPreferredSize(new java.awt.Dimension(170, 33));
+        actB.setBackground(new java.awt.Color(255, 251, 128));
         actB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 actBActionPerformed(evt);

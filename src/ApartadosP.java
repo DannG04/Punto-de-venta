@@ -648,7 +648,7 @@ public class ApartadosP extends javax.swing.JPanel {
 
         add(jPanel1, java.awt.BorderLayout.NORTH);
 
-        tablaAp.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        tablaAp.setFont(new java.awt.Font("Noto Serif", 0, 14)); // NOI18N
         tablaAp.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 

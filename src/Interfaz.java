@@ -187,9 +187,10 @@ public class Interfaz extends javax.swing.JFrame {
         closeSesion.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         closeSesion.setForeground(new java.awt.Color(78, 150, 150));
         closeSesion.setText("Cerrar sesión");
+        closeSesion.setIcon(SvgIcon.load("/icons/cerrar_sesion.svg", SvgIcon.LARGE));
         closeSesion.setMaximumSize(new java.awt.Dimension(115, 25));
         closeSesion.setMinimumSize(new java.awt.Dimension(115, 25));
-        closeSesion.setPreferredSize(new java.awt.Dimension(160, 60));
+        closeSesion.setPreferredSize(new java.awt.Dimension(200, 60));
         closeSesion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeSesionActionPerformed(evt);
@@ -370,7 +371,7 @@ public class Interfaz extends javax.swing.JFrame {
         menuBar.add(inventButton);
 
         ventasButton.setText("Ventas");
-        ventasButton.setIcon(SvgIcon.load("/icons/shopping.svg"));
+        ventasButton.setIcon(SvgIcon.load("/icons/ventas.svg"));
         ventasButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 ventasButtonMouseClicked(evt);
@@ -513,6 +514,7 @@ public class Interfaz extends javax.swing.JFrame {
         administrButton.add(kardexButton);
 
         empresaButton.setText("Empresa");
+        empresaButton.setIcon(SvgIcon.load("/icons/empresa.svg"));
         empresaButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 empresaButtonActionPerformed(evt);
@@ -958,11 +960,12 @@ public class Interfaz extends javax.swing.JFrame {
 
     private void configurarBotonServidor() {
         btnServidor = new javax.swing.JButton("Servidor móvil");
-        btnServidor.setFont(new java.awt.Font("Noto Serif", 1, 15));
+        btnServidor.setIcon(SvgIcon.load("/icons/servidor_movil.svg", SvgIcon.LARGE));
+        btnServidor.setFont(new java.awt.Font("Noto Serif", 1, 18));
         btnServidor.setForeground(new java.awt.Color(78, 150, 150));
         btnServidor.setMaximumSize(new java.awt.Dimension(115, 25));
         btnServidor.setMinimumSize(new java.awt.Dimension(115, 25));
-        btnServidor.setPreferredSize(new java.awt.Dimension(160, 60));
+        btnServidor.setPreferredSize(new java.awt.Dimension(200, 60));
         btnServidor.addActionListener(e -> toggleServidor());
 
         lblUrlServidor = new javax.swing.JLabel();
