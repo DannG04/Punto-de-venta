@@ -54,6 +54,7 @@ public class KardexP extends javax.swing.JPanel {
 
         lblKardexTitulo.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         lblKardexTitulo.setForeground(new java.awt.Color(78, 150, 150));
+        lblKardexTitulo.setIcon(SvgIcon.load("/icons/kardex.svg", SvgIcon.LARGE));
         lblKardexTitulo.setText("Kardex de Producto");
         pnlKardexTitulo.add(lblKardexTitulo);
 
@@ -64,7 +65,6 @@ public class KardexP extends javax.swing.JPanel {
         pnlKardexControls.setLayout(new java.awt.GridLayout(3, 1));
 
         lblBuscar.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        lblBuscar.setForeground(new java.awt.Color(78, 150, 150));
         lblBuscar.setText("Buscar:");
         pnlBusqueda.add(lblBuscar);
 
@@ -106,7 +106,6 @@ public class KardexP extends javax.swing.JPanel {
         pnlKardexControls.add(pnlInfoProd);
 
         lblDesde.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        lblDesde.setForeground(new java.awt.Color(78, 150, 150));
         lblDesde.setText("Desde:");
         pnlFiltros.add(lblDesde);
 
@@ -114,7 +113,6 @@ public class KardexP extends javax.swing.JPanel {
         pnlFiltros.add(spnDesde);
 
         lblHasta.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        lblHasta.setForeground(new java.awt.Color(78, 150, 150));
         lblHasta.setText("Hasta:");
         pnlFiltros.add(lblHasta);
 
@@ -122,7 +120,8 @@ public class KardexP extends javax.swing.JPanel {
         pnlFiltros.add(spnHasta);
 
         btnFiltrar.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        btnFiltrar.setForeground(new java.awt.Color(78, 150, 150));
+        btnFiltrar.setBackground(new java.awt.Color(153, 204, 255));
+        btnFiltrar.setIcon(SvgIcon.load("/icons/filtro.svg", SvgIcon.MEDIUM));
         btnFiltrar.setText("Filtrar");
         btnFiltrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -132,7 +131,8 @@ public class KardexP extends javax.swing.JPanel {
         pnlFiltros.add(btnFiltrar);
 
         btnExportarKardex.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        btnExportarKardex.setForeground(new java.awt.Color(78, 150, 150));
+        btnExportarKardex.setBackground(new java.awt.Color(153, 204, 255));
+        btnExportarKardex.setIcon(SvgIcon.load("/icons/imprimir.svg", SvgIcon.MEDIUM));
         btnExportarKardex.setText("Exportar Excel");
         btnExportarKardex.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

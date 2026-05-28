@@ -129,14 +129,14 @@ public class AdministracionP extends javax.swing.JPanel {
         // Controls row
         pnlCierreCtrl.setLayout(new java.awt.FlowLayout());
         lblFechaCierre.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        lblFechaCierre.setForeground(new java.awt.Color(78, 150, 150));
         lblFechaCierre.setText("Fecha:");
         pnlCierreCtrl.add(lblFechaCierre);
 
         pnlCierreCtrl.add(spnFechaCierre);
 
         btnConsultarCierre.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        btnConsultarCierre.setForeground(new java.awt.Color(78, 150, 150));
+        btnConsultarCierre.setBackground(new java.awt.Color(153, 204, 255));
+        btnConsultarCierre.setIcon(SvgIcon.load("/icons/filtro.svg", SvgIcon.MEDIUM));
         btnConsultarCierre.setText("Consultar");
         btnConsultarCierre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -228,7 +228,8 @@ public class AdministracionP extends javax.swing.JPanel {
         pnlTotales.add(pnlTotalesGrid, java.awt.BorderLayout.CENTER);
 
         btnExportarCierre.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        btnExportarCierre.setForeground(new java.awt.Color(78, 150, 150));
+        btnExportarCierre.setBackground(new java.awt.Color(153, 204, 255));
+        btnExportarCierre.setIcon(SvgIcon.load("/icons/imprimir.svg", SvgIcon.MEDIUM));
         btnExportarCierre.setText("Exportar a Excel");
         btnExportarCierre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -247,6 +248,7 @@ public class AdministracionP extends javax.swing.JPanel {
 
         jLabel2.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel2.setIcon(SvgIcon.load("/icons/admin.svg", SvgIcon.LARGE));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Registro de Ventas");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -260,7 +262,6 @@ public class AdministracionP extends javax.swing.JPanel {
         jPanel1.add(jLabel2, gridBagConstraints);
 
         lblOrdenAdmin.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        lblOrdenAdmin.setForeground(new java.awt.Color(78, 150, 150));
         lblOrdenAdmin.setText("Ordenar:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

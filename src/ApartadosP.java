@@ -167,7 +167,8 @@ public class ApartadosP extends javax.swing.JPanel {
         panelSald.add(cambCT);
 
         regSaldasion.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        regSaldasion.setForeground(new java.awt.Color(78, 150, 150));
+        regSaldasion.setBackground(new java.awt.Color(153, 204, 255));
+        regSaldasion.setIcon(SvgIcon.load("/icons/done.svg", SvgIcon.MEDIUM));
         regSaldasion.setText("Saldar");
         regSaldasion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -246,7 +247,8 @@ public class ApartadosP extends javax.swing.JPanel {
         panelRegProd.add(cantP);
 
         agP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        agP.setForeground(new java.awt.Color(78, 150, 150));
+        agP.setBackground(new java.awt.Color(125, 255, 177));
+        agP.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
         agP.setText("Agregar");
         agP.setPreferredSize(new java.awt.Dimension(125, 33));
         agP.addActionListener(new java.awt.event.ActionListener() {
@@ -257,7 +259,8 @@ public class ApartadosP extends javax.swing.JPanel {
         panelRegProd.add(agP);
 
         acP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        acP.setForeground(new java.awt.Color(78, 150, 150));
+        acP.setBackground(new java.awt.Color(255, 251, 128));
+        acP.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
         acP.setText("Actualizar");
         acP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -267,7 +270,8 @@ public class ApartadosP extends javax.swing.JPanel {
         panelRegProd.add(acP);
 
         elP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        elP.setForeground(new java.awt.Color(78, 150, 150));
+        elP.setBackground(new java.awt.Color(252, 149, 149));
+        elP.setIcon(SvgIcon.load("/icons/delete.svg", SvgIcon.MEDIUM));
         elP.setText("Eliminar");
         elP.setPreferredSize(new java.awt.Dimension(125, 33));
         elP.addActionListener(new java.awt.event.ActionListener() {
@@ -278,7 +282,8 @@ public class ApartadosP extends javax.swing.JPanel {
         panelRegProd.add(elP);
 
         heP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        heP.setForeground(new java.awt.Color(78, 150, 150));
+        heP.setBackground(new java.awt.Color(125, 255, 177));
+        heP.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
         heP.setText("Hecho");
         heP.setPreferredSize(new java.awt.Dimension(125, 33));
         heP.addActionListener(new java.awt.event.ActionListener() {
@@ -409,7 +414,8 @@ public class ApartadosP extends javax.swing.JPanel {
         panelApartado.add(vigF);
 
         hechoB4.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        hechoB4.setForeground(new java.awt.Color(78, 150, 150));
+        hechoB4.setBackground(new java.awt.Color(125, 255, 177));
+        hechoB4.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
         hechoB4.setText("Registrar");
         hechoB4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -419,7 +425,8 @@ public class ApartadosP extends javax.swing.JPanel {
         panelApartado.add(hechoB4);
 
         hechoB5.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        hechoB5.setForeground(new java.awt.Color(78, 150, 150));
+        hechoB5.setBackground(new java.awt.Color(153, 204, 255));
+        hechoB5.setIcon(SvgIcon.load("/icons/cancelar.svg", SvgIcon.MEDIUM));
         hechoB5.setText("Volver");
         hechoB5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -464,7 +471,8 @@ public class ApartadosP extends javax.swing.JPanel {
         panelRegAp1.add(curpCliente, gridBagConstraints);
 
         regC.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        regC.setForeground(new java.awt.Color(78, 150, 150));
+        regC.setBackground(new java.awt.Color(125, 255, 177));
+        regC.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
         regC.setText("Registrar");
         regC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -530,7 +538,8 @@ public class ApartadosP extends javax.swing.JPanel {
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
         regAp.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        regAp.setForeground(new java.awt.Color(78, 150, 150));
+        regAp.setBackground(new java.awt.Color(125, 255, 177));
+        regAp.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
         regAp.setText("Registrar");
         regAp.setPreferredSize(new java.awt.Dimension(125, 35));
         regAp.addActionListener(new java.awt.event.ActionListener() {
@@ -546,7 +555,8 @@ public class ApartadosP extends javax.swing.JPanel {
         jPanel2.add(regAp, gridBagConstraints);
 
         sald.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        sald.setForeground(new java.awt.Color(78, 150, 150));
+        sald.setBackground(new java.awt.Color(153, 204, 255));
+        sald.setIcon(SvgIcon.load("/icons/done.svg", SvgIcon.MEDIUM));
         sald.setText("Saldar");
         sald.setPreferredSize(new java.awt.Dimension(125, 35));
         sald.addActionListener(new java.awt.event.ActionListener() {
@@ -561,7 +571,8 @@ public class ApartadosP extends javax.swing.JPanel {
         jPanel2.add(sald, gridBagConstraints);
 
         canc.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        canc.setForeground(new java.awt.Color(78, 150, 150));
+        canc.setBackground(new java.awt.Color(252, 149, 149));
+        canc.setIcon(SvgIcon.load("/icons/cancelar.svg", SvgIcon.MEDIUM));
         canc.setText("Cancelar");
         canc.setPreferredSize(new java.awt.Dimension(125, 35));
         canc.addActionListener(new java.awt.event.ActionListener() {
@@ -581,6 +592,7 @@ public class ApartadosP extends javax.swing.JPanel {
 
         jLabel7.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel7.setIcon(SvgIcon.load("/icons/apartadosBook.svg", SvgIcon.LARGE));
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel7.setText("Sistema de Apartados");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -610,7 +622,6 @@ public class ApartadosP extends javax.swing.JPanel {
 
         sumLabel.setBackground(new java.awt.Color(255, 255, 255));
         sumLabel.setFont(new java.awt.Font("Noto Serif", 1, 20)); // NOI18N
-        sumLabel.setForeground(new java.awt.Color(78, 150, 150));
         sumLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         sumLabel.setText("Buscar:");
         sumLabel.setPreferredSize(new java.awt.Dimension(81, 40));
@@ -622,7 +633,6 @@ public class ApartadosP extends javax.swing.JPanel {
         jPanel1.add(sumLabel, gridBagConstraints);
 
         lblOrdenAp.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        lblOrdenAp.setForeground(new java.awt.Color(78, 150, 150));
         lblOrdenAp.setText("Ordenar:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -648,7 +658,7 @@ public class ApartadosP extends javax.swing.JPanel {
 
         add(jPanel1, java.awt.BorderLayout.NORTH);
 
-        tablaAp.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        tablaAp.setFont(new java.awt.Font("Noto Serif", 0, 14)); // NOI18N
         tablaAp.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 

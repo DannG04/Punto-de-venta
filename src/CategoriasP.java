@@ -110,7 +110,8 @@ public class CategoriasP extends javax.swing.JPanel {
         panelAgregar.add(labelIncAg, gridBagConstraints);
 
         btnGuardarAg.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        btnGuardarAg.setForeground(new java.awt.Color(78, 150, 150));
+        btnGuardarAg.setBackground(new java.awt.Color(125, 255, 177));
+        btnGuardarAg.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
         btnGuardarAg.setText("Guardar");
         btnGuardarAg.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -191,7 +192,8 @@ public class CategoriasP extends javax.swing.JPanel {
         panelEditar.add(labelIncEd, gridBagConstraints);
 
         btnGuardarEd.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        btnGuardarEd.setForeground(new java.awt.Color(78, 150, 150));
+        btnGuardarEd.setBackground(new java.awt.Color(125, 255, 177));
+        btnGuardarEd.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
         btnGuardarEd.setText("Guardar");
         btnGuardarEd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -213,6 +215,7 @@ public class CategoriasP extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel1.setIcon(SvgIcon.load("/icons/categorias.svg", SvgIcon.LARGE));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Catálogo de Categorías");
         jPanel1.add(jLabel1);
@@ -244,7 +247,8 @@ public class CategoriasP extends javax.swing.JPanel {
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
         btnAgregar.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        btnAgregar.setForeground(new java.awt.Color(78, 150, 150));
+        btnAgregar.setBackground(new java.awt.Color(125, 255, 177));
+        btnAgregar.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
         btnAgregar.setText("Agregar");
         btnAgregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -258,7 +262,8 @@ public class CategoriasP extends javax.swing.JPanel {
         jPanel2.add(btnAgregar, gridBagConstraints);
 
         btnEditar.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        btnEditar.setForeground(new java.awt.Color(78, 150, 150));
+        btnEditar.setBackground(new java.awt.Color(255, 251, 128));
+        btnEditar.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
         btnEditar.setText("Editar");
         btnEditar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -272,7 +277,8 @@ public class CategoriasP extends javax.swing.JPanel {
         jPanel2.add(btnEditar, gridBagConstraints);
 
         btnToggleEstatus.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        btnToggleEstatus.setForeground(new java.awt.Color(78, 150, 150));
+        btnToggleEstatus.setBackground(new java.awt.Color(255, 200, 100));
+        btnToggleEstatus.setIcon(SvgIcon.load("/icons/cancelar.svg", SvgIcon.MEDIUM));
         btnToggleEstatus.setText("Inactivar/Activar");
         btnToggleEstatus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -286,7 +292,6 @@ public class CategoriasP extends javax.swing.JPanel {
         jPanel2.add(btnToggleEstatus, gridBagConstraints);
 
         jLabelBuscar.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
-        jLabelBuscar.setForeground(new java.awt.Color(78, 150, 150));
         jLabelBuscar.setText("Buscar por nombre:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -303,7 +308,8 @@ public class CategoriasP extends javax.swing.JPanel {
         jPanel2.add(buscarField, gridBagConstraints);
 
         btnBuscar.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        btnBuscar.setForeground(new java.awt.Color(78, 150, 150));
+        btnBuscar.setBackground(new java.awt.Color(153, 204, 255));
+        btnBuscar.setIcon(SvgIcon.load("/icons/lupa.svg", SvgIcon.MEDIUM));
         btnBuscar.setText("Buscar");
         btnBuscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

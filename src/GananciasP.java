@@ -132,7 +132,8 @@ public class GananciasP extends javax.swing.JPanel {
         jPanel3.add(monF1, gridBagConstraints);
 
         actG1.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        actG1.setForeground(new java.awt.Color(78, 150, 150));
+        actG1.setBackground(new java.awt.Color(255, 251, 128));
+        actG1.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
         actG1.setText("Actualizar");
         actG1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -191,6 +192,7 @@ public class GananciasP extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel1.setIcon(SvgIcon.load("/icons/ganancia.svg", SvgIcon.LARGE));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Otras Ganancias");
         jPanel1.add(jLabel1);
@@ -201,7 +203,8 @@ public class GananciasP extends javax.swing.JPanel {
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
         agG.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        agG.setForeground(new java.awt.Color(78, 150, 150));
+        agG.setBackground(new java.awt.Color(125, 255, 177));
+        agG.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
         agG.setText("Agregar");
         agG.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -212,7 +215,8 @@ public class GananciasP extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.insets = new java.awt.Insets(30, 10, 10, 10);
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(agG, gridBagConstraints);
 
         labelinc.setFont(new java.awt.Font("Noto Serif", 0, 12)); // NOI18N
@@ -226,7 +230,8 @@ public class GananciasP extends javax.swing.JPanel {
         jPanel2.add(labelinc, gridBagConstraints);
 
         actG.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        actG.setForeground(new java.awt.Color(78, 150, 150));
+        actG.setBackground(new java.awt.Color(255, 251, 128));
+        actG.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
         actG.setText("Actualizar");
         actG.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -237,11 +242,13 @@ public class GananciasP extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(actG, gridBagConstraints);
 
         elimG.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        elimG.setForeground(new java.awt.Color(78, 150, 150));
+        elimG.setBackground(new java.awt.Color(252, 149, 149));
+        elimG.setIcon(SvgIcon.load("/icons/delete.svg", SvgIcon.MEDIUM));
         elimG.setText("Eliminar");
         elimG.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -252,6 +259,7 @@ public class GananciasP extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(elimG, gridBagConstraints);
 
@@ -282,7 +290,6 @@ public class GananciasP extends javax.swing.JPanel {
         jPanel2.add(monF, gridBagConstraints);
 
         jLabel2.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(78, 150, 150));
         jLabel2.setText("Descripción:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -293,7 +300,6 @@ public class GananciasP extends javax.swing.JPanel {
         jPanel2.add(jLabel2, gridBagConstraints);
 
         jLabel3.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(78, 150, 150));
         jLabel3.setText("Monto:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

@@ -113,7 +113,6 @@ public class DevolucionesP extends javax.swing.JPanel {
 
         sumLabel.setBackground(new java.awt.Color(255, 255, 255));
         sumLabel.setFont(new java.awt.Font("Noto Serif", 1, 20)); // NOI18N
-        sumLabel.setForeground(new java.awt.Color(78, 150, 150));
         sumLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         sumLabel.setText("Buscar:");
         sumLabel.setPreferredSize(new java.awt.Dimension(81, 40));
@@ -224,7 +223,8 @@ public class DevolucionesP extends javax.swing.JPanel {
         jPanel5.add(motP);
 
         agP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        agP.setForeground(new java.awt.Color(78, 150, 150));
+        agP.setBackground(new java.awt.Color(125, 255, 177));
+        agP.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
         agP.setText("Agregar");
         agP.setPreferredSize(new java.awt.Dimension(125, 33));
         agP.addActionListener(new java.awt.event.ActionListener() {
@@ -235,7 +235,8 @@ public class DevolucionesP extends javax.swing.JPanel {
         jPanel5.add(agP);
 
         elP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        elP.setForeground(new java.awt.Color(78, 150, 150));
+        elP.setBackground(new java.awt.Color(252, 149, 149));
+        elP.setIcon(SvgIcon.load("/icons/delete.svg", SvgIcon.MEDIUM));
         elP.setText("Eliminar");
         elP.setPreferredSize(new java.awt.Dimension(125, 33));
         elP.addActionListener(new java.awt.event.ActionListener() {
@@ -246,7 +247,8 @@ public class DevolucionesP extends javax.swing.JPanel {
         jPanel5.add(elP);
 
         heP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        heP.setForeground(new java.awt.Color(78, 150, 150));
+        heP.setBackground(new java.awt.Color(125, 255, 177));
+        heP.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
         heP.setText("Hecho");
         heP.setPreferredSize(new java.awt.Dimension(125, 33));
         heP.addActionListener(new java.awt.event.ActionListener() {
@@ -333,6 +335,7 @@ public class DevolucionesP extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel1.setIcon(SvgIcon.load("/icons/devolucion.svg", SvgIcon.LARGE));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Devoluciones de Venta");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -346,7 +349,6 @@ public class DevolucionesP extends javax.swing.JPanel {
         jPanel1.add(jLabel1, gridBagConstraints);
 
         lblOrdenDev.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        lblOrdenDev.setForeground(new java.awt.Color(78, 150, 150));
         lblOrdenDev.setText("Ordenar:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -376,7 +378,8 @@ public class DevolucionesP extends javax.swing.JPanel {
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
         regC.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        regC.setForeground(new java.awt.Color(78, 150, 150));
+        regC.setBackground(new java.awt.Color(125, 255, 177));
+        regC.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
         regC.setText("Registrar ");
         regC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -401,7 +404,8 @@ public class DevolucionesP extends javax.swing.JPanel {
         jPanel2.add(labelinc, gridBagConstraints);
 
         actC.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        actC.setForeground(new java.awt.Color(78, 150, 150));
+        actC.setBackground(new java.awt.Color(255, 251, 128));
+        actC.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
         actC.setText("Actualizar");
         actC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

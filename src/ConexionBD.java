@@ -6,6 +6,10 @@
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  *
@@ -17,8 +21,26 @@ public class ConexionBD {
     String nameBD = "punto_de_venta";
     String usuario = "postgres";
     String contra = "Daniel183.";
-    
+
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    public ConexionBD() {
+        File f = new File("db.properties");
+        if (!f.exists()) return;
+        try (InputStream in = new FileInputStream(f)) {
+            Properties props = new Properties();
+            props.load(in);
+            String host = props.getProperty("db.host", "localhost").trim();
+            String port = props.getProperty("db.port", "5432").trim();
+            String name = props.getProperty("db.name", nameBD).trim();
+            String user = props.getProperty("db.user", usuario).trim();
+            String pass = props.getProperty("db.password", contra);
+            url = "jdbc:postgresql://" + host + ":" + port + "/";
+            nameBD = name;
+            usuario = user;
+            contra = pass != null ? pass : contra;
+        } catch (Exception ignored) {}
+    }
     
     // FUNCIONES GENERALES
     public boolean inst(String instruccion) {//Función para ejecutar instrucciones

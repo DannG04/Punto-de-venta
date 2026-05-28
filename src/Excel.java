@@ -25,12 +25,10 @@ public class Excel {
             String[] empBGData = obtenerDatosEmpresa();
             String logoBG = empBGData[3];
             boolean usarLogoBG = !logoBG.isEmpty() && new java.io.File(logoBG).exists()
-                    && (logoBG.toLowerCase().endsWith(".png") || logoBG.toLowerCase().endsWith(".jpg")
-                        || logoBG.toLowerCase().endsWith(".jpeg"));
-            String logoPathBG = usarLogoBG ? logoBG : "src/img/Mega.png";
-            int pictTypeBG = logoPathBG.toLowerCase().endsWith(".png")
-                    ? Workbook.PICTURE_TYPE_PNG : Workbook.PICTURE_TYPE_JPEG;
-            InputStream is = new FileInputStream(logoPathBG);
+                    && isImageFile(logoBG);
+            int pictTypeBG = (usarLogoBG && !logoBG.toLowerCase().endsWith(".png"))
+                    ? Workbook.PICTURE_TYPE_JPEG : Workbook.PICTURE_TYPE_PNG;
+            InputStream is = getLogoStream(logoBG);
             byte[] bytes = IOUtils.toByteArray(is);
             int imgIndex = book.addPicture(bytes, pictTypeBG);
             is.close();
@@ -170,12 +168,10 @@ public class Excel {
             String[] empERData = obtenerDatosEmpresa();
             String logoER = empERData[3];
             boolean usarLogoER = !logoER.isEmpty() && new java.io.File(logoER).exists()
-                    && (logoER.toLowerCase().endsWith(".png") || logoER.toLowerCase().endsWith(".jpg")
-                        || logoER.toLowerCase().endsWith(".jpeg"));
-            String logoPathER = usarLogoER ? logoER : "src/img/Mega.png";
-            int pictTypeER = logoPathER.toLowerCase().endsWith(".png")
-                    ? Workbook.PICTURE_TYPE_PNG : Workbook.PICTURE_TYPE_JPEG;
-            InputStream is = new FileInputStream(logoPathER);
+                    && isImageFile(logoER);
+            int pictTypeER = (usarLogoER && !logoER.toLowerCase().endsWith(".png"))
+                    ? Workbook.PICTURE_TYPE_JPEG : Workbook.PICTURE_TYPE_PNG;
+            InputStream is = getLogoStream(logoER);
             byte[] bytes = IOUtils.toByteArray(is);
             int imgIndex = book.addPicture(bytes, pictTypeER);
             is.close();
@@ -937,6 +933,23 @@ public class Excel {
             }
         } catch (Exception ignored) {}
         return new String[]{nombre, rfc, direccion, logoRuta};
+    }
+
+    private static boolean isImageFile(String path) {
+        String lower = path.toLowerCase();
+        return lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg");
+    }
+
+    private static InputStream getLogoStream(String logoRuta) throws IOException {
+        if (!logoRuta.isEmpty() && isImageFile(logoRuta)) {
+            File f = new File(logoRuta);
+            if (f.exists()) return new FileInputStream(f);
+        }
+        // Busca el logo por defecto empaquetado dentro del JAR
+        InputStream is = Excel.class.getResourceAsStream("/img/Mega.png");
+        if (is != null) return is;
+        // Fallback para ejecución en desarrollo (fuera del JAR)
+        return new FileInputStream("src/img/Mega.png");
     }
 
     public static void obtenerUtilidad(){//Método que obtiene la utilidad del ejercicio

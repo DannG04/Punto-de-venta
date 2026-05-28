@@ -160,7 +160,8 @@ public class ClientesP extends javax.swing.JPanel {
         jPanel3.add(labelinc1, gridBagConstraints);
 
         actC1.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        actC1.setForeground(new java.awt.Color(78, 150, 150));
+        actC1.setBackground(new java.awt.Color(255, 251, 128));
+        actC1.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
         actC1.setText("Actualizar");
         actC1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -269,7 +270,8 @@ public class ClientesP extends javax.swing.JPanel {
         Registro.getContentPane().add(numTel2, gridBagConstraints);
 
         regC1.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        regC1.setForeground(new java.awt.Color(78, 150, 150));
+        regC1.setBackground(new java.awt.Color(125, 255, 177));
+        regC1.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
         regC1.setText("Registrar");
         regC1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -299,6 +301,7 @@ public class ClientesP extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel1.setIcon(SvgIcon.load("/icons/clients.svg", SvgIcon.LARGE));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Registro de Clientes");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -312,7 +315,6 @@ public class ClientesP extends javax.swing.JPanel {
         jPanel1.add(jLabel1, gridBagConstraints);
 
         lblOrdenClientes.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        lblOrdenClientes.setForeground(new java.awt.Color(78, 150, 150));
         lblOrdenClientes.setText("Ordenar:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -362,7 +364,8 @@ public class ClientesP extends javax.swing.JPanel {
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
         regC.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        regC.setForeground(new java.awt.Color(78, 150, 150));
+        regC.setBackground(new java.awt.Color(125, 255, 177));
+        regC.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
         regC.setText("Registrar");
         regC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -373,11 +376,13 @@ public class ClientesP extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.insets = new java.awt.Insets(30, 10, 10, 10);
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(regC, gridBagConstraints);
 
         actC.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        actC.setForeground(new java.awt.Color(78, 150, 150));
+        actC.setBackground(new java.awt.Color(255, 251, 128));
+        actC.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
         actC.setText("Actualizar");
         actC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -388,11 +393,13 @@ public class ClientesP extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(actC, gridBagConstraints);
 
         alta.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        alta.setForeground(new java.awt.Color(78, 150, 150));
+        alta.setBackground(new java.awt.Color(125, 255, 177));
+        alta.setIcon(SvgIcon.load("/icons/done.svg", SvgIcon.MEDIUM));
         alta.setText("Alta");
         alta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -403,10 +410,13 @@ public class ClientesP extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
         gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(alta, gridBagConstraints);
 
         elimC1.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        elimC1.setForeground(new java.awt.Color(78, 150, 150));
+        elimC1.setBackground(new java.awt.Color(252, 149, 149));
+        elimC1.setIcon(SvgIcon.load("/icons/delete.svg", SvgIcon.MEDIUM));
         elimC1.setText("Baja");
         elimC1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -417,6 +427,7 @@ public class ClientesP extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
         gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(elimC1, gridBagConstraints);
 

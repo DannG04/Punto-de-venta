@@ -120,7 +120,8 @@ public class ComprasP extends javax.swing.JPanel {
         panelRegCompra.add(jLabel4, gridBagConstraints);
 
         hechoB1.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        hechoB1.setForeground(new java.awt.Color(78, 150, 150));
+        hechoB1.setBackground(new java.awt.Color(125, 255, 177));
+        hechoB1.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
         hechoB1.setText("Hecho");
         hechoB1.setPreferredSize(new java.awt.Dimension(100, 40));
         hechoB1.addActionListener(new java.awt.event.ActionListener() {
@@ -271,7 +272,8 @@ public class ComprasP extends javax.swing.JPanel {
         jPanel5.add(precP);
 
         agP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        agP.setForeground(new java.awt.Color(78, 150, 150));
+        agP.setBackground(new java.awt.Color(125, 255, 177));
+        agP.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
         agP.setText("Agregar");
         agP.setPreferredSize(new java.awt.Dimension(125, 33));
         agP.addActionListener(new java.awt.event.ActionListener() {
@@ -282,7 +284,8 @@ public class ComprasP extends javax.swing.JPanel {
         jPanel5.add(agP);
 
         acP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        acP.setForeground(new java.awt.Color(78, 150, 150));
+        acP.setBackground(new java.awt.Color(255, 251, 128));
+        acP.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
         acP.setText("Actualizar");
         acP.setPreferredSize(new java.awt.Dimension(125, 33));
         acP.addActionListener(new java.awt.event.ActionListener() {
@@ -293,7 +296,8 @@ public class ComprasP extends javax.swing.JPanel {
         jPanel5.add(acP);
 
         elP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        elP.setForeground(new java.awt.Color(78, 150, 150));
+        elP.setBackground(new java.awt.Color(252, 149, 149));
+        elP.setIcon(SvgIcon.load("/icons/delete.svg", SvgIcon.MEDIUM));
         elP.setText("Eliminar");
         elP.setPreferredSize(new java.awt.Dimension(125, 33));
         elP.addActionListener(new java.awt.event.ActionListener() {
@@ -304,7 +308,8 @@ public class ComprasP extends javax.swing.JPanel {
         jPanel5.add(elP);
 
         heP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        heP.setForeground(new java.awt.Color(78, 150, 150));
+        heP.setBackground(new java.awt.Color(125, 255, 177));
+        heP.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
         heP.setText("Hecho");
         heP.setPreferredSize(new java.awt.Dimension(125, 33));
         heP.addActionListener(new java.awt.event.ActionListener() {
@@ -342,6 +347,7 @@ public class ComprasP extends javax.swing.JPanel {
 
         jLabel3.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel3.setIcon(SvgIcon.load("/icons/compras.svg", SvgIcon.LARGE));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("Compras");
         jLabel3.setPreferredSize(new java.awt.Dimension(163, 70));
@@ -356,7 +362,6 @@ public class ComprasP extends javax.swing.JPanel {
         jPanel1.add(jLabel3, gridBagConstraints);
 
         lblOrdenCompras.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        lblOrdenCompras.setForeground(new java.awt.Color(78, 150, 150));
         lblOrdenCompras.setText("Ordenar:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -409,7 +414,8 @@ public class ComprasP extends javax.swing.JPanel {
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
         agreCompra.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        agreCompra.setForeground(new java.awt.Color(78, 150, 150));
+        agreCompra.setBackground(new java.awt.Color(125, 255, 177));
+        agreCompra.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
         agreCompra.setText("Agregar");
         agreCompra.setPreferredSize(new java.awt.Dimension(127, 33));
         agreCompra.addActionListener(new java.awt.event.ActionListener() {
@@ -424,7 +430,8 @@ public class ComprasP extends javax.swing.JPanel {
         jPanel3.add(agreCompra, gridBagConstraints);
 
         actCompra.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        actCompra.setForeground(new java.awt.Color(78, 150, 150));
+        actCompra.setBackground(new java.awt.Color(255, 251, 128));
+        actCompra.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
         actCompra.setText("Actualizar");
         actCompra.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

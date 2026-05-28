@@ -71,7 +71,7 @@
             <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="ventasButtonMouseClicked"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ventasButton.setIcon(SvgIcon.load(&quot;/icons/shopping.svg&quot;));"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="ventasButton.setIcon(SvgIcon.load(&quot;/icons/ventas.svg&quot;));"/>
           </AuxValues>
         </Menu>
         <Menu class="javax.swing.JMenu" name="apartaButton">

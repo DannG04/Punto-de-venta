@@ -96,6 +96,8 @@ public class CotizacionesP extends javax.swing.JPanel {
         btnBuscarProd.setFont(new Font("Noto Serif", Font.BOLD, 13));
         btnBuscarProd.setToolTipText("Buscar producto por nombre o código");
         btnBuscarProd.setPreferredSize(new Dimension(44, 28));
+        btnBuscarProd.setBackground(new Color(255, 255, 255));
+        btnBuscarProd.setIcon(SvgIcon.load("/icons/lupa.svg", SvgIcon.SMALL));
         btnBuscarProd.addActionListener(e -> {
             Mise.limpiarTabla(modeloProdBusc);
             buscProdField.setText("");
@@ -149,14 +151,16 @@ public class CotizacionesP extends javax.swing.JPanel {
         // Botones agregar / eliminar
         JButton btnAgregar = new JButton("Agregar");
         btnAgregar.setFont(new Font("Noto Serif", Font.BOLD, 15));
-        btnAgregar.setForeground(new Color(78, 150, 150));
+        btnAgregar.setBackground(new Color(125, 255, 177));
+        btnAgregar.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
         btnAgregar.addActionListener(e -> agregarAlCarrito());
         gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 1;
         jPanel2.add(btnAgregar, gbc);
 
         JButton btnElim = new JButton("Quitar");
         btnElim.setFont(new Font("Noto Serif", Font.BOLD, 15));
-        btnElim.setForeground(new Color(78, 150, 150));
+        btnElim.setBackground(new Color(252, 149, 149));
+        btnElim.setIcon(SvgIcon.load("/icons/delete.svg", SvgIcon.MEDIUM));
         btnElim.addActionListener(e -> quitarDelCarrito());
         gbc.gridx = 1; gbc.gridy = row; gbc.gridwidth = 1;
         jPanel2.add(btnElim, gbc);
@@ -182,6 +186,8 @@ public class CotizacionesP extends javax.swing.JPanel {
         addLabel(jPanel2, "Cliente:", row, 0, gbc);
         JButton btnSelecCliente = new JButton("Seleccionar");
         btnSelecCliente.setFont(new Font("Noto Serif", Font.PLAIN, 14));
+        btnSelecCliente.setBackground(new Color(255, 255, 255));
+        btnSelecCliente.setIcon(SvgIcon.load("/icons/lupa.svg", SvgIcon.MEDIUM));
         btnSelecCliente.addActionListener(e -> {
             Mise.limpiarTabla(modeloCliBusc);
             cargarClientes("");
@@ -218,7 +224,8 @@ public class CotizacionesP extends javax.swing.JPanel {
         // Guardar
         JButton btnGuardar = new JButton("Guardar Cotización");
         btnGuardar.setFont(new Font("Noto Serif", Font.BOLD, 15));
-        btnGuardar.setForeground(new Color(78, 150, 150));
+        btnGuardar.setBackground(new Color(125, 255, 177));
+        btnGuardar.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
         btnGuardar.addActionListener(e -> guardarCotizacion());
         gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 2;
         jPanel2.add(btnGuardar, gbc);
@@ -228,6 +235,8 @@ public class CotizacionesP extends javax.swing.JPanel {
         // Limpiar
         JButton btnLimpiar = new JButton("Limpiar carrito");
         btnLimpiar.setFont(new Font("Noto Serif", Font.PLAIN, 14));
+        btnLimpiar.setBackground(new Color(255, 255, 255));
+        btnLimpiar.setIcon(SvgIcon.load("/icons/clean.svg", SvgIcon.MEDIUM));
         btnLimpiar.addActionListener(e -> limpiarCarrito());
         gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 2;
         jPanel2.add(btnLimpiar, gbc);
@@ -296,19 +305,26 @@ public class CotizacionesP extends javax.swing.JPanel {
 
         JButton btnConvertir = new JButton("Convertir a Venta");
         btnConvertir.setFont(new Font("Noto Serif", Font.BOLD, 14));
-        btnConvertir.setForeground(new Color(78, 150, 150));
+        btnConvertir.setBackground(new Color(204, 226, 249));
+        btnConvertir.setIcon(SvgIcon.load("/icons/convertir.svg", SvgIcon.MEDIUM));
         btnConvertir.addActionListener(e -> convertirAVenta());
 
         JButton btnCancelarCoti = new JButton("Cancelar Cot.");
-        btnCancelarCoti.setFont(new Font("Noto Serif", Font.PLAIN, 13));
+        btnCancelarCoti.setFont(new Font("Noto Serif", Font.BOLD, 13));
+        btnCancelarCoti.setBackground(new Color(252, 149, 149));
+        btnCancelarCoti.setIcon(SvgIcon.load("/icons/cancelar.svg", SvgIcon.MEDIUM));
         btnCancelarCoti.addActionListener(e -> cancelarCotizacion());
 
         JButton btnImprimir = new JButton("Imprimir");
-        btnImprimir.setFont(new Font("Noto Serif", Font.PLAIN, 13));
+        btnImprimir.setFont(new Font("Noto Serif", Font.BOLD, 13));
+        btnImprimir.setBackground(new Color(153, 204, 255));
+        btnImprimir.setIcon(SvgIcon.load("/icons/imprimir.svg", SvgIcon.MEDIUM));
         btnImprimir.addActionListener(e -> imprimirCotizacion());
 
         JButton btnDetalle = new JButton("Ver detalle");
-        btnDetalle.setFont(new Font("Noto Serif", Font.PLAIN, 13));
+        btnDetalle.setFont(new Font("Noto Serif", Font.BOLD, 13));
+        btnDetalle.setBackground(new Color(255, 251, 128));
+        btnDetalle.setIcon(SvgIcon.load("/icons/detalles.svg", SvgIcon.MEDIUM));
         btnDetalle.addActionListener(e -> verDetalle());
 
         panelBotones.add(btnConvertir);

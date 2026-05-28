@@ -147,7 +147,8 @@ public class EmpleadosP extends javax.swing.JPanel {
         regDialog.getContentPane().add(jLabel8, gridBagConstraints);
 
         botonEReg.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        botonEReg.setForeground(new java.awt.Color(78, 150, 150));
+        botonEReg.setBackground(new java.awt.Color(125, 255, 177));
+        botonEReg.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
         botonEReg.setText("Registrar");
         botonEReg.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -330,7 +331,8 @@ public class EmpleadosP extends javax.swing.JPanel {
         actuDialog.getContentPane().add(jLabel13, gridBagConstraints);
 
         actEBoton.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        actEBoton.setForeground(new java.awt.Color(78, 150, 150));
+        actEBoton.setBackground(new java.awt.Color(255, 251, 128));
+        actEBoton.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
         actEBoton.setText("Actualizar");
         actEBoton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -418,6 +420,7 @@ public class EmpleadosP extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel1.setIcon(SvgIcon.load("/icons/empleados.svg", SvgIcon.LARGE));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Empleados");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -431,7 +434,8 @@ public class EmpleadosP extends javax.swing.JPanel {
         panelBotones.setLayout(new java.awt.GridBagLayout());
 
         agB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        agB.setForeground(new java.awt.Color(78, 150, 150));
+        agB.setBackground(new java.awt.Color(125, 255, 177));
+        agB.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
         agB.setText("Agregar");
         agB.setPreferredSize(new java.awt.Dimension(125, 33));
         agB.addActionListener(new java.awt.event.ActionListener() {
@@ -446,7 +450,8 @@ public class EmpleadosP extends javax.swing.JPanel {
         panelBotones.add(agB, gridBagConstraints);
 
         eliB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        eliB.setForeground(new java.awt.Color(78, 150, 150));
+        eliB.setBackground(new java.awt.Color(252, 149, 149));
+        eliB.setIcon(SvgIcon.load("/icons/delete.svg", SvgIcon.MEDIUM));
         eliB.setText("Eliminar");
         eliB.setPreferredSize(new java.awt.Dimension(125, 33));
         eliB.addActionListener(new java.awt.event.ActionListener() {
@@ -461,7 +466,8 @@ public class EmpleadosP extends javax.swing.JPanel {
         panelBotones.add(eliB, gridBagConstraints);
 
         actB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        actB.setForeground(new java.awt.Color(78, 150, 150));
+        actB.setBackground(new java.awt.Color(255, 251, 128));
+        actB.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
         actB.setText("Actualizar");
         actB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

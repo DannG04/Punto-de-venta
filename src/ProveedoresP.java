@@ -176,7 +176,8 @@ public class ProveedoresP extends javax.swing.JPanel {
         panelRegistro.add(labelincR, gridBagConstraints);
 
         regProvBtn.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        regProvBtn.setForeground(new java.awt.Color(78, 150, 150));
+        regProvBtn.setBackground(new java.awt.Color(125, 255, 177));
+        regProvBtn.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
         regProvBtn.setText("Registrar");
         regProvBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -305,7 +306,8 @@ public class ProveedoresP extends javax.swing.JPanel {
         panelEditar.add(labelincE, gridBagConstraints);
 
         editProvBtn.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        editProvBtn.setForeground(new java.awt.Color(78, 150, 150));
+        editProvBtn.setBackground(new java.awt.Color(255, 251, 128));
+        editProvBtn.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
         editProvBtn.setText("Actualizar");
         editProvBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -327,6 +329,7 @@ public class ProveedoresP extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Noto Serif", 1, 36));
         jLabel1.setForeground(new java.awt.Color(78, 150, 150));
+        jLabel1.setIcon(SvgIcon.load("/icons/proveedor.svg", SvgIcon.LARGE));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Proveedores");
         jPanel1.add(jLabel1);
@@ -355,7 +358,8 @@ public class ProveedoresP extends javax.swing.JPanel {
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
         agregarBtn.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        agregarBtn.setForeground(new java.awt.Color(78, 150, 150));
+        agregarBtn.setBackground(new java.awt.Color(125, 255, 177));
+        agregarBtn.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
         agregarBtn.setText("Agregar");
         agregarBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -366,11 +370,13 @@ public class ProveedoresP extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(agregarBtn, gridBagConstraints);
 
         editarBtn.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        editarBtn.setForeground(new java.awt.Color(78, 150, 150));
+        editarBtn.setBackground(new java.awt.Color(255, 251, 128));
+        editarBtn.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
         editarBtn.setText("Editar");
         editarBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -381,11 +387,13 @@ public class ProveedoresP extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(editarBtn, gridBagConstraints);
 
         inactivarBtn.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        inactivarBtn.setForeground(new java.awt.Color(78, 150, 150));
+        inactivarBtn.setBackground(new java.awt.Color(252, 149, 149));
+        inactivarBtn.setIcon(SvgIcon.load("/icons/cancelar.svg", SvgIcon.MEDIUM));
         inactivarBtn.setText("Inactivar");
         inactivarBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -396,6 +404,7 @@ public class ProveedoresP extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(inactivarBtn, gridBagConstraints);
 
@@ -409,7 +418,8 @@ public class ProveedoresP extends javax.swing.JPanel {
         jPanel2.add(buscarField, gridBagConstraints);
 
         buscarBtn.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        buscarBtn.setForeground(new java.awt.Color(78, 150, 150));
+        buscarBtn.setBackground(new java.awt.Color(153, 204, 255));
+        buscarBtn.setIcon(SvgIcon.load("/icons/lupa.svg", SvgIcon.MEDIUM));
         buscarBtn.setText("Buscar");
         buscarBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
