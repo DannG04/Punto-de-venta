@@ -22,5 +22,7 @@ Thumbs.db
 # Archivos accidentales de Windows
 nul
 
-#Ignora la carpeta del instalador
-/installer/
+#Ignora la carpeta del instalador (binarios grandes, JRE, etc.)
+#pero versiona los scripts del parche en installer/update/
+/installer/*
+!/installer/update/
