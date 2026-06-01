@@ -23,25 +23,7 @@ public class Excel {
         String anio = String.valueOf(fecha.getYear());
         try {
             String[] empBGData = obtenerDatosEmpresa();
-            String logoBG = empBGData[3];
-            boolean usarLogoBG = !logoBG.isEmpty() && new java.io.File(logoBG).exists()
-                    && isImageFile(logoBG);
-            int pictTypeBG = (usarLogoBG && !logoBG.toLowerCase().endsWith(".png"))
-                    ? Workbook.PICTURE_TYPE_JPEG : Workbook.PICTURE_TYPE_PNG;
-            InputStream is = getLogoStream(logoBG);
-            byte[] bytes = IOUtils.toByteArray(is);
-            int imgIndex = book.addPicture(bytes, pictTypeBG);
-            is.close();
-
-            CreationHelper help = book.getCreationHelper();
-            Drawing draw = sheet.createDrawingPatriarch();
-
-            ClientAnchor ancho = help.createClientAnchor();
-            ancho.setCol1(0);
-            ancho.setRow1(1);
-            Picture pict = draw.createPicture(ancho, imgIndex);
-            pict.resize(1, 3);
-            sheet.addMergedRegion(new CellRangeAddress(1, 3, 0, 0));
+            insertarLogoEmpresa(book, sheet, empBGData[3]);
 
             // Estilos de encabezados
             CellStyle tituloEstilo = book.createCellStyle();
@@ -166,25 +148,7 @@ public class Excel {
         String anio = String.valueOf(fecha.getYear());
         try {
             String[] empERData = obtenerDatosEmpresa();
-            String logoER = empERData[3];
-            boolean usarLogoER = !logoER.isEmpty() && new java.io.File(logoER).exists()
-                    && isImageFile(logoER);
-            int pictTypeER = (usarLogoER && !logoER.toLowerCase().endsWith(".png"))
-                    ? Workbook.PICTURE_TYPE_JPEG : Workbook.PICTURE_TYPE_PNG;
-            InputStream is = getLogoStream(logoER);
-            byte[] bytes = IOUtils.toByteArray(is);
-            int imgIndex = book.addPicture(bytes, pictTypeER);
-            is.close();
-
-            CreationHelper help = book.getCreationHelper();
-            Drawing draw = sheet.createDrawingPatriarch();
-
-            ClientAnchor ancho = help.createClientAnchor();
-            ancho.setCol1(0);
-            ancho.setRow1(1);
-            Picture pict = draw.createPicture(ancho, imgIndex);
-            pict.resize(1, 3);
-            sheet.addMergedRegion(new CellRangeAddress(1, 3, 0, 0));
+            insertarLogoEmpresa(book, sheet, empERData[3]);
 
 
             // Estilos de encabezados
@@ -940,16 +904,25 @@ public class Excel {
         return lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg");
     }
 
-    private static InputStream getLogoStream(String logoRuta) throws IOException {
-        if (!logoRuta.isEmpty() && isImageFile(logoRuta)) {
-            File f = new File(logoRuta);
-            if (f.exists()) return new FileInputStream(f);
+    private static void insertarLogoEmpresa(Workbook book, Sheet sheet, String logoRuta) {
+        // Si no hay logo válido configurado, el reporte se exporta sin imagen.
+        if (logoRuta == null || logoRuta.isEmpty()) return;
+        File f = new File(logoRuta);
+        if (!f.exists() || !isImageFile(logoRuta)) return;
+        try (InputStream is = new FileInputStream(f)) {
+            int pictType = logoRuta.toLowerCase().endsWith(".png")
+                    ? Workbook.PICTURE_TYPE_PNG : Workbook.PICTURE_TYPE_JPEG;
+            int imgIndex = book.addPicture(IOUtils.toByteArray(is), pictType);
+            Drawing draw = sheet.createDrawingPatriarch();
+            ClientAnchor ancho = book.getCreationHelper().createClientAnchor();
+            ancho.setCol1(0);
+            ancho.setRow1(1);
+            Picture pict = draw.createPicture(ancho, imgIndex);
+            pict.resize(1, 3);
+            sheet.addMergedRegion(new CellRangeAddress(1, 3, 0, 0));
+        } catch (Exception ignored) {
+            // Si la imagen está corrupta o falla la lectura, se exporta sin logo.
         }
-        // Busca el logo por defecto empaquetado dentro del JAR
-        InputStream is = Excel.class.getResourceAsStream("/img/Mega.png");
-        if (is != null) return is;
-        // Fallback para ejecución en desarrollo (fuera del JAR)
-        return new FileInputStream("src/img/Mega.png");
     }
 
     public static void obtenerUtilidad(){//Método que obtiene la utilidad del ejercicio

@@ -26,7 +26,7 @@ public class WebInventario extends NanoWSD {
     private final String url = "jdbc:postgresql://localhost:5432/";
     private final String nameBD = "punto_de_venta";
     private final String usuario = "postgres";
-    private final String contra = "Daniel183.";
+    private final String contra = "root";
 
     private Connection conn = null;
 

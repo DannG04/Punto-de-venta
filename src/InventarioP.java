@@ -1154,7 +1154,12 @@ public class InventarioP extends javax.swing.JPanel {
             if (val != null) {
                 try { precio = Double.parseDouble(val.toString()); } catch (NumberFormatException ex) { /* ignorar */ }
             }
-            conect.insertarPrecioEnLista(idProducto, idLista, precio);
+            // Precio 0 = sin override: se borra para que la lista use el precio base del producto.
+            if (precio > 0) {
+                conect.insertarPrecioEnLista(idProducto, idLista, precio);
+            } else {
+                conect.eliminarPrecioEnLista(idProducto, idLista);
+            }
         }
     }
 

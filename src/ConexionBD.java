@@ -20,7 +20,7 @@ public class ConexionBD {
     String url = "jdbc:postgresql://localhost:5432/";
     String nameBD = "punto_de_venta";
     String usuario = "postgres";
-    String contra = "Daniel183.";
+    String contra = "root";
 
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -1252,8 +1252,20 @@ public class ConexionBD {
     }
 
     public double obtenerPrecioEnLista(String idProducto, int idLista) {//Función para obtener el precio de un producto en una lista (-1 si no existe)
+        // producto_precio actúa como override opcional: si no hay fila para la lista,
+        // las listas de fábrica "Menudeo"/"Mayoreo" caen a las columnas del producto.
         double precio = -1.0;
-        String instruccion = "SELECT precio FROM producto_precio WHERE id_producto=? AND id_lista=?;";
+        String instruccion =
+            "SELECT COALESCE(pp.precio, " +
+            "                CASE lp.nombre " +
+            "                     WHEN 'Menudeo' THEN p.precio_menudeo " +
+            "                     WHEN 'Mayoreo' THEN p.precio_mayoreo " +
+            "                END) AS precio " +
+            "FROM lista_precios lp " +
+            "JOIN producto p ON p.id_producto = ? " +
+            "LEFT JOIN producto_precio pp " +
+            "       ON pp.id_producto = p.id_producto AND pp.id_lista = lp.id_lista " +
+            "WHERE lp.id_lista = ?;";
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
@@ -1261,7 +1273,10 @@ public class ConexionBD {
             pstm.setInt(2, idLista);
             ResultSet rs = pstm.executeQuery();
             if (rs.next()) {
-                precio = rs.getDouble("precio");
+                double p = rs.getDouble("precio");
+                if (!rs.wasNull()) {
+                    precio = p;
+                }
             }
             conexion.close();
         } catch (SQLException e) {
@@ -1294,6 +1309,20 @@ public class ConexionBD {
             pstm.setString(1, idProducto);
             pstm.setInt(2, idLista);
             pstm.setDouble(3, precio);
+            pstm.executeUpdate();
+            conexion.close();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void eliminarPrecioEnLista(String idProducto, int idLista) {//Función para quitar el override de precio (vuelve a usarse el precio base del producto)
+        String instruccion = "DELETE FROM producto_precio WHERE id_producto=? AND id_lista=?;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            pstm.setString(1, idProducto);
+            pstm.setInt(2, idLista);
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
