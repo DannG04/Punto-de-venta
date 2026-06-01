@@ -111,7 +111,8 @@ for /f "delims=" %%F in ('dir /b /on "%PKGDIR%\migrations\V*.sql" 2^>nul') do (
     set "fname=%%~nF"
     set "ver=!fname:~1!"
     for /f "tokens=1 delims=_" %%A in ("!ver!") do set "ver=%%A"
-    findstr /c:"[!ver!]" "%SVFILE%" >nul
+    REM /l = busqueda literal: sin el, findstr trata [.] como regex y todo matchea.
+    findstr /l /c:"[!ver!]" "%SVFILE%" >nul
     if !errorlevel!==0 (
         echo [SKIP] V!ver! ya estaba aplicada.
     ) else (
@@ -125,6 +126,7 @@ for /f "delims=" %%F in ('dir /b /on "%PKGDIR%\migrations\V*.sql" 2^>nul') do (
         )
         REM Registrar la version (garantizado, aunque el .sql no se auto-registre)
         psql.exe -h %DBHOST% -p %DBPORT% -U %DBUSER% -d %DBNAME% -c "INSERT INTO schema_version(version,descripcion) VALUES('!ver!','aplicada por parche') ON CONFLICT (version) DO NOTHING" >nul
+        if !errorlevel! neq 0 echo [AVISO] V!ver! se aplico pero NO se pudo registrar en schema_version (se reintentara en la proxima corrida).
         echo [OK]   V!ver! aplicada.
         echo [%date% %time%] Aplicada V!ver! >> "%LOG%"
     )
@@ -134,9 +136,10 @@ for /f "delims=" %%F in ('dir /b /on "%PKGDIR%\migrations\V*.sql" 2^>nul') do (
 REM ---------- 8. Reemplazar JAR y dependencias ----------
 if exist "%PKGDIR%\Proy_Ventas.jar" (
     echo Reemplazando aplicacion...
-    if exist "%INSTALL_DIR%\Proy_Ventas.jar" copy /y "%INSTALL_DIR%\Proy_Ventas.jar" "%INSTALL_DIR%\Proy_Ventas.jar.bak" >nul
+    REM Respaldo con timestamp para no pisar un backup bueno en una segunda corrida.
+    if exist "%INSTALL_DIR%\Proy_Ventas.jar" copy /y "%INSTALL_DIR%\Proy_Ventas.jar" "%INSTALL_DIR%\Proy_Ventas.jar.%STAMP%.bak" >nul
     copy /y "%PKGDIR%\Proy_Ventas.jar" "%INSTALL_DIR%\Proy_Ventas.jar" >nul
-    echo [OK] JAR actualizado (respaldo: Proy_Ventas.jar.bak).
+    echo [OK] JAR actualizado (respaldo: Proy_Ventas.jar.%STAMP%.bak).
 )
 if exist "%PKGDIR%\lib" (
     xcopy /y /e "%PKGDIR%\lib\*" "%INSTALL_DIR%\lib\" >nul
