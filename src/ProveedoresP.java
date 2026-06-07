@@ -37,6 +37,8 @@ public class ProveedoresP extends javax.swing.JPanel {
         emailProvR = new javax.swing.JFormattedTextField();
         jLabelDirR = new javax.swing.JLabel();
         dirProvR = new javax.swing.JFormattedTextField();
+        jLabelRfcR = new javax.swing.JLabel();
+        rfcProvR = new javax.swing.JFormattedTextField();
         labelincR = new javax.swing.JLabel();
         regProvBtn = new javax.swing.JButton();
 
@@ -50,6 +52,8 @@ public class ProveedoresP extends javax.swing.JPanel {
         emailProvE = new javax.swing.JFormattedTextField();
         jLabelDirE = new javax.swing.JLabel();
         dirProvE = new javax.swing.JFormattedTextField();
+        jLabelRfcE = new javax.swing.JLabel();
+        rfcProvE = new javax.swing.JFormattedTextField();
         labelincE = new javax.swing.JLabel();
         editProvBtn = new javax.swing.JButton();
 
@@ -67,7 +71,7 @@ public class ProveedoresP extends javax.swing.JPanel {
         // ========== DIALOGO REGISTRO ==========
         registroDialog.setTitle("Registrar Proveedor");
         registroDialog.setAlwaysOnTop(true);
-        registroDialog.setMinimumSize(new java.awt.Dimension(550, 350));
+        registroDialog.setMinimumSize(new java.awt.Dimension(550, 390));
         registroDialog.setModal(true);
         registroDialog.setResizable(false);
         registroDialog.getContentPane().setLayout(new java.awt.CardLayout());
@@ -165,13 +169,32 @@ public class ProveedoresP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         panelRegistro.add(dirProvR, gridBagConstraints);
 
+        jLabelRfcR.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        jLabelRfcR.setForeground(new java.awt.Color(78, 150, 150));
+        jLabelRfcR.setText("RFC:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        panelRegistro.add(jLabelRfcR, gridBagConstraints);
+
+        rfcProvR.setFont(new java.awt.Font("Noto Serif", 0, 18));
+        rfcProvR.setPreferredSize(new java.awt.Dimension(250, 30));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        panelRegistro.add(rfcProvR, gridBagConstraints);
+
         labelincR.setFont(new java.awt.Font("Noto Serif", 0, 12));
         labelincR.setForeground(new java.awt.Color(204, 0, 51));
         labelincR.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelincR.setText(" ");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = 2;
         panelRegistro.add(labelincR, gridBagConstraints);
 
@@ -186,7 +209,7 @@ public class ProveedoresP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         panelRegistro.add(regProvBtn, gridBagConstraints);
@@ -197,7 +220,7 @@ public class ProveedoresP extends javax.swing.JPanel {
         // ========== DIALOGO EDITAR ==========
         editarDialog.setTitle("Editar Proveedor");
         editarDialog.setAlwaysOnTop(true);
-        editarDialog.setMinimumSize(new java.awt.Dimension(550, 350));
+        editarDialog.setMinimumSize(new java.awt.Dimension(550, 390));
         editarDialog.setModal(true);
         editarDialog.setResizable(false);
         editarDialog.getContentPane().setLayout(new java.awt.CardLayout());
@@ -295,13 +318,32 @@ public class ProveedoresP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         panelEditar.add(dirProvE, gridBagConstraints);
 
+        jLabelRfcE.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        jLabelRfcE.setForeground(new java.awt.Color(78, 150, 150));
+        jLabelRfcE.setText("RFC:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        panelEditar.add(jLabelRfcE, gridBagConstraints);
+
+        rfcProvE.setFont(new java.awt.Font("Noto Serif", 0, 18));
+        rfcProvE.setPreferredSize(new java.awt.Dimension(250, 30));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        panelEditar.add(rfcProvE, gridBagConstraints);
+
         labelincE.setFont(new java.awt.Font("Noto Serif", 0, 12));
         labelincE.setForeground(new java.awt.Color(204, 0, 51));
         labelincE.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelincE.setText(" ");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = 2;
         panelEditar.add(labelincE, gridBagConstraints);
 
@@ -316,7 +358,7 @@ public class ProveedoresP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         panelEditar.add(editProvBtn, gridBagConstraints);
@@ -441,6 +483,7 @@ public class ProveedoresP extends javax.swing.JPanel {
         telProvR.setText("");
         emailProvR.setText("");
         dirProvR.setText("");
+        rfcProvR.setText("");
         labelincR.setText(" ");
         registroDialog.setVisible(true);
     }//GEN-LAST:event_agregarBtnActionPerformed
@@ -455,6 +498,8 @@ public class ProveedoresP extends javax.swing.JPanel {
             telProvE.setText(tel.equals("null") ? "" : tel);
             emailProvE.setText(email.equals("null") ? "" : email);
             dirProvE.setText(dir.equals("null") ? "" : dir);
+            String[] fiscal = conect.obtenerDatosProveedor(idProv);
+            rfcProvE.setText(fiscal[0]);
             labelincE.setText(" ");
             editarDialog.setVisible(true);
         } else {
@@ -493,7 +538,11 @@ public class ProveedoresP extends javax.swing.JPanel {
             labelincR.setText("El email no tiene un formato válido");
             return;
         }
-        if (conect.insertarProveedor(nombre, telProvR.getText().trim(), email, dirProvR.getText().trim())) {
+        String rfc = rfcProvR.getText().trim().toUpperCase();
+        if (!rfc.isEmpty() && !rfc.matches("^[A-ZÑ&]{3,4}[0-9]{6}[A-Z0-9]{3}$")) {
+            Mise.JOption("El RFC no tiene un formato válido. Se guardará de todos modos.", "Advertencia", javax.swing.JOptionPane.WARNING_MESSAGE);
+        }
+        if (conect.insertarProveedor(nombre, telProvR.getText().trim(), email, dirProvR.getText().trim(), rfcProvR.getText().trim())) {
             mostrarTabla("");
             registroDialog.setVisible(false);
         }
@@ -510,9 +559,13 @@ public class ProveedoresP extends javax.swing.JPanel {
             labelincE.setText("El email no tiene un formato válido");
             return;
         }
+        String rfc = rfcProvE.getText().trim().toUpperCase();
+        if (!rfc.isEmpty() && !rfc.matches("^[A-ZÑ&]{3,4}[0-9]{6}[A-Z0-9]{3}$")) {
+            Mise.JOption("El RFC no tiene un formato válido. Se guardará de todos modos.", "Advertencia", javax.swing.JOptionPane.WARNING_MESSAGE);
+        }
         int conf = Mise.JOptionYesNo("¿Confirmar los cambios al proveedor?", "Editar Proveedor");
         if (conf == 0) {
-            if (conect.editarProveedor(idProv, nombre, telProvE.getText().trim(), email, dirProvE.getText().trim())) {
+            if (conect.editarProveedor(idProv, nombre, telProvE.getText().trim(), email, dirProvE.getText().trim(), rfcProvE.getText().trim())) {
                 mostrarTabla("");
                 editarDialog.setVisible(false);
             }
@@ -618,6 +671,8 @@ public class ProveedoresP extends javax.swing.JPanel {
     private javax.swing.JLabel jLabelEmailR;
     private javax.swing.JLabel jLabelNomE;
     private javax.swing.JLabel jLabelNomR;
+    private javax.swing.JLabel jLabelRfcE;
+    private javax.swing.JLabel jLabelRfcR;
     private javax.swing.JLabel jLabelTelE;
     private javax.swing.JLabel jLabelTelR;
     private javax.swing.JPanel jPanel1;
@@ -631,6 +686,8 @@ public class ProveedoresP extends javax.swing.JPanel {
     private javax.swing.JPanel panelRegistro;
     private javax.swing.JButton regProvBtn;
     private javax.swing.JDialog registroDialog;
+    private javax.swing.JFormattedTextField rfcProvE;
+    private javax.swing.JFormattedTextField rfcProvR;
     private javax.swing.JTable tablaProv;
     private javax.swing.JFormattedTextField telProvE;
     private javax.swing.JFormattedTextField telProvR;
