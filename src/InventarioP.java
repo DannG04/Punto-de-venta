@@ -31,6 +31,21 @@ public class InventarioP extends javax.swing.JPanel {
     private javax.swing.JLabel jLabelMaxDesc = new javax.swing.JLabel("Desc. máximo (%):");
     private javax.swing.JFormattedTextField maxDescuento = new javax.swing.JFormattedTextField();
 
+    // Campos de Compras (manejados fuera del form editor): código de barras, IVA, unidades, factor, precio compra
+    private javax.swing.JLabel jLabelCodBarras = new javax.swing.JLabel("Código de barras:");
+    private javax.swing.JFormattedTextField codBarrasInv = new javax.swing.JFormattedTextField();
+    private javax.swing.JCheckBox llevaIvaInv = new javax.swing.JCheckBox("Lleva IVA");
+    private javax.swing.JLabel jLabelUnidadCompra = new javax.swing.JLabel("Unidad de compra:");
+    private javax.swing.JComboBox<String> unidadCompraInv = new javax.swing.JComboBox<>(
+        new javax.swing.DefaultComboBoxModel<>(new String[]{"Pieza","Caja","Bolsa","Bulto","Botella","Lata","Paquete","Bote","Barra","Vaso","Tetra Pak","kg"}));
+    private javax.swing.JLabel jLabelUnidadVenta = new javax.swing.JLabel("Unidad de venta:");
+    private javax.swing.JComboBox<String> unidadVentaInv = new javax.swing.JComboBox<>(
+        new javax.swing.DefaultComboBoxModel<>(new String[]{"Pieza","Caja","Bolsa","Bulto","Botella","Lata","Paquete","Bote","Barra","Vaso","Tetra Pak","kg"}));
+    private javax.swing.JLabel jLabelFactor = new javax.swing.JLabel("Factor de conversión:");
+    private javax.swing.JFormattedTextField factorInv = new javax.swing.JFormattedTextField();
+    private javax.swing.JLabel jLabelPrecioCompra = new javax.swing.JLabel("Precio de compra:");
+    private javax.swing.JFormattedTextField precioCompraInv = new javax.swing.JFormattedTextField();
+
     // Tabla de precios por lista (manejada fuera del form editor)
     private javax.swing.JLabel jLabelListaPrecios = new javax.swing.JLabel("Precios por lista:");
     private javax.swing.JTable tblListaPrecios;
@@ -71,10 +86,109 @@ public class InventarioP extends javax.swing.JPanel {
         gbcMaxDesc.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(maxDescuento, gbcMaxDesc);
 
-        // --- Tabla "Precios por lista" al final del diálogo (gridy=11 y 12) ---
+        // --- Campos de Compras: código de barras, IVA, unidades, factor, precio compra (gridy=11..16) ---
+        java.awt.GridBagConstraints gbcCompras;
+
+        jLabelCodBarras.setFont(new java.awt.Font("Noto Serif", 1, 16));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 0; gbcCompras.gridy = 11;
+        gbcCompras.ipadx = 16;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        jDialog1.getContentPane().add(jLabelCodBarras, gbcCompras);
+
+        codBarrasInv.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15));
+        codBarrasInv.setPreferredSize(new java.awt.Dimension(200, 35));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 1; gbcCompras.gridy = 11;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        jDialog1.getContentPane().add(codBarrasInv, gbcCompras);
+
+        llevaIvaInv.setFont(new java.awt.Font("Noto Serif", 1, 14));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 0; gbcCompras.gridy = 12;
+        gbcCompras.gridwidth = 2;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(5, 10, 5, 10);
+        jDialog1.getContentPane().add(llevaIvaInv, gbcCompras);
+
+        jLabelUnidadCompra.setFont(new java.awt.Font("Noto Serif", 1, 16));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 0; gbcCompras.gridy = 13;
+        gbcCompras.ipadx = 16;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        jDialog1.getContentPane().add(jLabelUnidadCompra, gbcCompras);
+
+        unidadCompraInv.setFont(new java.awt.Font("Noto Serif", 0, 15));
+        unidadCompraInv.setPreferredSize(new java.awt.Dimension(200, 35));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 1; gbcCompras.gridy = 13;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        jDialog1.getContentPane().add(unidadCompraInv, gbcCompras);
+
+        jLabelUnidadVenta.setFont(new java.awt.Font("Noto Serif", 1, 16));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 0; gbcCompras.gridy = 14;
+        gbcCompras.ipadx = 16;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        jDialog1.getContentPane().add(jLabelUnidadVenta, gbcCompras);
+
+        unidadVentaInv.setFont(new java.awt.Font("Noto Serif", 0, 15));
+        unidadVentaInv.setPreferredSize(new java.awt.Dimension(200, 35));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 1; gbcCompras.gridy = 14;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        jDialog1.getContentPane().add(unidadVentaInv, gbcCompras);
+
+        jLabelFactor.setFont(new java.awt.Font("Noto Serif", 1, 16));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 0; gbcCompras.gridy = 15;
+        gbcCompras.ipadx = 16;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        jDialog1.getContentPane().add(jLabelFactor, gbcCompras);
+
+        factorInv.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15));
+        factorInv.setPreferredSize(new java.awt.Dimension(200, 35));
+        factorInv.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char c = evt.getKeyChar();
+                if (!Cake.numeros(c) && !Cake.inicioPunto(c)) evt.consume();
+                if (Cake.tamaño(factorInv.getText(), 10)) evt.consume();
+            }
+        });
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 1; gbcCompras.gridy = 15;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        jDialog1.getContentPane().add(factorInv, gbcCompras);
+
+        jLabelPrecioCompra.setFont(new java.awt.Font("Noto Serif", 1, 16));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 0; gbcCompras.gridy = 16;
+        gbcCompras.ipadx = 16;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        jDialog1.getContentPane().add(jLabelPrecioCompra, gbcCompras);
+
+        precioCompraInv.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15));
+        precioCompraInv.setPreferredSize(new java.awt.Dimension(200, 35));
+        precioCompraInv.setEditable(false);
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 1; gbcCompras.gridy = 16;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        jDialog1.getContentPane().add(precioCompraInv, gbcCompras);
+
+        // --- Tabla "Precios por lista" al final del diálogo (gridy=17 y 18) ---
         jLabelListaPrecios.setFont(new java.awt.Font("Noto Serif", 1, 18));
         java.awt.GridBagConstraints gbcTblLista = new java.awt.GridBagConstraints();
-        gbcTblLista.gridx = 0; gbcTblLista.gridy = 11;
+        gbcTblLista.gridx = 0; gbcTblLista.gridy = 17;
         gbcTblLista.gridwidth = 2;
         gbcTblLista.anchor = java.awt.GridBagConstraints.WEST;
         gbcTblLista.insets = new java.awt.Insets(14, 10, 4, 10);
@@ -97,14 +211,14 @@ public class InventarioP extends javax.swing.JPanel {
         jScrollPaneListaPrecios.setPreferredSize(new java.awt.Dimension(480, 100));
 
         gbcTblLista = new java.awt.GridBagConstraints();
-        gbcTblLista.gridx = 0; gbcTblLista.gridy = 12;
+        gbcTblLista.gridx = 0; gbcTblLista.gridy = 18;
         gbcTblLista.gridwidth = 2;
         gbcTblLista.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gbcTblLista.insets = new java.awt.Insets(0, 10, 14, 10);
         jDialog1.getContentPane().add(jScrollPaneListaPrecios, gbcTblLista);
 
-        jDialog1.setMinimumSize(new java.awt.Dimension(550, 780));
-        jDialog1.setSize(new java.awt.Dimension(550, 780));
+        jDialog1.setMinimumSize(new java.awt.Dimension(550, 1180));
+        jDialog1.setSize(new java.awt.Dimension(550, 1180));
         jDialog1.setLocationRelativeTo(null);
     }
 
@@ -596,6 +710,14 @@ public class InventarioP extends javax.swing.JPanel {
         codigoProvField.setText("");
         checkGenerarCodigo.setSelected(false);
 
+        // Limpiar campos de Compras (código de barras, IVA, unidades, factor, precio compra)
+        codBarrasInv.setText("");
+        llevaIvaInv.setSelected(false);
+        unidadCompraInv.setSelectedIndex(0);
+        unidadVentaInv.setSelectedIndex(0);
+        factorInv.setText("");
+        precioCompraInv.setText("");
+
         // Habilitar campos de código al agregar
         codigoProvField.setEnabled(true);
         checkGenerarCodigo.setEnabled(true);
@@ -693,6 +815,17 @@ public class InventarioP extends javax.swing.JPanel {
                     Integer idCat = getSelectedCategoriaId();
                     conect.insertarProductoConCodigoYCategoria(campos, idCat, maxDesc);
 
+                    // Guardar campos de Compras (código de barras, IVA, unidades, factor)
+                    double factor;
+                    try {
+                        factor = factorInv.getText().trim().isEmpty() ? 1.0 : Double.parseDouble(factorInv.getText().trim());
+                    } catch (NumberFormatException ex) {
+                        factor = 1.0;
+                    }
+                    conect.actualizarCamposCompraProducto(codigoProducto, codBarrasInv.getText().trim(),
+                        llevaIvaInv.isSelected(), (String) unidadCompraInv.getSelectedItem(),
+                        (String) unidadVentaInv.getSelectedItem(), factor);
+
                     // Guardar precios por lista
                     guardarPreciosLista(codigoProducto);
 
@@ -733,6 +866,17 @@ public class InventarioP extends javax.swing.JPanel {
                     String[] campos = {nom.getText(), cadd.getText(), precMay.getText(), precMen.getText()};
                     Integer idCat = getSelectedCategoriaId();
                     conect.actualizarProductoConCategoria(elemento, campos, idCat, maxDesc);
+
+                    // Guardar campos de Compras (código de barras, IVA, unidades, factor)
+                    double factor;
+                    try {
+                        factor = factorInv.getText().trim().isEmpty() ? 1.0 : Double.parseDouble(factorInv.getText().trim());
+                    } catch (NumberFormatException ex) {
+                        factor = 1.0;
+                    }
+                    conect.actualizarCamposCompraProducto(elemento, codBarrasInv.getText().trim(),
+                        llevaIvaInv.isSelected(), (String) unidadCompraInv.getSelectedItem(),
+                        (String) unidadVentaInv.getSelectedItem(), factor);
 
                     // Guardar precios por lista
                     guardarPreciosLista(elemento);
@@ -927,6 +1071,29 @@ public class InventarioP extends javax.swing.JPanel {
         // Cargar max_descuento actual desde la base de datos
         double maxDesc = conect.obtenerMaxDescuento(elemento);
         maxDescuento.setText("" + maxDesc);
+
+        // Cargar campos de Compras (código de barras, IVA, unidades, factor)
+        String[] pc = conect.obtenerProductoParaCompra(elemento);
+        if (pc != null) {
+            codBarrasInv.setText(pc[1]);
+            unidadCompraInv.setSelectedItem(pc[2]);
+            unidadVentaInv.setSelectedItem(pc[3]);
+            factorInv.setText(pc[4]);
+            llevaIvaInv.setSelected("t".equals(pc[5]));
+        }
+
+        // Cargar precio de compra actual (solo lectura)
+        precioCompraInv.setText("");
+        java.sql.ResultSet rsPC = conect.query("SELECT COALESCE(precio_compra,0) AS pc FROM producto WHERE id_producto = '" + elemento + "';");
+        if (rsPC != null) {
+            try {
+                if (rsPC.next()) {
+                    precioCompraInv.setText("" + rsPC.getDouble("pc"));
+                }
+            } catch (java.sql.SQLException ex) {
+                System.out.println("Error al cargar precio de compra: " + ex.getMessage());
+            }
+        }
 
         // Seleccionar la categoría actual en el combo
         String catActual = "" + modelo.getValueAt(a, 5);

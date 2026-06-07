@@ -1297,6 +1297,25 @@ public class ConexionBD {
         }
     }
 
+    public void actualizarCamposCompraProducto(String idProducto, String codigoBarras, boolean llevaIva,
+            String unidadCompra, String unidadVenta, double factor) {
+        String sql = "UPDATE producto SET codigo_barras=?, lleva_iva=?, unidad_compra=?, unidad_venta=?, factor_conversion=? WHERE id_producto=?;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(sql);
+            pstm.setString(1, codigoBarras == null || codigoBarras.isEmpty() ? null : codigoBarras);
+            pstm.setBoolean(2, llevaIva);
+            pstm.setString(3, unidadCompra);
+            pstm.setString(4, unidadVenta);
+            pstm.setDouble(5, factor);
+            pstm.setString(6, idProducto);
+            pstm.executeUpdate();
+            conexion.close();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     // FUNCIONES DE DESCUENTOS
     public double obtenerMaxDescuento(String idProducto) {//Función para obtener el descuento máximo de un producto
         double maxDesc = 100.0;
