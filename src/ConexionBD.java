@@ -503,12 +503,13 @@ public class ConexionBD {
             stmtSet.execute("SET kardex.referencia = '" + campos[0] + "'");
             if (!idEmpCompra.isEmpty())
                 stmtSet.execute("SET kardex.empleado = '" + idEmpCompra + "'");
-            CallableStatement cstm = conexion.prepareCall("{call reg_compra_prod(?,?::id_producto_dominio,?,?,?)}");
+            CallableStatement cstm = conexion.prepareCall("{call reg_compra_prod(?,?::id_producto_dominio,?,?,?,?)}");
             cstm.setString(1, campos[0]);
             cstm.setString(2, campos[1]);
-            cstm.setObject(3, campos[2], Types.NUMERIC);
-            cstm.setObject(4, campos[3], Types.INTEGER);
-            cstm.setBoolean(5, ac);
+            cstm.setObject(3, campos[2], Types.NUMERIC);   // precio por unidad de compra
+            cstm.setObject(4, campos[3], Types.INTEGER);   // cantidad en unidad de compra
+            cstm.setObject(5, campos[4], Types.NUMERIC);   // factor
+            cstm.setBoolean(6, ac);
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
@@ -527,6 +528,93 @@ public class ConexionBD {
         } catch (SQLException e) {
             Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    public String resolverCodigo(String codigo) {//Función para resolver un id_producto a partir del id o del código de barras
+        String idProd = null;
+        String sql = "SELECT id_producto FROM producto WHERE id_producto::varchar = ? OR codigo_barras = ? LIMIT 1;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(sql);
+            pstm.setString(1, codigo);
+            pstm.setString(2, codigo);
+            ResultSet rs = pstm.executeQuery();
+            if (rs.next()) idProd = rs.getString("id_producto");
+            conexion.close();
+        } catch (SQLException e) {
+            System.out.println("Error al resolver codigo: " + e.getMessage());
+        }
+        return idProd; // null si no existe
+    }
+
+    public String[] obtenerProductoParaCompra(String idProducto) {
+        // [0]nombre [1]codigo_barras [2]unidad_compra [3]unidad_venta [4]factor [5]lleva_iva("t"/"f") [6]precio_menudeo
+        String[] d = null;
+        String sql = "SELECT nombre, COALESCE(codigo_barras,'') cb, COALESCE(unidad_compra,'') uc, "
+                   + "COALESCE(unidad_venta,'') uv, COALESCE(factor_conversion,1) f, COALESCE(lleva_iva,false) iva, "
+                   + "COALESCE(precio_menudeo,0) pm FROM producto WHERE id_producto = ?;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(sql);
+            pstm.setString(1, idProducto);
+            ResultSet rs = pstm.executeQuery();
+            if (rs.next()) {
+                d = new String[]{ rs.getString("nombre"), rs.getString("cb"), rs.getString("uc"),
+                    rs.getString("uv"), rs.getString("f"), rs.getBoolean("iva") ? "t" : "f",
+                    String.valueOf(rs.getDouble("pm")) };
+            }
+            conexion.close();
+        } catch (SQLException e) {
+            System.out.println("Error al leer producto: " + e.getMessage());
+        }
+        return d; // null si no existe
+    }
+
+    public boolean codigoBarrasDuplicado(String codigoBarras, String idExcluir) {//Función para verificar si un código de barras ya está en uso por otro producto
+        if (codigoBarras == null || codigoBarras.trim().isEmpty()) return false;
+        String sql = "SELECT 1 FROM producto WHERE codigo_barras = ? AND id_producto <> ? LIMIT 1;";
+        boolean dup = false;
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(sql);
+            pstm.setString(1, codigoBarras.trim());
+            pstm.setString(2, idExcluir == null ? "" : idExcluir);
+            ResultSet rs = pstm.executeQuery();
+            dup = rs.next();
+            conexion.close();
+        } catch (SQLException e) {
+            System.out.println("Error al verificar codigo de barras: " + e.getMessage());
+        }
+        return dup;
+    }
+
+    public boolean crearProductoDesdeCompra(String[] d) {
+        // d: [0]id_producto [1]nombre [2]codigo_barras [3]unidad_compra [4]unidad_venta
+        //    [5]factor [6]lleva_iva("t"/"f") [7]precio_menudeo [8]precio_mayoreo [9]precio_compra
+        boolean ok = false;
+        String sql = "INSERT INTO producto(id_producto, nombre, cantidad, precio_mayoreo, precio_menudeo, "
+                   + "max_descuento, codigo_barras, lleva_iva, unidad_compra, unidad_venta, factor_conversion, precio_compra) "
+                   + "VALUES (?,?,0,?,?,0,?,?,?,?,?,?);";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(sql);
+            pstm.setString(1, d[0]);
+            pstm.setString(2, d[1]);
+            pstm.setDouble(3, Double.parseDouble(d[8]));
+            pstm.setDouble(4, Double.parseDouble(d[7]));
+            pstm.setString(5, d[2].isEmpty() ? null : d[2]);
+            pstm.setBoolean(6, "t".equals(d[6]));
+            pstm.setString(7, d[3]);
+            pstm.setString(8, d[4]);
+            pstm.setDouble(9, Double.parseDouble(d[5]));
+            pstm.setDouble(10, Double.parseDouble(d[9]));
+            pstm.executeUpdate();
+            conexion.close();
+            ok = true;
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return ok;
     }
 
     // FUNCIONES DE LA TABLA CLIENTE
@@ -847,9 +935,9 @@ public class ConexionBD {
     }
 
     // FUNCIONES DE LA TABLA PROVEEDOR
-    public boolean insertarProveedor(String nombre, String telefono, String email, String direccion) {//Función para insertar un proveedor
+    public boolean insertarProveedor(String nombre, String telefono, String email, String direccion, String rfc) {//Función para insertar un proveedor
         boolean band = false;
-        String instruccion = "INSERT INTO proveedor(nombre, telefono, email, direccion) VALUES(?,?,?,?);";
+        String instruccion = "INSERT INTO proveedor(nombre, telefono, email, direccion, rfc) VALUES(?,?,?,?,?);";
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
@@ -857,6 +945,7 @@ public class ConexionBD {
             pstm.setString(2, telefono.isEmpty() ? null : telefono);
             pstm.setString(3, email.isEmpty() ? null : email);
             pstm.setString(4, direccion.isEmpty() ? null : direccion);
+            pstm.setString(5, rfc == null || rfc.isEmpty() ? null : rfc);
             pstm.executeUpdate();
             conexion.close();
             band = true;
@@ -866,9 +955,9 @@ public class ConexionBD {
         return band;
     }
 
-    public boolean editarProveedor(int id, String nombre, String telefono, String email, String direccion) {//Función para editar un proveedor
+    public boolean editarProveedor(int id, String nombre, String telefono, String email, String direccion, String rfc) {//Función para editar un proveedor
         boolean band = false;
-        String instruccion = "UPDATE proveedor SET nombre=?, telefono=?, email=?, direccion=? WHERE id_proveedor=?;";
+        String instruccion = "UPDATE proveedor SET nombre=?, telefono=?, email=?, direccion=?, rfc=? WHERE id_proveedor=?;";
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
@@ -876,7 +965,8 @@ public class ConexionBD {
             pstm.setString(2, telefono.isEmpty() ? null : telefono);
             pstm.setString(3, email.isEmpty() ? null : email);
             pstm.setString(4, direccion.isEmpty() ? null : direccion);
-            pstm.setInt(5, id);
+            pstm.setString(5, rfc == null || rfc.isEmpty() ? null : rfc);
+            pstm.setInt(6, id);
             pstm.executeUpdate();
             conexion.close();
             band = true;
@@ -884,6 +974,25 @@ public class ConexionBD {
             Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
         return band;
+    }
+
+    public String[] obtenerDatosProveedor(int idProveedor) {//Función para obtener RFC y dirección de un proveedor
+        String[] datos = {"", ""}; // [0]=rfc, [1]=direccion
+        String sql = "SELECT COALESCE(rfc,'') rfc, COALESCE(direccion,'') direccion FROM proveedor WHERE id_proveedor = ?;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(sql);
+            pstm.setInt(1, idProveedor);
+            ResultSet rs = pstm.executeQuery();
+            if (rs.next()) {
+                datos[0] = rs.getString("rfc");
+                datos[1] = rs.getString("direccion");
+            }
+            conexion.close();
+        } catch (SQLException e) {
+            System.out.println("Error al obtener datos del proveedor: " + e.getMessage());
+        }
+        return datos;
     }
 
     public boolean cambiarEstatusProveedor(int id, String estatus) {//Función para cambiar el estatus de un proveedor
@@ -907,29 +1016,61 @@ public class ConexionBD {
         return query("SELECT id_proveedor, nombre FROM proveedor WHERE estatus='Activo' ORDER BY nombre");
     }
 
-    public String insertarCompraConProveedor(String[] campos, int idProveedor) {//Función para insertar una compra con proveedor
+    public String insertarCompraConProveedor(String[] campos, int idProveedor) {//Función para insertar el encabezado de una compra con proveedor (factura)
         String idCompra = "";
+        String sql = "INSERT INTO compras(id_empleado, descripcion, monto, id_proveedor, folio_proveedor, fecha_factura, origen) "
+                   + "VALUES(?::curp_dominio, ?, ?::numeric, ?, ?, ?::date, ?) RETURNING id_compra;";
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            String instruccion = "INSERT INTO compras(id_empleado, descripcion, monto, id_proveedor) VALUES(?::curp_dominio, ?, ?::numeric, ?) RETURNING id_compra;";
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
+            PreparedStatement pstm = conexion.prepareStatement(sql);
             pstm.setString(1, campos[0]);
             pstm.setString(2, campos[1]);
             pstm.setString(3, campos[2]);
-            if(idProveedor > 0){
-                pstm.setInt(4, idProveedor);
-            } else {
-                pstm.setNull(4, Types.INTEGER);
-            }
+            if (idProveedor > 0) pstm.setInt(4, idProveedor); else pstm.setNull(4, Types.INTEGER);
+            pstm.setString(5, campos[3].isEmpty() ? null : campos[3]);
+            pstm.setString(6, campos[4].isEmpty() ? null : campos[4]);
+            pstm.setString(7, campos[5].isEmpty() ? null : campos[5]);
             ResultSet rs = pstm.executeQuery();
-            if(rs.next()){
-                idCompra = rs.getString("id_compra");
-            }
+            if (rs.next()) idCompra = rs.getString("id_compra");
             conexion.close();
         } catch (SQLException e) {
             Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
         return idCompra;
+    }
+
+    public boolean folioYaRegistrado(int idProveedor, String folio) {//Función para verificar si un folio de proveedor ya fue registrado
+        if (idProveedor <= 0 || folio == null || folio.trim().isEmpty()) return false;
+        String sql = "SELECT 1 FROM compras WHERE id_proveedor = ? AND folio_proveedor = ? LIMIT 1;";
+        boolean existe = false;
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(sql);
+            pstm.setInt(1, idProveedor);
+            pstm.setString(2, folio.trim());
+            ResultSet rs = pstm.executeQuery();
+            existe = rs.next();
+            conexion.close();
+        } catch (SQLException e) {
+            System.out.println("Error al verificar folio: " + e.getMessage());
+        }
+        return existe;
+    }
+
+    public void actualizarTotalesCompra(String idCompra, double subtotal, double iva, double total) {//Función para actualizar los totales (subtotal, iva, monto) de una compra
+        String sql = "UPDATE compras SET subtotal = ?, iva = ?, monto = ? WHERE id_compra = ?;";
+        try {
+            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            PreparedStatement pstm = conexion.prepareStatement(sql);
+            pstm.setDouble(1, subtotal);
+            pstm.setDouble(2, iva);
+            pstm.setDouble(3, total);
+            pstm.setString(4, idCompra);
+            pstm.executeUpdate();
+            conexion.close();
+        } catch (SQLException e) {
+            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public double ObtenerDato(String nombreCol) {//Función para obtener un dato de la base de datos
