@@ -149,6 +149,7 @@ public class EmpleadosP extends javax.swing.JPanel {
         botonEReg.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         botonEReg.setBackground(new java.awt.Color(125, 255, 177));
         botonEReg.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
+        botonEReg.setPreferredSize(new java.awt.Dimension(160, 35));
         botonEReg.setText("Registrar");
         botonEReg.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -333,6 +334,7 @@ public class EmpleadosP extends javax.swing.JPanel {
         actEBoton.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         actEBoton.setBackground(new java.awt.Color(255, 251, 128));
         actEBoton.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
+        actEBoton.setPreferredSize(new java.awt.Dimension(160, 35));
         actEBoton.setText("Actualizar");
         actEBoton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -436,6 +438,7 @@ public class EmpleadosP extends javax.swing.JPanel {
         agB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         agB.setBackground(new java.awt.Color(125, 255, 177));
         agB.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
+        agB.setPreferredSize(new java.awt.Dimension(160, 35));
         agB.setText("Agregar");
         agB.setPreferredSize(new java.awt.Dimension(125, 33));
         agB.addActionListener(new java.awt.event.ActionListener() {
@@ -452,6 +455,7 @@ public class EmpleadosP extends javax.swing.JPanel {
         eliB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         eliB.setBackground(new java.awt.Color(252, 149, 149));
         eliB.setIcon(SvgIcon.load("/icons/delete.svg", SvgIcon.MEDIUM));
+        eliB.setPreferredSize(new java.awt.Dimension(160, 35));
         eliB.setText("Eliminar");
         eliB.setPreferredSize(new java.awt.Dimension(125, 33));
         eliB.addActionListener(new java.awt.event.ActionListener() {
@@ -468,6 +472,7 @@ public class EmpleadosP extends javax.swing.JPanel {
         actB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         actB.setBackground(new java.awt.Color(255, 251, 128));
         actB.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
+        actB.setPreferredSize(new java.awt.Dimension(160, 35));
         actB.setText("Actualizar");
         actB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -526,7 +531,7 @@ public class EmpleadosP extends javax.swing.JPanel {
                     errorContraseña.setText("La contraseña debe ser de al menos tres caracteres");
                 }else{
                     if(contra1EReg.getText().equals(contra2EReg.getText())){
-                        String[] campos = {curpEReg.getText(), nomEReg.getText(), "" + puestoEReg.getSelectedItem(), telEReg.getText(), userEReg.getText(), contra2EReg.getText()};
+                        String[] campos = {curpEReg.getText(), nomEReg.getText(), "" + puestoEReg.getSelectedItem().toString().toLowerCase().trim(), telEReg.getText(), userEReg.getText(), contra2EReg.getText()};
                         if(conect.insertarEmpleado(campos)){
                             nomEReg.setText(""); curpEReg.setText(""); telEReg.setText(""); userEReg.setText(""); contra1EReg.setText(""); contra2EReg.setText("");
                             regDialog.setVisible(false);

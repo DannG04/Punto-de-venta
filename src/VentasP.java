@@ -963,6 +963,7 @@ public class VentasP extends javax.swing.JPanel {
     private void tablaBuscMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaBuscMouseClicked
         if(tablaBusc.getSelectedRow() != -1){
             codigoProd.setText((String)tablaBusc.getValueAt(tablaBusc.getSelectedRow(), 0));
+            cantidadProd.setText("1");
         }
     }//GEN-LAST:event_tablaBuscMouseClicked
 

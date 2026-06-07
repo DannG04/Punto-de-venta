@@ -1,5 +1,8 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import com.kitfox.svg.app.beans.SVGIcon;
+
 import java.awt.*;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
@@ -64,8 +67,10 @@ public class CotizacionesP extends javax.swing.JPanel {
         // ---- PAGE_START: title ----
         JPanel panelTitle = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel titulo = new JLabel("Cotizaciones");
-        titulo.setFont(new Font("Noto Serif", Font.BOLD, 22));
+        titulo.setFont(new Font("Noto Serif", Font.BOLD, 36));
         titulo.setForeground(new Color(78, 150, 150));
+        titulo.setIcon(SvgIcon.load("/icons/shopping.svg", SvgIcon.LARGE));
+        titulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         panelTitle.add(titulo);
         add(panelTitle, BorderLayout.PAGE_START);
 
@@ -92,12 +97,11 @@ public class CotizacionesP extends javax.swing.JPanel {
                 if (Cake.tamaño(codigoCoti.getText(), 20)) evt.consume();
             }
         });
-        JButton btnBuscarProd = new JButton("...");
+        JButton btnBuscarProd = new JButton("");
         btnBuscarProd.setFont(new Font("Noto Serif", Font.BOLD, 13));
-        btnBuscarProd.setToolTipText("Buscar producto por nombre o código");
         btnBuscarProd.setPreferredSize(new Dimension(44, 28));
-        btnBuscarProd.setBackground(new Color(255, 255, 255));
-        btnBuscarProd.setIcon(SvgIcon.load("/icons/lupa.svg", SvgIcon.SMALL));
+        btnBuscarProd.setBackground(new Color(204, 226, 249));
+        btnBuscarProd.setIcon(SvgIcon.load("/icons/lupa.svg", SvgIcon.MEDIUM));
         btnBuscarProd.addActionListener(e -> {
             Mise.limpiarTabla(modeloProdBusc);
             buscProdField.setText("");
@@ -169,7 +173,6 @@ public class CotizacionesP extends javax.swing.JPanel {
         // Total
         totalCotiLabel = new JLabel("Total: $0.00");
         totalCotiLabel.setFont(new Font("Noto Serif", Font.BOLD, 18));
-        totalCotiLabel.setForeground(new Color(78, 150, 150));
         gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 2;
         jPanel2.add(totalCotiLabel, gbc);
         gbc.gridwidth = 1;
@@ -186,8 +189,8 @@ public class CotizacionesP extends javax.swing.JPanel {
         addLabel(jPanel2, "Cliente:", row, 0, gbc);
         JButton btnSelecCliente = new JButton("Seleccionar");
         btnSelecCliente.setFont(new Font("Noto Serif", Font.PLAIN, 14));
-        btnSelecCliente.setBackground(new Color(255, 255, 255));
-        btnSelecCliente.setIcon(SvgIcon.load("/icons/lupa.svg", SvgIcon.MEDIUM));
+        btnSelecCliente.setBackground(new Color(204, 226, 249));
+        btnSelecCliente.setIcon(SvgIcon.load("/icons/seleccionar.svg", SvgIcon.MEDIUM));
         btnSelecCliente.addActionListener(e -> {
             Mise.limpiarTabla(modeloCliBusc);
             cargarClientes("");
@@ -234,8 +237,8 @@ public class CotizacionesP extends javax.swing.JPanel {
 
         // Limpiar
         JButton btnLimpiar = new JButton("Limpiar carrito");
-        btnLimpiar.setFont(new Font("Noto Serif", Font.PLAIN, 14));
-        btnLimpiar.setBackground(new Color(255, 255, 255));
+        btnLimpiar.setFont(new Font("Noto Serif", Font.BOLD, 15));
+        btnLimpiar.setBackground(new Color(255, 251, 128));
         btnLimpiar.setIcon(SvgIcon.load("/icons/clean.svg", SvgIcon.MEDIUM));
         btnLimpiar.addActionListener(e -> limpiarCarrito());
         gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 2;
@@ -250,7 +253,6 @@ public class CotizacionesP extends javax.swing.JPanel {
         // Carrito table
         JLabel lblCarrito = new JLabel("  Carrito actual");
         lblCarrito.setFont(new Font("Noto Serif", Font.BOLD, 16));
-        lblCarrito.setForeground(new Color(78, 150, 150));
         lblCarrito.setAlignmentX(LEFT_ALIGNMENT);
         jPanel3.add(lblCarrito);
 
@@ -273,6 +275,7 @@ public class CotizacionesP extends javax.swing.JPanel {
         panelBusc.setAlignmentX(LEFT_ALIGNMENT);
         JLabel lblBusc = new JLabel("Buscar cotizaciones:");
         lblBusc.setFont(new Font("Noto Serif", Font.BOLD, 15));
+        lblBusc.setIcon(SvgIcon.load("/icons/lupa.svg", SvgIcon.MEDIUM));
         Busc = new JTextField(20);
         Busc.setFont(new Font("Noto Serif", Font.PLAIN, 14));
         Busc.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -339,7 +342,6 @@ public class CotizacionesP extends javax.swing.JPanel {
     private void addLabel(JPanel p, String text, int row, int col, GridBagConstraints gbc) {
         JLabel lbl = new JLabel(text);
         lbl.setFont(new Font("Noto Serif", Font.BOLD, 15));
-        lbl.setForeground(new Color(78, 150, 150));
         gbc.gridx = col; gbc.gridy = row; gbc.gridwidth = 1;
         p.add(lbl, gbc);
     }

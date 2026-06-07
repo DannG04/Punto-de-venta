@@ -1,5 +1,6 @@
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
@@ -47,14 +48,14 @@ public class InventarioP extends javax.swing.JPanel {
 
         // Agregar campo "Descuento máximo (%)" al diálogo de producto (gridy=8, empujando labelinc y botones)
         java.awt.GridBagConstraints gbcMaxDesc = new java.awt.GridBagConstraints();
-        jLabelMaxDesc.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        jLabelMaxDesc.setFont(new java.awt.Font("Noto Serif", 1, 16));
         gbcMaxDesc.gridx = 0; gbcMaxDesc.gridy = 10;
         gbcMaxDesc.ipadx = 16;
         gbcMaxDesc.anchor = java.awt.GridBagConstraints.WEST;
         gbcMaxDesc.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(jLabelMaxDesc, gbcMaxDesc);
 
-        maxDescuento.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        maxDescuento.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15));
         maxDescuento.setPreferredSize(new java.awt.Dimension(200, 35));
         maxDescuento.setText("100");
         maxDescuento.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -102,8 +103,9 @@ public class InventarioP extends javax.swing.JPanel {
         gbcTblLista.insets = new java.awt.Insets(0, 10, 14, 10);
         jDialog1.getContentPane().add(jScrollPaneListaPrecios, gbcTblLista);
 
-        jDialog1.setMinimumSize(new java.awt.Dimension(550, 820));
-        jDialog1.setSize(new java.awt.Dimension(550, 820));
+        jDialog1.setMinimumSize(new java.awt.Dimension(550, 780));
+        jDialog1.setSize(new java.awt.Dimension(550, 780));
+        jDialog1.setLocationRelativeTo(null);
     }
 
     /**
@@ -151,13 +153,13 @@ public class InventarioP extends javax.swing.JPanel {
         tablaVentas = new javax.swing.JTable();
 
         jDialog1.setAlwaysOnTop(true);
-        jDialog1.setMinimumSize(new java.awt.Dimension(550, 580));
+        jDialog1.setMinimumSize(new java.awt.Dimension(550, 550));
         jDialog1.setModal(true);
-        jDialog1.setPreferredSize(new java.awt.Dimension(550, 580));
-        jDialog1.setSize(new java.awt.Dimension(550, 580));
+        jDialog1.setPreferredSize(new java.awt.Dimension(550, 550));
+        jDialog1.setSize(new java.awt.Dimension(550, 550));
         jDialog1.getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        leibel.setFont(new java.awt.Font("Noto Serif", 1, 17)); // NOI18N
+        leibel.setFont(new java.awt.Font("Noto Serif", 1, 15)); // NOI18N
         leibel.setForeground(new java.awt.Color(176, 176, 176));
         leibel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         leibel.setText("El ID del producto se asignará automáticamente");
@@ -169,7 +171,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(leibel, gridBagConstraints);
 
-        jLabel3.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
         jLabel3.setText("Nombre: ");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -179,7 +181,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(jLabel3, gridBagConstraints);
 
-        jLabel4.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
         jLabel4.setText("Precio Mayoreo:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -189,7 +191,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(jLabel4, gridBagConstraints);
 
-        precMen.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        precMen.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15)); // NOI18N
         precMen.setPreferredSize(new java.awt.Dimension(200, 35));
         precMen.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -203,7 +205,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(precMen, gridBagConstraints);
 
-        jLabel5.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
         jLabel5.setText("Cantidad: ");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -213,7 +215,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(jLabel5, gridBagConstraints);
 
-        precMay.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        precMay.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15)); // NOI18N
         precMay.setPreferredSize(new java.awt.Dimension(200, 35));
         precMay.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -227,7 +229,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(precMay, gridBagConstraints);
 
-        jLabel6.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Noto Serif", Font.BOLD, 16)); // NOI18N
         jLabel6.setText("Precio Menudeo:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -237,7 +239,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(jLabel6, gridBagConstraints);
 
-        cadd.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        cadd.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15)); // NOI18N
         cadd.setPreferredSize(new java.awt.Dimension(200, 35));
         cadd.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -251,7 +253,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(cadd, gridBagConstraints);
 
-        jLabel7.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
         jLabel7.setText("Código del Proveedor:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -261,7 +263,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(jLabel7, gridBagConstraints);
 
-        codigoProvField.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        codigoProvField.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15)); // NOI18N
         codigoProvField.setPreferredSize(new java.awt.Dimension(200, 35));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -285,7 +287,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
         jDialog1.getContentPane().add(checkGenerarCodigo, gridBagConstraints);
 
-        jLabelCategoria.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        jLabelCategoria.setFont(new java.awt.Font("Noto Serif", 1, 16));
         jLabelCategoria.setText("Categoría:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -295,7 +297,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jDialog1.getContentPane().add(jLabelCategoria, gridBagConstraints);
 
-        categoriaCombo.setFont(new java.awt.Font("Noto Serif", 0, 16));
+        categoriaCombo.setFont(new java.awt.Font("Noto Serif", 0, 15));
         categoriaCombo.setPreferredSize(new java.awt.Dimension(200, 35));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -314,9 +316,10 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.gridwidth = 2;
         jDialog1.getContentPane().add(labelinc, gridBagConstraints);
 
-        hechoIns.setFont(new java.awt.Font("Noto Serif", 1, 20)); // NOI18N
-        hechoIns.setText("Hecho");
+        hechoIns.setFont(new java.awt.Font("Noto Serif", 1, 17)); // NOI18N
+        hechoIns.setText("Guardar");
         hechoIns.setBackground(new java.awt.Color(125, 255, 177));
+        hechoIns.setPreferredSize(new java.awt.Dimension(160, 33));
         hechoIns.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
         hechoIns.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -331,9 +334,10 @@ public class InventarioP extends javax.swing.JPanel {
         jDialog1.getContentPane().add(hechoIns, gridBagConstraints);
         hechoIns.setVisible(false);
 
-        hechoAct.setFont(new java.awt.Font("Noto Serif", 1, 20)); // NOI18N
-        hechoAct.setText("Hecho");
+        hechoAct.setFont(new java.awt.Font("Noto Serif", 1, 17)); // NOI18N
+        hechoAct.setText("Guardar");
         hechoAct.setBackground(new java.awt.Color(125, 255, 177));
+        hechoAct.setPreferredSize(new java.awt.Dimension(160, 33));
         hechoAct.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
         hechoAct.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -350,7 +354,7 @@ public class InventarioP extends javax.swing.JPanel {
 
         jScrollPane2.setPreferredSize(new java.awt.Dimension(200, 35));
 
-        nom.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        nom.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15)); // NOI18N
         nom.setPreferredSize(new java.awt.Dimension(200, 35));
         nom.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -406,7 +410,7 @@ public class InventarioP extends javax.swing.JPanel {
         jPanel1.add(buskProd, gridBagConstraints);
 
         sumLabel.setBackground(new java.awt.Color(255, 255, 255));
-        sumLabel.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        sumLabel.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
         sumLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         sumLabel.setIcon(SvgIcon.load("/icons/lupa.svg", SvgIcon.MEDIUM));
         sumLabel.setText("Buscar:");
@@ -418,7 +422,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel1.add(sumLabel, gridBagConstraints);
 
-        filtroCategoriaLabel.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        filtroCategoriaLabel.setFont(new java.awt.Font("Noto Serif", 1, 16));
         filtroCategoriaLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         filtroCategoriaLabel.setIcon(SvgIcon.load("/icons/filtro.svg", SvgIcon.MEDIUM));
         filtroCategoriaLabel.setText("Categoría:");
@@ -444,7 +448,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 0);
         jPanel1.add(filtroCategoria, gridBagConstraints);
 
-        lblOrdenInv.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        lblOrdenInv.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
         lblOrdenInv.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         lblOrdenInv.setIcon(SvgIcon.load("/icons/ordenar.svg", SvgIcon.MEDIUM));
         lblOrdenInv.setText("Ordenar:");
