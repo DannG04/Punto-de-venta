@@ -96,6 +96,14 @@ public class ComprasP extends javax.swing.JPanel {
         elP = new javax.swing.JButton();
         heP = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
+        panelTotales = new javax.swing.JPanel();
+        lblSubtotal = new javax.swing.JLabel();
+        lblIva = new javax.swing.JLabel();
+        lblTotal = new javax.swing.JLabel();
+        lblTotalFactura = new javax.swing.JLabel();
+        totalFacturaF = new javax.swing.JFormattedTextField();
+        lblCuadre = new javax.swing.JLabel();
+        guardarFacturaBtn = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -666,6 +674,7 @@ public class ComprasP extends javax.swing.JPanel {
                 hePActionPerformed(evt);
             }
         });
+        heP.setVisible(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 7;
@@ -690,6 +699,55 @@ public class ComprasP extends javax.swing.JPanel {
         jPanel4.add(jLabel2);
 
         panelRegProdC.add(jPanel4, java.awt.BorderLayout.NORTH);
+
+        panelTotales.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 15, 8));
+
+        lblSubtotal.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        lblSubtotal.setForeground(new java.awt.Color(78, 150, 150));
+        lblSubtotal.setText("Subtotal: $0.00");
+        panelTotales.add(lblSubtotal);
+
+        lblIva.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        lblIva.setForeground(new java.awt.Color(78, 150, 150));
+        lblIva.setText("IVA 16%: $0.00");
+        panelTotales.add(lblIva);
+
+        lblTotal.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        lblTotal.setForeground(new java.awt.Color(78, 150, 150));
+        lblTotal.setText("Total: $0.00");
+        panelTotales.add(lblTotal);
+
+        lblTotalFactura.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        lblTotalFactura.setForeground(new java.awt.Color(78, 150, 150));
+        lblTotalFactura.setText("Total en factura:");
+        panelTotales.add(lblTotalFactura);
+
+        totalFacturaF.setFont(new java.awt.Font("Noto Serif", 0, 16)); // NOI18N
+        totalFacturaF.setPreferredSize(new java.awt.Dimension(110, 28));
+        totalFacturaF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                totalFacturaFKeyReleased(evt);
+            }
+        });
+        panelTotales.add(totalFacturaF);
+
+        lblCuadre.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
+        lblCuadre.setText(" ");
+        panelTotales.add(lblCuadre);
+
+        guardarFacturaBtn.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        guardarFacturaBtn.setBackground(new java.awt.Color(125, 255, 177));
+        guardarFacturaBtn.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
+        guardarFacturaBtn.setText("Guardar factura");
+        guardarFacturaBtn.setPreferredSize(new java.awt.Dimension(170, 33));
+        guardarFacturaBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guardarFacturaBtnActionPerformed(evt);
+            }
+        });
+        panelTotales.add(guardarFacturaBtn);
+
+        panelRegProdC.add(panelTotales, java.awt.BorderLayout.SOUTH);
 
         prodComDialog.getContentPane().add(panelRegProdC, "card3");
 
@@ -749,7 +807,7 @@ public class ComprasP extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Compra", "Empleado", "Fecha", "Descripcion", "Monto"
+                "Compra", "Folio", "Proveedor", "Fecha", "Total"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -828,6 +886,7 @@ public class ComprasP extends javax.swing.JPanel {
             id_compra = "" + tablaCompras.getValueAt(tablaCompras.getSelectedRow(), 0);
             mostrarTablaProd();
             mostrarTablaProdCom();
+            actualizarTotalesUI();
             prodComDialog.setVisible(true);
         } else{
             Mise.JOption("Debe seleccionar la fila que desea actualizar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -866,6 +925,9 @@ public class ComprasP extends javax.swing.JPanel {
 
         mostrarTablaProd();
         mostrarTablaProdCom();
+        totalFacturaF.setText("");
+        lblCuadre.setText("");
+        actualizarTotalesUI();
         comDialog.setVisible(false);
         prodComDialog.setVisible(true);
     }//GEN-LAST:event_hechoB1ActionPerformed
@@ -972,8 +1034,62 @@ public class ComprasP extends javax.swing.JPanel {
         setCamposNuevo(true);
     }
 
+    private double[] calcularTotales() {
+        double subtotal = 0, iva = 0;
+        java.sql.ResultSet rs = conect.query(
+            "SELECT precio_total, COALESCE(lleva_iva,false) iva FROM compra_producto WHERE id_compra='" + id_compra + "';");
+        try {
+            while (rs.next()) {
+                double imp = rs.getDouble("precio_total");
+                subtotal += imp;
+                if (rs.getBoolean("iva")) iva += imp * 0.16;
+            }
+        } catch (java.sql.SQLException e) { System.out.println("Error al calcular totales"); }
+        return new double[]{ subtotal, iva, subtotal + iva };
+    }
+
     private void actualizarTotalesUI() {
-        // Implementado en T9 (totales y cuadre). Placeholder para mantener referencias.
+        double[] t = calcularTotales();
+        lblSubtotal.setText(String.format(java.util.Locale.US, "Subtotal: $%.2f", t[0]));
+        lblIva.setText(String.format(java.util.Locale.US, "IVA 16%%: $%.2f", t[1]));
+        lblTotal.setText(String.format(java.util.Locale.US, "Total: $%.2f", t[2]));
+        verificarCuadre(t[2]);
+    }
+
+    private void verificarCuadre(double totalCalc) {
+        String txt = totalFacturaF.getText().trim();
+        if (txt.isEmpty()) { lblCuadre.setText(""); return; }
+        try {
+            double totalFact = Double.parseDouble(txt);
+            boolean cuadra = Math.abs(totalFact - totalCalc) <= 0.50;
+            lblCuadre.setText(cuadra ? "✓ Cuadra" : "✗ No cuadra");
+            lblCuadre.setForeground(cuadra ? new java.awt.Color(0,150,0) : java.awt.Color.RED);
+        } catch (NumberFormatException e) { lblCuadre.setText(""); }
+    }
+
+    private void totalFacturaFKeyReleased(java.awt.event.KeyEvent evt) {
+        verificarCuadre(calcularTotales()[2]);
+    }
+
+    private void guardarFacturaBtnActionPerformed(java.awt.event.ActionEvent evt) {
+        if (modeloProdCom.getRowCount() == 0) {
+            Mise.JOption("Agregue al menos un producto antes de guardar.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        double[] t = calcularTotales();
+        String txt = totalFacturaF.getText().trim();
+        if (!txt.isEmpty()) {
+            try {
+                if (Math.abs(Double.parseDouble(txt) - t[2]) > 0.50) {
+                    int r = Mise.JOptionYesNo("El total calculado ($" + String.format(java.util.Locale.US,"%.2f",t[2])
+                        + ") no cuadra con el de la factura ($" + txt + ").\n¿Guardar de todos modos?", "Totales no cuadran");
+                    if (r != 0) return;
+                }
+            } catch (NumberFormatException ignored) {}
+        }
+        conect.actualizarTotalesCompra(id_compra, t[0], t[1], t[2]);
+        prodComDialog.setVisible(false);
+        mostrarTablaCom();
     }
 
     private void setCamposNuevo(boolean nuevo) {
@@ -1107,11 +1223,11 @@ public class ComprasP extends javax.swing.JPanel {
             new javax.swing.table.TableRowSorter<>(modeloCom);
         tablaCompras.setRowSorter(sorter);
         if ("Más reciente".equals(sel)) {
-            sorter.setComparator(2, java.util.Comparator.comparing(Object::toString));
-            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(2, javax.swing.SortOrder.DESCENDING)));
+            sorter.setComparator(3, java.util.Comparator.comparing(Object::toString));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(3, javax.swing.SortOrder.DESCENDING)));
         } else if ("Más antiguo".equals(sel)) {
-            sorter.setComparator(2, java.util.Comparator.comparing(Object::toString));
-            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(2, javax.swing.SortOrder.ASCENDING)));
+            sorter.setComparator(3, java.util.Comparator.comparing(Object::toString));
+            sorter.setSortKeys(java.util.Arrays.asList(new javax.swing.RowSorter.SortKey(3, javax.swing.SortOrder.ASCENDING)));
         } else if ("Mayor monto".equals(sel)) {
             sorter.setComparator(4, java.util.Comparator.comparingDouble(o -> {
                 try { return Double.parseDouble(o.toString()); } catch (Exception e) { return 0.0; }
@@ -1145,15 +1261,16 @@ public class ComprasP extends javax.swing.JPanel {
 
     public void mostrarTablaCom(){
         Mise.limpiarTabla(modeloCom);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM compras");
+        java.sql.ResultSet rs = conect.query(
+            "SELECT c.id_compra, COALESCE(c.folio_proveedor,'') folio, COALESCE(pr.nombre,'') prov, "
+          + "c.fecha_compra, c.monto FROM compras c LEFT JOIN proveedor pr ON pr.id_proveedor=c.id_proveedor "
+          + "ORDER BY c.id_compra DESC;");
         try{
             while(rs.next()){
-                modeloCom.addRow(new Object[]{rs.getString("id_compra"), rs.getString("id_empleado"), rs.getDate("fecha_compra"),
-                rs.getString("descripcion"), rs.getDouble("monto")});
+                modeloCom.addRow(new Object[]{ rs.getString("id_compra"), rs.getString("folio"),
+                    rs.getString("prov"), rs.getDate("fecha_compra"), rs.getDouble("monto") });
             }
-        } catch(java.sql.SQLException e){
-            System.out.println("Error al mostrar la tabla compras");
-        }
+        } catch(java.sql.SQLException e){ System.out.println("Error al mostrar la tabla compras"); }
     }
     
     public void mostrarTablaProdCom(){
@@ -1203,6 +1320,7 @@ public class ComprasP extends javax.swing.JPanel {
     private javax.swing.JFormattedTextField factorP;
     private javax.swing.JFormattedTextField fechaFactF;
     private javax.swing.JFormattedTextField folioF;
+    private javax.swing.JButton guardarFacturaBtn;
     private javax.swing.JButton heP;
     private javax.swing.JButton hechoB1;
     private javax.swing.JCheckBox ivaP;
@@ -1229,21 +1347,28 @@ public class ComprasP extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JLabel lblCuadre;
     private javax.swing.JLabel lblFechaFact;
     private javax.swing.JLabel lblFolio;
+    private javax.swing.JLabel lblIva;
     private javax.swing.JLabel lblOrdenCompras;
     private javax.swing.JLabel lblOrigen;
     private javax.swing.JLabel lblRfc;
+    private javax.swing.JLabel lblSubtotal;
+    private javax.swing.JLabel lblTotal;
+    private javax.swing.JLabel lblTotalFactura;
     private javax.swing.JFormattedTextField margenP;
     private javax.swing.JButton nuevoProvBtn;
     private javax.swing.JFormattedTextField origenF;
     private javax.swing.JPanel panelRegCompra;
     private javax.swing.JPanel panelRegProdC;
+    private javax.swing.JPanel panelTotales;
     private javax.swing.JFormattedTextField precP;
     private javax.swing.JDialog prodComDialog;
     private javax.swing.JComboBox<String> proveedorCombo;
     private javax.swing.JFormattedTextField pVentaP;
     private javax.swing.JTextPane rasF;
+    private javax.swing.JFormattedTextField totalFacturaF;
     private javax.swing.JComboBox<String> unidadCompraP;
     private javax.swing.JComboBox<String> unidadVentaP;
     private javax.swing.JLabel valRfc;
