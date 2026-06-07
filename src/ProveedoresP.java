@@ -181,6 +181,7 @@ public class ProveedoresP extends javax.swing.JPanel {
 
         rfcProvR.setFont(new java.awt.Font("Noto Serif", 0, 18));
         rfcProvR.setPreferredSize(new java.awt.Dimension(250, 30));
+        rfcProvR.setMinimumSize(new java.awt.Dimension(250, 30));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
@@ -330,6 +331,7 @@ public class ProveedoresP extends javax.swing.JPanel {
 
         rfcProvE.setFont(new java.awt.Font("Noto Serif", 0, 18));
         rfcProvE.setPreferredSize(new java.awt.Dimension(250, 30));
+        rfcProvE.setMinimumSize(new java.awt.Dimension(250, 30));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;

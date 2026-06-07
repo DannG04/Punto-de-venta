@@ -118,9 +118,9 @@ public class ComprasP extends javax.swing.JPanel {
 
         comDialog.setTitle("Compras");
         comDialog.setAlwaysOnTop(true);
-        comDialog.setMinimumSize(new java.awt.Dimension(620, 480));
+        comDialog.setMinimumSize(new java.awt.Dimension(620, 600));
         comDialog.setModal(true);
-        comDialog.setSize(new java.awt.Dimension(620, 480));
+        comDialog.setSize(new java.awt.Dimension(620, 600));
         comDialog.getContentPane().setLayout(new java.awt.CardLayout());
 
         panelRegCompra.setLayout(new java.awt.GridBagLayout());
@@ -192,6 +192,7 @@ public class ComprasP extends javax.swing.JPanel {
 
         folioF.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
         folioF.setPreferredSize(new java.awt.Dimension(250, 30));
+        folioF.setMinimumSize(new java.awt.Dimension(250, 30));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -210,6 +211,7 @@ public class ComprasP extends javax.swing.JPanel {
 
         fechaFactF.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
         fechaFactF.setPreferredSize(new java.awt.Dimension(250, 30));
+        fechaFactF.setMinimumSize(new java.awt.Dimension(250, 30));
         fechaFactF.setToolTipText("dd/MM/yyyy");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -229,6 +231,7 @@ public class ComprasP extends javax.swing.JPanel {
 
         origenF.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
         origenF.setPreferredSize(new java.awt.Dimension(250, 30));
+        origenF.setMinimumSize(new java.awt.Dimension(250, 30));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
@@ -262,7 +265,8 @@ public class ComprasP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         panelRegCompra.add(hechoB1, gridBagConstraints);
 
-        jScrollPane2.setPreferredSize(new java.awt.Dimension(342, 150));
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(342, 70));
+        jScrollPane2.setMinimumSize(new java.awt.Dimension(342, 70));
 
         rasF.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         rasF.setPreferredSize(new java.awt.Dimension(340, 50));
@@ -367,6 +371,7 @@ public class ComprasP extends javax.swing.JPanel {
         codP.setEditable(true);
         codP.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
         codP.setPreferredSize(new java.awt.Dimension(140, 30));
+        codP.setMinimumSize(new java.awt.Dimension(140, 30));
         codP.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 codPKeyTyped(evt);
@@ -391,6 +396,7 @@ public class ComprasP extends javax.swing.JPanel {
 
         codBarrasP.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
         codBarrasP.setPreferredSize(new java.awt.Dimension(140, 30));
+        codBarrasP.setMinimumSize(new java.awt.Dimension(140, 30));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -435,6 +441,7 @@ public class ComprasP extends javax.swing.JPanel {
 
         conceptoP.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
         conceptoP.setPreferredSize(new java.awt.Dimension(260, 30));
+        conceptoP.setMinimumSize(new java.awt.Dimension(260, 30));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -456,6 +463,7 @@ public class ComprasP extends javax.swing.JPanel {
 
         cantP.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
         cantP.setPreferredSize(new java.awt.Dimension(140, 30));
+        cantP.setMinimumSize(new java.awt.Dimension(140, 30));
         cantP.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 cantPKeyTyped(evt);
@@ -481,6 +489,7 @@ public class ComprasP extends javax.swing.JPanel {
         unidadCompraP.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
         unidadCompraP.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Pieza","Caja","Bolsa","Bulto","Botella","Lata","Paquete","Bote","Barra","Vaso","Tetra Pak","kg"}));
         unidadCompraP.setPreferredSize(new java.awt.Dimension(140, 30));
+        unidadCompraP.setMinimumSize(new java.awt.Dimension(140, 30));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
@@ -500,6 +509,7 @@ public class ComprasP extends javax.swing.JPanel {
 
         factorP.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
         factorP.setPreferredSize(new java.awt.Dimension(140, 30));
+        factorP.setMinimumSize(new java.awt.Dimension(140, 30));
         factorP.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 recalcularPVenta();
@@ -525,6 +535,7 @@ public class ComprasP extends javax.swing.JPanel {
         unidadVentaP.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
         unidadVentaP.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Pieza","Caja","Bolsa","Bulto","Botella","Lata","Paquete","Bote","Barra","Vaso","Tetra Pak","kg"}));
         unidadVentaP.setPreferredSize(new java.awt.Dimension(140, 30));
+        unidadVentaP.setMinimumSize(new java.awt.Dimension(140, 30));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 4;
@@ -544,6 +555,7 @@ public class ComprasP extends javax.swing.JPanel {
 
         precP.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
         precP.setPreferredSize(new java.awt.Dimension(140, 30));
+        precP.setMinimumSize(new java.awt.Dimension(140, 30));
         precP.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 precPKeyTyped(evt);
@@ -582,6 +594,7 @@ public class ComprasP extends javax.swing.JPanel {
 
         margenP.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
         margenP.setPreferredSize(new java.awt.Dimension(140, 30));
+        margenP.setMinimumSize(new java.awt.Dimension(140, 30));
         margenP.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 recalcularPVenta();
@@ -606,6 +619,7 @@ public class ComprasP extends javax.swing.JPanel {
 
         pVentaP.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
         pVentaP.setPreferredSize(new java.awt.Dimension(140, 30));
+        pVentaP.setMinimumSize(new java.awt.Dimension(140, 30));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 6;
