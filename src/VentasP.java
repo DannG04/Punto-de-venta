@@ -906,7 +906,11 @@ public class VentasP extends javax.swing.JPanel {
 
     private void regActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regActionPerformed
         if(!codigoProd.getText().isEmpty() && !cantidadProd.getText().isEmpty()){
-            String idProd = codigoProd.getText();
+            String idProd = conect.resolverCodigo(codigoProd.getText().trim());
+            if (idProd == null) {
+                Mise.JOption("No existe un producto con ese código o código de barras.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             double descuento = dctProd.getText().isEmpty() ? 0.0 : Double.parseDouble(dctProd.getText());
             double maxDesc = conect.obtenerMaxDescuento(idProd);
             if (descuento > maxDesc) {
