@@ -27,6 +27,8 @@ public class ApartadosP extends javax.swing.JPanel {
         modeloProdAp = (DefaultTableModel)tablaProdAp.getModel();
         modeloProd = (DefaultTableModel)tablaProd.getModel();
         modeloCli = (DefaultTableModel)tablaCli.getModel();
+
+        conect.revisarApartado();
     }
 
     /**
@@ -249,6 +251,7 @@ public class ApartadosP extends javax.swing.JPanel {
         agP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         agP.setBackground(new java.awt.Color(125, 255, 177));
         agP.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
+        agP.setPreferredSize(new java.awt.Dimension(160, 33));
         agP.setText("Agregar");
         agP.setPreferredSize(new java.awt.Dimension(125, 33));
         agP.addActionListener(new java.awt.event.ActionListener() {
@@ -261,6 +264,7 @@ public class ApartadosP extends javax.swing.JPanel {
         acP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         acP.setBackground(new java.awt.Color(255, 251, 128));
         acP.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
+        acP.setPreferredSize(new java.awt.Dimension(160, 33));
         acP.setText("Actualizar");
         acP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -272,6 +276,7 @@ public class ApartadosP extends javax.swing.JPanel {
         elP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         elP.setBackground(new java.awt.Color(252, 149, 149));
         elP.setIcon(SvgIcon.load("/icons/delete.svg", SvgIcon.MEDIUM));
+        elP.setPreferredSize(new java.awt.Dimension(160, 33));
         elP.setText("Eliminar");
         elP.setPreferredSize(new java.awt.Dimension(125, 33));
         elP.addActionListener(new java.awt.event.ActionListener() {
@@ -540,8 +545,8 @@ public class ApartadosP extends javax.swing.JPanel {
         regAp.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         regAp.setBackground(new java.awt.Color(125, 255, 177));
         regAp.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
+        regAp.setPreferredSize(new java.awt.Dimension(160, 35));
         regAp.setText("Registrar");
-        regAp.setPreferredSize(new java.awt.Dimension(125, 35));
         regAp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 regApActionPerformed(evt);
@@ -557,8 +562,8 @@ public class ApartadosP extends javax.swing.JPanel {
         sald.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         sald.setBackground(new java.awt.Color(153, 204, 255));
         sald.setIcon(SvgIcon.load("/icons/done.svg", SvgIcon.MEDIUM));
+        sald.setPreferredSize(new java.awt.Dimension(160, 35));
         sald.setText("Saldar");
-        sald.setPreferredSize(new java.awt.Dimension(125, 35));
         sald.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saldActionPerformed(evt);
@@ -573,8 +578,8 @@ public class ApartadosP extends javax.swing.JPanel {
         canc.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         canc.setBackground(new java.awt.Color(252, 149, 149));
         canc.setIcon(SvgIcon.load("/icons/cancelar.svg", SvgIcon.MEDIUM));
+        canc.setPreferredSize(new java.awt.Dimension(160, 35));
         canc.setText("Cancelar");
-        canc.setPreferredSize(new java.awt.Dimension(125, 35));
         canc.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancActionPerformed(evt);
@@ -621,9 +626,10 @@ public class ApartadosP extends javax.swing.JPanel {
         jPanel1.add(buskAp, gridBagConstraints);
 
         sumLabel.setBackground(new java.awt.Color(255, 255, 255));
-        sumLabel.setFont(new java.awt.Font("Noto Serif", 1, 20)); // NOI18N
+        sumLabel.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
         sumLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         sumLabel.setText("Buscar:");
+        sumLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         sumLabel.setPreferredSize(new java.awt.Dimension(81, 40));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -634,6 +640,7 @@ public class ApartadosP extends javax.swing.JPanel {
 
         lblOrdenAp.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
         lblOrdenAp.setText("Ordenar:");
+        lblOrdenAp.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -696,15 +703,15 @@ public class ApartadosP extends javax.swing.JPanel {
     private void saldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saldActionPerformed
         //Hace la validación de que el apartado este vigente para poder saldarlo
         if((modeloAp.getValueAt(tablaAp.getSelectedRow(), 8)).equals("Vigente")){
-        if(tablaAp.getSelectedRow() != -1){
-            idApF.setText("" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 0));
-            cantSaldaF.setText("" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 6));
-            recSaldF.setText("");
-            cambCT.setText("");
-            saldarDialog.setVisible(true);
-        } else{
-            Mise.JOption("Seleccione la fila que desea saldar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
+            if(tablaAp.getSelectedRow() != -1){
+                idApF.setText("" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 0));
+                cantSaldaF.setText("" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 6));
+                recSaldF.setText("");
+                cambCT.setText("");
+                saldarDialog.setVisible(true);
+            } else{
+                Mise.JOption("Seleccione la fila que desea saldar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
         }else{
             Mise.JOption("Ese pedido ya no esta vigente", "Pedido", WIDTH);
         }
@@ -737,6 +744,7 @@ public class ApartadosP extends javax.swing.JPanel {
                 mostrarTablaAp("");                
                 GenTicket.generarTicketProductos(conect.seleccionarProductos(id_apartado));
                 saldarDialog.setVisible(false);
+                mostrarTablaAp("");
             } else{
                 Mise.JOption("Lo recibido debe ser mayor o igual a la cantidad con la que salda", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
@@ -918,6 +926,7 @@ public class ApartadosP extends javax.swing.JPanel {
                     + " se le cobrarán $" + mon + " y se le dovolerán $" + tor, "Confirmar");
             if(res == 0){
                 conect.cancelarApartado(id_apartado);
+                mostrarTablaAp("");
             }
         } else{
             Mise.JOption("Seleccione la fila del apartado que desea cancelar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);

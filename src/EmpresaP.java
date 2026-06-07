@@ -2,8 +2,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.sql.ResultSet;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -27,6 +25,7 @@ public class EmpresaP extends javax.swing.JPanel {
     private JButton btnExaminar;
     private JButton btnGuardar;
     private JButton btnCancelar;
+    private JLabel lblImagen;
 
     public EmpresaP() {
         initComponents();
@@ -37,8 +36,11 @@ public class EmpresaP extends javax.swing.JPanel {
         setLayout(new BorderLayout());
 
         JLabel lblTitulo = new JLabel("Datos de la Empresa");
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
+        lblTitulo.setFont(new Font("Noto Serif", Font.BOLD, 36));
         lblTitulo.setBorder(BorderFactory.createEmptyBorder(16, 20, 8, 0));
+        lblTitulo.setForeground(new Color(78, 150, 150));
+        lblTitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTitulo.setIcon(SvgIcon.load("/icons/empresa.svg", SvgIcon.LARGE));
         add(lblTitulo, BorderLayout.NORTH);
 
         JPanel formPanel = new JPanel(new GridBagLayout());
@@ -59,7 +61,12 @@ public class EmpresaP extends javax.swing.JPanel {
         txtMensaje     = new JTextField(40);
         txtLogoRuta    = new JTextField(35);
         txtLogoRuta.setEditable(false);
-        btnExaminar    = new JButton("Examinar");
+
+        btnExaminar = new JButton("Examinar");
+        btnExaminar.setFont(new Font("Noto Serif", Font.BOLD, 15));
+        btnExaminar.setBackground(new Color(255, 251, 128));
+        btnExaminar.setIcon(SvgIcon.load("/icons/examinar.svg", SvgIcon.MEDIUM));
+        btnExaminar.setPreferredSize(new java.awt.Dimension(160, 35));
 
         String[][] fields = {
             {"Nombre *",          null},
@@ -78,8 +85,12 @@ public class EmpresaP extends javax.swing.JPanel {
             txtDireccion, txtCiudad, txtEstado, txtCp, txtMensaje, txtLogoRuta};
 
         for (int i = 0; i < inputs.length; i++) {
+            JLabel label = new JLabel(fields[i][0]);
+            label.setFont(new Font("Noto Serif", Font.BOLD, 16));
+            inputs[i].setFont(new Font("Noto Serif", Font.PLAIN, 15));
+
             gc.gridx = 0; gc.gridy = i; gc.weightx = 0;
-            formPanel.add(new JLabel(fields[i][0]), gc);
+            formPanel.add(label, gc);
             gc.gridx = 1; gc.weightx = 1;
             if (inputs[i] == txtLogoRuta) {
                 JPanel logoRow = new JPanel(new BorderLayout(5, 0));
@@ -91,11 +102,29 @@ public class EmpresaP extends javax.swing.JPanel {
             }
         }
 
+        lblImagen = new JLabel("");
+        lblImagen.setPreferredSize(new Dimension(120, 120));
+        gc.gridx = 0; gc.gridy = inputs.length; gc.weightx = 0; gc.gridwidth = 1;
+        gc.anchor = GridBagConstraints.NORTH;
+        formPanel.add(lblImagen, gc);
+
+        actualizarPreviewLogo();
         add(new JScrollPane(formPanel), BorderLayout.CENTER);
 
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        btnGuardar  = new JButton("Guardar");
+
+        btnGuardar = new JButton("Guardar");
+        btnGuardar.setFont(new Font("Noto Serif", Font.BOLD, 15));
+        btnGuardar.setBackground(new Color(125, 255, 177));
+        btnGuardar.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
+        btnGuardar.setPreferredSize(new java.awt.Dimension(160, 35));
+
         btnCancelar = new JButton("Cancelar");
+        btnCancelar.setFont(new Font("Noto Serif", Font.BOLD, 15));
+        btnCancelar.setBackground(new Color(252, 149, 149));
+        btnCancelar.setIcon(SvgIcon.load("/icons/cancelar.svg", SvgIcon.MEDIUM));
+        btnCancelar.setPreferredSize(new java.awt.Dimension(160, 35));
+
         btnPanel.add(btnCancelar);
         btnPanel.add(btnGuardar);
         add(btnPanel, BorderLayout.SOUTH);
@@ -120,9 +149,29 @@ public class EmpresaP extends javax.swing.JPanel {
                 txtCp.setText(nvl(rs.getString("cp")));
                 txtMensaje.setText(nvl(rs.getString("mensaje_ticket")));
                 txtLogoRuta.setText(nvl(rs.getString("logo_ruta")));
+
+                actualizarPreviewLogo();
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    // Método separado para actualizar la preview del logo
+    private void actualizarPreviewLogo() {
+        String ruta = txtLogoRuta.getText().trim();
+        File f = new File(ruta);
+        if (!ruta.isEmpty() && f.exists()) {
+            ImageIcon icon = new ImageIcon(
+                new ImageIcon(f.getAbsolutePath())
+                    .getImage()
+                    .getScaledInstance(120, 120, Image.SCALE_SMOOTH)
+            );
+            lblImagen.setIcon(icon);
+            lblImagen.setToolTipText(f.getName());
+        } else {
+            lblImagen.setIcon(SvgIcon.load("/icons/imagen.svg", 120));
+            lblImagen.setToolTipText(null);
         }
     }
 
@@ -131,6 +180,7 @@ public class EmpresaP extends javax.swing.JPanel {
         chooser.setFileFilter(new FileNameExtensionFilter("Imágenes", "ico", "png"));
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             txtLogoRuta.setText(chooser.getSelectedFile().getAbsolutePath());
+            actualizarPreviewLogo(); // actualiza la preview al seleccionar archivo
         }
     }
 
@@ -183,6 +233,7 @@ public class EmpresaP extends javax.swing.JPanel {
                 ImageIO.write(bi, "png", destPng);
                 logoRuta = destPng.getAbsolutePath();
                 txtLogoRuta.setText(logoRuta);
+                actualizarPreviewLogo(); // refresca preview tras convertir a PNG
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
