@@ -37,10 +37,10 @@ public class InventarioP extends javax.swing.JPanel {
     private javax.swing.JCheckBox llevaIvaInv = new javax.swing.JCheckBox("Lleva IVA");
     private javax.swing.JLabel jLabelUnidadCompra = new javax.swing.JLabel("Unidad de compra:");
     private javax.swing.JComboBox<String> unidadCompraInv = new javax.swing.JComboBox<>(
-        new javax.swing.DefaultComboBoxModel<>(new String[]{"Pieza","Caja","Bolsa","Bulto","Botella","Lata","Paquete","Bote","Barra","Vaso","Tetra Pak","kg"}));
+        new javax.swing.DefaultComboBoxModel<>(new String[]{"Pieza","Caja","Bolsa","Bulto","Botella","Lata","Paquete","Bote","Barra","Vaso","Tetra Pak"}));
     private javax.swing.JLabel jLabelUnidadVenta = new javax.swing.JLabel("Unidad de venta:");
     private javax.swing.JComboBox<String> unidadVentaInv = new javax.swing.JComboBox<>(
-        new javax.swing.DefaultComboBoxModel<>(new String[]{"Pieza","Caja","Bolsa","Bulto","Botella","Lata","Paquete","Bote","Barra","Vaso","Tetra Pak","kg"}));
+        new javax.swing.DefaultComboBoxModel<>(new String[]{"Pieza","Caja","Bolsa","Bulto","Botella","Lata","Paquete","Bote","Barra","Vaso","Tetra Pak"}));
     private javax.swing.JLabel jLabelFactor = new javax.swing.JLabel("Factor de conversión:");
     private javax.swing.JFormattedTextField factorInv = new javax.swing.JFormattedTextField();
     private javax.swing.JLabel jLabelPrecioCompra = new javax.swing.JLabel("Precio de compra:");

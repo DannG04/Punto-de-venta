@@ -21,6 +21,10 @@ Thumbs.db
 
 # Archivos accidentales de Windows
 nul
+#Documentos de Excel
+/BalancesGenerales/
+/Estados de resultados/
+/Reportes de ventas/
 
 #Ignora la carpeta del instalador (binarios grandes, JRE, etc.)
 #pero versiona los scripts del parche en installer/update/

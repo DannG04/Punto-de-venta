@@ -588,13 +588,13 @@ public class ConexionBD {
         return dup;
     }
 
-    public boolean crearProductoDesdeCompra(String[] d) {
+    public boolean crearProductoDesdeCompra(String[] d, Integer idCategoria, double maxDescuento) {
         // d: [0]id_producto [1]nombre [2]codigo_barras [3]unidad_compra [4]unidad_venta
         //    [5]factor [6]lleva_iva("t"/"f") [7]precio_menudeo [8]precio_mayoreo [9]precio_compra
         boolean ok = false;
         String sql = "INSERT INTO producto(id_producto, nombre, cantidad, precio_mayoreo, precio_menudeo, "
-                   + "max_descuento, codigo_barras, lleva_iva, unidad_compra, unidad_venta, factor_conversion, precio_compra) "
-                   + "VALUES (?,?,0,?,?,0,?,?,?,?,?,?);";
+                   + "max_descuento, codigo_barras, lleva_iva, unidad_compra, unidad_venta, factor_conversion, precio_compra, id_categoria) "
+                   + "VALUES (?,?,0,?,?,?,?,?,?,?,?,?,?);";
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             PreparedStatement pstm = conexion.prepareStatement(sql);
@@ -602,12 +602,18 @@ public class ConexionBD {
             pstm.setString(2, d[1]);
             pstm.setDouble(3, Double.parseDouble(d[8]));
             pstm.setDouble(4, Double.parseDouble(d[7]));
-            pstm.setString(5, d[2].isEmpty() ? null : d[2]);
-            pstm.setBoolean(6, "t".equals(d[6]));
-            pstm.setString(7, d[3]);
-            pstm.setString(8, d[4]);
-            pstm.setDouble(9, Double.parseDouble(d[5]));
-            pstm.setDouble(10, Double.parseDouble(d[9]));
+            pstm.setDouble(5, maxDescuento);
+            pstm.setString(6, d[2].isEmpty() ? null : d[2]);
+            pstm.setBoolean(7, "t".equals(d[6]));
+            pstm.setString(8, d[3]);
+            pstm.setString(9, d[4]);
+            pstm.setDouble(10, Double.parseDouble(d[5]));
+            pstm.setDouble(11, Double.parseDouble(d[9]));
+            if (idCategoria != null && idCategoria > 0) {
+                pstm.setInt(12, idCategoria);
+            } else {
+                pstm.setNull(12, Types.INTEGER);
+            }
             pstm.executeUpdate();
             conexion.close();
             ok = true;
@@ -935,9 +941,9 @@ public class ConexionBD {
     }
 
     // FUNCIONES DE LA TABLA PROVEEDOR
-    public boolean insertarProveedor(String nombre, String telefono, String email, String direccion, String rfc) {//Función para insertar un proveedor
-        boolean band = false;
-        String instruccion = "INSERT INTO proveedor(nombre, telefono, email, direccion, rfc) VALUES(?,?,?,?,?);";
+    public Integer insertarProveedor(String nombre, String telefono, String email, String direccion, String rfc) {//Función para insertar un proveedor; regresa el id_proveedor generado o null si falló
+        Integer idNuevo = null;
+        String instruccion = "INSERT INTO proveedor(nombre, telefono, email, direccion, rfc) VALUES(?,?,?,?,?) RETURNING id_proveedor;";
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
@@ -946,13 +952,13 @@ public class ConexionBD {
             pstm.setString(3, email.isEmpty() ? null : email);
             pstm.setString(4, direccion.isEmpty() ? null : direccion);
             pstm.setString(5, rfc == null || rfc.isEmpty() ? null : rfc);
-            pstm.executeUpdate();
+            ResultSet rs = pstm.executeQuery();
+            if (rs.next()) idNuevo = rs.getInt("id_proveedor");
             conexion.close();
-            band = true;
         } catch (SQLException e) {
             Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
-        return band;
+        return idNuevo;
     }
 
     public boolean editarProveedor(int id, String nombre, String telefono, String email, String direccion, String rfc) {//Función para editar un proveedor

@@ -544,7 +544,7 @@ public class ProveedoresP extends javax.swing.JPanel {
         if (!rfc.isEmpty() && !rfc.matches("^[A-ZÑ&]{3,4}[0-9]{6}[A-Z0-9]{3}$")) {
             Mise.JOption("El RFC no tiene un formato válido. Se guardará de todos modos.", "Advertencia", javax.swing.JOptionPane.WARNING_MESSAGE);
         }
-        if (conect.insertarProveedor(nombre, telProvR.getText().trim(), email, dirProvR.getText().trim(), rfcProvR.getText().trim())) {
+        if (conect.insertarProveedor(nombre, telProvR.getText().trim(), email, dirProvR.getText().trim(), rfcProvR.getText().trim()) != null) {
             mostrarTabla("");
             registroDialog.setVisible(false);
         }
