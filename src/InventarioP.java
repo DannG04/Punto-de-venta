@@ -60,166 +60,6 @@ public class InventarioP extends javax.swing.JPanel {
         modelo=(DefaultTableModel)tablaVentas.getModel();
         cargarFiltroCategorias();
         mostrarTabla("");
-
-        // Agregar campo "Descuento máximo (%)" al diálogo de producto (gridy=8, empujando labelinc y botones)
-        java.awt.GridBagConstraints gbcMaxDesc = new java.awt.GridBagConstraints();
-        jLabelMaxDesc.setFont(new java.awt.Font("Noto Serif", 1, 16));
-        gbcMaxDesc.gridx = 0; gbcMaxDesc.gridy = 10;
-        gbcMaxDesc.ipadx = 16;
-        gbcMaxDesc.anchor = java.awt.GridBagConstraints.WEST;
-        gbcMaxDesc.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabelMaxDesc, gbcMaxDesc);
-
-        maxDescuento.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15));
-        maxDescuento.setPreferredSize(new java.awt.Dimension(200, 35));
-        maxDescuento.setText("100");
-        maxDescuento.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                char c = evt.getKeyChar();
-                if (!Cake.numeros(c) && !Cake.inicioPunto(c)) evt.consume();
-                if (Cake.tamaño(maxDescuento.getText(), 5)) evt.consume();
-            }
-        });
-        gbcMaxDesc = new java.awt.GridBagConstraints();
-        gbcMaxDesc.gridx = 1; gbcMaxDesc.gridy = 10;
-        gbcMaxDesc.anchor = java.awt.GridBagConstraints.WEST;
-        gbcMaxDesc.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(maxDescuento, gbcMaxDesc);
-
-        // --- Campos de Compras: código de barras, IVA, unidades, factor, precio compra (gridy=11..16) ---
-        java.awt.GridBagConstraints gbcCompras;
-
-        jLabelCodBarras.setFont(new java.awt.Font("Noto Serif", 1, 16));
-        gbcCompras = new java.awt.GridBagConstraints();
-        gbcCompras.gridx = 0; gbcCompras.gridy = 11;
-        gbcCompras.ipadx = 16;
-        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
-        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabelCodBarras, gbcCompras);
-
-        codBarrasInv.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15));
-        codBarrasInv.setPreferredSize(new java.awt.Dimension(200, 35));
-        gbcCompras = new java.awt.GridBagConstraints();
-        gbcCompras.gridx = 1; gbcCompras.gridy = 11;
-        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
-        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(codBarrasInv, gbcCompras);
-
-        llevaIvaInv.setFont(new java.awt.Font("Noto Serif", 1, 14));
-        gbcCompras = new java.awt.GridBagConstraints();
-        gbcCompras.gridx = 0; gbcCompras.gridy = 12;
-        gbcCompras.gridwidth = 2;
-        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
-        gbcCompras.insets = new java.awt.Insets(5, 10, 5, 10);
-        jDialog1.getContentPane().add(llevaIvaInv, gbcCompras);
-
-        jLabelUnidadCompra.setFont(new java.awt.Font("Noto Serif", 1, 16));
-        gbcCompras = new java.awt.GridBagConstraints();
-        gbcCompras.gridx = 0; gbcCompras.gridy = 13;
-        gbcCompras.ipadx = 16;
-        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
-        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabelUnidadCompra, gbcCompras);
-
-        unidadCompraInv.setFont(new java.awt.Font("Noto Serif", 0, 15));
-        unidadCompraInv.setPreferredSize(new java.awt.Dimension(200, 35));
-        gbcCompras = new java.awt.GridBagConstraints();
-        gbcCompras.gridx = 1; gbcCompras.gridy = 13;
-        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
-        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(unidadCompraInv, gbcCompras);
-
-        jLabelUnidadVenta.setFont(new java.awt.Font("Noto Serif", 1, 16));
-        gbcCompras = new java.awt.GridBagConstraints();
-        gbcCompras.gridx = 0; gbcCompras.gridy = 14;
-        gbcCompras.ipadx = 16;
-        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
-        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabelUnidadVenta, gbcCompras);
-
-        unidadVentaInv.setFont(new java.awt.Font("Noto Serif", 0, 15));
-        unidadVentaInv.setPreferredSize(new java.awt.Dimension(200, 35));
-        gbcCompras = new java.awt.GridBagConstraints();
-        gbcCompras.gridx = 1; gbcCompras.gridy = 14;
-        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
-        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(unidadVentaInv, gbcCompras);
-
-        jLabelFactor.setFont(new java.awt.Font("Noto Serif", 1, 16));
-        gbcCompras = new java.awt.GridBagConstraints();
-        gbcCompras.gridx = 0; gbcCompras.gridy = 15;
-        gbcCompras.ipadx = 16;
-        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
-        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabelFactor, gbcCompras);
-
-        factorInv.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15));
-        factorInv.setPreferredSize(new java.awt.Dimension(200, 35));
-        factorInv.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                char c = evt.getKeyChar();
-                if (!Cake.numeros(c) && !Cake.inicioPunto(c)) evt.consume();
-                if (Cake.tamaño(factorInv.getText(), 10)) evt.consume();
-            }
-        });
-        gbcCompras = new java.awt.GridBagConstraints();
-        gbcCompras.gridx = 1; gbcCompras.gridy = 15;
-        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
-        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(factorInv, gbcCompras);
-
-        jLabelPrecioCompra.setFont(new java.awt.Font("Noto Serif", 1, 16));
-        gbcCompras = new java.awt.GridBagConstraints();
-        gbcCompras.gridx = 0; gbcCompras.gridy = 16;
-        gbcCompras.ipadx = 16;
-        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
-        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabelPrecioCompra, gbcCompras);
-
-        precioCompraInv.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15));
-        precioCompraInv.setPreferredSize(new java.awt.Dimension(200, 35));
-        precioCompraInv.setEditable(false);
-        gbcCompras = new java.awt.GridBagConstraints();
-        gbcCompras.gridx = 1; gbcCompras.gridy = 16;
-        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
-        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(precioCompraInv, gbcCompras);
-
-        // --- Tabla "Precios por lista" al final del diálogo (gridy=17 y 18) ---
-        jLabelListaPrecios.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        java.awt.GridBagConstraints gbcTblLista = new java.awt.GridBagConstraints();
-        gbcTblLista.gridx = 0; gbcTblLista.gridy = 17;
-        gbcTblLista.gridwidth = 2;
-        gbcTblLista.anchor = java.awt.GridBagConstraints.WEST;
-        gbcTblLista.insets = new java.awt.Insets(14, 10, 4, 10);
-        jDialog1.getContentPane().add(jLabelListaPrecios, gbcTblLista);
-
-        tblListaPrecios = new javax.swing.JTable(new javax.swing.table.DefaultTableModel(
-            new Object[][]{},
-            new String[]{"Lista", "Precio"}
-        ) {
-            @Override
-            public boolean isCellEditable(int row, int col) { return col == 1; }
-            @Override
-            public Class<?> getColumnClass(int col) { return col == 1 ? Double.class : String.class; }
-        });
-        tblListaPrecios.setFont(new java.awt.Font("Noto Serif", 0, 16));
-        tblListaPrecios.setRowHeight(28);
-        tblListaPrecios.getTableHeader().setFont(new java.awt.Font("Noto Serif", 1, 15));
-
-        jScrollPaneListaPrecios = new javax.swing.JScrollPane(tblListaPrecios);
-        jScrollPaneListaPrecios.setPreferredSize(new java.awt.Dimension(480, 100));
-
-        gbcTblLista = new java.awt.GridBagConstraints();
-        gbcTblLista.gridx = 0; gbcTblLista.gridy = 18;
-        gbcTblLista.gridwidth = 2;
-        gbcTblLista.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gbcTblLista.insets = new java.awt.Insets(0, 10, 14, 10);
-        jDialog1.getContentPane().add(jScrollPaneListaPrecios, gbcTblLista);
-
-        jDialog1.setMinimumSize(new java.awt.Dimension(550, 1180));
-        jDialog1.setSize(new java.awt.Dimension(550, 1180));
-        jDialog1.setLocationRelativeTo(null);
     }
 
     /**
@@ -233,7 +73,18 @@ public class InventarioP extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         jDialog1 = new javax.swing.JDialog();
-        leibel = new javax.swing.JLabel();
+        
+        // --- INICIO DE MODIFICACIÓN PARA EL SCROLL ---
+        // Creamos un panel contenedor principal para el JDialog
+        javax.swing.JPanel dialogContentPanel = new javax.swing.JPanel();
+        dialogContentPanel.setLayout(new java.awt.GridBagLayout());
+        
+        // Creamos el JScrollPane y le metemos el panel
+        dialogScrollPane = new javax.swing.JScrollPane(dialogContentPanel);
+        dialogScrollPane.setBorder(null);
+        dialogScrollPane.getVerticalScrollBar().setUnitIncrement(16); // Scroll más fluido
+        // --- FIN DE MODIFICACIÓN PARA EL SCROLL ---
+
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         precMen = new javax.swing.JFormattedTextField();
@@ -267,24 +118,16 @@ public class InventarioP extends javax.swing.JPanel {
         tablaVentas = new javax.swing.JTable();
 
         jDialog1.setAlwaysOnTop(true);
-        jDialog1.setMinimumSize(new java.awt.Dimension(550, 550));
+        jDialog1.setMinimumSize(new java.awt.Dimension(580, 600)); // Ajustado para dar espacio al scroll
         jDialog1.setModal(true);
-        jDialog1.setPreferredSize(new java.awt.Dimension(550, 550));
-        jDialog1.setSize(new java.awt.Dimension(550, 550));
-        jDialog1.getContentPane().setLayout(new java.awt.GridBagLayout());
+        jDialog1.setPreferredSize(new java.awt.Dimension(580, 600));
+        jDialog1.setSize(new java.awt.Dimension(580, 600));
+        
+        // El diálogo ahora usa BorderLayout para expandir el scrollpane
+        jDialog1.getContentPane().setLayout(new java.awt.BorderLayout());
+        jDialog1.getContentPane().add(dialogScrollPane, java.awt.BorderLayout.CENTER);
 
-        leibel.setFont(new java.awt.Font("Noto Serif", 1, 15)); // NOI18N
-        leibel.setForeground(new java.awt.Color(176, 176, 176));
-        leibel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        leibel.setText("El ID del producto se asignará automáticamente");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.ipadx = 16;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(leibel, gridBagConstraints);
-
+        // --- COMPONENTES ORIGINALES DEL DIÁLOGO ---
         jLabel3.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
         jLabel3.setText("Nombre: ");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -293,7 +136,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.ipadx = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabel3, gridBagConstraints);
+        dialogContentPanel.add(jLabel3, gridBagConstraints);
 
         jLabel4.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
         jLabel4.setText("Precio Mayoreo:");
@@ -303,10 +146,11 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.ipadx = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabel4, gridBagConstraints);
+        dialogContentPanel.add(jLabel4, gridBagConstraints);
 
-        precMen.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15)); // NOI18N
-        precMen.setPreferredSize(new java.awt.Dimension(200, 35));
+        precMen.setFont(new java.awt.Font("Noto Serif", java.awt.Font.PLAIN, 15)); // NOI18N
+        precMen.setPreferredSize(new java.awt.Dimension(270, 35));
+        precMen.setMinimumSize(new java.awt.Dimension(270, 35));
         precMen.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 precMenKeyTyped(evt);
@@ -317,7 +161,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(precMen, gridBagConstraints);
+        dialogContentPanel.add(precMen, gridBagConstraints);
 
         jLabel5.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
         jLabel5.setText("Cantidad: ");
@@ -327,10 +171,11 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.ipadx = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabel5, gridBagConstraints);
+        dialogContentPanel.add(jLabel5, gridBagConstraints);
 
-        precMay.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15)); // NOI18N
-        precMay.setPreferredSize(new java.awt.Dimension(200, 35));
+        precMay.setFont(new java.awt.Font("Noto Serif", java.awt.Font.PLAIN, 15)); // NOI18N
+        precMay.setPreferredSize(new java.awt.Dimension(270, 35));
+        precMay.setMinimumSize(new java.awt.Dimension(270, 35));
         precMay.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 precMayKeyTyped(evt);
@@ -341,9 +186,9 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(precMay, gridBagConstraints);
+        dialogContentPanel.add(precMay, gridBagConstraints);
 
-        jLabel6.setFont(new java.awt.Font("Noto Serif", Font.BOLD, 16)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Noto Serif", java.awt.Font.BOLD, 16)); // NOI18N
         jLabel6.setText("Precio Menudeo:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -351,10 +196,11 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.ipadx = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabel6, gridBagConstraints);
+        dialogContentPanel.add(jLabel6, gridBagConstraints);
 
-        cadd.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15)); // NOI18N
-        cadd.setPreferredSize(new java.awt.Dimension(200, 35));
+        cadd.setFont(new java.awt.Font("Noto Serif", java.awt.Font.PLAIN, 15)); // NOI18N
+        cadd.setPreferredSize(new java.awt.Dimension(270, 35));
+        cadd.setMinimumSize(new java.awt.Dimension(270, 35));
         cadd.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 caddKeyTyped(evt);
@@ -365,7 +211,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(cadd, gridBagConstraints);
+        dialogContentPanel.add(cadd, gridBagConstraints);
 
         jLabel7.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
         jLabel7.setText("Código del Proveedor:");
@@ -375,16 +221,17 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.ipadx = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabel7, gridBagConstraints);
+        dialogContentPanel.add(jLabel7, gridBagConstraints);
 
-        codigoProvField.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15)); // NOI18N
-        codigoProvField.setPreferredSize(new java.awt.Dimension(200, 35));
+        codigoProvField.setFont(new java.awt.Font("Noto Serif", java.awt.Font.PLAIN, 15)); // NOI18N
+        codigoProvField.setPreferredSize(new java.awt.Dimension(270, 35));
+        codigoProvField.setMinimumSize(new java.awt.Dimension(270, 35));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(codigoProvField, gridBagConstraints);
+        dialogContentPanel.add(codigoProvField, gridBagConstraints);
 
         checkGenerarCodigo.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
         checkGenerarCodigo.setText("Generar código propio");
@@ -399,7 +246,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
-        jDialog1.getContentPane().add(checkGenerarCodigo, gridBagConstraints);
+        dialogContentPanel.add(checkGenerarCodigo, gridBagConstraints);
 
         jLabelCategoria.setFont(new java.awt.Font("Noto Serif", 1, 16));
         jLabelCategoria.setText("Categoría:");
@@ -409,16 +256,17 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.ipadx = 16;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(jLabelCategoria, gridBagConstraints);
+        dialogContentPanel.add(jLabelCategoria, gridBagConstraints);
 
         categoriaCombo.setFont(new java.awt.Font("Noto Serif", 0, 15));
-        categoriaCombo.setPreferredSize(new java.awt.Dimension(200, 35));
+        categoriaCombo.setPreferredSize(new java.awt.Dimension(270, 35));
+        categoriaCombo.setMinimumSize(new java.awt.Dimension(270, 35));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jDialog1.getContentPane().add(categoriaCombo, gridBagConstraints);
+        dialogContentPanel.add(categoriaCombo, gridBagConstraints);
 
         labelinc.setFont(new java.awt.Font("Noto Serif", 0, 12)); // NOI18N
         labelinc.setForeground(new java.awt.Color(204, 0, 51));
@@ -428,7 +276,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
         gridBagConstraints.gridwidth = 2;
-        jDialog1.getContentPane().add(labelinc, gridBagConstraints);
+        dialogContentPanel.add(labelinc, gridBagConstraints);
 
         hechoIns.setFont(new java.awt.Font("Noto Serif", 1, 17)); // NOI18N
         hechoIns.setText("Guardar");
@@ -442,10 +290,10 @@ public class InventarioP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 19;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(30, 10, 10, 10);
-        jDialog1.getContentPane().add(hechoIns, gridBagConstraints);
+        dialogContentPanel.add(hechoIns, gridBagConstraints);
         hechoIns.setVisible(false);
 
         hechoAct.setFont(new java.awt.Font("Noto Serif", 1, 17)); // NOI18N
@@ -460,29 +308,199 @@ public class InventarioP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 19;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(30, 10, 10, 10);
-        jDialog1.getContentPane().add(hechoAct, gridBagConstraints);
+        dialogContentPanel.add(hechoAct, gridBagConstraints);
         hechoAct.setVisible(false);
 
         jScrollPane2.setPreferredSize(new java.awt.Dimension(200, 35));
 
-        nom.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15)); // NOI18N
-        nom.setPreferredSize(new java.awt.Dimension(200, 35));
+        nom.setFont(new java.awt.Font("Noto Serif", java.awt.Font.PLAIN, 15)); // NOI18N
+        nom.setPreferredSize(new java.awt.Dimension(270, 35));
+        nom.setMinimumSize(new java.awt.Dimension(270, 35));
         nom.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 nomKeyTyped(evt);
             }
         });
         jScrollPane2.setViewportView(nom);
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(270, 35));
+        jScrollPane2.setMinimumSize(new java.awt.Dimension(270, 35));
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jDialog1.getContentPane().add(jScrollPane2, gridBagConstraints);
+        dialogContentPanel.add(jScrollPane2, gridBagConstraints);
+
+
+        // --- INICIO DE COMPONENTES MOVIDOS DESDE EL CONSTRUCTOR ---
+        
+        java.awt.GridBagConstraints gbcMaxDesc = new java.awt.GridBagConstraints();
+        jLabelMaxDesc.setFont(new java.awt.Font("Noto Serif", 1, 16));
+        gbcMaxDesc.gridx = 0; gbcMaxDesc.gridy = 10;
+        gbcMaxDesc.ipadx = 16;
+        gbcMaxDesc.anchor = java.awt.GridBagConstraints.WEST;
+        gbcMaxDesc.insets = new java.awt.Insets(10, 10, 10, 10);
+        dialogContentPanel.add(jLabelMaxDesc, gbcMaxDesc);
+
+        maxDescuento.setFont(new java.awt.Font("Noto Serif", java.awt.Font.PLAIN, 15));
+        maxDescuento.setPreferredSize(new java.awt.Dimension(270, 35));
+        maxDescuento.setMinimumSize(new java.awt.Dimension(270, 35));
+        maxDescuento.setText("100");
+        maxDescuento.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char c = evt.getKeyChar();
+                if (!Cake.numeros(c) && !Cake.inicioPunto(c)) evt.consume();
+                if (Cake.tamaño(maxDescuento.getText(), 5)) evt.consume();
+            }
+        });
+        gbcMaxDesc = new java.awt.GridBagConstraints();
+        gbcMaxDesc.gridx = 1; gbcMaxDesc.gridy = 10;
+        gbcMaxDesc.anchor = java.awt.GridBagConstraints.WEST;
+        gbcMaxDesc.insets = new java.awt.Insets(10, 10, 10, 10);
+        dialogContentPanel.add(maxDescuento, gbcMaxDesc);
+
+        // --- Campos de Compras ---
+        java.awt.GridBagConstraints gbcCompras;
+
+        jLabelCodBarras.setFont(new java.awt.Font("Noto Serif", 1, 16));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 0; gbcCompras.gridy = 11;
+        gbcCompras.ipadx = 16;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        dialogContentPanel.add(jLabelCodBarras, gbcCompras);
+
+        codBarrasInv.setFont(new java.awt.Font("Noto Serif", java.awt.Font.PLAIN, 15));
+        codBarrasInv.setPreferredSize(new java.awt.Dimension(270, 35));
+        codBarrasInv.setMinimumSize(new java.awt.Dimension(270, 35));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 1; gbcCompras.gridy = 11;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        dialogContentPanel.add(codBarrasInv, gbcCompras);
+
+        llevaIvaInv.setFont(new java.awt.Font("Noto Serif", 1, 14));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 0; gbcCompras.gridy = 12;
+        gbcCompras.gridwidth = 2;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(5, 10, 5, 10);
+        dialogContentPanel.add(llevaIvaInv, gbcCompras);
+
+        jLabelUnidadCompra.setFont(new java.awt.Font("Noto Serif", 1, 16));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 0; gbcCompras.gridy = 13;
+        gbcCompras.ipadx = 16;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        dialogContentPanel.add(jLabelUnidadCompra, gbcCompras);
+
+        unidadCompraInv.setFont(new java.awt.Font("Noto Serif", 0, 15));
+        unidadCompraInv.setPreferredSize(new java.awt.Dimension(270, 35));
+        unidadCompraInv.setMinimumSize(new java.awt.Dimension(270, 35));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 1; gbcCompras.gridy = 13;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        dialogContentPanel.add(unidadCompraInv, gbcCompras);
+
+        jLabelUnidadVenta.setFont(new java.awt.Font("Noto Serif", 1, 16));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 0; gbcCompras.gridy = 14;
+        gbcCompras.ipadx = 16;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        dialogContentPanel.add(jLabelUnidadVenta, gbcCompras);
+
+        unidadVentaInv.setFont(new java.awt.Font("Noto Serif", 0, 15));
+        unidadVentaInv.setPreferredSize(new java.awt.Dimension(270, 35));
+        unidadVentaInv.setMinimumSize(new java.awt.Dimension(270, 35));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 1; gbcCompras.gridy = 14;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        dialogContentPanel.add(unidadVentaInv, gbcCompras);
+
+        jLabelFactor.setFont(new java.awt.Font("Noto Serif", 1, 16));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 0; gbcCompras.gridy = 15;
+        gbcCompras.ipadx = 16;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        dialogContentPanel.add(jLabelFactor, gbcCompras);
+
+        factorInv.setFont(new java.awt.Font("Noto Serif", java.awt.Font.PLAIN, 15));
+        factorInv.setPreferredSize(new java.awt.Dimension(270, 35));
+        factorInv.setMinimumSize(new java.awt.Dimension(270, 35));
+        factorInv.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                char c = evt.getKeyChar();
+                if (!Cake.numeros(c) && !Cake.inicioPunto(c)) evt.consume();
+                if (Cake.tamaño(factorInv.getText(), 10)) evt.consume();
+            }
+        });
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 1; gbcCompras.gridy = 15;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        dialogContentPanel.add(factorInv, gbcCompras);
+
+        jLabelPrecioCompra.setFont(new java.awt.Font("Noto Serif", 1, 16));
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 0; gbcCompras.gridy = 16;
+        gbcCompras.ipadx = 16;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        dialogContentPanel.add(jLabelPrecioCompra, gbcCompras);
+
+        precioCompraInv.setFont(new java.awt.Font("Noto Serif", java.awt.Font.PLAIN, 15));
+        precioCompraInv.setPreferredSize(new java.awt.Dimension(270, 35));
+        precioCompraInv.setMinimumSize(new java.awt.Dimension(270, 35));
+        precioCompraInv.setEditable(false);
+        gbcCompras = new java.awt.GridBagConstraints();
+        gbcCompras.gridx = 1; gbcCompras.gridy = 16;
+        gbcCompras.anchor = java.awt.GridBagConstraints.WEST;
+        gbcCompras.insets = new java.awt.Insets(10, 10, 10, 10);
+        dialogContentPanel.add(precioCompraInv, gbcCompras);
+
+        // --- Tabla "Precios por lista" ---
+        jLabelListaPrecios.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        java.awt.GridBagConstraints gbcTblLista = new java.awt.GridBagConstraints();
+        gbcTblLista.gridx = 0; 
+        gbcTblLista.gridy = 17;
+        gbcTblLista.gridwidth = 2;
+        gbcTblLista.anchor = java.awt.GridBagConstraints.WEST;
+        gbcTblLista.insets = new java.awt.Insets(14, 10, 4, 10);
+        dialogContentPanel.add(jLabelListaPrecios, gbcTblLista);
+
+        tblListaPrecios = new javax.swing.JTable(new javax.swing.table.DefaultTableModel(
+            new Object[][]{},
+            new String[]{"Lista", "Precio"}
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int col) { return col == 1; }
+            @Override
+            public Class<?> getColumnClass(int col) { return col == 1 ? Double.class : String.class; }
+        });
+        tblListaPrecios.setFont(new java.awt.Font("Noto Serif", 0, 16));
+        tblListaPrecios.setRowHeight(28);
+        tblListaPrecios.getTableHeader().setFont(new java.awt.Font("Noto Serif", 1, 15));
+
+        jScrollPaneListaPrecios = new javax.swing.JScrollPane(tblListaPrecios);
+        jScrollPaneListaPrecios.setPreferredSize(new java.awt.Dimension(480, 100));
+
+        gbcTblLista = new java.awt.GridBagConstraints();
+        gbcTblLista.gridx = 0; gbcTblLista.gridy = 18;
+        gbcTblLista.gridwidth = 2;
+        gbcTblLista.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gbcTblLista.insets = new java.awt.Insets(0, 10, 14, 10);
+        dialogContentPanel.add(jScrollPaneListaPrecios, gbcTblLista);
+
+        // --- FIN DE COMPONENTES MOVIDOS ---
 
         jDialog1.setLocationRelativeTo(null);
 
@@ -664,13 +682,11 @@ public class InventarioP extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(tablaVentas);
 
-        // Agregar listener para clic en la columna ID (columna 0)
         tablaVentas.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 int column = tablaVentas.getColumnModel().getColumnIndexAtX(evt.getX());
                 int row = evt.getPoint().y / tablaVentas.getRowHeight();
                 
-                // Si hizo clic en la columna 0 (ID) y hay una fila seleccionada
                 if (row < tablaVentas.getRowCount() && row >= 0 && column == 0) {
                     int modelRow = tablaVentas.convertRowIndexToModel(row);
                     String idProducto = "" + modelo.getValueAt(modelRow, 0);
@@ -701,7 +717,6 @@ public class InventarioP extends javax.swing.JPanel {
     private void agBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agBActionPerformed
         // TODO add your handling code here:
         jDialog1.setTitle("Agregar Producto");
-        leibel.setText("El ID del producto se asigna automáticamente");
         nom.setText("");
         precMen.setText("");
         precMay.setText("");
@@ -730,6 +745,19 @@ public class InventarioP extends javax.swing.JPanel {
 
         hechoIns.setVisible(true);
         hechoAct.setVisible(false);
+
+        // Reinicia el scroll hasta arriba
+        if (dialogScrollPane != null) {
+            // Es recomendable usar invokeLater porque a veces Swing ajusta el tamaño 
+            // de los componentes al mostrar el diálogo y puede sobreescribir tu 0.
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    dialogScrollPane.getVerticalScrollBar().setValue(0);
+                }
+            });
+        }
+
+        // Mostrar el diálogo
         jDialog1.setVisible(true);
         aux = false;
     }//GEN-LAST:event_agBActionPerformed
@@ -752,6 +780,17 @@ public class InventarioP extends javax.swing.JPanel {
 
             //MOSTRAR LOS DATOS EN EL FIELD
             mostrarDAct(a);
+
+            //Reinicia el scroll hasta arriba
+            if (dialogScrollPane != null) {
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        dialogScrollPane.getVerticalScrollBar().setValue(0);
+                    }
+                });
+            }
+
+            //Mostrar el diálogo
             jDialog1.setVisible(true);
             aux = false;
         }
@@ -1058,7 +1097,6 @@ public class InventarioP extends javax.swing.JPanel {
     
     public void mostrarDAct(int a){
         String elemento = "" + modelo.getValueAt(a, 0);
-        leibel.setText("ID: " + elemento);
         nom.setText("" + modelo.getValueAt(a, 1));
         cadd.setText("" + modelo.getValueAt(a, 2));
         precMay.setText("" + modelo.getValueAt(a, 3));
@@ -1426,12 +1464,12 @@ public class InventarioP extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     public static javax.swing.JLabel labelinc;
-    private javax.swing.JLabel leibel;
     private javax.swing.JTextPane nom;
     public javax.swing.JPanel panelBotones;
     private javax.swing.JFormattedTextField precMay;
     private javax.swing.JFormattedTextField precMen;
     private javax.swing.JLabel sumLabel;
     public static javax.swing.JTable tablaVentas;
+    private javax.swing.JScrollPane dialogScrollPane;
     // End of variables declaration//GEN-END:variables
 }

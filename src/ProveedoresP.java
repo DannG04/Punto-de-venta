@@ -79,7 +79,6 @@ public class ProveedoresP extends javax.swing.JPanel {
         panelRegistro.setLayout(new java.awt.GridBagLayout());
 
         jLabelNomR.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        jLabelNomR.setForeground(new java.awt.Color(78, 150, 150));
         jLabelNomR.setText("Nombre:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -103,7 +102,6 @@ public class ProveedoresP extends javax.swing.JPanel {
         panelRegistro.add(nomProvR, gridBagConstraints);
 
         jLabelTelR.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        jLabelTelR.setForeground(new java.awt.Color(78, 150, 150));
         jLabelTelR.setText("Teléfono:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -127,7 +125,6 @@ public class ProveedoresP extends javax.swing.JPanel {
         panelRegistro.add(telProvR, gridBagConstraints);
 
         jLabelEmailR.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        jLabelEmailR.setForeground(new java.awt.Color(78, 150, 150));
         jLabelEmailR.setText("Email:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -146,7 +143,6 @@ public class ProveedoresP extends javax.swing.JPanel {
         panelRegistro.add(emailProvR, gridBagConstraints);
 
         jLabelDirR.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        jLabelDirR.setForeground(new java.awt.Color(78, 150, 150));
         jLabelDirR.setText("Dirección:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -170,7 +166,6 @@ public class ProveedoresP extends javax.swing.JPanel {
         panelRegistro.add(dirProvR, gridBagConstraints);
 
         jLabelRfcR.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        jLabelRfcR.setForeground(new java.awt.Color(78, 150, 150));
         jLabelRfcR.setText("RFC:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -380,7 +375,7 @@ public class ProveedoresP extends javax.swing.JPanel {
 
         add(jPanel1, java.awt.BorderLayout.NORTH);
 
-        tablaProv.setFont(new java.awt.Font("Noto Serif", 0, 18));
+        tablaProv.setFont(new java.awt.Font("Noto Serif", 0, 16));
         tablaProv.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {},
             new String [] {
@@ -474,6 +469,7 @@ public class ProveedoresP extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
         jPanel2.add(buscarBtn, gridBagConstraints);
 

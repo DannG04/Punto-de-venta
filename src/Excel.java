@@ -485,171 +485,275 @@ public class Excel {
         }
     }
     
-    public static void reporteDiario(String nombreRD, java.time.LocalDate fecha){//Método que genera el reporte diario
-        //Obtenemos la fecha
-        String dia = String.valueOf(fecha.getDayOfMonth());
-        String mes = String.valueOf(fecha.getMonthValue());
+    public static void reporteDiario(String nombreRD, java.time.LocalDate fecha) {
+        String dia  = String.valueOf(fecha.getDayOfMonth());
+        String mes  = String.valueOf(fecha.getMonthValue());
         String anio = String.valueOf(fecha.getYear());
-        //Crear un libro de Excel
-        Workbook book = new XSSFWorkbook();
-        //Crear una hoja
-        Sheet sheet = book.createSheet("Reporte Diario");
-        
-        //Crear estilos
-        CellStyle tituloEstilo = crearEstiloTitulo(book);
-        CellStyle encabezadoEstilo = crearEstiloEncabezado(book);
-        CellStyle datosEstilo = crearEstiloDatos(book);
-        
-        //Filas ocupadas
-        int filasOcup = 0;
-        
-        //Empresa
-        String[] empRD = obtenerDatosEmpresa();
-        sheet.addMergedRegion(new CellRangeAddress(filasOcup, filasOcup, 0, 2));
-        Row filaEmpresa = sheet.createRow(filasOcup++);
-        Cell celdaEmpresa = filaEmpresa.createCell(0);
-        celdaEmpresa.setCellValue(empRD[0]
-                + (empRD[1].isEmpty() ? "" : "  RFC: " + empRD[1])
-                + (empRD[2].isEmpty() ? "" : "  " + empRD[2]));
-        celdaEmpresa.setCellStyle(tituloEstilo);
 
-        //Titulo
-        CellRangeAddress celdaFusionT = new CellRangeAddress(filasOcup, filasOcup, 0, 2);//Se fusionan 3 celdas
-        sheet.addMergedRegion(celdaFusionT);
-        Row filaTitulo = sheet.createRow(filasOcup);//Celda creada en la region fusionada
-        Cell celdaTitulo = filaTitulo.createCell(0);
-        celdaTitulo.setCellValue("REPORTE DIARIO");
-        celdaTitulo.setCellStyle(tituloEstilo); //Se aplica el estilo
-        filasOcup++;
-        
-        //Fecha
-        CellRangeAddress celdaFusionF = new CellRangeAddress(filasOcup, filasOcup, 0, 2);
-        sheet.addMergedRegion(celdaFusionF);
-        Row filaFecha = sheet.createRow(filasOcup);
-        Cell celdaFecha = filaFecha.createCell(0);
-        celdaFecha.setCellValue(fecha());
-        celdaFecha.setCellStyle(tituloEstilo);
-        filasOcup++;
-        
-        //Obtener la tabla
-        java.sql.ResultSet rs = conect.reporte_diario(fecha);
-        Double[] datos = new Double[5];
-        try{
-            while(rs.next()){
-                datos[0] = rs.getDouble(1);
-                datos[1] = rs.getDouble(2);
-                datos[2] = rs.getDouble(3);
-                datos[3] = rs.getDouble(4);
-                datos[4] = rs.getDouble(5);
-            }
-        } catch(java.sql.SQLException e){
-            System.out.println(e.getMessage());
-        }
-        
-        //Escribir el encabezado de la tabla
-        Row filaE = sheet.createRow(filasOcup);
-        for (int i=0; i<3; i++){
-            Cell celdaE = filaE.createCell(i);
-            String neim = "";
-            switch(i){
-                case 0 -> neim = "CUENTA";
-                case 1 -> neim = "DEBE";
-                case 2 -> neim = "HABER";
-            }
-            celdaE.setCellValue(neim);
-            celdaE.setCellStyle(encabezadoEstilo); //Aplicar el estilo
-        }
-        filasOcup++;
-        
-        //Escribir los nombres de las cuentas
-        int lim = filasOcup + 5;
-        int aux = 0;
-        while (filasOcup < lim){
-            Row filaC = sheet.createRow(filasOcup);
-            
-            //Cuentas
-            Cell celdaC = filaC.createCell(0);
-            String neim = "";
-            switch(aux){
-                case 0 -> neim = "Ventas";
-                case 1 -> neim = "Devoluciones de Venta";
-                case 2 -> neim = "Compras";
-                case 3 -> neim = "Gastos";
-                case 4 -> neim = "Otras Ganancias";
-            }
-            celdaC.setCellValue(neim);
-            //Aplicar el estilo
-            celdaC.setCellStyle(datosEstilo);
-            
-            //DEBE
-            Cell celdaD = filaC.createCell(1);
-            if(aux==0 || aux==4){
-                Double dato = 0.0;
-                switch(aux){
-                    case 0 -> dato = datos[0];
-                    case 4 -> dato = datos[4];
+        Workbook book = new XSSFWorkbook();
+        Sheet sheet = book.createSheet("Reporte Diario");
+
+        // ── Estilos ───────────────────────────────────────────────────────────
+        CellStyle estEmpresa   = crearEstiloEmpresa(book);
+        CellStyle estTitulo    = crearEstiloTitulo(book);
+        CellStyle estSubtitulo = crearEstiloSubtitulo(book);
+        CellStyle estEncabezado= crearEstiloEncabezado(book);
+        CellStyle estDatos     = crearEstiloDatos(book);
+        CellStyle estMonto     = crearEstiloMonto(book);
+        CellStyle estTotal     = crearEstiloTotal(book);
+        CellStyle estMontoTotal= crearEstiloMontoTotal(book);
+        CellStyle estPositivo  = crearEstiloResultadoPositivo(book);
+        CellStyle estNegativo  = crearEstiloResultadoNegativo(book);
+
+        int fila = 0;
+
+        // ════════════════════════════════════════════════════════════════════
+        // BLOQUE 1 — ENCABEZADO DE EMPRESA
+        // ════════════════════════════════════════════════════════════════════
+        String[] emp = obtenerDatosEmpresa();
+        // [0]nombre [1]razonSocial [2]rfc [3]telefono [4]correo
+        // [5]direccion [6]ciudad [7]estado [8]cp [9]logoRuta
+        String nombre      = emp[0];
+        String razonSocial = emp[1];
+        String rfc         = emp[2];
+        String telefono    = emp[3];
+        String correo      = emp[4];
+        String direccion   = emp[5];
+        String ciudad      = emp[6];
+        String estado      = emp[7];
+        String cp          = emp[8];
+        String logoRuta    = emp[9];
+
+        // Logo
+        if (!logoRuta.isEmpty()) {
+            try {
+                java.io.File logoFile = new java.io.File(logoRuta);
+                if (logoFile.exists()) {
+                    byte[] logoBytes = java.nio.file.Files.readAllBytes(logoFile.toPath());
+                    int tipo = logoRuta.toLowerCase().endsWith(".png")
+                            ? Workbook.PICTURE_TYPE_PNG
+                            : Workbook.PICTURE_TYPE_JPEG;
+                    int idx = book.addPicture(logoBytes, tipo);
+                    Drawing<?> drawing = sheet.createDrawingPatriarch();
+                    ClientAnchor anchor = book.getCreationHelper().createClientAnchor();
+                    anchor.setCol1(0); anchor.setRow1(fila);
+                    anchor.setCol2(1); anchor.setRow2(fila + 3);
+                    drawing.createPicture(anchor, idx);
+                    fila += 3;
                 }
-                celdaD.setCellValue(dato);
+            } catch (Exception e) {
+                System.out.println("Logo no cargado: " + e.getMessage());
             }
-            celdaD.setCellStyle(datosEstilo);
-            
-            //HABER
-            Cell celdaH = filaC.createCell(2);
-            if(aux==1 || aux==2 || aux==3){
-                Double dato = 0.0;
-                switch(aux){
-                    case 1 -> dato = datos[1];
-                    case 2 -> dato = datos[2];
-                    case 3 -> dato = datos[3];
-                }
-                celdaH.setCellValue(dato);
-            }
-            celdaH.setCellStyle(datosEstilo);
-            
-            filasOcup++;
-            aux++;
         }
-        
-        //Suma
-        Row sumaFila = sheet.createRow(filasOcup);
-        //DEBE
-        Cell celdaSumD = sumaFila.createCell(1);
-        celdaSumD.setCellFormula("SUM(B" + (lim - 4) + ":B" + (filasOcup) + ")");
-        celdaSumD.setCellStyle(datosEstilo);
-        //HABER
-        Cell celdaSumH = sumaFila.createCell(2);
-        celdaSumH.setCellFormula("SUM(C" + (lim - 4) + ":C" + (filasOcup) + ")");
-        celdaSumH.setCellStyle(datosEstilo);
-        
-        //Ajustar el tamaño de las columnas
-        for (int i = 0; i < 3; i++) {
-            sheet.autoSizeColumn(i);
+
+        // Nombre empresa
+        fila = agregarFilaMerge(sheet, fila, 0, 4, nombre, estEmpresa);
+
+        // Razón social
+        if (!razonSocial.isEmpty())
+            fila = agregarFilaMerge(sheet, fila, 0, 4, razonSocial, estEmpresa);
+
+        // RFC y Teléfono — misma fila
+        if (!rfc.isEmpty() || !telefono.isEmpty()) {
+            Row r = sheet.createRow(fila++);
+            crearCelda(r, 0, rfc.isEmpty()      ? "" : "RFC: " + rfc,      estSubtitulo);
+            crearCelda(r, 3, telefono.isEmpty() ? "" : "Tel: " + telefono, estSubtitulo);
         }
-        
-        //Guardar el archivo Excel
+
+        // Correo
+        if (!correo.isEmpty())
+            fila = agregarFilaMerge(sheet, fila, 0, 4, correo, estSubtitulo);
+
+        // Dirección completa
+        String dirCompleta = java.util.stream.Stream.of(direccion, ciudad, estado,
+                                cp.isEmpty() ? "" : "C.P. " + cp)
+                .filter(s -> !s.isEmpty())
+                .collect(java.util.stream.Collectors.joining(", "));
+        if (!dirCompleta.isEmpty())
+            fila = agregarFilaMerge(sheet, fila, 0, 4, dirCompleta, estSubtitulo);
+
+        fila++; // separador
+
+        // ════════════════════════════════════════════════════════════════════
+        // BLOQUE 2 — TÍTULO DEL REPORTE
+        // ════════════════════════════════════════════════════════════════════
+        fila = agregarFilaMerge(sheet, fila, 0, 4, "REPORTE DIARIO", estTitulo);
+        fila = agregarFilaMerge(sheet, fila, 0, 4, fecha(), estSubtitulo);
+        fila++; // separador
+
+        // ════════════════════════════════════════════════════════════════════
+        // BLOQUE 3 — DATOS DE LA BASE DE DATOS
+        // ════════════════════════════════════════════════════════════════════
+        double totalVentas = 0, ventasNetas = 0, totalDevoluciones = 0,
+            numTrans = 0, ticketProm = 0, totalCompras = 0,
+            totalGastos = 0, otrasGanancias = 0,
+            resultadoNeto = 0, valorInventario = 0;
         try {
-            String directoryName = "Reportes de ventas";
-            File directory = new File(directoryName);
-            if (!directory.exists()) {
-                directory.mkdirs();
+            java.sql.ResultSet rs = conect.reporte_diario(fecha);
+            if (rs != null && rs.next()) {
+                totalVentas       = rs.getDouble(1);
+                ventasNetas       = rs.getDouble(2);
+                totalDevoluciones = rs.getDouble(3);
+                numTrans          = rs.getDouble(4);    // bigint → getLong
+                ticketProm        = rs.getDouble(5);
+                totalCompras      = rs.getDouble(6);
+                totalGastos       = rs.getDouble(7);
+                otrasGanancias    = rs.getDouble(8);
+                resultadoNeto     = rs.getDouble(9);
+                valorInventario   = rs.getDouble(10);
             }
-            String fileName = nombreRD + dia + "_" + mes + "_" + anio;
-            File file = new File(directoryName + "/" + fileName + ".xlsx");
-            FileOutputStream fileOut = new FileOutputStream(file);
-            book.write(fileOut);
-            fileOut.close();
-            Desktop.getDesktop().open(file);
-        } catch(Exception e) {
-            System.out.println("Error al guardar el excel");
+        } catch (java.sql.SQLException e) {
+            System.out.println("Error al obtener reporte: " + e.getMessage());
         }
-        
-        //Cerrar el libro
+
+        // ════════════════════════════════════════════════════════════════════
+        // BLOQUE 4 — SECCIÓN: RESUMEN OPERATIVO
+        // ════════════════════════════════════════════════════════════════════
+        fila = agregarFilaMerge(sheet, fila, 0, 4, "RESUMEN OPERATIVO", estEncabezado);
+
+        // encabezados de columna
+        Row encOp = sheet.createRow(fila++);
+        crearCelda(encOp, 0, "CONCEPTO",   estEncabezado);
+        crearCelda(encOp, 3, "MONTO",      estEncabezado);
+        crearCelda(encOp, 4, "REFERENCIA", estEncabezado);
+
+        Object[][] operativo = {
+            {"Número de transacciones", numTrans,       "ventas del día"},
+            {"Ticket promedio",         ticketProm,     "total ventas / transacciones"},
+            {"Valor del inventario",    valorInventario,"a precio de costo actual"},
+        };
+        for (Object[] r : operativo) {
+            Row row = sheet.createRow(fila++);
+            crearCelda(row, 0, (String) r[0], estDatos);
+            Cell cMonto = row.createCell(3);
+            cMonto.setCellValue((Double) r[1]);
+            cMonto.setCellStyle(estMonto);
+            crearCelda(row, 4, (String) r[2], estDatos);
+        }
+        fila++; // separador
+
+        // ════════════════════════════════════════════════════════════════════
+        // BLOQUE 5 — SECCIÓN: ESTADO DE RESULTADOS DEL DÍA
+        // ════════════════════════════════════════════════════════════════════
+        fila = agregarFilaMerge(sheet, fila, 0, 4, "ESTADO DE RESULTADOS DEL DÍA", estEncabezado);
+
+        Row encRes = sheet.createRow(fila++);
+        crearCelda(encRes, 0, "CONCEPTO",  estEncabezado);
+        crearCelda(encRes, 2, "DEBE",      estEncabezado);
+        crearCelda(encRes, 3, "HABER",     estEncabezado);
+
+        // filas: {concepto, debe o null, haber o null}
+        int filaVentasBrutas = fila;
+        Object[][] resultados = {
+            {"(+)  Ventas brutas",         totalVentas,       null},
+            {"(-)  Devoluciones de venta", null,              totalDevoluciones},
+            {"(=)  Ventas netas",          ventasNetas,       null},
+            {"(-)  Compras",               null,              totalCompras},
+            {"(-)  Gastos operativos",     null,              totalGastos},
+            {"(+)  Otras ganancias",       otrasGanancias,    null},
+        };
+        for (Object[] r : resultados) {
+            Row row = sheet.createRow(fila++);
+            crearCelda(row, 0, (String) r[0], estDatos);
+
+            Cell cDebe = row.createCell(2);
+            cDebe.setCellStyle(estMonto);
+            if (r[1] != null) cDebe.setCellValue((Double) r[1]);
+
+            Cell cHaber = row.createCell(3);
+            cHaber.setCellStyle(estMonto);
+            if (r[2] != null) cHaber.setCellValue((Double) r[2]);
+        }
+
+        // Fila de resultado neto con fórmula Excel
+        // DEBE total  = ventas brutas + ventas netas + otras ganancias (col C)
+        // HABER total = devoluciones + compras + gastos (col D)
+        int filaInicio = filaVentasBrutas + 1; // 1-indexed para Excel
+        int filaFin    = fila;                 // última fila de datos
+
+        Row filaRes = sheet.createRow(fila++);
+        crearCelda(filaRes, 0, "RESULTADO NETO DEL DÍA", estTotal);
+        Cell cNetoDebe  = filaRes.createCell(2);
+        Cell cNetoHaber = filaRes.createCell(3);
+        // La diferencia real va en DEBE si positivo, HABER si negativo
+        CellStyle estiloNeto = resultadoNeto >= 0 ? estPositivo : estNegativo;
+        cNetoDebe.setCellValue(resultadoNeto);
+        cNetoDebe.setCellStyle(estiloNeto);
+        cNetoHaber.setCellStyle(estMontoTotal); // vacía pero con estilo de total
+
+        fila++; // separador
+
+        // ════════════════════════════════════════════════════════════════════
+        // BLOQUE 6 — PIE: NOTA AL PIE
+        // ════════════════════════════════════════════════════════════════════
+        CellStyle estNota = crearEstiloDatos(book);
+        Font fuenteNota = book.createFont();
+        fuenteNota.setItalic(true);
+        fuenteNota.setFontHeightInPoints((short) 8);
+        estNota.setFont(fuenteNota);
+
+        fila = agregarFilaMerge(sheet, fila, 0, 4,
+            "* El valor del inventario refleja el costo de adquisición más reciente por producto.",
+            estNota);
+        fila = agregarFilaMerge(sheet, fila, 0, 4,
+            "* Reporte generado el " + new java.util.Date(),
+            estNota);
+
+        // ── Anchos de columna ────────────────────────────────────────────
+        sheet.setColumnWidth(0, 10000); // concepto
+        sheet.setColumnWidth(1, 1000);  // espaciado
+        sheet.setColumnWidth(2, 4000);  // debe
+        sheet.setColumnWidth(3, 4000);  // haber / monto
+        sheet.setColumnWidth(4, 6000);  // referencia
+
+        // ── Guardar ──────────────────────────────────────────────────────
         try {
-            book.close();
-        } catch(Exception e) {
-            System.out.println("Error al cerrar el archivo");
+            String dirReportes = System.getProperty("user.home") + "/Documents/Reportes de ventas";
+            java.io.File directorio = new java.io.File(dirReportes);
+            if (!directorio.exists()) directorio.mkdirs();
+
+            String nombreArchivo = nombreRD + dia + "_" + mes + "_" + anio + ".xlsx";
+            java.io.File archivo = new java.io.File(dirReportes + "/" + nombreArchivo);
+
+            if (archivo.exists() && !archivo.canWrite()) {
+                javax.swing.JOptionPane.showMessageDialog(null,
+                    "El archivo ya está abierto.\nCiérralo e intenta de nuevo.",
+                    "Archivo en uso", javax.swing.JOptionPane.WARNING_MESSAGE);
+                book.close();
+                return;
+            }
+
+            java.io.FileOutputStream out = new java.io.FileOutputStream(archivo);
+            book.write(out);
+            out.close();
+            System.out.println("Reporte guardado en: " + archivo.getAbsolutePath());
+            java.awt.Desktop.getDesktop().open(archivo);
+
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(null,
+                "Error al guardar el reporte:\n" + e.getMessage(),
+                "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
-        
+
+        try { book.close(); } catch (Exception ignored) {}
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    private static int agregarFilaMerge(Sheet sheet, int fila, int col1, int col2,
+                                        String valor, CellStyle estilo) {
+        sheet.addMergedRegion(new CellRangeAddress(fila, fila, col1, col2));
+        Row row = sheet.createRow(fila);
+        Cell c = row.createCell(col1);
+        c.setCellValue(valor);
+        c.setCellStyle(estilo);
+        return fila + 1;
+    }
+
+    private static void crearCelda(Row row, int col, String valor, CellStyle estilo) {
+        Cell c = row.createCell(col);
+        c.setCellValue(valor);
+        c.setCellStyle(estilo);
     }
     
     public static void reporteKardex(String idProducto, String nombreProducto, java.time.LocalDate desde, java.time.LocalDate hasta) {//Método que genera el reporte de kardex de un producto
@@ -870,6 +974,81 @@ public class Excel {
         Estilo.setBorderTop(BorderStyle.THIN);
         return Estilo;
     }
+
+    private static CellStyle crearEstiloEmpresa(Workbook book) {
+        CellStyle s = book.createCellStyle();
+        Font f = book.createFont();
+        f.setBold(true);
+        f.setFontHeightInPoints((short) 14);
+        f.setFontName("Arial");
+        s.setFont(f);
+        s.setAlignment(HorizontalAlignment.CENTER);
+        return s;
+    }
+
+    private static CellStyle crearEstiloSubtitulo(Workbook book) {
+        CellStyle s = book.createCellStyle();
+        Font f = book.createFont();
+        f.setFontHeightInPoints((short) 10);
+        f.setFontName("Arial");
+        s.setFont(f);
+        s.setAlignment(HorizontalAlignment.CENTER);
+        return s;
+    }
+
+    private static CellStyle crearEstiloMonto(Workbook book) {
+        CellStyle s = book.createCellStyle();
+        Font f = book.createFont();
+        f.setFontName("Arial");
+        f.setFontHeightInPoints((short) 10);
+        s.setFont(f);
+        s.setDataFormat(book.createDataFormat().getFormat("$#,##0.00;($#,##0.00)"));
+        s.setAlignment(HorizontalAlignment.RIGHT);
+        return s;
+    }
+
+    private static CellStyle crearEstiloTotal(Workbook book) {
+        CellStyle s = book.createCellStyle();
+        Font f = book.createFont();
+        f.setBold(true);
+        f.setFontName("Arial");
+        f.setFontHeightInPoints((short) 10);
+        s.setFont(f);
+        s.setBorderTop(BorderStyle.MEDIUM);
+        return s;
+    }
+
+    private static CellStyle crearEstiloMontoTotal(Workbook book) {
+        CellStyle s = crearEstiloMonto(book);
+        Font f = book.createFont();
+        f.setBold(true);
+        f.setFontName("Arial");
+        s.setFont(f);
+        s.setBorderTop(BorderStyle.MEDIUM);
+        return s;
+    }
+
+    private static CellStyle crearEstiloResultadoPositivo(Workbook book) {
+        CellStyle s = crearEstiloMontoTotal(book);
+        Font f = book.createFont();
+        f.setBold(true);
+        f.setFontName("Arial");
+        f.setColor(IndexedColors.DARK_GREEN.getIndex());
+        s.setFont(f);
+        s.setDataFormat(book.createDataFormat().getFormat("$#,##0.00;($#,##0.00)"));
+        return s;
+    }
+
+    private static CellStyle crearEstiloResultadoNegativo(Workbook book) {
+        CellStyle s = crearEstiloMontoTotal(book);
+        Font f = book.createFont();
+        f.setBold(true);
+        f.setFontName("Arial");
+        f.setColor(IndexedColors.RED.getIndex());
+        s.setFont(f);
+        s.setDataFormat(book.createDataFormat().getFormat("$#,##0.00;($#,##0.00)"));
+        return s;
+    }
     
     public static String fecha(){//Método que obtiene la fecha actual
         java.time.LocalDateTime ahora = java.time.LocalDateTime.now();
@@ -878,25 +1057,59 @@ public class Excel {
     }
     
     private static String[] obtenerDatosEmpresa() {
-        String nombre = "Mi Empresa", rfc = "", direccion = "", logoRuta = "";
+        // defaults
+        String nombre      = "Mi Empresa";
+        String razonSocial = "";
+        String rfc         = "";
+        String telefono    = "";
+        String correo      = "";
+        String direccion   = "";
+        String ciudad      = "";
+        String estado      = "";
+        String cp          = "";
+        String logoRuta    = "";
+
         try {
             java.sql.ResultSet rs = conect.obtenerEmpresa();
             if (rs != null && rs.next()) {
-                String n = rs.getString("nombre");
-                if (n != null && !n.isEmpty()) nombre = n;
-                String r = rs.getString("rfc");
-                if (r != null) rfc = r;
-                String dir = rs.getString("direccion");
-                String ciudad = rs.getString("ciudad");
-                if (dir != null && !dir.isEmpty())
-                    direccion = ciudad != null && !ciudad.isEmpty() ? dir + ", " + ciudad : dir;
-                else if (ciudad != null)
-                    direccion = ciudad;
-                String lr = rs.getString("logo_ruta");
-                if (lr != null && !lr.isEmpty()) logoRuta = lr;
+                String v;
+
+                v = rs.getString("nombre");
+                if (v != null && !v.isEmpty()) nombre = v;
+
+                v = rs.getString("razon_social");
+                if (v != null && !v.isEmpty()) razonSocial = v;
+
+                v = rs.getString("rfc");
+                if (v != null && !v.isEmpty()) rfc = v;
+
+                v = rs.getString("telefono");
+                if (v != null && !v.isEmpty()) telefono = v;
+
+                v = rs.getString("correo");
+                if (v != null && !v.isEmpty()) correo = v;
+
+                v = rs.getString("direccion");
+                if (v != null && !v.isEmpty()) direccion = v;
+
+                v = rs.getString("ciudad");
+                if (v != null && !v.isEmpty()) ciudad = v;
+
+                v = rs.getString("estado");
+                if (v != null && !v.isEmpty()) estado = v;
+
+                v = rs.getString("cp");
+                if (v != null && !v.isEmpty()) cp = v;
+
+                v = rs.getString("logo_ruta");
+                if (v != null && !v.isEmpty()) logoRuta = v;
             }
         } catch (Exception ignored) {}
-        return new String[]{nombre, rfc, direccion, logoRuta};
+
+        // [0]nombre [1]razonSocial [2]rfc [3]telefono [4]correo
+        // [5]direccion [6]ciudad [7]estado [8]cp [9]logoRuta
+        return new String[]{nombre, razonSocial, rfc, telefono, correo,
+                            direccion, ciudad, estado, cp, logoRuta};
     }
 
     private static boolean isImageFile(String path) {

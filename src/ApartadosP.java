@@ -555,7 +555,8 @@ public class ApartadosP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.RELATIVE;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(regAp, gridBagConstraints);
 
@@ -572,6 +573,8 @@ public class ApartadosP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(sald, gridBagConstraints);
 
@@ -588,6 +591,8 @@ public class ApartadosP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel2.add(canc, gridBagConstraints);
 
@@ -877,6 +882,10 @@ public class ApartadosP extends javax.swing.JPanel {
                 conect.eliminarApartado(id_apartado);
                 prodApartadoDialog.setVisible(false);
             }
+        } else {
+            Mise.JOption("No ha registrado el apartado, no es posible cerrar la ventana."
+                    + "\nSi desea cancelar el apartado debe registrarlo y depués cancelarlo, o eliminar todos los productos que registró anteriormente.", "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_prodApartadoDialogWindowClosing
 
@@ -974,6 +983,7 @@ public class ApartadosP extends javax.swing.JPanel {
 
     private void tablaProdMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaProdMouseClicked
         codP.setText("" + tablaProd.getValueAt(tablaProd.getSelectedRow(), 0));
+        cantP.setText("1");
     }//GEN-LAST:event_tablaProdMouseClicked
 
     private void cmbOrdenApActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbOrdenApActionPerformed

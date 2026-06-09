@@ -397,7 +397,7 @@ public class EmpleadosP extends javax.swing.JPanel {
 
         setLayout(new java.awt.BorderLayout());
 
-        tablaEmp.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        tablaEmp.setFont(new java.awt.Font("Noto Serif", 0, 16)); // NOI18N
         tablaEmp.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -438,7 +438,6 @@ public class EmpleadosP extends javax.swing.JPanel {
         agB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         agB.setBackground(new java.awt.Color(125, 255, 177));
         agB.setIcon(SvgIcon.load("/icons/add-task.svg", SvgIcon.MEDIUM));
-        agB.setPreferredSize(new java.awt.Dimension(160, 35));
         agB.setText("Agregar");
         agB.setPreferredSize(new java.awt.Dimension(125, 33));
         agB.addActionListener(new java.awt.event.ActionListener() {
@@ -449,13 +448,14 @@ public class EmpleadosP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 30, 10, 30);
         panelBotones.add(agB, gridBagConstraints);
 
         eliB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         eliB.setBackground(new java.awt.Color(252, 149, 149));
         eliB.setIcon(SvgIcon.load("/icons/delete.svg", SvgIcon.MEDIUM));
-        eliB.setPreferredSize(new java.awt.Dimension(160, 35));
         eliB.setText("Eliminar");
         eliB.setPreferredSize(new java.awt.Dimension(125, 33));
         eliB.addActionListener(new java.awt.event.ActionListener() {
@@ -466,13 +466,14 @@ public class EmpleadosP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 30, 10, 30);
         panelBotones.add(eliB, gridBagConstraints);
 
         actB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
         actB.setBackground(new java.awt.Color(255, 251, 128));
         actB.setIcon(SvgIcon.load("/icons/edit.svg", SvgIcon.MEDIUM));
-        actB.setPreferredSize(new java.awt.Dimension(160, 35));
         actB.setText("Actualizar");
         actB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -482,6 +483,8 @@ public class EmpleadosP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 30, 10, 30);
         panelBotones.add(actB, gridBagConstraints);
 
@@ -671,11 +674,15 @@ public class EmpleadosP extends javax.swing.JPanel {
 
     private void activarEmpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_activarEmpActionPerformed
         //Vuelve a registrar a un empleado que ya se ha registrado antes
-        String cuur = Mise.JOptionInput("Ingresa la CURP del empleado:", "Registrar empleado");
-        if(conect.inactivarEmpleado(cuur, false)){
-            mostrarTablaEmp();
-            Mise.JOption("Empleado registrado nuevamente", "Empleado", javax.swing.JOptionPane.PLAIN_MESSAGE);
-            regDialog.setVisible(false);
+        String cuur = Mise.JOptionInput("Ingresa la CURP del empleado que desea registrar nuevamente:", "Registrar empleado");
+        if(cuur != null && !cuur.trim().isEmpty()){
+            if(conect.inactivarEmpleado(cuur, false)){
+                mostrarTablaEmp();
+                Mise.JOption("Empleado registrado nuevamente", "Empleado", javax.swing.JOptionPane.PLAIN_MESSAGE);
+                regDialog.setVisible(false);
+            } else {
+                Mise.JOption("No se encontró un empleado con esa CURP o el empleado ya está activo", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
         }
     }//GEN-LAST:event_activarEmpActionPerformed
 

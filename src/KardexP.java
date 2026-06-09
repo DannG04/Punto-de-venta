@@ -1,4 +1,6 @@
 
+import java.awt.Font;
+
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -89,17 +91,14 @@ public class KardexP extends javax.swing.JPanel {
         pnlKardexControls.add(pnlBusqueda);
 
         lblNombreProd.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
-        lblNombreProd.setForeground(new java.awt.Color(78, 150, 150));
         lblNombreProd.setText("Nombre: —");
         pnlInfoProd.add(lblNombreProd);
 
         lblCodigoProd.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
-        lblCodigoProd.setForeground(new java.awt.Color(78, 150, 150));
         lblCodigoProd.setText("   |   Código: —");
         pnlInfoProd.add(lblCodigoProd);
 
         lblExistenciaProd.setFont(new java.awt.Font("Noto Serif", 1, 14)); // NOI18N
-        lblExistenciaProd.setForeground(new java.awt.Color(78, 150, 150));
         lblExistenciaProd.setText("   |   Existencia: —");
         pnlInfoProd.add(lblExistenciaProd);
 
@@ -110,6 +109,7 @@ public class KardexP extends javax.swing.JPanel {
         pnlFiltros.add(lblDesde);
 
         spnDesde.setPreferredSize(new java.awt.Dimension(140, 32));
+        spnDesde.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15));
         pnlFiltros.add(spnDesde);
 
         lblHasta.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
@@ -117,6 +117,7 @@ public class KardexP extends javax.swing.JPanel {
         pnlFiltros.add(lblHasta);
 
         spnHasta.setPreferredSize(new java.awt.Dimension(140, 32));
+        spnHasta.setFont(new java.awt.Font("Noto Serif", Font.PLAIN, 15));
         pnlFiltros.add(spnHasta);
 
         btnFiltrar.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
@@ -131,8 +132,8 @@ public class KardexP extends javax.swing.JPanel {
         pnlFiltros.add(btnFiltrar);
 
         btnExportarKardex.setFont(new java.awt.Font("Noto Serif", 1, 16)); // NOI18N
-        btnExportarKardex.setBackground(new java.awt.Color(153, 204, 255));
-        btnExportarKardex.setIcon(SvgIcon.load("/icons/imprimir.svg", SvgIcon.MEDIUM));
+        btnExportarKardex.setBackground(new java.awt.Color(125, 255, 177));
+        btnExportarKardex.setIcon(SvgIcon.load("/icons/excel.svg", SvgIcon.MEDIUM));
         btnExportarKardex.setText("Exportar Excel");
         btnExportarKardex.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

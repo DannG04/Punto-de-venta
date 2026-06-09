@@ -54,7 +54,7 @@ public class Interfaz extends javax.swing.JFrame {
     boolean iniDia = false;
     javax.swing.Timer timerDia = null;
     Dimension tamanio = Toolkit.getDefaultToolkit().getScreenSize();
-    Dimension tamanioMin = new Dimension(430, 430);
+    Dimension tamanioMin = new Dimension(450, 450);
 
     // Servidor web para inventario móvil
     private WebInventario servidorWeb = null;
@@ -146,10 +146,10 @@ public class Interfaz extends javax.swing.JFrame {
         opcion2.setToolTipText("");
         popupMenu.add(opcion2);
 
-        opcion3.setText("jMenuItem1");
+        opcion3.setText("");
         popupMenu.add(opcion3);
 
-        opcion4.setText("jMenuItem1");
+        opcion4.setText("");
         popupMenu.add(opcion4);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -163,7 +163,7 @@ public class Interfaz extends javax.swing.JFrame {
             }
         });
 
-        panelPrin.setBackground(new java.awt.Color(204, 226, 249));
+        //panelPrin.setBackground(new java.awt.Color(204, 226, 249));
         panelPrin.setLayout(new java.awt.GridBagLayout());
 
         perfil.setBackground(new java.awt.Color(204, 226, 249));
@@ -179,13 +179,12 @@ public class Interfaz extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 12, 0);
         panelPrin.add(perfil, gridBagConstraints);
 
         closeSesion.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        closeSesion.setForeground(new java.awt.Color(78, 150, 150));
+        closeSesion.setBackground(new java.awt.Color(252, 149, 149));
         closeSesion.setText("Cerrar sesión");
         closeSesion.setIcon(SvgIcon.load("/icons/cerrar_sesion.svg", SvgIcon.LARGE));
         closeSesion.setMaximumSize(new java.awt.Dimension(115, 25));
@@ -199,8 +198,8 @@ public class Interfaz extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
         panelPrin.add(closeSesion, gridBagConstraints);
 
@@ -218,8 +217,8 @@ public class Interfaz extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
         panelPrin.add(initerDia, gridBagConstraints);
 
@@ -285,9 +284,11 @@ public class Interfaz extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
         iniSession.add(contraF1, gridBagConstraints);
 
-        eyeB1.setBackground(new java.awt.Color(255, 255, 254));
+        eyeB1.setBackground(new java.awt.Color(204, 226, 249));
         eyeB1.setIcon(SvgIcon.load("/icons/closeEye.svg", SvgIcon.LARGE));
         eyeB1.setBorderPainted(false);
+        eyeB1.setPreferredSize(new Dimension(40, 30));
+        eyeB1.setMinimumSize(new Dimension(40, 30));
         eyeB1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 eyeB1ActionPerformed(evt);
@@ -308,7 +309,8 @@ public class Interfaz extends javax.swing.JFrame {
         iniSession.add(contInc, gridBagConstraints);
 
         veriB1.setFont(new java.awt.Font("Noto Serif", 1, 12)); // NOI18N
-        veriB1.setForeground(new java.awt.Color(78, 150, 150));
+        veriB1.setBackground(new java.awt.Color(204, 226, 249));
+        veriB1.setIcon(SvgIcon.load("/icons/login.svg", SvgIcon.MEDIUM));
         veriB1.setText("Iniciar Sesión");
         veriB1.setPreferredSize(new java.awt.Dimension(150, 30));
         veriB1.addActionListener(new java.awt.event.ActionListener() {
@@ -324,7 +326,7 @@ public class Interfaz extends javax.swing.JFrame {
         iniSession.add(veriB1, gridBagConstraints);
 
         usuarioBox.setFont(new java.awt.Font("Noto Serif", 0, 12)); // NOI18N
-        usuarioBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Daniel Gonzalez", "Gael Eduardo García", "Elisa Sánchez" }));
+        usuarioBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "" }));
         usuarioBox.setPreferredSize(new java.awt.Dimension(180, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -676,7 +678,7 @@ public class Interfaz extends javax.swing.JFrame {
         contraF1.setText("");
         contInc.setText("");
         eyeB1.setSelected(false);
-        eyeB1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/eye2.png")));
+        eyeB1.setIcon(SvgIcon.load("/icons/closeEye.svg", SvgIcon.LARGE));
         comboUsuarios();
         iniSession.setVisible(true);
         botones.setVisible(false);
@@ -962,7 +964,7 @@ public class Interfaz extends javax.swing.JFrame {
         btnServidor = new javax.swing.JButton("Servidor móvil");
         btnServidor.setIcon(SvgIcon.load("/icons/servidor_movil.svg", SvgIcon.LARGE));
         btnServidor.setFont(new java.awt.Font("Noto Serif", 1, 18));
-        btnServidor.setForeground(new java.awt.Color(78, 150, 150));
+        btnServidor.setBackground(new java.awt.Color(153, 204, 255));
         btnServidor.setMaximumSize(new java.awt.Dimension(115, 25));
         btnServidor.setMinimumSize(new java.awt.Dimension(115, 25));
         btnServidor.setPreferredSize(new java.awt.Dimension(200, 60));
@@ -976,16 +978,16 @@ public class Interfaz extends javax.swing.JFrame {
         java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 3;
-        gbc.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gbc.anchor = java.awt.GridBagConstraints.WEST;
+        gbc.gridwidth = 2;
+        gbc.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gbc.insets = new java.awt.Insets(5, 5, 2, 0);
         panelPrin.add(btnServidor, gbc);
 
         java.awt.GridBagConstraints gbcUrl = new java.awt.GridBagConstraints();
         gbcUrl.gridx = 0;
         gbcUrl.gridy = 4;
-        gbcUrl.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gbcUrl.anchor = java.awt.GridBagConstraints.WEST;
+        gbcUrl.gridwidth = 2;
+        gbcUrl.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gbcUrl.insets = new java.awt.Insets(0, 10, 2, 0);
         panelPrin.add(lblUrlServidor, gbcUrl);
 

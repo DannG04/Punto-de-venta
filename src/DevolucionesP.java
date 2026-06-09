@@ -247,7 +247,7 @@ public class DevolucionesP extends javax.swing.JPanel {
         jPanel5.add(elP);
 
         heP.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        heP.setBackground(new java.awt.Color(125, 255, 177));
+        heP.setBackground(new java.awt.Color(153, 204, 255));
         heP.setIcon(SvgIcon.load("/icons/guardar.svg", SvgIcon.MEDIUM));
         heP.setText("Hecho");
         heP.setPreferredSize(new java.awt.Dimension(125, 33));
@@ -544,19 +544,24 @@ public class DevolucionesP extends javax.swing.JPanel {
                 prodDevDialog.setVisible(false);
             }
         } else{
-            prodDevDialog.setVisible(false);
-            mostrarDev();
+            Mise.JOption("Debe finalizar el registro de la devolución para cerrar esta ventana, o eliminar todos los productos registrados", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_prodDevDialogWindowClosing
 
     private void hePActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hePActionPerformed
-        prodDevDialog.setVisible(false);
-        Mise.JOption("Cantidad a devolver: " + sumaTotalDev(), "Total devolución", javax.swing.JOptionPane.PLAIN_MESSAGE);
-        mostrarDev();
+        if(tablaProdDev.getRowCount() == 0){
+            Mise.JOption("Debe registrar al menos un producto para finalizar la devolución", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        } else {
+            prodDevDialog.setVisible(false);
+            Mise.JOption("Cantidad a devolver: " + sumaTotalDev(), "Total devolución", javax.swing.JOptionPane.PLAIN_MESSAGE);
+            mostrarDev();
+        }
     }//GEN-LAST:event_hePActionPerformed
 
     private void tablaProdVentaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaProdVentaMouseClicked
         codP.setText("" + modeloVenDet.getValueAt(tablaProdVenta.getSelectedRow(), 0));
+        cantP.setText("" + modeloVenDet.getValueAt(tablaProdVenta.getSelectedRow(), 1));
     }//GEN-LAST:event_tablaProdVentaMouseClicked
 
     private void cmbOrdenDevActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbOrdenDevActionPerformed

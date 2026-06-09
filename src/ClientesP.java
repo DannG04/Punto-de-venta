@@ -65,7 +65,7 @@ public class ClientesP extends javax.swing.JPanel {
         alta = new javax.swing.JButton();
         elimC1 = new javax.swing.JButton();
 
-        actualizarDialog.setTitle("Actualizar");
+        actualizarDialog.setTitle("Actualizar Cliente");
         actualizarDialog.setAlwaysOnTop(true);
         actualizarDialog.setMinimumSize(new java.awt.Dimension(550, 300));
         actualizarDialog.setModal(true);
@@ -179,6 +179,7 @@ public class ClientesP extends javax.swing.JPanel {
 
         actualizarDialog.setLocationRelativeTo(null);
 
+        Registro.setTitle("Registrar Cliente");
         Registro.setAlwaysOnTop(true);
         Registro.setMinimumSize(new java.awt.Dimension(520, 250));
         Registro.setModal(true);
@@ -340,7 +341,7 @@ public class ClientesP extends javax.swing.JPanel {
 
         add(jPanel1, java.awt.BorderLayout.NORTH);
 
-        tablaC.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        tablaC.setFont(new java.awt.Font("Noto Serif", 0, 16)); // NOI18N
         tablaC.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -398,7 +399,7 @@ public class ClientesP extends javax.swing.JPanel {
         jPanel2.add(actC, gridBagConstraints);
 
         alta.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        alta.setBackground(new java.awt.Color(125, 255, 177));
+        alta.setBackground(new java.awt.Color(153, 204, 255));
         alta.setIcon(SvgIcon.load("/icons/done.svg", SvgIcon.MEDIUM));
         alta.setText("Alta");
         alta.addActionListener(new java.awt.event.ActionListener() {
@@ -523,9 +524,11 @@ public class ClientesP extends javax.swing.JPanel {
         if(tablaC.getSelectedRow() != -1){
             idCli = "" + tablaC.getValueAt(tablaC.getSelectedRow(), 0);
             int res = Mise.JOptionYesNo("¿Está seguro que desea dar de alta a este cliente?", "Cliente");
-            if(res == 0){
+            if(res == 0 && tablaC.getValueAt(tablaC.getSelectedRow(), 3).equals("Inactivo")){
                 conect.inactivarCliente(idCli, false);
                 mostrarTabla();
+            } else if(res == 0){
+                Mise.JOption("Este cliente ya se encuentra activo", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else{
             Mise.JOption("Seleccione la fila que desea dar de alta", "Error",JOptionPane.ERROR_MESSAGE );
@@ -536,9 +539,11 @@ public class ClientesP extends javax.swing.JPanel {
         if(tablaC.getSelectedRow() != -1){
             idCli = "" + tablaC.getValueAt(tablaC.getSelectedRow(), 0);
             int res = Mise.JOptionYesNo("¿Está seguro que desea dar de baja a este cliente?", "Cliente");
-            if(res == 0){
+            if(res == 0 && tablaC.getValueAt(tablaC.getSelectedRow(), 3).equals("Activo")){
                 conect.inactivarCliente(idCli, true);
                 mostrarTabla();
+            } else if(res == 0){
+                Mise.JOption("Este cliente ya se encuentra inactivo", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else{
             Mise.JOption("Seleccione la fila que desea dar de baja", "Error",JOptionPane.ERROR_MESSAGE );

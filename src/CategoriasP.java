@@ -57,7 +57,6 @@ public class CategoriasP extends javax.swing.JPanel {
         panelAgregar.setLayout(new java.awt.GridBagLayout());
 
         jLabelNomAg.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        jLabelNomAg.setForeground(new java.awt.Color(78, 150, 150));
         jLabelNomAg.setText("Nombre: *");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -81,7 +80,6 @@ public class CategoriasP extends javax.swing.JPanel {
         panelAgregar.add(nomField, gridBagConstraints);
 
         jLabelDescAg.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        jLabelDescAg.setForeground(new java.awt.Color(78, 150, 150));
         jLabelDescAg.setText("Descripción:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -258,6 +256,8 @@ public class CategoriasP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 20, 10, 20);
         jPanel2.add(btnAgregar, gridBagConstraints);
 
@@ -273,6 +273,8 @@ public class CategoriasP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 20, 10, 20);
         jPanel2.add(btnEditar, gridBagConstraints);
 
@@ -288,6 +290,8 @@ public class CategoriasP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 20, 10, 20);
         jPanel2.add(btnToggleEstatus, gridBagConstraints);
 
@@ -304,6 +308,8 @@ public class CategoriasP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(4, 20, 4, 20);
         jPanel2.add(buscarField, gridBagConstraints);
 
@@ -319,6 +325,8 @@ public class CategoriasP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(4, 20, 10, 20);
         jPanel2.add(btnBuscar, gridBagConstraints);
 

@@ -398,7 +398,7 @@ public class VentasP extends javax.swing.JPanel {
 
         jScrollPane3.setPreferredSize(new java.awt.Dimension(450, 300));
 
-        tablaCli.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        tablaCli.setFont(new java.awt.Font("Noto Serif", 0, 14)); // NOI18N
         tablaCli.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -429,7 +429,8 @@ public class VentasP extends javax.swing.JPanel {
         panelRegVenta.add(jScrollPane3, gridBagConstraints);
 
         Reg.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        Reg.setForeground(new java.awt.Color(78, 150, 150));
+        Reg.setBackground(new java.awt.Color(153, 204, 255));
+        Reg.setIcon(SvgIcon.load("/icons/add-user.svg", SvgIcon.MEDIUM));
         Reg.setText("Registrar nuevo cliente");
         Reg.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -468,7 +469,7 @@ public class VentasP extends javax.swing.JPanel {
 
         jScrollPane4.setPreferredSize(new java.awt.Dimension(500, 300));
 
-        tablaProdPocos.setFont(new java.awt.Font("Noto Serif", 0, 18)); // NOI18N
+        tablaProdPocos.setFont(new java.awt.Font("Noto Serif", 0, 14)); // NOI18N
         tablaProdPocos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -621,7 +622,7 @@ public class VentasP extends javax.swing.JPanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
