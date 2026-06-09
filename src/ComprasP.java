@@ -45,6 +45,7 @@ public class ComprasP extends javax.swing.JPanel {
         modeloProdCom = (DefaultTableModel)tablaProdCom.getModel();
         modeloProd = (DefaultTableModel)tablaProd.getModel();
         construirNuevoProvDialog();
+        agregarBotonesInfo();
     }
 
     /**
@@ -1630,6 +1631,56 @@ public class ComprasP extends javax.swing.JPanel {
         } catch(java.sql.SQLException e){
             System.out.println("Error al mostrar la tabla de productos");
         }
+    }
+
+    private void agregarBotonesInfo() {
+        cantP.setToolTipText("Cuántas unidades de compra recibes en esta entrega");
+        unidadCompraP.setToolTipText("Cómo viene el producto del proveedor (ej: Caja, Bolsa…)");
+        factorP.setToolTipText("Unidades de venta que contiene una unidad de compra (ej: 24 piezas por caja)");
+        unidadVentaP.setToolTipText("Cómo vendes el producto al cliente (ej: Pieza, Botella…)");
+
+        java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
+        gbc.anchor = java.awt.GridBagConstraints.WEST;
+
+        gbc.gridx = 4; gbc.gridy = 3;
+        gbc.insets = new java.awt.Insets(6, 6, 6, 10);
+        jPanel5.add(crearBtnInfo(
+            "Cantidad y Unidad de compra",
+            "<html><b>Cantidad:</b> Cuántas unidades de compra recibes en esta entrega.<br>"
+            + "Ejemplo: si te llegan 5 cajas, escribe <b>5</b>.<br><br>"
+            + "<b>Unidad de compra:</b> Cómo viene el producto del proveedor.<br>"
+            + "Ejemplo: <b>Caja</b>, Bolsa, Bulto, Botella…</html>"
+        ), gbc);
+
+        gbc = new java.awt.GridBagConstraints();
+        gbc.anchor = java.awt.GridBagConstraints.WEST;
+        gbc.gridx = 4; gbc.gridy = 4;
+        gbc.insets = new java.awt.Insets(6, 6, 6, 10);
+        jPanel5.add(crearBtnInfo(
+            "Factor y Unidad de venta",
+            "<html><b>Factor:</b> Cuántas unidades de venta contiene una unidad de compra.<br>"
+            + "Ejemplo: si compras una <b>Caja</b> con 24 <b>Piezas</b> adentro, el factor es <b>24</b>.<br>"
+            + "Si compras y vendes en la misma unidad (pieza por pieza), el factor es <b>1</b>.<br><br>"
+            + "<b>Unidad de venta:</b> Cómo vendes el producto al cliente.<br>"
+            + "Ejemplo: Pieza, Botella, Lata…<br><br>"
+            + "<i>Inventario que se agrega = Cantidad × Factor</i></html>"
+        ), gbc);
+    }
+
+    private javax.swing.JButton crearBtnInfo(String titulo, String mensaje) {
+        javax.swing.JButton btn = new javax.swing.JButton("?");
+        btn.setFont(new java.awt.Font("Noto Serif", java.awt.Font.BOLD, 15));
+        btn.setForeground(new java.awt.Color(78, 150, 150));
+        btn.setBackground(new java.awt.Color(220, 242, 242));
+        btn.setPreferredSize(new java.awt.Dimension(32, 32));
+        btn.setMinimumSize(new java.awt.Dimension(32, 32));
+        btn.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        btn.setFocusPainted(false);
+        btn.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
+        btn.setToolTipText("Haz clic para ver más información");
+        btn.addActionListener(e -> javax.swing.JOptionPane.showMessageDialog(
+            prodComDialog, mensaje, titulo, javax.swing.JOptionPane.INFORMATION_MESSAGE));
+        return btn;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

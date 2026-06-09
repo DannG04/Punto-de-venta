@@ -30,7 +30,12 @@ public class WebInventario extends NanoWSD {
 
     private Connection conn = null;
 
-    private Connection getConn() throws SQLException {
+    // synchronized: pgjdbc Connection NO es thread-safe. El hilo del WebSocket y los
+    // hilos del pool HTTP de NanoHTTPD comparten esta misma conexión, y al cargar la
+    // página varias consultas (categorias/listas por WS y por fetch) coinciden. Sin
+    // serializar, el acceso concurrente corrompe/reinicia la conexión a mitad de una
+    // operación, se pierde la respuesta y la pantalla de stock queda colgada.
+    private synchronized Connection getConn() throws SQLException {
         // isValid(2) hace un ping real a la BD; detecta conexiones muertas por inactividad
         // que isClosed() no detecta (es solo un flag local del driver)
         if (conn == null || conn.isClosed() || !conn.isValid(2)) {
@@ -158,6 +163,8 @@ public class WebInventario extends NanoWSD {
             try {
                 if (texto.equals("categorias")) {
                     send(obtenerCategoriasJson());
+                } else if (texto.equals("listas")) {
+                    send(obtenerListasJson());
                 } else if (texto.startsWith("stockbajo:")) {
                     int umbral = parsearInt(texto.substring(10), 5);
                     send(stockBajoJson(umbral));
@@ -183,11 +190,15 @@ public class WebInventario extends NanoWSD {
     }
 
     /** Consulta un producto por código y devuelve JSON */
-    private String consultarProductoJson(String codigo) {
+    private synchronized String consultarProductoJson(String codigo) {
         try {
             PreparedStatement ps = getConn().prepareStatement(
                 "SELECT p.id_producto, p.nombre, p.cantidad, p.precio_mayoreo, p.precio_menudeo, "
-                + "COALESCE(c.nombre,'Sin categoría') AS categoria, p.max_descuento "
+                + "COALESCE(c.nombre,'Sin categoría') AS categoria, p.max_descuento, "
+                + "COALESCE(p.codigo_barras,'') AS codigo_barras, COALESCE(p.lleva_iva,false) AS lleva_iva, "
+                + "COALESCE(p.unidad_compra,'') AS unidad_compra, COALESCE(p.unidad_venta,'') AS unidad_venta, "
+                + "COALESCE(p.factor_conversion,1) AS factor_conversion, COALESCE(p.precio_compra,0) AS precio_compra, "
+                + "p.id_categoria "
                 + "FROM producto p LEFT JOIN categoria c ON p.id_categoria=c.id_categoria "
                 + "WHERE p.estatus = 'Activo' AND p.id_producto=?");
             ps.setString(1, codigo);
@@ -195,6 +206,8 @@ public class WebInventario extends NanoWSD {
             if (!rs.next()) {
                 return "{\"error\":\"Producto no encontrado\"}";
             }
+            int idCategoria = rs.getInt("id_categoria");
+            if (rs.wasNull()) idCategoria = 0;
             return "{"
                 + "\"id_producto\":\"" + escaparJson(rs.getString("id_producto")) + "\","
                 + "\"nombre\":\"" + escaparJson(rs.getString("nombre")) + "\","
@@ -202,15 +215,78 @@ public class WebInventario extends NanoWSD {
                 + "\"precio_mayoreo\":" + rs.getDouble("precio_mayoreo") + ","
                 + "\"precio_menudeo\":" + rs.getDouble("precio_menudeo") + ","
                 + "\"categoria\":\"" + escaparJson(rs.getString("categoria")) + "\","
-                + "\"max_descuento\":" + rs.getDouble("max_descuento")
+                + "\"id_categoria\":" + idCategoria + ","
+                + "\"max_descuento\":" + rs.getDouble("max_descuento") + ","
+                + "\"codigo_barras\":\"" + escaparJson(rs.getString("codigo_barras")) + "\","
+                + "\"lleva_iva\":" + rs.getBoolean("lleva_iva") + ","
+                + "\"unidad_compra\":\"" + escaparJson(rs.getString("unidad_compra")) + "\","
+                + "\"unidad_venta\":\"" + escaparJson(rs.getString("unidad_venta")) + "\","
+                + "\"factor_conversion\":" + rs.getDouble("factor_conversion") + ","
+                + "\"precio_compra\":" + rs.getDouble("precio_compra") + ","
+                + "\"precios\":" + preciosProductoJson(codigo)
                 + "}";
         } catch (SQLException e) {
             return "{\"error\":\"" + escaparJson(e.getMessage()) + "\"}";
         }
     }
 
+    /**
+     * Devuelve los precios por lista de un producto como JSON array.
+     * producto_precio actúa como override opcional: si no hay fila para la lista,
+     * las listas de fábrica "Menudeo"/"Mayoreo" caen a las columnas del producto.
+     */
+    private synchronized String preciosProductoJson(String codigo) {
+        StringBuilder json = new StringBuilder("[");
+        try {
+            PreparedStatement ps = getConn().prepareStatement(
+                "SELECT lp.id_lista, lp.nombre, "
+                + "COALESCE(pp.precio, CASE lp.nombre "
+                + "    WHEN 'Menudeo' THEN p.precio_menudeo "
+                + "    WHEN 'Mayoreo' THEN p.precio_mayoreo END) AS precio "
+                + "FROM lista_precios lp "
+                + "JOIN producto p ON p.id_producto = ? "
+                + "LEFT JOIN producto_precio pp ON pp.id_producto = p.id_producto AND pp.id_lista = lp.id_lista "
+                + "WHERE lp.estatus = 'Activo' ORDER BY lp.id_lista");
+            ps.setString(1, codigo);
+            ResultSet rs = ps.executeQuery();
+            boolean primero = true;
+            while (rs.next()) {
+                if (!primero) json.append(",");
+                json.append("{\"id\":").append(rs.getInt("id_lista"))
+                    .append(",\"nombre\":\"").append(escaparJson(rs.getString("nombre")))
+                    .append("\",\"precio\":").append(rs.getDouble("precio")).append("}");
+                primero = false;
+            }
+        } catch (SQLException e) {
+            return "[]";
+        }
+        json.append("]");
+        return json.toString();
+    }
+
+    /** Devuelve las listas de precios activas como JSON array */
+    private synchronized String obtenerListasJson() {
+        StringBuilder json = new StringBuilder("[");
+        try {
+            PreparedStatement ps = getConn().prepareStatement(
+                "SELECT id_lista, nombre FROM lista_precios WHERE estatus='Activo' ORDER BY id_lista");
+            ResultSet rs = ps.executeQuery();
+            boolean primero = true;
+            while (rs.next()) {
+                if (!primero) json.append(",");
+                json.append("{\"id\":").append(rs.getInt(1))
+                    .append(",\"nombre\":\"").append(escaparJson(rs.getString(2))).append("\"}");
+                primero = false;
+            }
+        } catch (SQLException e) {
+            return "[{\"error\":\"" + escaparJson(e.getMessage()) + "\"}]";
+        }
+        json.append("]");
+        return json.toString();
+    }
+
     /** Devuelve las categorías activas como JSON array */
-    private String obtenerCategoriasJson() {
+    private synchronized String obtenerCategoriasJson() {
         StringBuilder json = new StringBuilder("[");
         try {
             PreparedStatement ps = getConn().prepareStatement(
@@ -231,7 +307,7 @@ public class WebInventario extends NanoWSD {
     }
 
     /** Registra un producto desde JSON y devuelve resultado */
-    private String registrarProductoJson(String cuerpo) {
+    private synchronized String registrarProductoJson(String cuerpo) {
         try {
             String codigo   = extraerJson(cuerpo, "codigo");
             String nombre   = extraerJson(cuerpo, "nombre");
@@ -243,6 +319,11 @@ public class WebInventario extends NanoWSD {
             double pMenudeo = parsearDouble(extraerJson(cuerpo, "precioMenudeo"), 0.0);
             int    idCat    = parsearInt(extraerJson(cuerpo, "idCategoria"), 0);
             double maxDesc  = parsearDouble(extraerJson(cuerpo, "maxDescuento"), 100.0);
+            String codBarras = extraerJson(cuerpo, "codigoBarras").trim();
+
+            if (!codBarras.isEmpty() && codigoBarrasDuplicado(codBarras, codigo)) {
+                return "{\"error\":\"El código de barras ya está en uso por otro producto\"}";
+            }
 
             PreparedStatement ps = getConn().prepareStatement(
                 "INSERT INTO producto(id_producto,nombre,cantidad,precio_mayoreo,precio_menudeo,id_categoria,max_descuento) VALUES(?,?,?,?,?,?,?)");
@@ -254,6 +335,9 @@ public class WebInventario extends NanoWSD {
             if (idCat > 0) ps.setInt(6, idCat); else ps.setNull(6, Types.INTEGER);
             ps.setDouble(7, maxDesc);
             ps.executeUpdate();
+
+            guardarCamposCompra(cuerpo, codigo);
+            guardarPreciosLista(cuerpo, codigo);
             return "{\"ok\":true}";
         } catch (SQLException e) {
             String msg = e.getMessage() != null ? e.getMessage() : "Error de base de datos";
@@ -265,7 +349,7 @@ public class WebInventario extends NanoWSD {
     }
 
     /** Actualiza un producto existente desde JSON */
-    private String editarProductoJson(String cuerpo) {
+    private synchronized String editarProductoJson(String cuerpo) {
         try {
             String codigo   = extraerJson(cuerpo, "codigo");
             String nombre   = extraerJson(cuerpo, "nombre");
@@ -277,6 +361,11 @@ public class WebInventario extends NanoWSD {
             double pMenudeo = parsearDouble(extraerJson(cuerpo, "precioMenudeo"), 0.0);
             int    idCat    = parsearInt(extraerJson(cuerpo, "idCategoria"), 0);
             double maxDesc  = parsearDouble(extraerJson(cuerpo, "maxDescuento"), 100.0);
+            String codBarras = extraerJson(cuerpo, "codigoBarras").trim();
+
+            if (!codBarras.isEmpty() && codigoBarrasDuplicado(codBarras, codigo)) {
+                return "{\"error\":\"El código de barras ya está en uso por otro producto\"}";
+            }
 
             PreparedStatement ps = getConn().prepareStatement(
                 "UPDATE producto SET nombre=?,cantidad=?,precio_mayoreo=?,precio_menudeo=?,id_categoria=?,max_descuento=? WHERE id_producto=?");
@@ -289,14 +378,83 @@ public class WebInventario extends NanoWSD {
             ps.setString(7, codigo);
             int rows = ps.executeUpdate();
             if (rows == 0) return "{\"error\":\"Producto no encontrado\"}";
+
+            guardarCamposCompra(cuerpo, codigo);
+            guardarPreciosLista(cuerpo, codigo);
             return "{\"ok\":true}";
         } catch (SQLException e) {
             return "{\"error\":\"" + escaparJson(e.getMessage()) + "\"}";
         }
     }
 
+    /** Verifica si un código de barras ya está en uso por otro producto */
+    private synchronized boolean codigoBarrasDuplicado(String codigoBarras, String idExcluir) {
+        if (codigoBarras == null || codigoBarras.trim().isEmpty()) return false;
+        try {
+            PreparedStatement ps = getConn().prepareStatement(
+                "SELECT 1 FROM producto WHERE codigo_barras = ? AND id_producto <> ? LIMIT 1");
+            ps.setString(1, codigoBarras.trim());
+            ps.setString(2, idExcluir == null ? "" : idExcluir);
+            return ps.executeQuery().next();
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    /** Persiste los campos de compra (código de barras, IVA, unidades, factor) */
+    private synchronized void guardarCamposCompra(String cuerpo, String codigo) throws SQLException {
+        String codBarras = extraerJson(cuerpo, "codigoBarras").trim();
+        boolean llevaIva = Boolean.parseBoolean(extraerJson(cuerpo, "llevaIva").trim());
+        String uCompra   = extraerJson(cuerpo, "unidadCompra").trim();
+        String uVenta    = extraerJson(cuerpo, "unidadVenta").trim();
+        double factor    = parsearDouble(extraerJson(cuerpo, "factor"), 1.0);
+        if (factor <= 0) factor = 1.0;
+
+        PreparedStatement ps = getConn().prepareStatement(
+            "UPDATE producto SET codigo_barras=?, lleva_iva=?, unidad_compra=?, unidad_venta=?, factor_conversion=? WHERE id_producto=?");
+        ps.setString(1, codBarras.isEmpty() ? null : codBarras);
+        ps.setBoolean(2, llevaIva);
+        ps.setString(3, uCompra.isEmpty() ? null : uCompra);
+        ps.setString(4, uVenta.isEmpty() ? null : uVenta);
+        ps.setDouble(5, factor);
+        ps.setString(6, codigo);
+        ps.executeUpdate();
+    }
+
+    /**
+     * Persiste los precios por lista desde el campo "precios" del JSON.
+     * Formato: "idLista:precio,idLista:precio,...". Precio 0 = sin override
+     * (se borra la fila para que la lista use el precio base del producto).
+     */
+    private synchronized void guardarPreciosLista(String cuerpo, String codigo) throws SQLException {
+        String precios = extraerJson(cuerpo, "precios").trim();
+        if (precios.isEmpty()) return;
+        for (String par : precios.split(",")) {
+            int sep = par.indexOf(':');
+            if (sep < 0) continue;
+            int idLista  = parsearInt(par.substring(0, sep), 0);
+            double valor = parsearDouble(par.substring(sep + 1), 0.0);
+            if (idLista <= 0) continue;
+            if (valor > 0) {
+                PreparedStatement ps = getConn().prepareStatement(
+                    "INSERT INTO producto_precio(id_producto,id_lista,precio) VALUES(?,?,?) "
+                    + "ON CONFLICT (id_producto,id_lista) DO UPDATE SET precio = EXCLUDED.precio");
+                ps.setString(1, codigo);
+                ps.setInt(2, idLista);
+                ps.setDouble(3, valor);
+                ps.executeUpdate();
+            } else {
+                PreparedStatement ps = getConn().prepareStatement(
+                    "DELETE FROM producto_precio WHERE id_producto=? AND id_lista=?");
+                ps.setString(1, codigo);
+                ps.setInt(2, idLista);
+                ps.executeUpdate();
+            }
+        }
+    }
+
     /** Devuelve productos con stock <= umbral como JSON array */
-    private String stockBajoJson(int umbral) {
+    private synchronized String stockBajoJson(int umbral) {
         StringBuilder json = new StringBuilder("[");
         try {
             PreparedStatement ps = getConn().prepareStatement(
@@ -345,8 +503,12 @@ public class WebInventario extends NanoWSD {
             return servirArchivoEstatico("quagga.min.js", "application/javascript");
         } else if (uri.equals("/categorias") && method == Method.GET) {
             return servirCategorias();
+        } else if (uri.equals("/listas") && method == Method.GET) {
+            return jsonResponse(Response.Status.OK, obtenerListasJson());
         } else if (uri.equals("/producto") && method == Method.POST) {
-            return guardarProducto(session);
+            return guardarProducto(session, false);
+        } else if (uri.equals("/producto/editar") && method == Method.POST) {
+            return guardarProducto(session, true);
         } else if (uri.equals("/buscar") && method == Method.GET) {
             String codigo = session.getParameters().getOrDefault("codigo", List.of("")).get(0).trim();
             if (codigo.isEmpty()) {
@@ -417,6 +579,11 @@ public class WebInventario extends NanoWSD {
             + ".vacio{text-align:center;color:#888;padding:40px 0;font-size:1.1em}\n"
             + ".total{text-align:center;color:#666;font-size:.9em;margin-bottom:12px}\n"
             + "#wsIndicator{text-align:center;font-size:.8em;padding:4px;margin-bottom:8px;border-radius:6px;display:none}\n"
+            + ".check{display:flex;align-items:center;gap:8px;cursor:pointer}\n"
+            + ".check input{width:auto;margin:0}\n"
+            + ".campo-lista{display:flex;align-items:center;gap:10px;margin-top:8px}\n"
+            + ".campo-lista label{flex:1;margin:0}\n"
+            + ".campo-lista input{flex:1;width:auto}\n"
             + "</style></head><body>\n"
             + "<div id=\"wsIndicator\"></div>\n"
             + "<nav>\n"
@@ -442,6 +609,18 @@ public class WebInventario extends NanoWSD {
             + "  <div class=\"campo\"><label>Precio menudeo</label><input type=\"number\" id=\"nMenudeo\" step=\"0.01\" placeholder=\"0.00\" inputmode=\"decimal\"></div>\n"
             + "  <div class=\"campo\"><label>Categoría <span style=\"font-weight:normal;color:#888\">(opcional)</span></label><select id=\"nCategoria\"><option value=\"0\">Sin categoría</option></select></div>\n"
             + "  <div class=\"campo\"><label>Descuento máximo (%)</label><input type=\"number\" id=\"nMaxDesc\" value=\"100\" min=\"0\" max=\"100\" inputmode=\"numeric\"></div>\n"
+            + "  <div class=\"campo\">\n"
+            + "    <label>Código de barras <span style=\"font-weight:normal;color:#888\">(opcional)</span></label>\n"
+            + "    <input type=\"text\" id=\"nCodBarras\" placeholder=\"Escanea o escribe el código de barras\">\n"
+            + "    <button class=\"btn-scan\" id=\"nCbScanBtn\">&#x1F4F7; Escanear código de barras</button>\n"
+            + "    <div class=\"visor\" id=\"nCbVisor\"><div class=\"linea-scan\"></div></div>\n"
+            + "    <button class=\"btn-scan\" id=\"nCbStopBtn\" style=\"display:none;background:#c0392b\">&#x23F9; Cerrar escáner</button>\n"
+            + "  </div>\n"
+            + "  <div class=\"campo\"><label class=\"check\"><input type=\"checkbox\" id=\"nLlevaIva\"> Lleva IVA</label></div>\n"
+            + "  <div class=\"campo\"><label>Unidad de compra</label><select id=\"nUCompra\"></select></div>\n"
+            + "  <div class=\"campo\"><label>Unidad de venta</label><select id=\"nUVenta\"></select></div>\n"
+            + "  <div class=\"campo\"><label>Factor de conversión</label><input type=\"number\" id=\"nFactor\" value=\"1\" step=\"0.001\" min=\"0\" inputmode=\"decimal\"></div>\n"
+            + "  <div class=\"campo\"><label>Precios por lista</label><div id=\"nPrecios\"></div></div>\n"
             + "  <button class=\"btn-guardar\" id=\"nGuardar\">Guardar producto</button>\n"
             + "  <div class=\"status\" id=\"nStatus\"></div>\n"
             + "</section>\n"
@@ -478,6 +657,18 @@ public class WebInventario extends NanoWSD {
             + "    <div class=\"campo\"><label>Precio menudeo</label><input type=\"number\" id=\"eMenudeo\" step=\"0.01\" inputmode=\"decimal\"></div>\n"
             + "    <div class=\"campo\"><label>Categoría</label><select id=\"eCategoria\"><option value=\"0\">Sin categoría</option></select></div>\n"
             + "    <div class=\"campo\"><label>Descuento máximo (%)</label><input type=\"number\" id=\"eMaxDesc\" min=\"0\" max=\"100\" inputmode=\"numeric\"></div>\n"
+            + "    <div class=\"campo\">\n"
+            + "      <label>Código de barras <span style=\"font-weight:normal;color:#888\">(opcional)</span></label>\n"
+            + "      <input type=\"text\" id=\"eCodBarras\" placeholder=\"Escanea o escribe el código de barras\">\n"
+            + "      <button class=\"btn-scan\" id=\"eCbScanBtn\">&#x1F4F7; Escanear código de barras</button>\n"
+            + "      <div class=\"visor\" id=\"eCbVisor\"><div class=\"linea-scan\"></div></div>\n"
+            + "      <button class=\"btn-scan\" id=\"eCbStopBtn\" style=\"display:none;background:#c0392b\">&#x23F9; Cerrar escáner</button>\n"
+            + "    </div>\n"
+            + "    <div class=\"campo\"><label class=\"check\"><input type=\"checkbox\" id=\"eLlevaIva\"> Lleva IVA</label></div>\n"
+            + "    <div class=\"campo\"><label>Unidad de compra</label><select id=\"eUCompra\"></select></div>\n"
+            + "    <div class=\"campo\"><label>Unidad de venta</label><select id=\"eUVenta\"></select></div>\n"
+            + "    <div class=\"campo\"><label>Factor de conversión</label><input type=\"number\" id=\"eFactor\" step=\"0.001\" min=\"0\" inputmode=\"decimal\"></div>\n"
+            + "    <div class=\"campo\"><label>Precios por lista</label><div id=\"ePrecios\"></div></div>\n"
             + "    <button class=\"btn-guardar\" id=\"eGuardar\">Guardar cambios</button>\n"
             + "  </div>\n"
             + "  <div class=\"status\" id=\"eStatus\"></div>\n"
@@ -528,6 +719,39 @@ public class WebInventario extends NanoWSD {
             + "});\n"
             + "(function(){var p=location.pathname.replace('/','');if(p&&p!=='nuevo')irA(p);})();\n"
             + "\n"
+            // ---- UNIDADES (lista fija, igual que el escritorio) ----
+            + "var UNIDADES=['Pieza','Caja','Bolsa','Bulto','Botella','Lata','Paquete','Bote','Barra','Vaso','Tetra Pak'];\n"
+            + "function llenarUnidades(){\n"
+            + "  var ids=['nUCompra','nUVenta','eUCompra','eUVenta'];\n"
+            + "  for(var i=0;i<ids.length;i++){\n"
+            + "    var sel=document.getElementById(ids[i]);if(!sel||sel.options.length)continue;\n"
+            + "    for(var j=0;j<UNIDADES.length;j++){var o=document.createElement('option');o.value=UNIDADES[j];o.textContent=UNIDADES[j];sel.appendChild(o);}\n"
+            + "  }\n"
+            + "}\n"
+            + "llenarUnidades();\n"
+            + "\n"
+            // ---- PRECIOS POR LISTA ----
+            + "function cargarListas(listas){\n"
+            + "  if(!Array.isArray(listas))return;\n"
+            + "  var conts=['nPrecios','ePrecios'];\n"
+            + "  for(var c=0;c<conts.length;c++){\n"
+            + "    var cont=document.getElementById(conts[c]);if(!cont||cont.children.length)continue;\n"
+            + "    for(var i=0;i<listas.length;i++){\n"
+            + "      if(listas[i].error)continue;\n"
+            + "      var fila=document.createElement('div');fila.className='campo-lista';\n"
+            + "      var lab=document.createElement('label');lab.textContent=listas[i].nombre;\n"
+            + "      var inp=document.createElement('input');inp.type='number';inp.step='0.01';inp.min='0';inp.value='0';\n"
+            + "      inp.setAttribute('inputmode','decimal');inp.setAttribute('data-idlista',listas[i].id);\n"
+            + "      fila.appendChild(lab);fila.appendChild(inp);cont.appendChild(fila);\n"
+            + "    }\n"
+            + "  }\n"
+            + "}\n"
+            + "function preciosStr(contId){\n"
+            + "  var out=[],ins=document.querySelectorAll('#'+contId+' input[data-idlista]');\n"
+            + "  for(var i=0;i<ins.length;i++){out.push(ins[i].getAttribute('data-idlista')+':'+(ins[i].value||'0'));}\n"
+            + "  return out.join(',');\n"
+            + "}\n"
+            + "\n"
             // ---- WEBSOCKET COMPARTIDO ----
             + "var ws,wsListo=false,wsPing;\n"
             + "var pendiente=null,cola=[];\n"
@@ -545,6 +769,7 @@ public class WebInventario extends NanoWSD {
             + "  ws.onopen=function(){\n"
             + "    wsListo=true;cola=[];pendiente=null;\n"
             + "    enviarWS('categorias','categorias');\n"
+            + "    enviarWS('listas','listas');\n"
             + "    if(seccionActual==='stockbajo') cargarStock();\n"
             + "  };\n"
             + "  ws.onmessage=function(e){\n"
@@ -552,6 +777,7 @@ public class WebInventario extends NanoWSD {
             + "      var data=JSON.parse(e.data);\n"
             + "      switch(pendiente){\n"
             + "        case 'categorias': cargarCategorias(data);siguienteCola();return;\n"
+            + "        case 'listas': cargarListas(data);siguienteCola();return;\n"
             + "        case 'stockbajo': mostrarStock(data);siguienteCola();return;\n"
             + "        case 'consulta': mostrarConsulta(data);siguienteCola();return;\n"
             + "        case 'editar-buscar': llenarEditar(data);siguienteCola();return;\n"
@@ -566,6 +792,7 @@ public class WebInventario extends NanoWSD {
             + "}\n"
             + "conectarWS();\n"
             + "fetch('/categorias').then(function(r){return r.json();}).then(cargarCategorias).catch(function(){});\n"
+            + "fetch('/listas').then(function(r){return r.json();}).then(cargarListas).catch(function(){});\n"
             + "\n"
             + "function cargarCategorias(cats){\n"
             + "  if(!Array.isArray(cats))return;\n"
@@ -617,6 +844,7 @@ public class WebInventario extends NanoWSD {
             + "}\n"
             + "function escHtml(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}\n"
             + "function fmtNum(n){return Number(n).toFixed(2);}\n"
+            + "function fila(et,val){return '<div class=\"fila\"><span class=\"etiqueta\">'+et+'</span><span class=\"valor\">'+val+'</span></div>';}\n"
             + "\n"
             // ---- NUEVO: registrar producto ----
             + "document.getElementById('nScanBtn').addEventListener('click',function(){\n"
@@ -625,11 +853,20 @@ public class WebInventario extends NanoWSD {
             + "  });\n"
             + "});\n"
             + "document.getElementById('nStopBtn').addEventListener('click',detenerScanner);\n"
+            + "document.getElementById('nCbScanBtn').addEventListener('click',function(){\n"
+            + "  iniciarScanner(document.getElementById('nCbVisor'),document.getElementById('nCbScanBtn'),document.getElementById('nCbStopBtn'),function(cod){\n"
+            + "    document.getElementById('nCodBarras').value=cod;\n"
+            + "  });\n"
+            + "});\n"
+            + "document.getElementById('nCbStopBtn').addEventListener('click',detenerScanner);\n"
             + "document.getElementById('nGuardar').addEventListener('click',function(){\n"
             + "  var d={codigo:document.getElementById('nCodigo').value.trim(),nombre:document.getElementById('nNombre').value.trim(),\n"
             + "    cantidad:document.getElementById('nCantidad').value||'0',precioMayoreo:document.getElementById('nMayoreo').value||'0',\n"
             + "    precioMenudeo:document.getElementById('nMenudeo').value||'0',idCategoria:document.getElementById('nCategoria').value,\n"
-            + "    maxDescuento:document.getElementById('nMaxDesc').value||'100'};\n"
+            + "    maxDescuento:document.getElementById('nMaxDesc').value||'100',\n"
+            + "    codigoBarras:document.getElementById('nCodBarras').value.trim(),llevaIva:document.getElementById('nLlevaIva').checked,\n"
+            + "    unidadCompra:document.getElementById('nUCompra').value,unidadVenta:document.getElementById('nUVenta').value,\n"
+            + "    factor:document.getElementById('nFactor').value||'1',precios:preciosStr('nPrecios')};\n"
             + "  if(!d.codigo||!d.nombre){mostrarEstado('nStatus','El código y el nombre son obligatorios',false);return;}\n"
             + "  var btn=document.getElementById('nGuardar');btn.disabled=true;btn.textContent='Guardando...';\n"
             + "  if(wsListo){enviarWS('nuevo',JSON.stringify(d));}\n"
@@ -643,6 +880,10 @@ public class WebInventario extends NanoWSD {
             + "    document.getElementById('nCantidad').value='1';\n"
             + "    document.getElementById('nMayoreo').value='';document.getElementById('nMenudeo').value='';\n"
             + "    document.getElementById('nCategoria').value='0';document.getElementById('nMaxDesc').value='100';\n"
+            + "    document.getElementById('nCodBarras').value='';document.getElementById('nLlevaIva').checked=false;\n"
+            + "    document.getElementById('nUCompra').selectedIndex=0;document.getElementById('nUVenta').selectedIndex=0;\n"
+            + "    document.getElementById('nFactor').value='1';\n"
+            + "    var npi=document.querySelectorAll('#nPrecios input[data-idlista]');for(var i=0;i<npi.length;i++)npi[i].value='0';\n"
             + "  }else{mostrarEstado('nStatus','Error: '+(json.error||'Error desconocido'),false);}\n"
             + "}\n"
             + "\n"
@@ -664,13 +905,24 @@ public class WebInventario extends NanoWSD {
             + "  var div=document.getElementById('cResultado');\n"
             + "  if(p.error){div.innerHTML='<div class=\"err-card\">'+escHtml(p.error)+'</div>';return;}\n"
             + "  var sc=p.cantidad===0?'stock-cero':p.cantidad<=5?'stock-bajo':'stock-ok';\n"
-            + "  div.innerHTML='<div class=\"tarjeta\"><h2>'+escHtml(p.nombre)+'</h2>'\n"
-            + "    +'<div class=\"fila\"><span class=\"etiqueta\">Código</span><span class=\"valor\">'+escHtml(p.id_producto)+'</span></div>'\n"
-            + "    +'<div class=\"fila\"><span class=\"etiqueta\">Categoría</span><span class=\"valor\">'+escHtml(p.categoria)+'</span></div>'\n"
+            + "  var h='<div class=\"tarjeta\"><h2>'+escHtml(p.nombre)+'</h2>'\n"
+            + "    +fila('Código',escHtml(p.id_producto))\n"
+            + "    +(p.codigo_barras?fila('Código de barras',escHtml(p.codigo_barras)):'')\n"
+            + "    +fila('Categoría',escHtml(p.categoria))\n"
             + "    +'<div class=\"fila\"><span class=\"etiqueta\">Cantidad en stock</span><span class=\"valor '+sc+'\">'+p.cantidad+'</span></div>'\n"
-            + "    +'<div class=\"fila\"><span class=\"etiqueta\">Precio mayoreo</span><span class=\"valor\">$'+fmtNum(p.precio_mayoreo)+'</span></div>'\n"
-            + "    +'<div class=\"fila\"><span class=\"etiqueta\">Precio menudeo</span><span class=\"valor\">$'+fmtNum(p.precio_menudeo)+'</span></div>'\n"
-            + "    +'<div class=\"fila\"><span class=\"etiqueta\">Desc. máximo</span><span class=\"valor\">'+p.max_descuento+'%</span></div></div>';\n"
+            + "    +fila('Precio mayoreo','$'+fmtNum(p.precio_mayoreo))\n"
+            + "    +fila('Precio menudeo','$'+fmtNum(p.precio_menudeo))\n"
+            + "    +fila('Precio de compra','$'+fmtNum(p.precio_compra))\n"
+            + "    +fila('Lleva IVA',p.lleva_iva?'Sí':'No')\n"
+            + "    +(p.unidad_compra?fila('Unidad de compra',escHtml(p.unidad_compra)):'')\n"
+            + "    +(p.unidad_venta?fila('Unidad de venta',escHtml(p.unidad_venta)):'')\n"
+            + "    +fila('Factor de conversión',p.factor_conversion)\n"
+            + "    +fila('Desc. máximo',p.max_descuento+'%');\n"
+            + "  if(Array.isArray(p.precios)&&p.precios.length){\n"
+            + "    h+='<div class=\"fila\" style=\"border-top:1px solid #e0e0e0;margin-top:6px;padding-top:10px\"><span class=\"etiqueta\">Precios por lista</span><span class=\"valor\"></span></div>';\n"
+            + "    for(var i=0;i<p.precios.length;i++){h+=fila('&bull; '+escHtml(p.precios[i].nombre),'$'+fmtNum(p.precios[i].precio));}\n"
+            + "  }\n"
+            + "  h+='</div>';div.innerHTML=h;\n"
             + "}\n"
             + "\n"
             // ---- EDITAR ----
@@ -681,6 +933,12 @@ public class WebInventario extends NanoWSD {
             + "  });\n"
             + "});\n"
             + "document.getElementById('eStopBtn').addEventListener('click',detenerScanner);\n"
+            + "document.getElementById('eCbScanBtn').addEventListener('click',function(){\n"
+            + "  iniciarScanner(document.getElementById('eCbVisor'),document.getElementById('eCbScanBtn'),document.getElementById('eCbStopBtn'),function(cod){\n"
+            + "    document.getElementById('eCodBarras').value=cod;\n"
+            + "  });\n"
+            + "});\n"
+            + "document.getElementById('eCbStopBtn').addEventListener('click',detenerScanner);\n"
             + "document.getElementById('eCodigo').addEventListener('keydown',function(e){if(e.key==='Enter'&&this.value.trim())buscarEditar(this.value.trim());});\n"
             + "function buscarEditar(codigo){\n"
             + "  editarCodigo=codigo;\n"
@@ -696,15 +954,25 @@ public class WebInventario extends NanoWSD {
             + "  document.getElementById('eMayoreo').value=p.precio_mayoreo;\n"
             + "  document.getElementById('eMenudeo').value=p.precio_menudeo;\n"
             + "  document.getElementById('eMaxDesc').value=p.max_descuento;\n"
+            + "  if(p.id_categoria!==undefined)document.getElementById('eCategoria').value=p.id_categoria;\n"
+            + "  document.getElementById('eCodBarras').value=p.codigo_barras||'';\n"
+            + "  document.getElementById('eLlevaIva').checked=!!p.lleva_iva;\n"
+            + "  if(p.unidad_compra)document.getElementById('eUCompra').value=p.unidad_compra;\n"
+            + "  if(p.unidad_venta)document.getElementById('eUVenta').value=p.unidad_venta;\n"
+            + "  document.getElementById('eFactor').value=p.factor_conversion;\n"
+            + "  if(Array.isArray(p.precios)){for(var i=0;i<p.precios.length;i++){var inp=document.querySelector('#ePrecios input[data-idlista=\"'+p.precios[i].id+'\"]');if(inp)inp.value=p.precios[i].precio;}}\n"
             + "  document.getElementById('eForm').style.display='block';\n"
             + "}\n"
             + "document.getElementById('eGuardar').addEventListener('click',function(){\n"
             + "  var d=JSON.stringify({codigo:editarCodigo,nombre:document.getElementById('eNombre').value.trim(),\n"
             + "    cantidad:document.getElementById('eCantidad').value||'0',precioMayoreo:document.getElementById('eMayoreo').value||'0',\n"
             + "    precioMenudeo:document.getElementById('eMenudeo').value||'0',idCategoria:document.getElementById('eCategoria').value,\n"
-            + "    maxDescuento:document.getElementById('eMaxDesc').value||'100'});\n"
+            + "    maxDescuento:document.getElementById('eMaxDesc').value||'100',\n"
+            + "    codigoBarras:document.getElementById('eCodBarras').value.trim(),llevaIva:document.getElementById('eLlevaIva').checked,\n"
+            + "    unidadCompra:document.getElementById('eUCompra').value,unidadVenta:document.getElementById('eUVenta').value,\n"
+            + "    factor:document.getElementById('eFactor').value||'1',precios:preciosStr('ePrecios')});\n"
             + "  if(wsListo){enviarWS('editar-guardar','editar:'+d);}\n"
-            + "  else{pendiente='editar-guardar';fetch('/producto',{method:'POST',headers:{'Content-Type':'application/json'},body:d}).then(function(r){return r.json();}).then(function(r){respuestaEditar(r);siguienteCola();}).catch(function(){respuestaEditar({error:'Error de conexión'});siguienteCola();});}\n"
+            + "  else{pendiente='editar-guardar';fetch('/producto/editar',{method:'POST',headers:{'Content-Type':'application/json'},body:d}).then(function(r){return r.json();}).then(function(r){respuestaEditar(r);siguienteCola();}).catch(function(){respuestaEditar({error:'Error de conexión'});siguienteCola();});}\n"
             + "});\n"
             + "function respuestaEditar(data){\n"
             + "  if(data.ok) mostrarEstado('eStatus','Producto actualizado',true);\n"
@@ -767,7 +1035,7 @@ public class WebInventario extends NanoWSD {
     // -------------------------------------------------------------------------
     // GET /categorias  →  JSON con categorías activas
     // -------------------------------------------------------------------------
-    private Response servirCategorias() {
+    private synchronized Response servirCategorias() {
         StringBuilder json = new StringBuilder("[");
         try {
             PreparedStatement ps = getConn().prepareStatement(
@@ -789,71 +1057,26 @@ public class WebInventario extends NanoWSD {
     }
 
     // -------------------------------------------------------------------------
-    // POST /producto  →  insertar producto en la BD
+    // POST /producto         →  insertar producto en la BD
+    // POST /producto/editar  →  actualizar producto existente
+    // Fallback REST cuando el WebSocket no está disponible. Reutiliza los mismos
+    // handlers que la vía WebSocket para no duplicar la lógica de negocio.
     // -------------------------------------------------------------------------
-    private Response guardarProducto(IHTTPSession session) {
+    private synchronized Response guardarProducto(IHTTPSession session, boolean editar) {
         try {
-            // Leer cuerpo de la petición
             Map<String, String> archivos = new HashMap<>();
             session.parseBody(archivos);
             String cuerpo = archivos.get("postData");
             if (cuerpo == null || cuerpo.isBlank()) {
                 return jsonResponse(Response.Status.BAD_REQUEST, "{\"error\":\"Cuerpo vacío\"}");
             }
-
-            // Extraer campos del JSON
-            String codigo       = extraerJson(cuerpo, "codigo");
-            String nombre       = extraerJson(cuerpo, "nombre");
-            String cantidad     = extraerJson(cuerpo, "cantidad");
-            String mayoreo      = extraerJson(cuerpo, "precioMayoreo");
-            String menudeo      = extraerJson(cuerpo, "precioMenudeo");
-            String idCatStr     = extraerJson(cuerpo, "idCategoria");
-            String maxDescStr   = extraerJson(cuerpo, "maxDescuento");
-
-            if (codigo.isBlank() || nombre.isBlank()) {
-                return jsonResponse(Response.Status.BAD_REQUEST,
-                    "{\"error\":\"El código y el nombre son obligatorios\"}");
-            }
-
-            // Parsear valores numéricos con defaults seguros
-            int    cant       = parsearInt(cantidad, 0);
-            double pMayoreo   = parsearDouble(mayoreo, 0.0);
-            double pMenudeo   = parsearDouble(menudeo, 0.0);
-            int    idCat      = parsearInt(idCatStr, 0);
-            double maxDesc    = parsearDouble(maxDescStr, 100.0);
-
-            // Insertar con PreparedStatement
-            String sql = "INSERT INTO producto(id_producto, nombre, cantidad, "
-                       + "precio_mayoreo, precio_menudeo, id_categoria, max_descuento) "
-                       + "VALUES (?,?,?,?,?,?,?)";
-
-            PreparedStatement ps = getConn().prepareStatement(sql);
-            ps.setString(1, codigo);
-            ps.setString(2, nombre);
-            ps.setInt(3, cant);
-            ps.setDouble(4, pMayoreo);
-            ps.setDouble(5, pMenudeo);
-            if (idCat > 0) {
-                ps.setInt(6, idCat);
-            } else {
-                ps.setNull(6, Types.INTEGER);
-            }
-            ps.setDouble(7, maxDesc);
-            ps.executeUpdate();
-
-            return jsonResponse(Response.Status.OK, "{\"ok\":true}");
-
+            String resultado = editar ? editarProductoJson(cuerpo) : registrarProductoJson(cuerpo);
+            Response.Status status = resultado.contains("\"error\"")
+                ? Response.Status.INTERNAL_ERROR : Response.Status.OK;
+            return jsonResponse(status, resultado);
         } catch (ResponseException | java.io.IOException e) {
             return jsonResponse(Response.Status.BAD_REQUEST,
                 "{\"error\":\"Error al leer la petición\"}");
-        } catch (SQLException e) {
-            String msg = e.getMessage() != null ? e.getMessage() : "Error de base de datos";
-            // Mensaje amigable para código duplicado
-            if (msg.contains("duplicate key") || msg.contains("already exists")) {
-                msg = "Ya existe un producto con ese código";
-            }
-            return jsonResponse(Response.Status.INTERNAL_ERROR,
-                "{\"error\":\"" + escaparJson(msg) + "\"}");
         }
     }
 
