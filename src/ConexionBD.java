@@ -71,6 +71,8 @@ public class ConexionBD {
         return rs;
     }
 
+    private static String nvl(String s) { return s == null ? "" : s; }
+
     // FUNCION DE LA TABLA EMPLEADO
     public boolean insertarEmpleado(String[] campos) {//Función para insertar un empleado
         boolean band = false;
@@ -294,6 +296,113 @@ public class ConexionBD {
             GestorErrores.manejar(e);
         }
         return rs;
+    }
+
+    public TicketData obtenerDatosVenta(String idVenta) {
+        TicketData datos = new TicketData();
+        datos.tipo = TipoTicket.VENTA;
+        datos.idTransaccion = idVenta;
+        try {
+            ResultSet emp = obtenerEmpresa();
+            if (emp != null && emp.next()) {
+                datos.empresaNombre  = nvl(emp.getString("nombre"));
+                datos.empresaTel     = nvl(emp.getString("telefono"));
+                String dir    = nvl(emp.getString("direccion"));
+                String ciudad = nvl(emp.getString("ciudad"));
+                datos.empresaDireccion = dir.isEmpty() ? ciudad
+                                       : (ciudad.isEmpty() ? dir : dir + ", " + ciudad);
+                datos.empresaMensaje = nvl(emp.getString("mensaje_ticket"));
+                String logo = emp.getString("logo_ruta");
+                datos.logoRuta = logo == null ? "" : logo;
+            }
+        } catch (Exception e) { GestorErrores.registrar(e); }
+        try {
+            ResultSet v = query(
+                "SELECT v.total_venta, v.fecha_venta, v.forma_pago, " +
+                "COALESCE(c.nombre,'Cliente General') AS cliente_nombre, e.nombre AS empleado_nombre " +
+                "FROM venta v " +
+                "LEFT JOIN cliente c ON v.id_cliente = c.id_cliente " +
+                "JOIN empleado e ON v.id_empleado = e.id_empleado " +
+                "WHERE v.id_venta = '" + idVenta + "'");
+            if (v != null && v.next()) {
+                datos.fecha         = nvl(v.getString("fecha_venta"));
+                datos.total         = v.getDouble("total_venta");
+                datos.formaPago     = nvl(v.getString("forma_pago"));
+                datos.clienteNombre = nvl(v.getString("cliente_nombre"));
+                datos.vendedor      = nvl(v.getString("empleado_nombre"));
+            }
+        } catch (Exception e) { GestorErrores.registrar(e); }
+        try {
+            ResultSet det = query(
+                "SELECT p.nombre, vd.cantidad_producto, vd.precio_dado, vd.precio_total " +
+                "FROM venta_detalle vd JOIN producto p ON vd.id_producto = p.id_producto " +
+                "WHERE vd.id_venta = '" + idVenta + "'");
+            int num = 1;
+            while (det != null && det.next()) {
+                datos.productos.add(new String[]{
+                    String.valueOf(num++),
+                    nvl(det.getString("nombre")),
+                    String.valueOf(det.getInt("cantidad_producto")),
+                    "$" + String.format("%.2f", det.getDouble("precio_dado")),
+                    "$" + String.format("%.2f", det.getDouble("precio_total"))
+                });
+                datos.subtotal += det.getDouble("precio_total");
+            }
+        } catch (Exception e) { GestorErrores.registrar(e); }
+        return datos;
+    }
+
+    public TicketData obtenerDatosApartado(String idApartado, TipoTicket tipo) {
+        TicketData datos = new TicketData();
+        datos.tipo = tipo;
+        datos.idTransaccion = idApartado;
+        try {
+            ResultSet emp = obtenerEmpresa();
+            if (emp != null && emp.next()) {
+                datos.empresaNombre  = nvl(emp.getString("nombre"));
+                datos.empresaTel     = nvl(emp.getString("telefono"));
+                String dir    = nvl(emp.getString("direccion"));
+                String ciudad = nvl(emp.getString("ciudad"));
+                datos.empresaDireccion = dir.isEmpty() ? ciudad
+                                       : (ciudad.isEmpty() ? dir : dir + ", " + ciudad);
+                datos.empresaMensaje = nvl(emp.getString("mensaje_ticket"));
+                String logo = emp.getString("logo_ruta");
+                datos.logoRuta = logo == null ? "" : logo;
+            }
+        } catch (Exception e) { GestorErrores.registrar(e); }
+        try {
+            ResultSet ap = query(
+                "SELECT a.fecha_inicio, a.fecha_limite, a.cantidad_dada, a.cantidad_faltante, a.cantidad_total, " +
+                "c.nombre AS cliente_nombre, e.nombre AS empleado_nombre " +
+                "FROM apartado a " +
+                "JOIN cliente c ON a.id_cliente = c.id_cliente " +
+                "JOIN empleado e ON a.id_empleado = e.id_empleado " +
+                "WHERE a.id_apartado = '" + idApartado + "'");
+            if (ap != null && ap.next()) {
+                datos.fecha             = nvl(ap.getString("fecha_inicio"));
+                datos.fechaLimite       = nvl(ap.getString("fecha_limite"));
+                datos.clienteNombre     = nvl(ap.getString("cliente_nombre"));
+                datos.vendedor          = nvl(ap.getString("empleado_nombre"));
+                datos.cantidadDada      = ap.getDouble("cantidad_dada");
+                datos.cantidadFaltante  = ap.getDouble("cantidad_faltante");
+                datos.total             = ap.getDouble("cantidad_total");
+            }
+        } catch (Exception e) { GestorErrores.registrar(e); }
+        try {
+            ResultSet det = seleccionarProductos(idApartado);
+            int num = 1;
+            while (det != null && det.next()) {
+                datos.productos.add(new String[]{
+                    String.valueOf(num++),
+                    nvl(det.getString("nombre")),
+                    String.valueOf(det.getInt("cantidad")),
+                    "$" + String.format("%.2f", det.getDouble("precio_unitario")),
+                    "$" + String.format("%.2f", det.getDouble("precio_total"))
+                });
+                datos.subtotal += det.getDouble("precio_total");
+            }
+        } catch (Exception e) { GestorErrores.registrar(e); }
+        return datos;
     }
 
     public boolean hayPocosProductos() {//Función para verificar si hay pocos productos
