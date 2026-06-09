@@ -731,7 +731,8 @@ public class ApartadosP extends javax.swing.JPanel {
                 if(conect.actualizarApartado(id_apartado, Double.valueOf(cantPagF.getText()))){
                     guardarApDialog.setVisible(false);
                     mostrarTablaAp("");
-                    GenTicket.generarTicketApartado(conect.seleccionarApartado(id_apartado));
+                    TicketData datosAp = conect.obtenerDatosApartado(id_apartado, TipoTicket.APARTADO_NUEVO);
+                    new TicketDialog(datosAp, conect).setVisible(true);
                 }
             } else{
                 Mise.JOption("El pago debe ser mayor o igual a la cantidad mínima a pagar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -746,8 +747,9 @@ public class ApartadosP extends javax.swing.JPanel {
         if(!recSaldF.getText().isEmpty()){
             if(Double.parseDouble(recSaldF.getText()) >= Double.parseDouble(cantSaldaF.getText())){
                 conect.entregarApartado(idApF.getText());
-                mostrarTablaAp("");                
-                GenTicket.generarTicketProductos(conect.seleccionarProductos(id_apartado));
+                mostrarTablaAp("");
+                TicketData datosAp = conect.obtenerDatosApartado(idApF.getText(), TipoTicket.APARTADO_SALDO);
+                new TicketDialog(datosAp, conect).setVisible(true);
                 saldarDialog.setVisible(false);
                 mostrarTablaAp("");
             } else{
