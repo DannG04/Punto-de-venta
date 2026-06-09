@@ -214,6 +214,7 @@ public class VentasP extends javax.swing.JPanel {
         elim = new javax.swing.JButton();
         actB = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
+        pnlBuscar = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaVentas = new javax.swing.JTable();
         jLabel10 = new javax.swing.JLabel();
@@ -689,16 +690,18 @@ public class VentasP extends javax.swing.JPanel {
 
         jPanel3.add(jScrollPane1);
 
+        pnlBuscar.setMaximumSize(new java.awt.Dimension(2147483647, 60));
+        pnlBuscar.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 5));
+
         jLabel10.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(78, 150, 150));
-        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel10.setIcon(SvgIcon.load("/icons/lupa.svg", SvgIcon.LARGE));
         jLabel10.setText("Buscar");
-        jLabel10.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-        jPanel3.add(jLabel10);
+        pnlBuscar.add(jLabel10);
 
-        Busc.setMaximumSize(new java.awt.Dimension(2147483647, 30));
+        Busc.setMaximumSize(new java.awt.Dimension(300, 30));
         Busc.setMinimumSize(new java.awt.Dimension(150, 30));
-        Busc.setPreferredSize(new java.awt.Dimension(150, 30));
+        Busc.setPreferredSize(new java.awt.Dimension(300, 30));
         Busc.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 BuscKeyReleased(evt);
@@ -707,7 +710,9 @@ public class VentasP extends javax.swing.JPanel {
                 BuscKeyTyped(evt);
             }
         });
-        jPanel3.add(Busc);
+        pnlBuscar.add(Busc);
+
+        jPanel3.add(pnlBuscar);
 
         jScrollPane2.setPreferredSize(new java.awt.Dimension(452, 200));
 
@@ -1187,6 +1192,7 @@ public class VentasP extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel pnlBuscar;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;

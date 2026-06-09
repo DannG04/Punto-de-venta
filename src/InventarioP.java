@@ -664,7 +664,7 @@ public class InventarioP extends javax.swing.JPanel {
         bajasB.setBackground(new java.awt.Color(204, 226, 249));
         bajasB.setIcon(SvgIcon.load("/icons/closeEye.svg", SvgIcon.MEDIUM));
         bajasB.setText("Dados de baja");
-        bajasB.setPreferredSize(new java.awt.Dimension(160, 33));
+        bajasB.setPreferredSize(new java.awt.Dimension(220, 33));
         bajasB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bajasBActionPerformed(evt);
