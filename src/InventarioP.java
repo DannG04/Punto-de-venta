@@ -1243,7 +1243,8 @@ public class InventarioP extends javax.swing.JPanel {
                 Mise.JOption("Código de barras guardado exitosamente en:\n" + archivo.getAbsolutePath(), 
                             "Guardado", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             } catch(java.io.IOException ex){
-                Mise.JOption("Error al guardar el archivo: " + ex.getMessage(), 
+                GestorErrores.registrar(ex);
+                Mise.JOption("No se pudo guardar el archivo. Intente de nuevo.",
                             "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -1301,7 +1302,8 @@ public class InventarioP extends javax.swing.JPanel {
                             "Imprimir", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (java.awt.print.PrinterException ex) {
-            Mise.JOption("Error al imprimir: " + ex.getMessage(), 
+            GestorErrores.registrar(ex);
+            Mise.JOption("No se pudo imprimir. Verifique la impresora e intente de nuevo.",
                         "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }

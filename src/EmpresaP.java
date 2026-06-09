@@ -153,7 +153,7 @@ public class EmpresaP extends javax.swing.JPanel {
                 actualizarPreviewLogo();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            GestorErrores.registrar(e);
         }
     }
 
@@ -235,7 +235,7 @@ public class EmpresaP extends javax.swing.JPanel {
                 txtLogoRuta.setText(logoRuta);
                 actualizarPreviewLogo(); // refresca preview tras convertir a PNG
             } catch (IOException ex) {
-                ex.printStackTrace();
+                GestorErrores.registrar(ex);
             }
         }
 

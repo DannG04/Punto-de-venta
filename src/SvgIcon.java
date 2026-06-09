@@ -50,7 +50,7 @@ public class SvgIcon {
 
         } catch (Exception e) {
             System.err.println("SvgIcon: Error al cargar → " + resourcePath);
-            e.printStackTrace();
+            GestorErrores.registrar(e);
             return null;
         }
     }

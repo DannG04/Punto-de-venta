@@ -52,7 +52,7 @@ public class ConexionBD {
             conexion.close();
             band = true;
         } catch (Exception e) {
-            System.out.println("Error al ejecutar la instruccion");
+            GestorErrores.registrar(e);
             band = false;
         }
         return band;
@@ -66,7 +66,7 @@ public class ConexionBD {
             rs = s.executeQuery(instruccion);
             conexion.close();
         } catch (Exception e) {
-            System.out.println("Error al obtener el Result Set");
+            GestorErrores.registrar(e);
         }
         return rs;
     }
@@ -89,7 +89,7 @@ public class ConexionBD {
             conexion.close();
             band = true;
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return band;
     }
@@ -108,7 +108,7 @@ public class ConexionBD {
             conexion.close();
             band = true;
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return band;
     }
@@ -124,7 +124,7 @@ public class ConexionBD {
             conexion.close();
             band = true;
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return band;
     }
@@ -141,7 +141,7 @@ public class ConexionBD {
             }
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return band;
     }
@@ -162,7 +162,7 @@ public class ConexionBD {
             }
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return dates;
     }
@@ -181,7 +181,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
     
@@ -199,7 +199,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -217,7 +217,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -231,7 +231,7 @@ public class ConexionBD {
             conexion.close();
             band = true;
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return band;
     }
@@ -247,7 +247,7 @@ public class ConexionBD {
             }
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return hay;
     }
@@ -267,7 +267,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -279,7 +279,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -294,7 +294,7 @@ public class ConexionBD {
             }
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return sum;
     }
@@ -312,7 +312,7 @@ public class ConexionBD {
             idVenta = cstm.getString(1);
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return idVenta;
     }
@@ -347,7 +347,7 @@ public class ConexionBD {
                 psKardex.executeUpdate();
                 conexion.close();
             } catch (SQLException e) {
-                Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                GestorErrores.manejar(e);
             }
         }
         return idVenta;
@@ -373,7 +373,7 @@ public class ConexionBD {
             pstm.setDate(1, java.sql.Date.valueOf(fecha));
             rs = pstm.executeQuery();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return rs;
     }
@@ -394,7 +394,7 @@ public class ConexionBD {
             pstm.setString(2, "%" + filtro + "%");
             rs = pstm.executeQuery();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return rs;
     }
@@ -411,7 +411,7 @@ public class ConexionBD {
             pstm.setString(2, "%" + filtro + "%");
             rs = pstm.executeQuery();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return rs;
     }
@@ -435,7 +435,7 @@ public class ConexionBD {
             pstm.setDate(3, java.sql.Date.valueOf(hasta));
             rs = pstm.executeQuery();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return rs;
     }
@@ -454,7 +454,7 @@ public class ConexionBD {
             idCompra = cstm.getString(1);
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return idCompra;
     }
@@ -471,7 +471,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -483,7 +483,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -513,7 +513,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -526,7 +526,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -638,7 +638,7 @@ public class ConexionBD {
             conexion.close();
             band = true;
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return band;
     }
@@ -656,7 +656,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -669,7 +669,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -686,7 +686,7 @@ public class ConexionBD {
             idDev = cstm.getString(1);
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return idDev;
     }
@@ -699,7 +699,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -731,7 +731,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -744,7 +744,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -761,7 +761,7 @@ public class ConexionBD {
             idAp = cstm.getString(1);
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return idAp;
     }
@@ -777,7 +777,7 @@ public class ConexionBD {
             conexion.close();
             band = true;
         } catch(SQLException e){
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return band;
     }
@@ -790,7 +790,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -801,7 +801,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -817,7 +817,7 @@ public class ConexionBD {
             }
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return monto;
     }
@@ -830,7 +830,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -842,7 +842,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
 }
 
@@ -858,7 +858,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -871,7 +871,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -888,7 +888,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -904,7 +904,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -920,7 +920,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -936,7 +936,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -977,7 +977,7 @@ public class ConexionBD {
             conexion.close();
             band = true;
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return band;
     }
@@ -1013,7 +1013,7 @@ public class ConexionBD {
             conexion.close();
             band = true;
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return band;
     }
@@ -1040,7 +1040,7 @@ public class ConexionBD {
             if (rs.next()) idCompra = rs.getString("id_compra");
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return idCompra;
     }
@@ -1075,7 +1075,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -1096,7 +1096,7 @@ public class ConexionBD {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al obtener " + nombreCol + ": " + e.getMessage());
+            GestorErrores.registrar(e);
         } finally {
             try {
                 if (rs != null)
@@ -1106,7 +1106,7 @@ public class ConexionBD {
                 if (conn != null)
                     conn.close();
             } catch (SQLException e) {
-                System.out.println("Error al cerrar conexiones: " + e.getMessage());
+                GestorErrores.registrar(e);
             }
         }
         return total;
@@ -1120,7 +1120,7 @@ public class ConexionBD {
             rs = cstm.executeQuery();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return rs;
     }
@@ -1134,7 +1134,7 @@ public class ConexionBD {
             rs = cstm.executeQuery();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return rs;
     }
@@ -1148,7 +1148,7 @@ public class ConexionBD {
                             + idap + "';");
             resultado = consulta.executeQuery();
         } catch (Exception e) {
-            System.out.println("Error: " + e.toString());
+            GestorErrores.registrar(e);
         }
         return resultado;
 
@@ -1162,7 +1162,7 @@ public class ConexionBD {
                     "SELECT nombre FROM empleado where id_empleado = '" + idVendedor + "'");
             resultado = consulta.executeQuery();
         } catch (Exception e) {
-            System.out.println("Error: " + e.toString());
+            GestorErrores.registrar(e);
         }
         return resultado;
     }
@@ -1176,7 +1176,7 @@ public class ConexionBD {
                     + idApartado + "';";
             resultado = stmt.executeQuery(query);
         } catch (Exception e) {
-            System.out.println("Error: " + e.toString());
+            GestorErrores.registrar(e);
         }
         return resultado;
     }
@@ -1194,7 +1194,7 @@ public class ConexionBD {
             conexion.close();
             band = true;
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return band;
     }
@@ -1212,7 +1212,7 @@ public class ConexionBD {
             conexion.close();
             band = true;
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return band;
     }
@@ -1229,7 +1229,7 @@ public class ConexionBD {
             conexion.close();
             band = true;
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return band;
     }
@@ -1251,7 +1251,7 @@ public class ConexionBD {
             pstm.setString(1, "%" + filtro + "%");
             rs = pstm.executeQuery();
         } catch (SQLException e) {
-            System.out.println("Error al buscar categorías: " + e.getMessage());
+            GestorErrores.registrar(e);
         }
         return rs;
     }
@@ -1276,7 +1276,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -1299,7 +1299,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -1336,7 +1336,7 @@ public class ConexionBD {
             }
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return maxDesc;
     }
@@ -1350,7 +1350,7 @@ public class ConexionBD {
             cstm.execute();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -1365,7 +1365,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -1397,7 +1397,7 @@ public class ConexionBD {
             conexion.close();
             return true;
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
             return false;
         }
     }
@@ -1446,7 +1446,7 @@ public class ConexionBD {
             }
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return precio;
     }
@@ -1462,7 +1462,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -1478,7 +1478,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -1507,7 +1507,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -1523,7 +1523,7 @@ public class ConexionBD {
             }
             conexion.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return minMax;
     }
@@ -1561,7 +1561,7 @@ public class ConexionBD {
             ins.executeUpdate();
             conn.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -1573,7 +1573,7 @@ public class ConexionBD {
             del.executeUpdate();
             conn.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -1605,7 +1605,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conn.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 
@@ -1638,7 +1638,7 @@ public class ConexionBD {
             }
             conn.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return idCoti;
     }
@@ -1666,7 +1666,7 @@ public class ConexionBD {
                     ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY).executeQuery(sql);
             }
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return null;
     }
@@ -1681,7 +1681,7 @@ public class ConexionBD {
             pstm.setString(1, idCoti);
             rs = pstm.executeQuery();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return rs;
     }
@@ -1701,7 +1701,7 @@ public class ConexionBD {
             pstm.setString(1, idCoti);
             rs = pstm.executeQuery();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return rs;
     }
@@ -1778,7 +1778,7 @@ public class ConexionBD {
             conn.createStatement().execute("DELETE FROM venta_temp");
             conn.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
         return idVenta;
     }
@@ -1792,7 +1792,7 @@ public class ConexionBD {
             pstm.executeUpdate();
             conn.close();
         } catch (SQLException e) {
-            Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            GestorErrores.manejar(e);
         }
     }
 }
