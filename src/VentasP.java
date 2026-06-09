@@ -830,6 +830,10 @@ public class VentasP extends javax.swing.JPanel {
                 totalLabel.setText("Total: " + precT);
                 dctGlobal.setText("0");
                 ventaDialog.setVisible(false);
+                TicketData datosTicket = conect.obtenerDatosVenta(idTemV);
+                datosTicket.recibido = recCT.getText().isEmpty() ? datosTicket.total : Double.valueOf(recCT.getText());
+                datosTicket.cambio   = cambCT.getText().isEmpty() ? 0.0 : Double.valueOf(cambCT.getText());
+                new TicketDialog(datosTicket, conect).setVisible(true);
                 if(conect.hayPocosProductos()){
                     mostrarProdPocos();
                     prodPocosDialog.setVisible(true);

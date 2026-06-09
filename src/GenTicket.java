@@ -365,4 +365,107 @@ public class GenTicket {
     private static String nvl(String s) {
         return s == null ? "" : s;
     }
+
+    public static void generarTicketVenta(String idVenta) {
+        try {
+            String nomEmpresa = "", telEmpresa = "", dirEmpresa = "", msgTicket = "Muchas gracias por su compra.";
+            try {
+                ResultSet emp = con.obtenerEmpresa();
+                if (emp != null && emp.next()) {
+                    nomEmpresa = nvl(emp.getString("nombre"));
+                    telEmpresa = nvl(emp.getString("telefono"));
+                    String dir = nvl(emp.getString("direccion"));
+                    String ciudad = nvl(emp.getString("ciudad"));
+                    dirEmpresa = dir.isEmpty() ? ciudad : (ciudad.isEmpty() ? dir : dir + ", " + ciudad);
+                    String msg = nvl(emp.getString("mensaje_ticket"));
+                    if (!msg.isEmpty()) msgTicket = msg;
+                }
+            } catch (Exception ignored) {}
+
+            ResultSet vh = con.query(
+                "SELECT v.total_venta, v.fecha_venta, v.forma_pago, " +
+                "COALESCE(c.nombre,'Cliente General') AS cliente_nombre, e.nombre AS empleado_nombre " +
+                "FROM venta v " +
+                "LEFT JOIN cliente c ON v.id_cliente = c.id_cliente " +
+                "JOIN empleado e ON v.id_empleado = e.id_empleado " +
+                "WHERE v.id_venta = '" + idVenta + "'");
+            if (vh == null || !vh.next()) return;
+
+            double totalVenta = vh.getDouble("total_venta");
+            String fechaVenta  = nvl(vh.getString("fecha_venta"));
+            String formaPago   = nvl(vh.getString("forma_pago"));
+            String clienteNom  = nvl(vh.getString("cliente_nombre"));
+            String vendedorNom = nvl(vh.getString("empleado_nombre"));
+
+            ResultSet det = con.query(
+                "SELECT p.nombre, vd.cantidad_producto, vd.precio_dado, vd.precio_total " +
+                "FROM venta_detalle vd JOIN producto p ON vd.id_producto = p.id_producto " +
+                "WHERE vd.id_venta = '" + idVenta + "'");
+
+            java.util.List<String[]> prods = new java.util.ArrayList<>();
+            while (det != null && det.next()) {
+                prods.add(new String[]{
+                    nvl(det.getString("nombre")),
+                    String.valueOf(det.getInt("cantidad_producto")),
+                    String.format("%.2f", det.getDouble("precio_dado")),
+                    String.format("%.2f", det.getDouble("precio_total"))
+                });
+            }
+
+            DateFormat fmtHora = new SimpleDateFormat("HH:mm:ss");
+            Date now = new Date();
+
+            int totalRows = 14 + prods.size();
+            PrinterMatrix printer = new PrinterMatrix();
+            printer.setOutSize(totalRows, 52);
+
+            int row = 1;
+            printer.printCharAtCol(row, row, 44, "*");
+            if (!nomEmpresa.isEmpty()) { row++; printer.printTextWrap(row, row+1, 10, 52, nomEmpresa); }
+            if (!telEmpresa.isEmpty()) { row++; printer.printTextWrap(row, row+1, 3, 52, "Tel: " + telEmpresa); }
+            if (!dirEmpresa.isEmpty()) { row++; printer.printTextWrap(row, row+1, 3, 52, dirEmpresa); }
+            row++; printer.printCharAtCol(row, row, 44, "*");
+            row++; printer.printTextWrap(row, row+1, 12, 52, "COMPROBANTE DE VENTA");
+            row++; printer.printTextWrap(row, row+1, 1, 52, "Folio: " + idVenta);
+            row++; printer.printTextWrap(row, row+1, 1, 52, "Fecha: " + fechaVenta + "  " + fmtHora.format(now));
+            row++; printer.printTextWrap(row, row+1, 1, 52, "Cliente: " + clienteNom);
+            row++; printer.printTextWrap(row, row+1, 1, 52, "Vendedor: " + vendedorNom);
+            row++; printer.printTextWrap(row, row+1, 1, 52, "Forma de pago: " + formaPago);
+            row++; printer.printTextWrap(row, row+1, 1, 52, "-------------------------------------------");
+            row++; printer.printTextWrap(row, row+1,  1, 18, "PRODUCTO");
+                   printer.printTextWrap(row, row+1, 20, 25, "CANT");
+                   printer.printTextWrap(row, row+1, 27, 36, "P.UNIT");
+                   printer.printTextWrap(row, row+1, 38, 44, "TOTAL");
+            for (String[] p : prods) {
+                row++;
+                printer.printTextWrap(row, row+1,  1, 18, p[0]);
+                printer.printTextWrap(row, row+1, 20, 25, p[1]);
+                printer.printTextWrap(row, row+1, 27, 36, p[2]);
+                printer.printTextWrap(row, row+1, 38, 44, p[3]);
+            }
+            row++; printer.printTextWrap(row, row+1, 1, 52, "-------------------------------------------");
+            row++; printer.printTextWrap(row, row+1, 1, 52, "Total: $" + String.format("%.2f", totalVenta));
+            row++; printer.printTextWrap(row, row+1, 1, 52, "-------" + msgTicket + "-------");
+
+            printer.toFile("impresionVenta.txt");
+
+            FileInputStream inputStream = null;
+            try {
+                inputStream = new FileInputStream("impresionVenta.txt");
+                Mise.JOption("Ticket generado", "Ticket", JOptionPane.PLAIN_MESSAGE);
+            } catch (Exception ex) { GestorErrores.registrar(ex); }
+            if (inputStream == null) return;
+
+            DocFlavor docFormat = DocFlavor.INPUT_STREAM.AUTOSENSE;
+            Doc document = new SimpleDoc(inputStream, docFormat, null);
+            PrintRequestAttributeSet attributeSet = new HashPrintRequestAttributeSet();
+            PrintService ps = PrintServiceLookup.lookupDefaultPrintService();
+            if (ps != null) {
+                try { ps.createPrintJob().print(document, attributeSet); }
+                catch (Exception ex) { GestorErrores.registrar(ex); }
+            }
+        } catch (Exception e) {
+            GestorErrores.registrar(e);
+        }
+    }
 }
