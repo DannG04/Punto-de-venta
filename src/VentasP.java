@@ -961,7 +961,7 @@ public class VentasP extends javax.swing.JPanel {
     private void BuscKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_BuscKeyReleased
         String palabra = Busc.getText();
         Mise.limpiarTabla(modeloBusc);
-        String instruccion = "SELECT * FROM producto WHERE nombre LIKE '%" + palabra + "%' OR CAST(id_producto AS TEXT) LIKE '%" + palabra + "%' ORDER BY id_producto;";
+        String instruccion = "SELECT * FROM producto WHERE estatus = 'Activo' AND (nombre LIKE '%" + palabra + "%' OR CAST(id_producto AS TEXT) LIKE '%" + palabra + "%') ORDER BY id_producto;";
         mostrarBusqueda(instruccion);
     }//GEN-LAST:event_BuscKeyReleased
 
@@ -1039,7 +1039,7 @@ public class VentasP extends javax.swing.JPanel {
     
     public void mostrarBusqueda(String instruccion){
         if(instruccion.equals("")){
-            instruccion = "SELECT * FROM producto ORDER BY id_producto";
+            instruccion = "SELECT * FROM producto WHERE estatus = 'Activo' ORDER BY id_producto";
         }
         Mise.limpiarTabla(modeloBusc);
         java.sql.ResultSet rs = conect.query(instruccion);
@@ -1072,7 +1072,7 @@ public class VentasP extends javax.swing.JPanel {
     
     public void mostrarProdPocos(){
         Mise.limpiarTabla(modeloProdP);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM producto WHERE cantidad<=12 ORDER BY id_producto");
+        java.sql.ResultSet rs = conect.query("SELECT * FROM producto WHERE estatus = 'Activo' AND cantidad<=12 ORDER BY id_producto");
         try{
             while(rs.next()){
                 modeloProdP.addRow(new Object[]{rs.getString("id_producto"), rs.getString("nombre"), rs.getInt("cantidad")});

@@ -1164,7 +1164,7 @@ public class Excel {
             System.out.println("Utilidad del ejercicio: " + utilidadDelEjercicio);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            GestorErrores.registrar(e);
         }
 
     }

@@ -119,7 +119,7 @@ public class GenTicket {
                     inputStream = new FileInputStream("impresionApartado.txt");
                     Mise.JOption("Ticket generado", "Ticket", JOptionPane.PLAIN_MESSAGE);
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    GestorErrores.registrar(ex);
                 }
                 if (inputStream == null) {
                     return;
@@ -135,7 +135,7 @@ public class GenTicket {
                     try {
                         printJob.print(document, attributeSet);
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        GestorErrores.registrar(ex);
                     }
                 } else {
                     System.out.println("No hay una impresora instalada");
@@ -144,7 +144,7 @@ public class GenTicket {
                 System.out.println("No se encontraron resultados en el ResultSet.");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            GestorErrores.registrar(e);
         }
     }
 
@@ -233,7 +233,7 @@ public class GenTicket {
                 inputStream = new FileInputStream("impresionPagado.txt");
                 Mise.JOption("Ticket generado", "Ticket", JOptionPane.PLAIN_MESSAGE);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                GestorErrores.registrar(ex);
             }
             if (inputStream == null) {
                 return;
@@ -249,13 +249,13 @@ public class GenTicket {
                 try {
                     printJob.print(document, attributeSet);
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    GestorErrores.registrar(ex);
                 }
             } else {
                 System.out.println("No hay una impresora instalada");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            GestorErrores.registrar(e);
         }
     }
 
@@ -347,7 +347,7 @@ public class GenTicket {
             try {
                 inputStream = new java.io.FileInputStream("impresionCotizacion.txt");
                 javax.swing.JOptionPane.showMessageDialog(null, "Ticket de cotización generado", "Ticket", javax.swing.JOptionPane.PLAIN_MESSAGE);
-            } catch (Exception ex) { ex.printStackTrace(); }
+            } catch (Exception ex) { GestorErrores.registrar(ex); }
             if (inputStream == null) return;
 
             javax.print.DocFlavor docFormat = javax.print.DocFlavor.INPUT_STREAM.AUTOSENSE;
@@ -355,10 +355,10 @@ public class GenTicket {
             javax.print.attribute.PrintRequestAttributeSet attrs = new javax.print.attribute.HashPrintRequestAttributeSet();
             javax.print.PrintService ps = javax.print.PrintServiceLookup.lookupDefaultPrintService();
             if (ps != null) {
-                try { ps.createPrintJob().print(document, attrs); } catch (Exception ex) { ex.printStackTrace(); }
+                try { ps.createPrintJob().print(document, attrs); } catch (Exception ex) { GestorErrores.registrar(ex); }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            GestorErrores.registrar(e);
         }
     }
 

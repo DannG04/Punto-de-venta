@@ -114,6 +114,7 @@ public class InventarioP extends javax.swing.JPanel {
         agB = new javax.swing.JButton();
         eliB = new javax.swing.JButton();
         actB = new javax.swing.JButton();
+        bajasB = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaVentas = new javax.swing.JTable();
 
@@ -659,6 +660,20 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 30, 10, 30);
         panelBotones.add(actB, gridBagConstraints);
 
+        bajasB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        bajasB.setForeground(new java.awt.Color(78, 150, 150));
+        bajasB.setText("Dados de baja");
+        bajasB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bajasBActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(10, 30, 10, 30);
+        panelBotones.add(bajasB, gridBagConstraints);
+
         add(panelBotones, java.awt.BorderLayout.EAST);
 
         jScrollPane1.setPreferredSize(new java.awt.Dimension(540, 402));
@@ -699,20 +714,51 @@ public class InventarioP extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void eliBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliBActionPerformed
-        // TODO add your handling code here:
-        
         if(tablaVentas.getSelectedRow() != -1){
-            int resp = Mise.JOptionYesNo("¿Seguro que desea eliminar esta fila?", "Eliminar");
+            int resp = Mise.JOptionYesNo(
+                "¿Dar de baja este producto? Saldrá del inventario activo pero se conservará su historial (kardex). Requiere stock 0.",
+                "Dar de baja");
             if(resp == 0){
                 int a = tablaVentas.convertRowIndexToModel(tablaVentas.getSelectedRow());
-                if(conect.eliminarProducto("" + modelo.getValueAt(a, 0))){//Si se elimina muestra la nueva tabla
+                if(conect.eliminarProducto("" + modelo.getValueAt(a, 0))){//baja lógica; refresca la tabla
                     mostrarTabla("");
                 }
             }
         }
         else
-            Mise.JOption("Debe seleccionar la fila que desea eliminar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            Mise.JOption("Debe seleccionar la fila que desea dar de baja", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
     }//GEN-LAST:event_eliBActionPerformed
+
+    private void bajasBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bajasBActionPerformed
+        java.util.List<String> ids = new java.util.ArrayList<>();
+        java.util.List<String> etiquetas = new java.util.ArrayList<>();
+        java.sql.ResultSet rs = conect.obtenerProductosInactivos();
+        try {
+            while (rs != null && rs.next()) {
+                ids.add(rs.getString("id_producto"));
+                etiquetas.add(rs.getString("id_producto") + " - " + rs.getString("nombre"));
+            }
+            if (rs != null) rs.close();
+        } catch (java.sql.SQLException e) {
+            GestorErrores.registrar(e);
+        }
+        if (etiquetas.isEmpty()) {
+            Mise.JOption("No hay productos dados de baja.", "Productos dados de baja",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        Object sel = javax.swing.JOptionPane.showInputDialog(this,
+                "Seleccione un producto para reactivar:", "Productos dados de baja",
+                javax.swing.JOptionPane.PLAIN_MESSAGE, null,
+                etiquetas.toArray(), etiquetas.get(0));
+        if (sel == null) return;
+        int idx = etiquetas.indexOf(sel.toString());
+        if (idx >= 0 && conect.reactivarProducto(ids.get(idx))) {
+            Mise.JOption("Producto reactivado.", "Productos dados de baja",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            mostrarTabla("");
+        }
+    }//GEN-LAST:event_bajasBActionPerformed
 
     private void agBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agBActionPerformed
         // TODO add your handling code here:
@@ -852,6 +898,34 @@ public class InventarioP extends javax.swing.JPanel {
 
                     String campos[] = {codigoProducto, nom.getText(), cadd.getText(), precMay.getText(), precMen.getText()};
                     Integer idCat = getSelectedCategoriaId();
+
+                    // Flujo de decisión si el código ya existe
+                    String estado = conect.estadoProducto(codigoProducto);
+                    if ("Activo".equals(estado)) {
+                        labelinc.setText("Ya existe un producto activo con ese código");
+                        aux = false;
+                        return;
+                    } else if ("Inactivo".equals(estado)) {
+                        int op = Mise.JOptionYesNo(
+                            "Existe un producto dado de baja con el código " + codigoProducto + ".\n" +
+                            "Sí = es el MISMO producto: reactivar (conserva su historial).\n" +
+                            "No = es un producto NUEVO: archivar el anterior y crear uno nuevo (historial nuevo).",
+                            "Código ya registrado");
+                        if (op == 0) { // reactivar el mismo producto
+                            conect.reactivarProducto(codigoProducto);
+                            mostrarTabla("");
+                            jDialog1.setVisible(false);
+                            aux = false;
+                            return;
+                        } else if (op == 1) { // producto nuevo: liberar el código
+                            conect.archivarProducto(codigoProducto);
+                            // continúa al INSERT con el código liberado
+                        } else { // cancelado
+                            aux = false;
+                            return;
+                        }
+                    }
+
                     conect.insertarProductoConCodigoYCategoria(campos, idCat, maxDesc);
 
                     // Guardar campos de Compras (código de barras, IVA, unidades, factor)
@@ -1004,7 +1078,7 @@ public class InventarioP extends javax.swing.JPanel {
 
     private void buskProdKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buskProdKeyReleased
         String busqueda = buskProd.getText();
-        String instruccion = "SELECT p.*, c.nombre AS categoria_nombre FROM producto p LEFT JOIN categoria c ON p.id_categoria = c.id_categoria WHERE p.nombre LIKE '%" + busqueda + "%' OR CAST(p.id_producto AS TEXT) LIKE '%" + busqueda + "%' ORDER BY p.id_producto;";
+        String instruccion = "SELECT p.*, c.nombre AS categoria_nombre FROM producto p LEFT JOIN categoria c ON p.id_categoria = c.id_categoria WHERE p.estatus = 'Activo' AND (p.nombre LIKE '%" + busqueda + "%' OR CAST(p.id_producto AS TEXT) LIKE '%" + busqueda + "%') ORDER BY p.id_producto;";
         if(!buskProd.getText().isEmpty()){
             mostrarTabla(instruccion);
         }
@@ -1070,12 +1144,12 @@ public class InventarioP extends javax.swing.JPanel {
     public final void mostrarTabla(String inst){
         Mise.limpiarTabla(modelo);
         if(inst.isEmpty()){
-            inst = "SELECT p.*, c.nombre AS categoria_nombre FROM producto p LEFT JOIN categoria c ON p.id_categoria = c.id_categoria ORDER BY p.id_producto";
+            inst = "SELECT p.*, c.nombre AS categoria_nombre FROM producto p LEFT JOIN categoria c ON p.id_categoria = c.id_categoria WHERE p.estatus = 'Activo' ORDER BY p.id_producto";
         }
         java.sql.ResultSet rs = conect.query(inst);
         if (rs == null) {
             // Fallback: la tabla categoria puede no existir aún
-            rs = conect.query("SELECT *, '' AS categoria_nombre FROM producto ORDER BY id_producto");
+            rs = conect.query("SELECT *, '' AS categoria_nombre FROM producto WHERE estatus = 'Activo' ORDER BY id_producto");
         }
         llenarTabla(rs);
     }
@@ -1243,7 +1317,8 @@ public class InventarioP extends javax.swing.JPanel {
                 Mise.JOption("Código de barras guardado exitosamente en:\n" + archivo.getAbsolutePath(), 
                             "Guardado", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             } catch(java.io.IOException ex){
-                Mise.JOption("Error al guardar el archivo: " + ex.getMessage(), 
+                GestorErrores.registrar(ex);
+                Mise.JOption("No se pudo guardar el archivo. Intente de nuevo.",
                             "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -1301,7 +1376,8 @@ public class InventarioP extends javax.swing.JPanel {
                             "Imprimir", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (java.awt.print.PrinterException ex) {
-            Mise.JOption("Error al imprimir: " + ex.getMessage(), 
+            GestorErrores.registrar(ex);
+            Mise.JOption("No se pudo imprimir. Verifique la impresora e intente de nuevo.",
                         "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -1430,7 +1506,7 @@ public class InventarioP extends javax.swing.JPanel {
             mostrarTabla("");
         } else {
             int idCat = filtroCategoriaIds.get(idx);
-            String inst = "SELECT p.*, c.nombre AS categoria_nombre FROM producto p LEFT JOIN categoria c ON p.id_categoria = c.id_categoria WHERE p.id_categoria = " + idCat + " ORDER BY p.id_producto";
+            String inst = "SELECT p.*, c.nombre AS categoria_nombre FROM producto p LEFT JOIN categoria c ON p.id_categoria = c.id_categoria WHERE p.id_categoria = " + idCat + " AND p.estatus = 'Activo' ORDER BY p.id_producto";
             mostrarTabla(inst);
         }
     }
@@ -1447,6 +1523,7 @@ public class InventarioP extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> cmbOrdenInv;
     private javax.swing.JFormattedTextField codigoProvField;
     private javax.swing.JButton eliB;
+    private javax.swing.JButton bajasB;
     private javax.swing.JComboBox<String> filtroCategoria;
     private javax.swing.JLabel filtroCategoriaLabel;
     private javax.swing.JButton hechoAct;
