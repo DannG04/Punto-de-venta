@@ -1019,7 +1019,8 @@ public class Interfaz extends javax.swing.JFrame {
                 }
                 btnServidor.setText("Detener servidor");
             } catch (java.io.IOException ex) {
-                Mise.JOption("No se pudo iniciar el servidor:\n" + ex.getMessage(),
+                GestorErrores.registrar(ex);
+                Mise.JOption("No se pudo iniciar el servidor. Intente de nuevo.",
                         "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         } else {

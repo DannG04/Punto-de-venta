@@ -30,3 +30,6 @@ nul
 #pero versiona los scripts del parche en installer/update/
 /installer/*
 !/installer/update/
+
+# Logs de la aplicación
+logs/

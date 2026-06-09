@@ -1,3 +1,4 @@
+BEGIN;
 ALTER TABLE otras_ganancias 
 ALTER COLUMN id_otras_ganancias TYPE VARCHAR(18);
 
@@ -32,3 +33,4 @@ BEGIN
     END IF;
 END;
 $$ LANGUAGE plpgsql;
+COMMIT;
