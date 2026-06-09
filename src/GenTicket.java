@@ -415,7 +415,17 @@ public class GenTicket {
             DateFormat fmtHora = new SimpleDateFormat("HH:mm:ss");
             Date now = new Date();
 
-            int totalRows = 14 + prods.size();
+            // Pre-calculate row counts accounting for text wrapping
+            final int PROD_WIDTH = 17;  // PRODUCTO column: cols 1-18
+            final int BODY_WIDTH = 51;  // full-width lines: cols 1-52
+            int prodRows = 0;
+            for (String[] p : prods) {
+                prodRows += Math.max(1, (int) Math.ceil(p[0].length() / (double) PROD_WIDTH));
+            }
+            String footerMsg = "-------" + msgTicket + "-------";
+            int footerLines = Math.max(1, (int) Math.ceil(footerMsg.length() / (double) BODY_WIDTH));
+            // 13 fixed header rows + products + separator + total + footer rows + 1 buffer
+            int totalRows = 13 + prodRows + 2 + footerLines + 1;
             PrinterMatrix printer = new PrinterMatrix();
             printer.setOutSize(totalRows, 52);
 
@@ -438,14 +448,16 @@ public class GenTicket {
                    printer.printTextWrap(row, row+1, 38, 44, "TOTAL");
             for (String[] p : prods) {
                 row++;
-                printer.printTextWrap(row, row+1,  1, 18, p[0]);
-                printer.printTextWrap(row, row+1, 20, 25, p[1]);
-                printer.printTextWrap(row, row+1, 27, 36, p[2]);
-                printer.printTextWrap(row, row+1, 38, 44, p[3]);
+                int nameLines = Math.max(1, (int) Math.ceil(p[0].length() / (double) PROD_WIDTH));
+                printer.printTextWrap(row, row + nameLines,  1, 18, p[0]);
+                printer.printTextWrap(row, row + nameLines, 20, 25, p[1]);
+                printer.printTextWrap(row, row + nameLines, 27, 36, p[2]);
+                printer.printTextWrap(row, row + nameLines, 38, 44, p[3]);
+                row += nameLines - 1;
             }
             row++; printer.printTextWrap(row, row+1, 1, 52, "-------------------------------------------");
             row++; printer.printTextWrap(row, row+1, 1, 52, "Total: $" + String.format("%.2f", totalVenta));
-            row++; printer.printTextWrap(row, row+1, 1, 52, "-------" + msgTicket + "-------");
+            row++; printer.printTextWrap(row, row + footerLines, 1, 52, footerMsg);
 
             printer.toFile("impresionVenta.txt");
 
