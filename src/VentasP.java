@@ -695,7 +695,7 @@ public class VentasP extends javax.swing.JPanel {
 
         jLabel10.setFont(new java.awt.Font("Noto Serif", 1, 36)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(78, 150, 150));
-        jLabel10.setIcon(SvgIcon.load("/icons/lupa.svg", SvgIcon.LARGE));
+        jLabel10.setIcon(SvgIcon.load("/icons/lupaTitulo.svg", 36));
         jLabel10.setText("Buscar");
         pnlBuscar.add(jLabel10);
 
