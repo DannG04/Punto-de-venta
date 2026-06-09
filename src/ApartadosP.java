@@ -1069,7 +1069,7 @@ public class ApartadosP extends javax.swing.JPanel {
     
     public void mostrarTablaPro(){//Muestra la tabla de productos
         Mise.limpiarTabla(modeloProd);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM producto ORDER BY id_producto");
+        java.sql.ResultSet rs = conect.query("SELECT * FROM producto WHERE estatus = 'Activo' ORDER BY id_producto");
         if(rs != null){
             try{
                 while(rs.next()){

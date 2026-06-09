@@ -1622,7 +1622,7 @@ public class ComprasP extends javax.swing.JPanel {
     
     public void mostrarTablaProd(){
         Mise.limpiarTabla(modeloProd);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM producto ORDER BY id_producto");
+        java.sql.ResultSet rs = conect.query("SELECT * FROM producto WHERE estatus = 'Activo' ORDER BY id_producto");
         try{
             while(rs.next()){
                 modeloProd.addRow(new Object[]{rs.getString("id_producto"), rs.getString("nombre")});

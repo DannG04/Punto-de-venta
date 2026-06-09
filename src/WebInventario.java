@@ -189,7 +189,7 @@ public class WebInventario extends NanoWSD {
                 "SELECT p.id_producto, p.nombre, p.cantidad, p.precio_mayoreo, p.precio_menudeo, "
                 + "COALESCE(c.nombre,'Sin categoría') AS categoria, p.max_descuento "
                 + "FROM producto p LEFT JOIN categoria c ON p.id_categoria=c.id_categoria "
-                + "WHERE p.id_producto=?");
+                + "WHERE p.estatus = 'Activo' AND p.id_producto=?");
             ps.setString(1, codigo);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
@@ -303,7 +303,7 @@ public class WebInventario extends NanoWSD {
                 "SELECT p.id_producto, p.nombre, p.cantidad, p.precio_mayoreo, p.precio_menudeo, "
                 + "COALESCE(c.nombre,'Sin categoría') AS categoria "
                 + "FROM producto p LEFT JOIN categoria c ON p.id_categoria=c.id_categoria "
-                + "WHERE p.cantidad<=? ORDER BY p.cantidad ASC, p.nombre ASC");
+                + "WHERE p.estatus = 'Activo' AND p.cantidad<=? ORDER BY p.cantidad ASC, p.nombre ASC");
             ps.setInt(1, umbral);
             ResultSet rs = ps.executeQuery();
             boolean primero = true;
