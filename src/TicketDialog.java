@@ -43,7 +43,8 @@ public class TicketDialog extends javax.swing.JDialog {
         pnlBotones.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         btnImprimir.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        btnImprimir.setForeground(new java.awt.Color(78, 150, 150));
+        btnImprimir.setBackground(new java.awt.Color(153, 204, 255));
+        btnImprimir.setIcon(SvgIcon.load("/icons/imprimir.svg", SvgIcon.MEDIUM));
         btnImprimir.setText("Imprimir");
         btnImprimir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -53,6 +54,8 @@ public class TicketDialog extends javax.swing.JDialog {
         pnlBotones.add(btnImprimir);
 
         btnCerrar.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
+        btnCerrar.setBackground(new java.awt.Color(252, 149, 149));
+        btnCerrar.setIcon(SvgIcon.load("/icons/cancelar.svg", SvgIcon.MEDIUM));
         btnCerrar.setText("Cerrar");
         btnCerrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

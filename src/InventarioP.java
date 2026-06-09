@@ -661,8 +661,10 @@ public class InventarioP extends javax.swing.JPanel {
         panelBotones.add(actB, gridBagConstraints);
 
         bajasB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        bajasB.setForeground(new java.awt.Color(78, 150, 150));
+        bajasB.setBackground(new java.awt.Color(204, 226, 249));
+        bajasB.setIcon(SvgIcon.load("/icons/closeEye.svg", SvgIcon.MEDIUM));
         bajasB.setText("Dados de baja");
+        bajasB.setPreferredSize(new java.awt.Dimension(160, 33));
         bajasB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bajasBActionPerformed(evt);
