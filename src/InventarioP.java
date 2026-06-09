@@ -661,10 +661,10 @@ public class InventarioP extends javax.swing.JPanel {
         panelBotones.add(actB, gridBagConstraints);
 
         bajasB.setFont(new java.awt.Font("Noto Serif", 1, 18)); // NOI18N
-        bajasB.setBackground(new java.awt.Color(204, 226, 249));
-        bajasB.setIcon(SvgIcon.load("/icons/closeEye.svg", SvgIcon.MEDIUM));
-        bajasB.setText("Dados de baja");
-        bajasB.setPreferredSize(new java.awt.Dimension(220, 33));
+        bajasB.setBackground(new java.awt.Color(176, 224, 230));
+        bajasB.setText("<html><center>Dados<br>de baja</center></html>");
+        bajasB.setIcon(SvgIcon.load("/icons/down_product.svg", SvgIcon.MEDIUM));
+        bajasB.setPreferredSize(new java.awt.Dimension(160, 66));
         bajasB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bajasBActionPerformed(evt);
@@ -673,6 +673,7 @@ public class InventarioP extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridheight = 2;
         gridBagConstraints.insets = new java.awt.Insets(10, 30, 10, 30);
         panelBotones.add(bajasB, gridBagConstraints);
 

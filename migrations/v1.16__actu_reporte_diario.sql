@@ -1,6 +1,8 @@
 -- FUNCTION: public.reporte_diario(date)
+BEGIN;
+DROP FUNCTION IF EXISTS public.reporte_diario();
 
--- DROP FUNCTION IF EXISTS public.reporte_diario(date);
+DROP FUNCTION IF EXISTS public.reporte_diario(date);
 
 CREATE OR REPLACE FUNCTION public.reporte_diario(
 	p_fecha date)
@@ -110,3 +112,4 @@ BEGIN
 	END IF;
 END;
 $BODY$;
+COMMIT;
