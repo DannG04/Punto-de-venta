@@ -21,6 +21,24 @@ public class ComprasP extends javax.swing.JPanel {
 
     boolean ins = true;
 
+    // Carrito de captura: los renglones viven en memoria hasta "Guardar factura".
+    // modoCarrito = true al registrar una compra nueva; false al editar una compra ya guardada.
+    private boolean modoCarrito = false;
+    private final java.util.List<ConexionBD.RenglonCompra> carrito = new java.util.ArrayList<>();
+    // Encabezado pendiente (solo en modoCarrito, aún no escrito en la BD)
+    private int headIdProveedor = -1;
+    private String headFolio = "", headFechaSql = "", headOrigen = "", headDescripcion = "";
+    // id del borrador que se está capturando/retomando (0 = ninguno todavía)
+    private int idBorradorActual = 0;
+    // botón "Dejar pendiente" (se construye en el constructor, junto a "Guardar factura")
+    private javax.swing.JButton dejarPendienteBtn;
+    // botón "Descartar pendiente" (panel lateral; elimina un borrador 'En proceso')
+    private javax.swing.JButton descartarPendienteBtn;
+    // selector de fecha de factura: botón que muestra la fecha y abre el CalendarioPanel
+    // (mismo componente que usa el reporte diario). Reemplaza al campo de texto generado.
+    private javax.swing.JButton fechaFactBtn;
+    private java.time.LocalDate fechaFacturaSel = java.time.LocalDate.now();
+
     // Proveedor
     private java.util.ArrayList<Integer> proveedorIds = new java.util.ArrayList<>();
 
@@ -46,6 +64,153 @@ public class ComprasP extends javax.swing.JPanel {
         modeloProd = (DefaultTableModel)tablaProd.getModel();
         construirNuevoProvDialog();
         agregarBotonesInfo();
+        construirBotonDejarPendiente();
+        construirBotonDescartarPendiente();
+        construirSelectorFecha();
+    }
+
+    private void construirSelectorFecha() {
+        // Reemplaza el campo de texto de fecha por un botón que muestra la fecha elegida y abre
+        // el CalendarioPanel (igual que el reporte diario), para agilizar la captura.
+        fechaFactBtn = new javax.swing.JButton();
+        fechaFactBtn.setFont(new java.awt.Font("Noto Serif", 0, 18));
+        fechaFactBtn.setPreferredSize(new java.awt.Dimension(250, 30));
+        fechaFactBtn.setMinimumSize(new java.awt.Dimension(250, 30));
+        fechaFactBtn.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        fechaFactBtn.setIcon(SvgIcon.load("/icons/reporteDiario.svg", SvgIcon.SMALL));
+        fechaFactBtn.setToolTipText("Clic para elegir la fecha de la factura en el calendario.");
+        fechaFactBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                abrirCalendarioFactura();
+            }
+        });
+        actualizarTextoFechaBtn();
+        // Sustituir el campo de texto generado por el botón, conservando su posición en la rejilla.
+        java.awt.Container cont = fechaFactF.getParent();
+        if (cont != null && cont.getLayout() instanceof java.awt.GridBagLayout) {
+            java.awt.GridBagLayout gbl = (java.awt.GridBagLayout) cont.getLayout();
+            java.awt.GridBagConstraints gbc = gbl.getConstraints(fechaFactF);
+            cont.remove(fechaFactF);
+            cont.add(fechaFactBtn, gbc);
+            cont.revalidate();
+            cont.repaint();
+        }
+    }
+
+    private void actualizarTextoFechaBtn() {
+        if (fechaFacturaSel == null) {
+            fechaFactBtn.setText("Seleccionar fecha…");
+        } else {
+            fechaFactBtn.setText(fechaFacturaSel.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        }
+    }
+
+    private void abrirCalendarioFactura() {
+        CalendarioPanel calPanel = new CalendarioPanel();
+        if (fechaFacturaSel != null) calPanel.seleccionarFecha(fechaFacturaSel);
+
+        javax.swing.JButton btnAceptar = new javax.swing.JButton("Aceptar");
+        javax.swing.JButton btnCancelar = new javax.swing.JButton("Cancelar");
+        javax.swing.JPanel btnPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 6, 0));
+        btnPanel.add(btnCancelar);
+        btnPanel.add(btnAceptar);
+
+        javax.swing.JPanel contenido = new javax.swing.JPanel(new java.awt.BorderLayout(0, 10));
+        contenido.setBorder(javax.swing.BorderFactory.createEmptyBorder(12, 12, 8, 12));
+        contenido.add(new javax.swing.JLabel("Seleccione la fecha de la factura:"), java.awt.BorderLayout.NORTH);
+        contenido.add(calPanel, java.awt.BorderLayout.CENTER);
+        contenido.add(btnPanel, java.awt.BorderLayout.SOUTH);
+
+        javax.swing.JDialog dialog = new javax.swing.JDialog(comDialog, "Fecha de la factura", true);
+        dialog.setContentPane(contenido);
+        dialog.pack();
+        dialog.setLocationRelativeTo(comDialog);
+        dialog.setAlwaysOnTop(true);
+
+        final boolean[] ok = {false};
+        btnAceptar.addActionListener(e -> { ok[0] = true; dialog.dispose(); });
+        btnCancelar.addActionListener(e -> dialog.dispose());
+        dialog.setVisible(true);
+
+        if (ok[0]) {
+            fechaFacturaSel = calPanel.getFechaSeleccionada();
+            actualizarTextoFechaBtn();
+        }
+    }
+
+    private void construirBotonDescartarPendiente() {
+        descartarPendienteBtn = new javax.swing.JButton("Descartar pendiente");
+        descartarPendienteBtn.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        descartarPendienteBtn.setBackground(new java.awt.Color(252, 149, 149));
+        descartarPendienteBtn.setIcon(SvgIcon.load("/icons/delete.svg", SvgIcon.MEDIUM));
+        descartarPendienteBtn.setToolTipText("Elimina una factura 'En proceso' seleccionada. No afecta inventario.");
+        java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gbc.insets = new java.awt.Insets(10, 30, 10, 30);
+        descartarPendienteBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                descartarPendienteActionPerformed(evt);
+            }
+        });
+        jPanel3.setPreferredSize(new java.awt.Dimension(150, 160));
+        jPanel3.add(descartarPendienteBtn, gbc);
+        jPanel3.revalidate();
+    }
+
+    private void descartarPendienteActionPerformed(java.awt.event.ActionEvent evt) {
+        if (capturaEnProceso()) return;
+        int row = tablaCompras.getSelectedRow();
+        if (row == -1) {
+            Mise.JOption("Seleccione la factura 'En proceso' que desea descartar.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String estado = "" + tablaCompras.getValueAt(row, 5);
+        if (!"En proceso".equals(estado)) {
+            Mise.JOption("Solo se pueden descartar facturas 'En proceso'.\nLas compras terminadas no se eliminan desde aquí.", "Aviso", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        int res = Mise.JOptionYesNo("¿Descartar definitivamente esta factura pendiente?\n"
+            + "Se perderá la captura del borrador (no afecta inventario).", "Descartar pendiente");
+        if (res != 0) return;
+        conect.eliminarBorrador(Integer.parseInt("" + tablaCompras.getValueAt(row, 0)));
+        mostrarTablaCom();
+    }
+
+    private void construirBotonDejarPendiente() {
+        dejarPendienteBtn = new javax.swing.JButton("Dejar pendiente");
+        dejarPendienteBtn.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        dejarPendienteBtn.setBackground(new java.awt.Color(255, 221, 148));
+        dejarPendienteBtn.setToolTipText("Guarda la factura como 'En proceso' para terminarla después. No afecta inventario.");
+        dejarPendienteBtn.setPreferredSize(new java.awt.Dimension(200, 33));
+        dejarPendienteBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dejarPendienteActionPerformed(evt);
+            }
+        });
+
+        // Reorganizar panelTotales en DOS filas para que los botones no se salgan de la pantalla
+        // en monitores pequeños: arriba los totales, abajo los botones.
+        panelTotales.removeAll();
+        panelTotales.setLayout(new java.awt.BorderLayout());
+
+        javax.swing.JPanel filaTotales = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 15, 4));
+        filaTotales.add(lblSubtotal);
+        filaTotales.add(lblIva);
+        filaTotales.add(lblTotal);
+        filaTotales.add(lblTotalFactura);
+        filaTotales.add(totalFacturaF);
+        filaTotales.add(lblCuadre);
+
+        javax.swing.JPanel filaBotones = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 15, 4));
+        filaBotones.add(dejarPendienteBtn);
+        filaBotones.add(guardarFacturaBtn);
+
+        panelTotales.add(filaTotales, java.awt.BorderLayout.NORTH);
+        panelTotales.add(filaBotones, java.awt.BorderLayout.SOUTH);
+        panelTotales.revalidate();
     }
 
     /**
@@ -913,11 +1078,11 @@ public class ComprasP extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Compra", "Folio", "Proveedor", "Fecha", "Total"
+                "Compra", "Folio", "Proveedor", "Fecha", "Total", "Estado"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -972,7 +1137,9 @@ public class ComprasP extends javax.swing.JPanel {
     private void agreCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agreCompraActionPerformed
         if (capturaEnProceso()) return;
         cargarProveedores();
-        folioF.setText(""); fechaFactF.setText(""); origenF.setText(""); rasF.setText(""); valRfc.setText("");
+        folioF.setText(""); origenF.setText(""); rasF.setText(""); valRfc.setText("");
+        fechaFacturaSel = java.time.LocalDate.now();   // por defecto, hoy
+        actualizarTextoFechaBtn();
         comDialog.setVisible(true);
     }//GEN-LAST:event_agreCompraActionPerformed
 
@@ -1000,8 +1167,17 @@ public class ComprasP extends javax.swing.JPanel {
 
     private void actCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actCompraActionPerformed
         if (capturaEnProceso()) return;
-        if(tablaCompras.getSelectedRow() != -1){
-            id_compra = "" + tablaCompras.getValueAt(tablaCompras.getSelectedRow(), 0);
+        int row = tablaCompras.getSelectedRow();
+        if(row != -1){
+            String estado = "" + tablaCompras.getValueAt(row, 5);
+            if ("En proceso".equals(estado)) {
+                // Es un borrador: se retoma en modo carrito donde se dejó.
+                retomarBorrador(Integer.parseInt("" + tablaCompras.getValueAt(row, 0)));
+                return;
+            }
+            modoCarrito = false;
+            idBorradorActual = 0;
+            id_compra = "" + tablaCompras.getValueAt(row, 0);
             mostrarTablaProd();
             mostrarTablaProdCom();
             actualizarTotalesUI();
@@ -1012,6 +1188,34 @@ public class ComprasP extends javax.swing.JPanel {
             Mise.JOption("Debe seleccionar la fila que desea actualizar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_actCompraActionPerformed
+
+    private void retomarBorrador(int idBorrador) {
+        String[] cab = conect.obtenerCabeceraBorrador(idBorrador);
+        if (cab == null) {
+            Mise.JOption("No se pudo cargar el borrador.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        idBorradorActual = idBorrador;
+        modoCarrito = true;
+        headIdProveedor = Integer.parseInt(cab[0]);
+        headFolio = cab[1];
+        headFechaSql = cab[2];
+        headOrigen = cab[3];
+        headDescripcion = cab[4];
+        carrito.clear();
+        carrito.addAll(conect.obtenerRenglonesBorrador(idBorrador));
+        id_compra = "";
+        ins = true;
+        cargarCategoriasCombo();
+        mostrarTablaProd();
+        mostrarTablaProdCom();
+        limpiarCapturaRenglon();
+        totalFacturaF.setText(cab[5]);
+        lblCuadre.setText("");
+        actualizarTotalesUI();
+        ajustarDialogoProd();
+        prodComDialog.setVisible(true);
+    }
 
     private void hechoB1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoB1ActionPerformed
         int idProvSeleccionado = -1;
@@ -1025,31 +1229,31 @@ public class ComprasP extends javax.swing.JPanel {
         }
 
         String fechaSql = "";
-        String fechaUi = fechaFactF.getText().trim();
-        if (!fechaUi.isEmpty()) {
-            try {
-                java.text.SimpleDateFormat in = new java.text.SimpleDateFormat("dd/MM/yyyy");
-                java.text.SimpleDateFormat out = new java.text.SimpleDateFormat("yyyy-MM-dd");
-                in.setLenient(false);
-                fechaSql = out.format(in.parse(fechaUi));
-            } catch (java.text.ParseException ex) {
-                Mise.JOption("Fecha de factura inválida (use dd/MM/yyyy).", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        if (fechaFacturaSel != null) {
+            fechaSql = fechaFacturaSel.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         }
 
-        String descripcion = rasF.getText().trim();
-        String[] campos = { Interfaz.idVendedor, descripcion, "0", folio, fechaSql, origenF.getText().trim() };
-        id_compra = conect.insertarCompraConProveedor(campos, idProvSeleccionado);
-        if (id_compra == null || id_compra.isEmpty()) return;
+        // No se escribe nada en la BD todavía: el encabezado queda en memoria y los
+        // renglones se capturan en el carrito. Todo se guarda junto en "Guardar factura".
+        headIdProveedor = idProvSeleccionado;
+        headFolio = folio;
+        headFechaSql = fechaSql;
+        headOrigen = origenF.getText().trim();
+        headDescripcion = rasF.getText().trim();
+        modoCarrito = true;
+        idBorradorActual = 0;
+        carrito.clear();
+        id_compra = "";
+        ins = true;
 
+        cargarCategoriasCombo();
         mostrarTablaProd();
         mostrarTablaProdCom();
+        limpiarCapturaRenglon();
         totalFacturaF.setText("");
         lblCuadre.setText("");
         actualizarTotalesUI();
         comDialog.setVisible(false);
-        cargarCategoriasCombo();
         ajustarDialogoProd();
         prodComDialog.setVisible(true);
     }//GEN-LAST:event_hechoB1ActionPerformed
@@ -1127,6 +1331,12 @@ public class ComprasP extends javax.swing.JPanel {
         String idProd = conect.resolverCodigo(codigo);
         boolean nuevo = (idProd == null);
 
+        ConexionBD.RenglonCompra r = new ConexionBD.RenglonCompra();
+        r.nuevo = nuevo;
+        r.precioCompra = precP.getText().trim();
+        r.cantidad = cantP.getText().trim();
+        r.factor = factorStr;
+
         if (nuevo) {
             if (!codigo.matches("^[A-Za-z0-9_-]{3,50}$")) {
                 Mise.JOption("El código interno debe ser 3-50 caracteres (letras, números, - o _).", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -1171,16 +1381,63 @@ public class ComprasP extends javax.swing.JPanel {
             int idxCat = categoriaCombo.getSelectedIndex();
             if (idxCat > 0 && idxCat < categoriaIds.size()) idCategoria = categoriaIds.get(idxCat);
 
-            String[] d = { codigo, conceptoP.getText().trim(), cb,
-                (String) unidadCompraP.getSelectedItem(), (String) unidadVentaP.getSelectedItem(),
-                factorStr, ivaP.isSelected() ? "t" : "f",
-                pMenudeoP.getText().trim(), pMayoreoP.getText().trim(), precP.getText().trim() };
-            if (!conect.crearProductoDesdeCompra(d, idCategoria, maxDescuento)) return;
+            // El código de barras no debe repetirse en otro renglón nuevo del mismo carrito.
+            if (modoCarrito && !cb.isEmpty()) {
+                for (ConexionBD.RenglonCompra rc : carrito) {
+                    if (!codigo.equals(rc.idProducto) && cb.equals(rc.codigoBarras)) {
+                        Mise.JOption("Ese código de barras ya está en otro renglón de esta factura.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+            }
             idProd = codigo;
+            r.idProducto = codigo;
+            r.nombre = conceptoP.getText().trim();
+            r.codigoBarras = cb;
+            r.unidadCompra = (String) unidadCompraP.getSelectedItem();
+            r.unidadVenta = (String) unidadVentaP.getSelectedItem();
+            r.llevaIva = ivaP.isSelected();
+            r.precioMenudeo = pMenudeoP.getText().trim();
+            r.precioMayoreo = pMayoreoP.getText().trim();
+            r.maxDescuento = maxDescuento;
+            r.idCategoria = idCategoria;
+
+            // En modo edición (compra ya guardada) el producto se crea de inmediato.
+            if (!modoCarrito) {
+                String[] d = { codigo, conceptoP.getText().trim(), cb,
+                    (String) unidadCompraP.getSelectedItem(), (String) unidadVentaP.getSelectedItem(),
+                    factorStr, ivaP.isSelected() ? "t" : "f",
+                    pMenudeoP.getText().trim(), pMayoreoP.getText().trim(), precP.getText().trim() };
+                if (!conect.crearProductoDesdeCompra(d, idCategoria, maxDescuento)) return;
+            }
+        } else {
+            r.idProducto = idProd;
+            String[] p = conect.obtenerProductoParaCompra(idProd);
+            if (p != null) {
+                r.nombre = p[0];
+                r.codigoBarras = p[1];
+                r.unidadCompra = p[2];
+                r.unidadVenta = p[3];
+                r.llevaIva = "t".equals(p[5]);
+            } else {
+                r.nombre = conceptoP.getText().trim();
+                r.unidadCompra = (String) unidadCompraP.getSelectedItem();
+                r.unidadVenta = (String) unidadVentaP.getSelectedItem();
+                r.llevaIva = ivaP.isSelected();
+            }
         }
 
-        String[] campos = { id_compra, idProd, precP.getText().trim(), cantP.getText().trim(), factorStr };
-        conect.insertarProdCompra(campos, ins);
+        if (modoCarrito) {
+            // Upsert por código: si el producto ya está en el carrito, se reemplaza el renglón.
+            int idxExist = -1;
+            for (int i = 0; i < carrito.size(); i++) {
+                if (carrito.get(i).idProducto.equals(r.idProducto)) { idxExist = i; break; }
+            }
+            if (idxExist >= 0) carrito.set(idxExist, r); else carrito.add(r);
+        } else {
+            String[] campos = { id_compra, idProd, precP.getText().trim(), cantP.getText().trim(), factorStr };
+            conect.insertarProdCompra(campos, ins);
+        }
         ins = true;
         limpiarCapturaRenglon();
         mostrarTablaProdCom();
@@ -1191,13 +1448,21 @@ public class ComprasP extends javax.swing.JPanel {
         codP.setText(""); codBarrasP.setText(""); conceptoP.setText("");
         cantP.setText(""); precP.setText(""); factorP.setText(""); margenP.setText("");
         pMenudeoP.setText(""); pMayoreoP.setText(""); maxDescuentoP.setText("");
-        categoriaCombo.setSelectedIndex(0);
+        if (categoriaCombo.getItemCount() > 0) categoriaCombo.setSelectedIndex(0);
         ivaP.setSelected(false); estadoP.setText("");
         setCamposNuevo(true);
     }
 
     private double[] calcularTotales() {
         double subtotal = 0, iva = 0;
+        if (modoCarrito) {
+            for (ConexionBD.RenglonCompra r : carrito) {
+                double imp = parseD(r.precioCompra) * parseD(r.cantidad);
+                subtotal += imp;
+                if (r.llevaIva) iva += imp * 0.16;
+            }
+            return new double[]{ subtotal, iva, subtotal + iva };
+        }
         java.sql.ResultSet rs = conect.query(
             "SELECT precio_total, COALESCE(lleva_iva,false) iva FROM compra_producto WHERE id_compra='" + id_compra + "';");
         try {
@@ -1208,6 +1473,10 @@ public class ComprasP extends javax.swing.JPanel {
             }
         } catch (java.sql.SQLException e) { System.out.println("Error al calcular totales"); }
         return new double[]{ subtotal, iva, subtotal + iva };
+    }
+
+    private double parseD(String s) {
+        try { return Double.parseDouble(s.trim()); } catch (Exception e) { return 0; }
     }
 
     private void actualizarTotalesUI() {
@@ -1240,18 +1509,80 @@ public class ComprasP extends javax.swing.JPanel {
         }
         double[] t = calcularTotales();
         String txt = totalFacturaF.getText().trim();
-        if (!txt.isEmpty()) {
+        if (modoCarrito) {
+            // Al terminar la factura el Total en factura es OBLIGATORIO, para verificar el cuadre sí o sí.
+            if (txt.isEmpty()) {
+                Mise.JOption("Escriba el Total en factura para poder guardar (es obligatorio).", "Falta el total", javax.swing.JOptionPane.WARNING_MESSAGE);
+                totalFacturaF.requestFocus();
+                return;
+            }
+            double totalFact;
             try {
-                if (Math.abs(Double.parseDouble(txt) - t[2]) > 0.50) {
-                    int r = Mise.JOptionYesNo("El total calculado ($" + String.format(java.util.Locale.US,"%.2f",t[2])
-                        + ") no cuadra con el de la factura ($" + txt + ").\n¿Guardar de todos modos?", "Totales no cuadran");
-                    if (r != 0) return;
-                }
-            } catch (NumberFormatException ignored) {}
+                totalFact = Double.parseDouble(txt);
+            } catch (NumberFormatException e) {
+                Mise.JOption("El Total en factura debe ser un número.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                totalFacturaF.requestFocus();
+                return;
+            }
+            if (Math.abs(totalFact - t[2]) > 0.50) {
+                int r = Mise.JOptionYesNo("El total calculado ($" + String.format(java.util.Locale.US,"%.2f",t[2])
+                    + ") NO cuadra con el de la factura ($" + String.format(java.util.Locale.US,"%.2f",totalFact) + ").\n"
+                    + "¿Seguro que desea continuar? Su factura no cuadra.", "La factura no cuadra");
+                if (r != 0) return;
+            }
+            // Única escritura a inventario: todo el carrito se guarda en una sola transacción
+            // y, si venía de un borrador, se elimina dentro de la misma transacción.
+            String[] cab = { Interfaz.idVendedor, headDescripcion, headFolio, headFechaSql, headOrigen };
+            String idNueva = conect.guardarFacturaCompleta(cab, headIdProveedor, carrito, t[0], t[1], t[2], idBorradorActual);
+            if (idNueva == null || idNueva.isEmpty()) {
+                // Falló y se revirtió todo: no se cierra para no perder la captura.
+                Mise.JOption("No se pudo guardar la factura. Revise los datos e intente de nuevo.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            id_compra = idNueva;
+            carrito.clear();
+            modoCarrito = false;
+            idBorradorActual = 0;
+        } else {
+            // Edición de una compra ya terminada: el total en factura sigue siendo opcional.
+            if (!txt.isEmpty()) {
+                try {
+                    if (Math.abs(Double.parseDouble(txt) - t[2]) > 0.50) {
+                        int r = Mise.JOptionYesNo("El total calculado ($" + String.format(java.util.Locale.US,"%.2f",t[2])
+                            + ") no cuadra con el de la factura ($" + txt + ").\n¿Guardar de todos modos?", "Totales no cuadran");
+                        if (r != 0) return;
+                    }
+                } catch (NumberFormatException ignored) {}
+            }
+            conect.actualizarTotalesCompra(id_compra, t[0], t[1], t[2]);
         }
-        conect.actualizarTotalesCompra(id_compra, t[0], t[1], t[2]);
         prodComDialog.setVisible(false);
         mostrarTablaCom();
+    }
+
+    private void dejarPendienteActionPerformed(java.awt.event.ActionEvent evt) {
+        if (!modoCarrito) {
+            // Solo aplica a una compra en captura (nueva o borrador retomado), no a una ya terminada.
+            Mise.JOption("Esta opción solo aplica al capturar una compra nueva.", "Aviso", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        if (carrito.isEmpty()) {
+            Mise.JOption("Agregue al menos un producto antes de dejar la factura pendiente.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        // El borrador NO toca inventario; el total en factura aquí es opcional.
+        String[] cab = { Interfaz.idVendedor, headDescripcion, headFolio, headFechaSql, headOrigen };
+        Integer id = conect.guardarBorrador(cab, headIdProveedor, totalFacturaF.getText().trim(), carrito, idBorradorActual);
+        if (id == null) {
+            Mise.JOption("No se pudo guardar el borrador. Intente de nuevo.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        carrito.clear();
+        modoCarrito = false;
+        idBorradorActual = 0;
+        prodComDialog.setVisible(false);
+        mostrarTablaCom();
+        Mise.JOption("La factura quedó guardada como 'En proceso'.\nPuede retomarla cuando quiera con el botón Actualizar.", "Guardada", javax.swing.JOptionPane.INFORMATION_MESSAGE);
     }
 
     private boolean capturaEnProceso() {
@@ -1330,23 +1661,55 @@ public class ComprasP extends javax.swing.JPanel {
     }
 
     private void acPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acPActionPerformed
-        if (tablaProdCom.getSelectedRow() == -1) {
+        int row = tablaProdCom.getSelectedRow();
+        if (row == -1) {
             Mise.JOption("Seleccione la fila de la tabla de Productos Comprados que desea actualizar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
             return;
         }
-        codP.setText("" + tablaProdCom.getValueAt(tablaProdCom.getSelectedRow(), 0));
-        cantP.setText("" + tablaProdCom.getValueAt(tablaProdCom.getSelectedRow(), 2));
-        precP.setText("" + tablaProdCom.getValueAt(tablaProdCom.getSelectedRow(), 4));
+        if (modoCarrito) {
+            // El renglón vive en memoria: se puede reeditar por completo, incluso un producto
+            // nuevo (concepto, precios, unidades…), porque todavía no se escribió en inventario.
+            ConexionBD.RenglonCompra r = carrito.get(row);
+            codP.setText(r.idProducto);
+            conceptoP.setText(r.nombre);
+            codBarrasP.setText(r.codigoBarras == null ? "" : r.codigoBarras);
+            unidadCompraP.setSelectedItem(r.unidadCompra);
+            unidadVentaP.setSelectedItem(r.unidadVenta);
+            factorP.setText(r.factor);
+            ivaP.setSelected(r.llevaIva);
+            precP.setText(r.precioCompra);
+            cantP.setText(r.cantidad);
+            if (r.nuevo) {
+                pMenudeoP.setText(r.precioMenudeo);
+                pMayoreoP.setText(r.precioMayoreo);
+                maxDescuentoP.setText(String.valueOf(r.maxDescuento));
+                int idxCat = (r.idCategoria == null) ? 0 : categoriaIds.indexOf(r.idCategoria);
+                categoriaCombo.setSelectedIndex(idxCat < 0 ? 0 : idxCat);
+                setCamposNuevo(true);
+            } else {
+                setCamposNuevo(false);
+            }
+            ins = false;
+            return;
+        }
+        codP.setText("" + tablaProdCom.getValueAt(row, 0));
+        cantP.setText("" + tablaProdCom.getValueAt(row, 2));
+        precP.setText("" + tablaProdCom.getValueAt(row, 4));
         buscarPActionPerformed(null);
         ins = false;
     }//GEN-LAST:event_acPActionPerformed
 
     private void elPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elPActionPerformed
-        if(tablaProdCom.getSelectedRow() == -1){
+        int row = tablaProdCom.getSelectedRow();
+        if(row == -1){
             Mise.JOption("Seleccione la fila de la tabla de Productos Comprados que desea eliminar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         } else{
-            String[] campos = {id_compra, "" + tablaProdCom.getValueAt(tablaProdCom.getSelectedRow(), 0)};
-            conect.eliminarProdCompra(campos);
+            if (modoCarrito) {
+                carrito.remove(row);
+            } else {
+                String[] campos = {id_compra, "" + tablaProdCom.getValueAt(row, 0)};
+                conect.eliminarProdCompra(campos);
+            }
             mostrarTablaProdCom();
             actualizarTotalesUI();
             ins = true;
@@ -1355,6 +1718,21 @@ public class ComprasP extends javax.swing.JPanel {
     }//GEN-LAST:event_elPActionPerformed
 
     private void prodComDialogWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_prodComDialogWindowClosing
+        if (modoCarrito) {
+            // En modo carrito no se escribió nada en inventario. Cerrar descarta los cambios
+            // de esta sesión (si retomó un borrador, el borrador guardado se conserva tal cual).
+            if (!carrito.isEmpty()) {
+                int res = Mise.JOptionYesNo("Hay una factura en captura sin terminar.\n"
+                    + "Si cierra se perderán los cambios no guardados de esta sesión.\n"
+                    + "Use \"Dejar pendiente\" si quiere terminarla después.\n\n¿Cerrar de todos modos?", "Cerrar ventana");
+                if (res != 0) return;
+            }
+            carrito.clear();
+            modoCarrito = false;
+            idBorradorActual = 0;
+            prodComDialog.setVisible(false);
+            return;
+        }
         if(modeloProdCom.getRowCount() == 0){
             int res = Mise.JOptionYesNo("No registró ningun producto, ¿seguro que desea cerrar esta ventana?"
                     + "\n(al realizar esta acción la compra no podrá guardarse)", "Cerrar ventana");
@@ -1591,20 +1969,40 @@ public class ComprasP extends javax.swing.JPanel {
 
     public void mostrarTablaCom(){
         Mise.limpiarTabla(modeloCom);
+        // Une borradores (En proceso) y compras (Terminada). Los borradores aparecen arriba.
         java.sql.ResultSet rs = conect.query(
-            "SELECT c.id_compra, COALESCE(c.folio_proveedor,'') folio, COALESCE(pr.nombre,'') prov, "
-          + "c.fecha_compra, c.monto FROM compras c LEFT JOIN proveedor pr ON pr.id_proveedor=c.id_proveedor "
-          + "ORDER BY c.id_compra DESC;");
+            "SELECT id, folio, prov, fecha, total, estado FROM ("
+          + "  SELECT b.id_borrador::varchar AS id, COALESCE(b.folio_proveedor,'') AS folio, COALESCE(pr.nombre,'') AS prov, "
+          + "         b.fecha_creacion::date AS fecha, "
+          + "         COALESCE(b.total_factura,(SELECT COALESCE(SUM(precio_compra*cantidad),0) "
+          + "             FROM compra_borrador_producto bp WHERE bp.id_borrador=b.id_borrador)) AS total, "
+          + "         'En proceso' AS estado, 0 AS orden "
+          + "    FROM compra_borrador b LEFT JOIN proveedor pr ON pr.id_proveedor=b.id_proveedor "
+          + "  UNION ALL "
+          + "  SELECT c.id_compra::varchar, COALESCE(c.folio_proveedor,''), COALESCE(pr.nombre,''), "
+          + "         c.fecha_compra::date, c.monto, 'Terminada', 1 "
+          + "    FROM compras c LEFT JOIN proveedor pr ON pr.id_proveedor=c.id_proveedor "
+          + ") t ORDER BY orden, id DESC;");
+        if (rs == null) return;
         try{
             while(rs.next()){
-                modeloCom.addRow(new Object[]{ rs.getString("id_compra"), rs.getString("folio"),
-                    rs.getString("prov"), rs.getDate("fecha_compra"), rs.getDouble("monto") });
+                modeloCom.addRow(new Object[]{ rs.getString("id"), rs.getString("folio"),
+                    rs.getString("prov"), rs.getDate("fecha"), rs.getDouble("total"), rs.getString("estado") });
             }
         } catch(java.sql.SQLException e){ System.out.println("Error al mostrar la tabla compras"); }
     }
     
     public void mostrarTablaProdCom(){
         Mise.limpiarTabla(modeloProdCom);
+        if (modoCarrito) {
+            for (ConexionBD.RenglonCompra r : carrito) {
+                double imp = parseD(r.precioCompra) * parseD(r.cantidad);
+                modeloProdCom.addRow(new Object[]{ r.idProducto, r.nombre,
+                    (int) parseD(r.cantidad), r.unidadCompra, parseD(r.precioCompra),
+                    r.llevaIva ? "Sí" : "No", imp });
+            }
+            return;
+        }
         java.sql.ResultSet rs = conect.query(
             "SELECT cp.id_producto, p.nombre, cp.cantidad, COALESCE(cp.unidad_compra,'') uc, "
           + "cp.precio_adquirido, COALESCE(cp.lleva_iva,false) iva, cp.precio_total "
