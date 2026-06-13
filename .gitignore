@@ -33,3 +33,7 @@ nul
 
 # Logs de la aplicación
 logs/
+
+# Artefactos de tiempo de ejecución (logo de empresa y plantillas generadas)
+/logo.png
+/impresionVenta.txt
