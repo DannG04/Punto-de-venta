@@ -31,6 +31,7 @@ public class ConexionBD extends BaseDAO {
     private final CategoriaDAO categorias = new CategoriaDAO();
     private final ProveedorDAO proveedores = new ProveedorDAO();
     private final GastoDAO gastos = new GastoDAO();
+    private final GananciaDAO ganancias = new GananciaDAO();
 
     // FUNCION DE LA TABLA EMPLEADO
     public boolean insertarEmpleado(String[] campos) { return empleados.insertarEmpleado(campos); }
@@ -1209,36 +1210,9 @@ public class ConexionBD extends BaseDAO {
     public void actualizarGasto(String idGasto, String[] campos) { gastos.actualizarGasto(idGasto, campos); }
 
     // FUNCIONES PARA LA TABLA OTRAS GANANCIAS
-    public void insertarOtraGanancia(String[] campos) {//Función para insertar otra ganancia
-        String columnas = "otras_ganancias(descripcion, monto)";
-        String instruccion = "INSERT INTO " + columnas + " VALUES(?,?);";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setString(1, campos[0]);
-            pstm.setDouble(2, Double.parseDouble(campos[1]));
-            pstm.executeUpdate();
-            conexion.close();
-        } catch (SQLException e) {
-            GestorErrores.manejar(e);
-        }
-    }
+    public void insertarOtraGanancia(String[] campos) { ganancias.insertarOtraGanancia(campos); }
 
-    public void actualizarOtraGanancia(String[] campos) {//Función para actualizar otra ganancia
-        String columnas = "SET descripcion=?, monto=?";
-        String instruccion = "UPDATE otras_ganancias " + columnas + " WHERE id_otras_ganancias=?;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setString(1, campos[0]);
-            pstm.setDouble(2, Double.parseDouble(campos[1]));
-            pstm.setString(3, campos[2]);
-            pstm.executeUpdate();
-            conexion.close();
-        } catch (SQLException e) {
-            GestorErrores.manejar(e);
-        }
-    }
+    public void actualizarOtraGanancia(String[] campos) { ganancias.actualizarOtraGanancia(campos); }
 
     // FUNCIONES DE LA TABLA PROVEEDOR
     public Integer insertarProveedor(String nombre, String telefono, String email, String direccion, String rfc) { return proveedores.insertarProveedor(nombre, telefono, email, direccion, rfc); }
