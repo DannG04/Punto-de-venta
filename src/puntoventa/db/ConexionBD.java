@@ -26,101 +26,19 @@ public class ConexionBD extends BaseDAO {
     // ahora viven en BaseDAO. Las 36 llamadas crudas conect.inst/query se resuelven
     // por herencia. Esta clase queda como fachada de delegadores hacia los DAOs.
 
+    // DAOs por dominio (la fachada delega en ellos)
+    private final EmpleadoDAO empleados = new EmpleadoDAO();
+
     // FUNCION DE LA TABLA EMPLEADO
-    public boolean insertarEmpleado(String[] campos) {//Función para insertar un empleado
-        boolean band = false;
-        String columnas = "empleado(id_empleado, nombre, puesto, telefono, usuario, contrasenia)";
-        String instruccion = "INSERT INTO " + columnas + " VALUES(?,?,?,?,?,?);";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setString(1, campos[0]);
-            pstm.setString(2, campos[1]);
-            pstm.setObject(3, campos[2], Types.OTHER);
-            pstm.setString(4, campos[3]);
-            pstm.setString(5, campos[4]);
-            pstm.setString(6, campos[5]);
-            pstm.executeUpdate();
-            conexion.close();
-            band = true;
-        } catch (SQLException e) {
-            GestorErrores.manejar(e);
-        }
-        return band;
-    }
+    public boolean insertarEmpleado(String[] campos) { return empleados.insertarEmpleado(campos); }
 
-    public boolean actualizarEmpleado(String[] campos, String idEm) {//Función para actualizar un empleado
-        boolean band = false;
-        String columnas = "SET puesto=?, telefono=?";
-        String instruccion = "UPDATE empleado " + columnas + " WHERE id_empleado=?;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setObject(1, campos[0], Types.OTHER);
-            pstm.setString(2, campos[1]);
-            pstm.setString(3, idEm);
-            pstm.executeUpdate();
-            conexion.close();
-            band = true;
-        } catch (SQLException e) {
-            GestorErrores.manejar(e);
-        }
-        return band;
-    }
+    public boolean actualizarEmpleado(String[] campos, String idEm) { return empleados.actualizarEmpleado(campos, idEm); }
 
-    public boolean inactivarEmpleado(String idEm, boolean act) {//Función para inactivar un empleado
-        boolean band = false;
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            CallableStatement cstm = conexion.prepareCall("{call inactivar_empleado(?::curp_dominio,?)}");
-            cstm.setString(1, idEm);
-            cstm.setBoolean(2, act);
-            cstm.execute();
-            conexion.close();
-            band = true;
-        } catch (SQLException e) {
-            GestorErrores.manejar(e);
-        }
-        return band;
-    }
-    
-    public boolean verificarUsuario(String uss) {//Función para verificar si un usuario ya existe
-        boolean band = false;
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            CallableStatement cstm = conexion.prepareCall("{call verif_user(?)}");
-            cstm.setString(1, uss);
-            ResultSet rs = cstm.executeQuery();
-            while(rs.next()){
-                band = rs.getBoolean(1);
-            }
-            conexion.close();
-        } catch (SQLException e) {
-            GestorErrores.manejar(e);
-        }
-        return band;
-    }
-    
-    public String[] idEmpleado(String uss, String paswor) {//Función para obtener los datos de un empleado
-        String[] dates = new String[4];
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            CallableStatement cstm = conexion.prepareCall("{call ide_emp(?,?)}");
-            cstm.setString(1, uss);
-            cstm.setString(2, paswor);
-            ResultSet rs = cstm.executeQuery();
-            while(rs.next()){
-                dates[0] = rs.getString("ide");
-                dates[1] = rs.getString("neim");
-                dates[2] = rs.getString("pues");
-                dates[3] = rs.getString("tel");
-            }
-            conexion.close();
-        } catch (SQLException e) {
-            GestorErrores.manejar(e);
-        }
-        return dates;
-    }
+    public boolean inactivarEmpleado(String idEm, boolean act) { return empleados.inactivarEmpleado(idEm, act); }
+
+    public boolean verificarUsuario(String uss) { return empleados.verificarUsuario(uss); }
+
+    public String[] idEmpleado(String uss, String paswor) { return empleados.idEmpleado(uss, paswor); }
 
     // FUNCIONES DE LA TABLA PRODUCTO
     public void insertarProducto(String[] datos) {//Función para insertar un producto
@@ -1538,18 +1456,7 @@ public class ConexionBD extends BaseDAO {
 
     }
 
-    public ResultSet seleccionarVendedor(String idVendedor) {//Función para seleccionar un vendedor
-        ResultSet resultado = null;
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement consulta = conexion.prepareStatement(
-                    "SELECT nombre FROM empleado where id_empleado = '" + idVendedor + "'");
-            resultado = consulta.executeQuery();
-        } catch (Exception e) {
-            GestorErrores.registrar(e);
-        }
-        return resultado;
-    }
+    public ResultSet seleccionarVendedor(String idVendedor) { return empleados.seleccionarVendedor(idVendedor); }
 
     public ResultSet seleccionarProductos(String idApartado) {//Función para seleccionar los productos de un apartado
         ResultSet resultado = null;
