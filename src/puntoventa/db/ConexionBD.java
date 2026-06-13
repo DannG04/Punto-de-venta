@@ -30,6 +30,7 @@ public class ConexionBD extends BaseDAO {
     private final EmpleadoDAO empleados = new EmpleadoDAO();
     private final CategoriaDAO categorias = new CategoriaDAO();
     private final ProveedorDAO proveedores = new ProveedorDAO();
+    private final GastoDAO gastos = new GastoDAO();
 
     // FUNCION DE LA TABLA EMPLEADO
     public boolean insertarEmpleado(String[] campos) { return empleados.insertarEmpleado(campos); }
@@ -1203,37 +1204,9 @@ public class ConexionBD extends BaseDAO {
     }
 
     // FUNCIONES PARA LA TABLA GASTOS
-    public void insertarGasto(String[] campos) {//Función para insertar un gasto
-        String columnas = "gastos(id_empleado, descripcion, monto)";
-        String instruccion = "INSERT INTO " + columnas + " VALUES(?,?,?);";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setString(1, campos[0]);
-            pstm.setString(2, campos[1]);
-            pstm.setDouble(3, Double.parseDouble(campos[2]));
-            pstm.executeUpdate();
-            conexion.close();
-        } catch (SQLException e) {
-            GestorErrores.manejar(e);
-        }
-    }
+    public void insertarGasto(String[] campos) { gastos.insertarGasto(campos); }
 
-    public void actualizarGasto(String idGasto, String[] campos) {//Función para actualizar un gasto
-        String columnas = "SET descripcion=?, monto=?";
-        String instruccion = "UPDATE gastos " + columnas + " WHERE id_gasto=?;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setString(1, campos[0]);
-            pstm.setDouble(2, Double.parseDouble(campos[1]));
-            pstm.setString(3, idGasto);
-            pstm.executeUpdate();
-            conexion.close();
-        } catch (SQLException e) {
-            GestorErrores.manejar(e);
-        }
-    }
+    public void actualizarGasto(String idGasto, String[] campos) { gastos.actualizarGasto(idGasto, campos); }
 
     // FUNCIONES PARA LA TABLA OTRAS GANANCIAS
     public void insertarOtraGanancia(String[] campos) {//Función para insertar otra ganancia
