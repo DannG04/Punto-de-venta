@@ -28,6 +28,7 @@ public class ConexionBD extends BaseDAO {
 
     // DAOs por dominio (la fachada delega en ellos)
     private final EmpleadoDAO empleados = new EmpleadoDAO();
+    private final CategoriaDAO categorias = new CategoriaDAO();
 
     // FUNCION DE LA TABLA EMPLEADO
     public boolean insertarEmpleado(String[] campos) { return empleados.insertarEmpleado(campos); }
@@ -1473,79 +1474,17 @@ public class ConexionBD extends BaseDAO {
     }
 
     // FUNCIONES DE LA TABLA CATEGORIA
-    public boolean insertarCategoria(String nombre, String descripcion) {//Función para insertar una categoría
-        boolean band = false;
-        String instruccion = "INSERT INTO categoria(nombre, descripcion) VALUES(?,?);";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setString(1, nombre);
-            pstm.setString(2, descripcion.isEmpty() ? null : descripcion);
-            pstm.executeUpdate();
-            conexion.close();
-            band = true;
-        } catch (SQLException e) {
-            GestorErrores.manejar(e);
-        }
-        return band;
-    }
+    public boolean insertarCategoria(String nombre, String descripcion) { return categorias.insertarCategoria(nombre, descripcion); }
 
-    public boolean editarCategoria(int id, String nombre, String descripcion) {//Función para editar una categoría
-        boolean band = false;
-        String instruccion = "UPDATE categoria SET nombre=?, descripcion=? WHERE id_categoria=?;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setString(1, nombre);
-            pstm.setString(2, descripcion.isEmpty() ? null : descripcion);
-            pstm.setInt(3, id);
-            pstm.executeUpdate();
-            conexion.close();
-            band = true;
-        } catch (SQLException e) {
-            GestorErrores.manejar(e);
-        }
-        return band;
-    }
+    public boolean editarCategoria(int id, String nombre, String descripcion) { return categorias.editarCategoria(id, nombre, descripcion); }
 
-    public boolean cambiarEstatusCategoria(int id, String estatus) {//Función para cambiar estatus de una categoría
-        boolean band = false;
-        String instruccion = "UPDATE categoria SET estatus=? WHERE id_categoria=?;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setString(1, estatus);
-            pstm.setInt(2, id);
-            pstm.executeUpdate();
-            conexion.close();
-            band = true;
-        } catch (SQLException e) {
-            GestorErrores.manejar(e);
-        }
-        return band;
-    }
+    public boolean cambiarEstatusCategoria(int id, String estatus) { return categorias.cambiarEstatusCategoria(id, estatus); }
 
-    public ResultSet obtenerCategorias() {//Función para obtener categorías activas
-        return query("SELECT id_categoria, nombre FROM categoria WHERE estatus='Activo' ORDER BY nombre");
-    }
+    public ResultSet obtenerCategorias() { return categorias.obtenerCategorias(); }
 
-    public ResultSet obtenerTodasCategorias() {//Función para obtener todas las categorías
-        return query("SELECT id_categoria, nombre, descripcion, estatus FROM categoria ORDER BY id_categoria");
-    }
+    public ResultSet obtenerTodasCategorias() { return categorias.obtenerTodasCategorias(); }
 
-    public ResultSet buscarCategoriasPorNombre(String filtro) {//Función para buscar categorías por nombre
-        ResultSet rs = null;
-        String instruccion = "SELECT id_categoria, nombre, descripcion, estatus FROM categoria WHERE nombre ILIKE ? ORDER BY id_categoria";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setString(1, "%" + filtro + "%");
-            rs = pstm.executeQuery();
-        } catch (SQLException e) {
-            GestorErrores.registrar(e);
-        }
-        return rs;
-    }
+    public ResultSet buscarCategoriasPorNombre(String filtro) { return categorias.buscarCategoriasPorNombre(filtro); }
 
     // FUNCIONES DE PRODUCTO CON CATEGORÍA
     public void insertarProductoConCodigoYCategoria(String[] datos, Integer idCategoria, double maxDescuento) {//Función para insertar un producto con código y categoría
