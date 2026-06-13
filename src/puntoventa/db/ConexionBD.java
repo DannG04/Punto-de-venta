@@ -32,6 +32,7 @@ public class ConexionBD extends BaseDAO {
     private final ProveedorDAO proveedores = new ProveedorDAO();
     private final GastoDAO gastos = new GastoDAO();
     private final GananciaDAO ganancias = new GananciaDAO();
+    private final EmpresaDAO empresa = new EmpresaDAO();
 
     // FUNCION DE LA TABLA EMPLEADO
     public boolean insertarEmpleado(String[] campos) { return empleados.insertarEmpleado(campos); }
@@ -1477,47 +1478,16 @@ public class ConexionBD extends BaseDAO {
     }
 
     // FUNCIONES DE LA TABLA EMPRESA
-    public ResultSet obtenerEmpresa() {
-        return query("SELECT * FROM empresa WHERE id = 1");
-    }
+    public ResultSet obtenerEmpresa() { return empresa.obtenerEmpresa(); }
 
     public boolean actualizarEmpresa(String nombre, String razonSocial, String rfc,
             String telefono, String correo, String direccion, String ciudad,
             String estado, String cp, String mensajeTicket, String logoRuta) {
-        String instruccion = "UPDATE empresa SET nombre=?, razon_social=?, rfc=?, telefono=?, correo=?, " +
-            "direccion=?, ciudad=?, estado=?, cp=?, mensaje_ticket=?, logo_ruta=? WHERE id=1;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setString(1, nombre);
-            pstm.setString(2, razonSocial.isEmpty() ? null : razonSocial);
-            pstm.setString(3, rfc.isEmpty() ? null : rfc);
-            pstm.setString(4, telefono.isEmpty() ? null : telefono);
-            pstm.setString(5, correo.isEmpty() ? null : correo);
-            pstm.setString(6, direccion.isEmpty() ? null : direccion);
-            pstm.setString(7, ciudad.isEmpty() ? null : ciudad);
-            pstm.setString(8, estado.isEmpty() ? null : estado);
-            pstm.setString(9, cp.isEmpty() ? null : cp);
-            pstm.setString(10, mensajeTicket.isEmpty() ? null : mensajeTicket);
-            pstm.setString(11, logoRuta.isEmpty() ? null : logoRuta);
-            pstm.executeUpdate();
-            conexion.close();
-            return true;
-        } catch (SQLException e) {
-            GestorErrores.manejar(e);
-            return false;
-        }
+        return empresa.actualizarEmpresa(nombre, razonSocial, rfc, telefono, correo,
+            direccion, ciudad, estado, cp, mensajeTicket, logoRuta);
     }
 
-    public boolean empresaInicializada() {
-        try {
-            ResultSet rs = query("SELECT nombre FROM empresa WHERE id=1 AND nombre <> 'Mi Empresa'");
-            if (rs != null && rs.next()) return true;
-        } catch (Exception e) {
-            // tabla aún no existe o nombre es el default
-        }
-        return false;
-    }
+    public boolean empresaInicializada() { return empresa.empresaInicializada(); }
 
     // FUNCIONES DE LISTA DE PRECIOS
     public ResultSet obtenerListas() {//Función para obtener las listas de precios activas
