@@ -459,8 +459,8 @@ public class GananciasP extends javax.swing.JPanel {
         if(desF1.getText().isEmpty() || monF1.getText().isEmpty()){
             labelinc1.setText("Llene todos los campos");
         } else{
-            String[] campos = {desF1.getText(), monF1.getText()};
-            conect.actualizarGasto(id_otraganancia, campos);
+            String[] campos = {desF1.getText(), monF1.getText(), id_otraganancia};
+            conect.actualizarOtraGanancia(campos);
             labelinc1.setText("");
             actualizarDialog.setVisible(false);
             mostrarTablaOG();

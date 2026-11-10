@@ -31,7 +31,7 @@ public class ComprasP extends javax.swing.JPanel {
     // Carrito de captura: los renglones viven en memoria hasta "Guardar factura".
     // modoCarrito = true al registrar una compra nueva; false al editar una compra ya guardada.
     private boolean modoCarrito = false;
-    private final java.util.List<ConexionBD.RenglonCompra> carrito = new java.util.ArrayList<>();
+    private final java.util.List<RenglonCompra> carrito = new java.util.ArrayList<>();
     // Encabezado pendiente (solo en modoCarrito, aún no escrito en la BD)
     private int headIdProveedor = -1;
     private String headFolio = "", headFechaSql = "", headOrigen = "", headDescripcion = "";
@@ -1338,7 +1338,7 @@ public class ComprasP extends javax.swing.JPanel {
         String idProd = conect.resolverCodigo(codigo);
         boolean nuevo = (idProd == null);
 
-        ConexionBD.RenglonCompra r = new ConexionBD.RenglonCompra();
+        RenglonCompra r = new RenglonCompra();
         r.nuevo = nuevo;
         r.precioCompra = precP.getText().trim();
         r.cantidad = cantP.getText().trim();
@@ -1390,7 +1390,7 @@ public class ComprasP extends javax.swing.JPanel {
 
             // El código de barras no debe repetirse en otro renglón nuevo del mismo carrito.
             if (modoCarrito && !cb.isEmpty()) {
-                for (ConexionBD.RenglonCompra rc : carrito) {
+                for (RenglonCompra rc : carrito) {
                     if (!codigo.equals(rc.idProducto) && cb.equals(rc.codigoBarras)) {
                         Mise.JOption("Ese código de barras ya está en otro renglón de esta factura.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
                         return;
@@ -1463,7 +1463,7 @@ public class ComprasP extends javax.swing.JPanel {
     private double[] calcularTotales() {
         double subtotal = 0, iva = 0;
         if (modoCarrito) {
-            for (ConexionBD.RenglonCompra r : carrito) {
+            for (RenglonCompra r : carrito) {
                 double imp = parseD(r.precioCompra) * parseD(r.cantidad);
                 subtotal += imp;
                 if (r.llevaIva) iva += imp * 0.16;
@@ -1676,7 +1676,7 @@ public class ComprasP extends javax.swing.JPanel {
         if (modoCarrito) {
             // El renglón vive en memoria: se puede reeditar por completo, incluso un producto
             // nuevo (concepto, precios, unidades…), porque todavía no se escribió en inventario.
-            ConexionBD.RenglonCompra r = carrito.get(row);
+            RenglonCompra r = carrito.get(row);
             codP.setText(r.idProducto);
             conceptoP.setText(r.nombre);
             codBarrasP.setText(r.codigoBarras == null ? "" : r.codigoBarras);
@@ -2002,7 +2002,7 @@ public class ComprasP extends javax.swing.JPanel {
     public void mostrarTablaProdCom(){
         Mise.limpiarTabla(modeloProdCom);
         if (modoCarrito) {
-            for (ConexionBD.RenglonCompra r : carrito) {
+            for (RenglonCompra r : carrito) {
                 double imp = parseD(r.precioCompra) * parseD(r.cantidad);
                 modeloProdCom.addRow(new Object[]{ r.idProducto, r.nombre,
                     (int) parseD(r.cantidad), r.unidadCompra, parseD(r.precioCompra),

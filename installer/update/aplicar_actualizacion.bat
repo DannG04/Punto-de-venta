@@ -193,6 +193,13 @@ if exist "%PKGDIR%\lib" (
     xcopy /y /e "%PKGDIR%\lib\*" "%INSTALL_DIR%\lib\" >nul
     echo [OK] Dependencias actualizadas.
 )
+REM Lanzador PuntoVenta.exe: si el jar cambia la clase principal, un .exe viejo
+REM apunta a una clase que ya no existe y la app no abre. Por eso lo reemplazamos.
+if exist "%PKGDIR%\PuntoVenta.exe" (
+    if exist "%INSTALL_DIR%\PuntoVenta.exe" copy /y "%INSTALL_DIR%\PuntoVenta.exe" "%INSTALL_DIR%\PuntoVenta.exe.%STAMP%.bak" >nul
+    copy /y "%PKGDIR%\PuntoVenta.exe" "%INSTALL_DIR%\PuntoVenta.exe" >nul
+    echo [OK] Lanzador actualizado ^(respaldo: PuntoVenta.exe.%STAMP%.bak^).
+)
 
 echo.
 echo ============================================
