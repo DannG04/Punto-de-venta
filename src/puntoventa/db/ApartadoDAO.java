@@ -61,7 +61,7 @@ public class ApartadoDAO extends BaseDAO {
                 datos.productos.add(new String[]{
                     String.valueOf(num++),
                     nvl(det.getString("nombre")),
-                    String.valueOf(det.getInt("cantidad")),
+                    String.valueOf(det.getInt("cantidad_apartada")),
                     "$" + String.format("%.2f", det.getDouble("precio_unitario")),
                     "$" + String.format("%.2f", det.getDouble("precio_total"))
                 });
@@ -215,7 +215,9 @@ public class ApartadoDAO extends BaseDAO {
         try {
             Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
             Statement stmt = conexion.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            String query = "SELECT * FROM producto, apartado_detalle where producto.id_producto = apartado_detalle.id_producto and id_apartado = '"
+            // producto y apartado_detalle tienen ambas una columna "cantidad" (stock vs. piezas apartadas);
+            // cantidad_apartada desambigua la del apartado.
+            String query = "SELECT *, apartado_detalle.cantidad AS cantidad_apartada FROM producto, apartado_detalle where producto.id_producto = apartado_detalle.id_producto and id_apartado = '"
                     + idApartado + "';";
             resultado = stmt.executeQuery(query);
         } catch (Exception e) {
