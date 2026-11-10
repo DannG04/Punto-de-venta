@@ -108,7 +108,7 @@ public class GestorErrores {
     private static String contextoAutomatico() {
         for (StackTraceElement el : Thread.currentThread().getStackTrace()) {
             String cn = el.getClassName();
-            if (!cn.equals("java.lang.Thread") && !cn.equals("GestorErrores")) {
+            if (!cn.equals("java.lang.Thread") && !cn.equals(GestorErrores.class.getName())) {
                 return el.getClassName() + "." + el.getMethodName();
             }
         }
