@@ -96,6 +96,16 @@ public class VentaDAO extends BaseDAO {
         }
     }
 
+    public boolean ventaEnCurso() {//true si el carrito (venta_temp) tiene productos
+        try (Connection conexion = conectar();
+             ResultSet rs = conexion.createStatement().executeQuery("SELECT EXISTS(SELECT 1 FROM venta_temp)")) {
+            return rs.next() && rs.getBoolean(1);
+        } catch (SQLException e) {
+            GestorErrores.manejar(e);
+            return true; // ante la duda, no dejar actualizar
+        }
+    }
+
     public Double sumaVentaTemp() {//Función para obtener la suma de la venta temporal
         Double sum = 0.0;
         try (Connection conexion = conectar()) {

@@ -75,6 +75,8 @@ public class ConexionBD extends BaseDAO {
 
     public Double sumaVentaTemp() { return ventas.sumaVentaTemp(); }
 
+    public boolean ventaEnCurso() { return ventas.ventaEnCurso(); }
+
     // FUNCIONES DE LA TABLA VENTA
     public String registrarVenta(String idEmp, String idCli) { return ventas.registrarVenta(idEmp, idCli); }
 
