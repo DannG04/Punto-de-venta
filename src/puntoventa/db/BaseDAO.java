@@ -47,32 +47,104 @@ public class BaseDAO {
     }
 
     // FUNCIONES GENERALES
-    public boolean inst(String instruccion) {//Función para ejecutar instrucciones
-        boolean band = true;
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            Statement s = conexion.createStatement();
-            int rs = s.executeUpdate(instruccion);
-            conexion.close();
-            band = true;
-        } catch (Exception e) {
-            GestorErrores.registrar(e);
-            band = false;
-        }
-        return band;
+
+    /** Abre una conexión nueva. Quien la pide la cierra (usar siempre try-with-resources). */
+    protected Connection conectar() throws SQLException {
+        return DriverManager.getConnection(url + nameBD, usuario, contra);
     }
 
-    public ResultSet query(String instruccion) {//Función para obtener un ResultSet
-        ResultSet rs = null;
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            Statement s = conexion.createStatement();
-            rs = s.executeQuery(instruccion);
-            conexion.close();
+    /**
+     * Asigna los parámetros de un PreparedStatement. Los String se envían sin tipo
+     * para que PostgreSQL los infiera igual que a un literal entre comillas (así
+     * sirven para columnas de dominio, enteras o de fecha); null se envía como NULL.
+     */
+    protected static void asignar(PreparedStatement ps, Object... params) throws SQLException {
+        for (int i = 0; i < params.length; i++) {
+            Object p = params[i];
+            if (p == null) ps.setNull(i + 1, Types.NULL);
+            else if (p instanceof String) ps.setObject(i + 1, p, Types.OTHER);
+            else ps.setObject(i + 1, p);
+        }
+    }
+
+    /**
+     * Ejecuta una consulta con parámetros y devuelve un ResultSet ya desconectado:
+     * la conexión se cierra antes de regresar, así que el llamador no tiene nada
+     * que cerrar. Funciona porque el driver de PostgreSQL trae todas las filas a
+     * memoria al ejecutar; el ResultSet se puede recorrer (y reposicionar) sin conexión.
+     * Lanza SQLException para que cada método decida cómo reportar el error.
+     */
+    protected ResultSet consultar(String sql, Object... params) throws SQLException {
+        try (Connection conexion = conectar()) {
+            if (params.length == 0) {
+                // Sin parámetros se usa Statement simple (mismo comportamiento que el query() histórico)
+                return conexion.createStatement(
+                        ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY).executeQuery(sql);
+            }
+            PreparedStatement ps = conexion.prepareStatement(sql,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            asignar(ps, params);
+            return ps.executeQuery();
+        }
+    }
+
+    /** Ejecuta INSERT/UPDATE/DELETE con parámetros y devuelve las filas afectadas. */
+    protected int ejecutar(String sql, Object... params) throws SQLException {
+        try (Connection conexion = conectar();
+             PreparedStatement ps = conexion.prepareStatement(sql)) {
+            asignar(ps, params);
+            return ps.executeUpdate();
+        }
+    }
+
+    /**
+     * Fija una variable de sesión (p. ej. kardex.referencia) en la conexión dada.
+     * Equivale a SET nombre = 'valor', pero con el valor como parámetro.
+     */
+    protected static void fijarVariableSesion(Connection conexion, String nombre, String valor) throws SQLException {
+        try (PreparedStatement ps = conexion.prepareStatement("SELECT set_config(?, ?, false)")) {
+            ps.setString(1, nombre);
+            ps.setString(2, valor);
+            ps.execute();
+        }
+    }
+
+    // inst() y query() son protected a propósito: el SQL solo se escribe dentro de puntoventa.db.
+    // Los paneles y reportes piden datos mediante métodos con nombre de la fachada/DAOs.
+    protected boolean inst(String instruccion) {//Función para ejecutar instrucciones
+        try (Connection conexion = conectar();
+             Statement s = conexion.createStatement()) {
+            s.executeUpdate(instruccion);
+            return true;
         } catch (Exception e) {
             GestorErrores.registrar(e);
+            return false;
         }
-        return rs;
+    }
+
+    protected ResultSet query(String instruccion) {//Función para obtener un ResultSet
+        return consultarONulo(instruccion);
+    }
+
+    /** Como consultar(), pero si falla registra el error en el log y devuelve null (no muestra diálogo). */
+    protected ResultSet consultarONulo(String sql, Object... params) {
+        try {
+            return consultar(sql, params);
+        } catch (Exception e) {
+            GestorErrores.registrar(e);
+            return null;
+        }
+    }
+
+    /** Como ejecutar(), pero si falla registra el error en el log y devuelve false (no muestra diálogo). */
+    protected boolean ejecutarOFalso(String sql, Object... params) {
+        try {
+            ejecutar(sql, params);
+            return true;
+        } catch (Exception e) {
+            GestorErrores.registrar(e);
+            return false;
+        }
     }
 
     protected static String nvl(String s) { return s == null ? "" : s; }

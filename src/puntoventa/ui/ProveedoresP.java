@@ -633,12 +633,7 @@ public class ProveedoresP extends javax.swing.JPanel {
 
     public void mostrarTabla(String filtro){
         Mise.limpiarTabla(modelo);
-        String sql = "SELECT * FROM proveedor";
-        if(filtro != null && !filtro.isEmpty()){
-            sql += " WHERE LOWER(nombre) LIKE LOWER('%" + filtro.replace("'", "''") + "%')";
-        }
-        sql += " ORDER BY id_proveedor";
-        java.sql.ResultSet rs = conect.query(sql);
+        java.sql.ResultSet rs = conect.buscarProveedores(filtro);
         if(rs != null){
             try{
                 while(rs.next()){

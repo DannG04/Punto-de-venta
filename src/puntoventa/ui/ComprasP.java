@@ -162,7 +162,9 @@ public class ComprasP extends javax.swing.JPanel {
                 descartarPendienteActionPerformed(evt);
             }
         });
-        jPanel3.setPreferredSize(new java.awt.Dimension(150, 160));
+        // Sin tamaño fijo: el GridBagLayout calcula el ancho para que quepa
+        // "Descartar pendiente" (con 150px fijos los botones se cortaban).
+        jPanel3.setPreferredSize(null);
         jPanel3.add(descartarPendienteBtn, gbc);
         jPanel3.revalidate();
     }
@@ -1470,8 +1472,7 @@ public class ComprasP extends javax.swing.JPanel {
             }
             return new double[]{ subtotal, iva, subtotal + iva };
         }
-        java.sql.ResultSet rs = conect.query(
-            "SELECT precio_total, COALESCE(lleva_iva,false) iva FROM compra_producto WHERE id_compra='" + id_compra + "';");
+        java.sql.ResultSet rs = conect.obtenerImportesCompra(id_compra);
         try {
             while (rs.next()) {
                 double imp = rs.getDouble("precio_total");
@@ -1977,19 +1978,7 @@ public class ComprasP extends javax.swing.JPanel {
     public void mostrarTablaCom(){
         Mise.limpiarTabla(modeloCom);
         // Une borradores (En proceso) y compras (Terminada). Los borradores aparecen arriba.
-        java.sql.ResultSet rs = conect.query(
-            "SELECT id, folio, prov, fecha, total, estado FROM ("
-          + "  SELECT b.id_borrador::varchar AS id, COALESCE(b.folio_proveedor,'') AS folio, COALESCE(pr.nombre,'') AS prov, "
-          + "         b.fecha_creacion::date AS fecha, "
-          + "         COALESCE(b.total_factura,(SELECT COALESCE(SUM(precio_compra*cantidad),0) "
-          + "             FROM compra_borrador_producto bp WHERE bp.id_borrador=b.id_borrador)) AS total, "
-          + "         'En proceso' AS estado, 0 AS orden "
-          + "    FROM compra_borrador b LEFT JOIN proveedor pr ON pr.id_proveedor=b.id_proveedor "
-          + "  UNION ALL "
-          + "  SELECT c.id_compra::varchar, COALESCE(c.folio_proveedor,''), COALESCE(pr.nombre,''), "
-          + "         c.fecha_compra::date, c.monto, 'Terminada', 1 "
-          + "    FROM compras c LEFT JOIN proveedor pr ON pr.id_proveedor=c.id_proveedor "
-          + ") t ORDER BY orden, id DESC;");
+        java.sql.ResultSet rs = conect.obtenerComprasYBorradores();
         if (rs == null) return;
         try{
             while(rs.next()){
@@ -2010,11 +1999,7 @@ public class ComprasP extends javax.swing.JPanel {
             }
             return;
         }
-        java.sql.ResultSet rs = conect.query(
-            "SELECT cp.id_producto, p.nombre, cp.cantidad, COALESCE(cp.unidad_compra,'') uc, "
-          + "cp.precio_adquirido, COALESCE(cp.lleva_iva,false) iva, cp.precio_total "
-          + "FROM compra_producto cp JOIN producto p ON p.id_producto = cp.id_producto "
-          + "WHERE cp.id_compra='" + id_compra + "';");
+        java.sql.ResultSet rs = conect.obtenerProductosCompra(id_compra);
         try{
             while(rs.next()){
                 modeloProdCom.addRow(new Object[]{ rs.getString("id_producto"), rs.getString("nombre"),
@@ -2028,7 +2013,7 @@ public class ComprasP extends javax.swing.JPanel {
     
     public void mostrarTablaProd(){
         Mise.limpiarTabla(modeloProd);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM producto WHERE estatus = 'Activo' ORDER BY id_producto");
+        java.sql.ResultSet rs = conect.obtenerProductosActivos();
         try{
             while(rs.next()){
                 modeloProd.addRow(new Object[]{rs.getString("id_producto"), rs.getString("nombre")});

@@ -791,8 +791,9 @@ public class Interfaz extends javax.swing.JFrame {
                 botones.setVisible(true);
                 panelPrin.setVisible(true);
                 horaPanel.setVisible(true);
-                this.setSize(tamanio.width, tamanio.height - 20);
-                this.setLocationRelativeTo(null);
+                // Área útil de la pantalla (descuenta la barra de tareas, sin importar su tamaño o posición)
+                java.awt.Rectangle util = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+                this.setBounds(util);
                 menuBar.setVisible(true);
 
                 initerDia.setVisible(false);
@@ -956,7 +957,7 @@ public class Interfaz extends javax.swing.JFrame {
 
     public final void comboUsuarios() {// Llena el comboBox con los usuarios activos
         java.util.ArrayList<String> users = new java.util.ArrayList<>();
-        java.sql.ResultSet rs = conect.query("SELECT usuario FROM empleado WHERE estatus='Activo'");
+        java.sql.ResultSet rs = conect.obtenerUsuariosActivos();
         try {
             while (rs.next()) {
                 users.add(rs.getString("usuario"));

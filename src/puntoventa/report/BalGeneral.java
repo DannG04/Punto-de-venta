@@ -28,7 +28,7 @@ public class BalGeneral {
         double cant[] = new double[3];
         double ap=0;
         try {       
-            result = conect.query("SELECT * from balance_general('01/01/"+fecha.getYear()+"','"+fecha.toString()+"');");
+            result = conect.balanceGeneral(fecha);
             while(result.next()){
                 cant[0]= result.getDouble(1);
                 cant[1]= result.getDouble(2);
@@ -40,7 +40,7 @@ public class BalGeneral {
             sumas = cant[0]+cant[1]+cant[2];
             insertarCampoActivo("Total de Activo",String.valueOf(sumas),datosEstilos);
             sumas =0;
-            result = conect.query("SELECT anticipo_clientes();");
+            result = conect.anticipoClientes();
             while(result.next()){
                 ap= result.getDouble(1);
             }

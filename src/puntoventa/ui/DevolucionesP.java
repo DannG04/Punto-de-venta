@@ -448,10 +448,10 @@ public class DevolucionesP extends javax.swing.JPanel {
 
     private void buskVenKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buskVenKeyReleased
         if(!buskVen.getText().isEmpty()){
-            mostrarVen("SELECT * FROM venta WHERE id_venta LIKE '%" + buskVen.getText() + "%';");
+            mostrarVen(buskVen.getText());
         }
         if(evt.getKeyChar() == java.awt.event.KeyEvent.VK_BACK_SPACE){
-            mostrarVen("SELECT * FROM venta WHERE id_venta LIKE '%" + buskVen.getText() + "%';");
+            mostrarVen(buskVen.getText());
         }
     }//GEN-LAST:event_buskVenKeyReleased
 
@@ -606,7 +606,7 @@ public class DevolucionesP extends javax.swing.JPanel {
 
     public double sumaTotalDev(){
         double tot = 0.0;
-        java.sql.ResultSet rs = conect.query("SELECT monto FROM devolucion_ventas WHERE id_devolucion='" + id_dev + "';");
+        java.sql.ResultSet rs = conect.obtenerMontoDevolucion(id_dev);
         try{
             while(rs.next()){
                 tot = rs.getDouble(1);
@@ -619,7 +619,7 @@ public class DevolucionesP extends javax.swing.JPanel {
     
     public void mostrarDev(){
         Mise.limpiarTabla(modeloDev);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM devolucion_ventas;");
+        java.sql.ResultSet rs = conect.obtenerDevoluciones();
         try{
             while(rs.next()){
                 modeloDev.addRow(new Object[]{rs.getString("id_devolucion"), rs.getString("id_venta"), rs.getDate("fecha_devolucion"), rs.getDouble("monto")});
@@ -629,12 +629,9 @@ public class DevolucionesP extends javax.swing.JPanel {
         }
     }
     
-    public void mostrarVen(String ins){
-        if(ins.equals("")){
-            ins = "SELECT * FROM venta;";
-        }
+    public void mostrarVen(String busqueda){//Ventas cuyo id contiene el texto; vacío = todas
         Mise.limpiarTabla(modeloVen);
-        java.sql.ResultSet rs = conect.query(ins);
+        java.sql.ResultSet rs = conect.buscarVentasPorId(busqueda);
         try{
             while(rs.next()){
                 modeloVen.addRow(new Object[]{rs.getString("id_venta"), rs.getString("id_empleado"), rs.getDouble("total_venta"), rs.getDate("fecha_venta")});
@@ -646,7 +643,7 @@ public class DevolucionesP extends javax.swing.JPanel {
     
     public void mostrarVenDet(){
         Mise.limpiarTabla(modeloVenDet);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM venta_detalle WHERE id_venta='" + id_ven + "';");
+        java.sql.ResultSet rs = conect.obtenerDetalleVenta(id_ven);
         try{
             while(rs.next()){
                 modeloVenDet.addRow(new Object[]{rs.getString("id_producto"), rs.getString("cantidad_producto")});
@@ -658,7 +655,7 @@ public class DevolucionesP extends javax.swing.JPanel {
     
     public void mostrarProdD(){
         Mise.limpiarTabla(modeloProdD);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM devolucion_ventas_detalle WHERE id_devolucion='"+ id_dev + "';");
+        java.sql.ResultSet rs = conect.obtenerDetalleDevolucion(id_dev);
         try{
             while(rs.next()){
                 modeloProdD.addRow(new Object[]{rs.getString("id_producto"), rs.getString("motivo"), rs.getInt("cantidad"), rs.getDouble("total")});

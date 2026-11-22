@@ -354,7 +354,7 @@ public class GananciasP extends javax.swing.JPanel {
                 Mise.JOption("No es posible eliminar esta ganancia", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
             } else{
                 id_otraganancia = "" + tablaOG.getValueAt(tablaOG.getSelectedRow(), 0);
-                conect.inst("DELETE FROM otras_ganancias WHERE id_otras_ganancias='" + id_otraganancia + "';");
+                conect.eliminarOtraGanancia(id_otraganancia);
                 labelinc.setText("");
                 mostrarTablaOG();
             }
@@ -473,7 +473,7 @@ public class GananciasP extends javax.swing.JPanel {
 
     public void mostrarTablaOG(){
         Mise.limpiarTabla(modeloOG);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM otras_ganancias");
+        java.sql.ResultSet rs = conect.obtenerOtrasGanancias();
         try{
             while(rs.next()){
                 modeloOG.addRow(new Object[]{rs.getString("id_otras_ganancias"), rs.getString("descripcion"), rs.getDouble("monto"), rs.getDate("fecha_otras_ganancias")});

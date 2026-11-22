@@ -324,7 +324,7 @@ public class GastosP extends javax.swing.JPanel {
             labelinc.setText("Seleccione la fila que desea eliminar");
         } else{
             id_gasto = "" + tablaG.getValueAt(tablaG.getSelectedRow(), 0);
-            conect.inst("DELETE FROM gastos WHERE id_gasto='" + id_gasto + "';");
+            conect.eliminarGasto(id_gasto);
             labelinc.setText("");
             mostrarTablaGastos();
         }
@@ -438,7 +438,7 @@ public class GastosP extends javax.swing.JPanel {
 
     public void mostrarTablaGastos(){
         Mise.limpiarTabla(modeloG);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM gastos order by fecha_gasto;");
+        java.sql.ResultSet rs = conect.obtenerGastos();
         try{
             while(rs.next()){
                 modeloG.addRow(new Object[]{rs.getString("id_gasto"), rs.getString("id_empleado"), rs.getDate("fecha_gasto"), rs.getString("descripcion"), rs.getDouble("monto")});

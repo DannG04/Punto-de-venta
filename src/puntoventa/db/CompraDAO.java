@@ -14,8 +14,7 @@ public class CompraDAO extends BaseDAO {
 
     public String insertarCompra(String[] campos) {//Función para insertar una compra
         String idCompra = "";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call reg_compra(?::curp_dominio,?,?)}");
             cstm.registerOutParameter(1, Types.VARCHAR);
             cstm.setString(1, campos[0]);
@@ -23,7 +22,6 @@ public class CompraDAO extends BaseDAO {
             cstm.setObject(3, campos[2], Types.NUMERIC);
             cstm.execute();
             idCompra = cstm.getString(1);
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -33,34 +31,29 @@ public class CompraDAO extends BaseDAO {
     public void actualizarCompra(String[] campos) {//Función para actualizar una compra
         String columnas = "descripcion=?, monto=?";
         String instruccion = "UPDATE compras SET " + columnas + " WHERE id_compra=?;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareCall(instruccion);
             pstm.setString(1, campos[0]);
             pstm.setDouble(2, Double.parseDouble(campos[1]));
             pstm.setString(3, campos[2]);
             pstm.executeUpdate();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
     }
 
     public void eliminarCompra(String idCom) {//Función para eliminar una compra
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call elim_compra(?)}");
             cstm.setString(1, idCom);
             cstm.execute();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
     }
 
     public void insertarProdCompra(String[] campos, boolean ac) {//Función para insertar un producto en una compra
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             // Obtener id_empleado de la compra para el kardex
             String idEmpCompra = "";
             PreparedStatement psEmp = conexion.prepareStatement("SELECT id_empleado FROM compras WHERE id_compra = ?");
@@ -68,11 +61,10 @@ public class CompraDAO extends BaseDAO {
             ResultSet rsEmp = psEmp.executeQuery();
             if (rsEmp.next()) idEmpCompra = rsEmp.getString(1);
             // Establecer variables de sesión para el trigger kardex
-            Statement stmtSet = conexion.createStatement();
-            stmtSet.execute("SET kardex.tipo = 'Compra'");
-            stmtSet.execute("SET kardex.referencia = '" + campos[0] + "'");
+            fijarVariableSesion(conexion, "kardex.tipo", "Compra");
+            fijarVariableSesion(conexion, "kardex.referencia", campos[0]);
             if (!idEmpCompra.isEmpty())
-                stmtSet.execute("SET kardex.empleado = '" + idEmpCompra + "'");
+                fijarVariableSesion(conexion, "kardex.empleado", idEmpCompra);
             CallableStatement cstm = conexion.prepareCall("{call reg_compra_prod(?,?::id_producto_dominio,?,?,?,?)}");
             cstm.setString(1, campos[0]);
             cstm.setString(2, campos[1]);
@@ -81,20 +73,17 @@ public class CompraDAO extends BaseDAO {
             cstm.setObject(5, campos[4], Types.NUMERIC);   // factor
             cstm.setBoolean(6, ac);
             cstm.execute();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
     }
 
     public void eliminarProdCompra(String[] campos) {//Función para eliminar un producto de una compra
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call elim_compra_prod(?,?::id_producto_dominio)}");
             cstm.setString(1, campos[0]);
             cstm.setString(2, campos[1]);
             cstm.execute();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -112,7 +101,7 @@ public class CompraDAO extends BaseDAO {
         //                       (terminar el borrador = crear la compra real y eliminarlo, todo o nada)
         Connection conexion = null;
         try {
-            conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            conexion = conectar();
             conexion.setAutoCommit(false);
 
             // 1. Encabezado de la compra
@@ -133,12 +122,10 @@ public class CompraDAO extends BaseDAO {
             }
 
             // 2. Variables de sesión para el trigger de kardex (misma conexión/transacción)
-            try (Statement st = conexion.createStatement()) {
-                st.execute("SET kardex.tipo = 'Compra'");
-                st.execute("SET kardex.referencia = '" + idCompra + "'");
-                if (cab[0] != null && !cab[0].isEmpty())
-                    st.execute("SET kardex.empleado = '" + cab[0] + "'");
-            }
+            fijarVariableSesion(conexion, "kardex.tipo", "Compra");
+            fijarVariableSesion(conexion, "kardex.referencia", idCompra);
+            if (cab[0] != null && !cab[0].isEmpty())
+                fijarVariableSesion(conexion, "kardex.empleado", cab[0]);
 
             String sqlProd = "INSERT INTO producto(id_producto, nombre, cantidad, precio_mayoreo, precio_menudeo, "
                            + "max_descuento, codigo_barras, lleva_iva, unidad_compra, unidad_venta, factor_conversion, precio_compra, id_categoria) "
@@ -214,7 +201,7 @@ public class CompraDAO extends BaseDAO {
         // cab: [0]id_empleado [1]descripcion [2]folio [3]fecha(yyyy-MM-dd o "") [4]origen
         Connection conexion = null;
         try {
-            conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            conexion = conectar();
             conexion.setAutoCommit(false);
 
             Integer idBorrador = (idBorradorExistente > 0) ? idBorradorExistente : null;
@@ -303,8 +290,7 @@ public class CompraDAO extends BaseDAO {
                    + "COALESCE(to_char(fecha_factura,'YYYY-MM-DD'),'') fecha, COALESCE(origen,'') origen, "
                    + "COALESCE(descripcion,'') descripcion, COALESCE(total_factura::varchar,'') total "
                    + "FROM compra_borrador WHERE id_borrador=?;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(sql);
             pstm.setInt(1, idBorrador);
             ResultSet rs = pstm.executeQuery();
@@ -312,7 +298,6 @@ public class CompraDAO extends BaseDAO {
                 cab = new String[]{ rs.getString("idp"), rs.getString("folio"), rs.getString("fecha"),
                     rs.getString("origen"), rs.getString("descripcion"), rs.getString("total") };
             }
-            conexion.close();
         } catch (SQLException e) {
             System.out.println("Error al leer borrador: " + e.getMessage());
         }
@@ -323,8 +308,7 @@ public class CompraDAO extends BaseDAO {
     public java.util.List<RenglonCompra> obtenerRenglonesBorrador(int idBorrador) {
         java.util.List<RenglonCompra> lista = new java.util.ArrayList<>();
         String sql = "SELECT * FROM compra_borrador_producto WHERE id_borrador=? ORDER BY linea;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(sql);
             pstm.setInt(1, idBorrador);
             ResultSet rs = pstm.executeQuery();
@@ -347,7 +331,6 @@ public class CompraDAO extends BaseDAO {
                 r.idCategoria = rs.wasNull() ? null : cat;
                 lista.add(r);
             }
-            conexion.close();
         } catch (SQLException e) {
             System.out.println("Error al leer renglones de borrador: " + e.getMessage());
         }
@@ -355,12 +338,10 @@ public class CompraDAO extends BaseDAO {
     }
 
     public void eliminarBorrador(int idBorrador) {
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement("DELETE FROM compra_borrador WHERE id_borrador=?;");
             pstm.setInt(1, idBorrador);
             pstm.executeUpdate();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -370,14 +351,12 @@ public class CompraDAO extends BaseDAO {
         if (idProveedor <= 0 || folio == null || folio.trim().isEmpty()) return false;
         String sql = "SELECT 1 FROM compras WHERE id_proveedor = ? AND folio_proveedor = ? LIMIT 1;";
         boolean existe = false;
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(sql);
             pstm.setInt(1, idProveedor);
             pstm.setString(2, folio.trim());
             ResultSet rs = pstm.executeQuery();
             existe = rs.next();
-            conexion.close();
         } catch (SQLException e) {
             System.out.println("Error al verificar folio: " + e.getMessage());
         }
@@ -386,17 +365,46 @@ public class CompraDAO extends BaseDAO {
 
     public void actualizarTotalesCompra(String idCompra, double subtotal, double iva, double total) {//Función para actualizar los totales (subtotal, iva, monto) de una compra
         String sql = "UPDATE compras SET subtotal = ?, iva = ?, monto = ? WHERE id_compra = ?;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(sql);
             pstm.setDouble(1, subtotal);
             pstm.setDouble(2, iva);
             pstm.setDouble(3, total);
             pstm.setString(4, idCompra);
             pstm.executeUpdate();
-            conexion.close();
         } catch (SQLException e) {
             Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    // CONSULTAS PARA LLENAR TABLAS DE LA UI
+
+    public ResultSet obtenerComprasYBorradores() {//Borradores (En proceso) arriba y compras (Terminada) debajo
+        return consultarONulo(
+            "SELECT id, folio, prov, fecha, total, estado FROM ("
+          + "  SELECT b.id_borrador::varchar AS id, COALESCE(b.folio_proveedor,'') AS folio, COALESCE(pr.nombre,'') AS prov, "
+          + "         b.fecha_creacion::date AS fecha, "
+          + "         COALESCE(b.total_factura,(SELECT COALESCE(SUM(precio_compra*cantidad),0) "
+          + "             FROM compra_borrador_producto bp WHERE bp.id_borrador=b.id_borrador)) AS total, "
+          + "         'En proceso' AS estado, 0 AS orden "
+          + "    FROM compra_borrador b LEFT JOIN proveedor pr ON pr.id_proveedor=b.id_proveedor "
+          + "  UNION ALL "
+          + "  SELECT c.id_compra::varchar, COALESCE(c.folio_proveedor,''), COALESCE(pr.nombre,''), "
+          + "         c.fecha_compra::date, c.monto, 'Terminada', 1 "
+          + "    FROM compras c LEFT JOIN proveedor pr ON pr.id_proveedor=c.id_proveedor "
+          + ") t ORDER BY orden, id DESC");
+    }
+
+    public ResultSet obtenerProductosCompra(String idCompra) {//Renglones de una compra con el nombre del producto
+        return consultarONulo(
+            "SELECT cp.id_producto, p.nombre, cp.cantidad, COALESCE(cp.unidad_compra,'') uc, "
+          + "cp.precio_adquirido, COALESCE(cp.lleva_iva,false) iva, cp.precio_total "
+          + "FROM compra_producto cp JOIN producto p ON p.id_producto = cp.id_producto "
+          + "WHERE cp.id_compra = ?", idCompra);
+    }
+
+    public ResultSet obtenerImportesCompra(String idCompra) {//Importe e IVA de cada renglón de una compra
+        return consultarONulo(
+            "SELECT precio_total, COALESCE(lleva_iva,false) iva FROM compra_producto WHERE id_compra = ?", idCompra);
     }
 }

@@ -320,8 +320,10 @@ public class AdministracionP extends javax.swing.JPanel {
 
     private void tablaVentasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaVentasMouseClicked
         if(tablaVentas.getSelectedRow() != -1){
-            labelVentaID.setText("Venta: " + modeloVentas.getValueAt(tablaVentas.getSelectedRow(), 0));
-            mostrarTablaVentasDet("" + modeloVentas.getValueAt(tablaVentas.getSelectedRow(), 0));
+            // Con la tabla ordenada, el índice de la vista no es el del modelo:
+            // leer desde la tabla para mostrar la venta que se hizo clic.
+            labelVentaID.setText("Venta: " + tablaVentas.getValueAt(tablaVentas.getSelectedRow(), 0));
+            mostrarTablaVentasDet("" + tablaVentas.getValueAt(tablaVentas.getSelectedRow(), 0));
             ventaDetDialog.setVisible(true);
         }
     }//GEN-LAST:event_tablaVentasMouseClicked
@@ -375,7 +377,7 @@ public class AdministracionP extends javax.swing.JPanel {
 
     public void mostrarTablaVentas(){
         Mise.limpiarTabla(modeloVentas);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM venta");
+        java.sql.ResultSet rs = conect.obtenerVentas();
         try{
             while(rs.next()){
                 modeloVentas.addRow(new Object[]{rs.getString("id_venta"), rs.getString("id_empleado"), rs.getString("id_cliente"), rs.getDouble("total_venta"), rs.getDate("fecha_venta")});
@@ -387,7 +389,7 @@ public class AdministracionP extends javax.swing.JPanel {
 
     public void mostrarTablaVentasDet(String id_venta){
         Mise.limpiarTabla(modeloVenDet);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM venta_detalle WHERE id_venta='" + id_venta + "';");
+        java.sql.ResultSet rs = conect.obtenerDetalleVenta(id_venta);
         try{
             while(rs.next()){
                 modeloVenDet.addRow(new Object[]{rs.getString("id_producto"), rs.getInt("cantidad_producto"), rs.getDouble("precio_dado"), rs.getDouble("precio_total"), rs.getString("tipo_venta")});

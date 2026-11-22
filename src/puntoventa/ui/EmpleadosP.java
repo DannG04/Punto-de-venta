@@ -695,7 +695,7 @@ public class EmpleadosP extends javax.swing.JPanel {
 
     public void mostrarTablaEmp(){//Muestra la tabla de empleados
         Mise.limpiarTabla(modeloEmp);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM empleado WHERE estatus='Activo'");
+        java.sql.ResultSet rs = conect.obtenerEmpleadosActivos();
         try{
             while(rs.next()){
                 modeloEmp.addRow(new Object[]{rs.getString("id_empleado"), rs.getString("nombre"), rs.getString("puesto"), rs.getString("telefono")});

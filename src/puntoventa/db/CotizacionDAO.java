@@ -22,8 +22,7 @@ public class CotizacionDAO extends BaseDAO {
         String instruccion = "SELECT id_producto, nombre, precio_menudeo, precio_mayoreo, cantidad FROM producto " +
             "WHERE estatus = 'Activo' AND (LOWER(nombre) LIKE LOWER(?) OR LOWER(id_producto) LIKE LOWER(?)) " +
             "ORDER BY nombre LIMIT 50";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setString(1, "%" + filtro + "%");
             pstm.setString(2, "%" + filtro + "%");
@@ -39,8 +38,7 @@ public class CotizacionDAO extends BaseDAO {
     }
 
     public void insertarCotizacionTemp(String idProd, int cantidad, String tipoVenta, boolean acum) {
-        try {
-            Connection conn = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conn = conectar()) {
             int cantExistente = 0;
             if (acum) {
                 PreparedStatement chk = conn.prepareStatement(
@@ -63,19 +61,16 @@ public class CotizacionDAO extends BaseDAO {
             ins.setInt(3, cantFinal);
             ins.setString(4, idProd);
             ins.executeUpdate();
-            conn.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
     }
 
     public void eliminarCotizacionTemp(String idProd) {
-        try {
-            Connection conn = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conn = conectar()) {
             PreparedStatement del = conn.prepareStatement("DELETE FROM cotizacion_temp WHERE id_producto=?");
             del.setString(1, idProd);
             del.executeUpdate();
-            conn.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -87,12 +82,10 @@ public class CotizacionDAO extends BaseDAO {
 
     public double sumaCotizacionTemp() {
         double sum = 0.0;
-        try {
-            Connection conn = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conn = conectar()) {
             ResultSet rs = conn.createStatement().executeQuery(
                 "SELECT COALESCE(SUM(precio_total),0) FROM cotizacion_temp");
             if (rs.next()) sum = rs.getDouble(1);
-            conn.close();
         } catch (SQLException e) {}
         return sum;
     }
@@ -100,14 +93,12 @@ public class CotizacionDAO extends BaseDAO {
     public void actualizarDescuentoCotiTemp(String idProd, double descuento) {
         String sql = "UPDATE cotizacion_temp SET descuento_pct=?, " +
             "precio_total=precio_dado*cantidad_prod*(1-?/100) WHERE id_producto=?";
-        try {
-            Connection conn = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conn = conectar()) {
             PreparedStatement pstm = conn.prepareStatement(sql);
             pstm.setDouble(1, descuento);
             pstm.setDouble(2, descuento);
             pstm.setString(3, idProd);
             pstm.executeUpdate();
-            conn.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -116,8 +107,7 @@ public class CotizacionDAO extends BaseDAO {
     public String guardarCotizacion(String idEmp, String idCli, double total,
                                     java.sql.Date vigencia, String notas) {
         String idCoti = "";
-        try {
-            Connection conn = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conn = conectar()) {
             PreparedStatement ins = conn.prepareStatement(
                 "INSERT INTO cotizacion(id_empleado, id_cliente, total_cotizacion, fecha_vigencia, notas) " +
                 "VALUES(?::CHAR(18), ?::CHAR(18), ?, ?, ?) RETURNING id_cotizacion");
@@ -140,7 +130,6 @@ public class CotizacionDAO extends BaseDAO {
                 det.executeUpdate();
                 conn.createStatement().execute("DELETE FROM cotizacion_temp");
             }
-            conn.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -158,8 +147,7 @@ public class CotizacionDAO extends BaseDAO {
             sql += "WHERE c.id_cotizacion ILIKE ? OR cl.nombre ILIKE ? OR c.estatus ILIKE ? ";
         }
         sql += "ORDER BY c.fecha_cotizacion DESC";
-        try {
-            Connection conn = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conn = conectar()) {
             if (filtro != null && !filtro.isEmpty()) {
                 PreparedStatement pstm = conn.prepareStatement(sql);
                 String like = "%" + filtro + "%";
@@ -179,8 +167,7 @@ public class CotizacionDAO extends BaseDAO {
         ResultSet rs = null;
         String sql = "SELECT id_producto, nombre_p, cantidad, tipo_venta, precio_dado, descuento_pct, precio_total " +
             "FROM cotizacion_detalle WHERE id_cotizacion=? ORDER BY id_cotizacion_detalle";
-        try {
-            Connection conn = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conn = conectar()) {
             PreparedStatement pstm = conn.prepareStatement(sql);
             pstm.setString(1, idCoti);
             rs = pstm.executeQuery();
@@ -199,8 +186,7 @@ public class CotizacionDAO extends BaseDAO {
             "COALESCE(c.notas,'') AS notas, c.id_empleado " +
             "FROM cotizacion c LEFT JOIN cliente cl ON c.id_cliente = cl.id_cliente " +
             "WHERE c.id_cotizacion=?";
-        try {
-            Connection conn = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conn = conectar()) {
             PreparedStatement pstm = conn.prepareStatement(sql);
             pstm.setString(1, idCoti);
             rs = pstm.executeQuery();
@@ -212,27 +198,39 @@ public class CotizacionDAO extends BaseDAO {
 
     public String convertirCotizacionAVenta(String idCoti, String formaPago) {
         String idVenta = "";
-        try {
-            Connection conn = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conn = conectar()) {
 
             // Obtener datos de la cotizacion
             PreparedStatement sel = conn.prepareStatement(
                 "SELECT id_empleado, id_cliente FROM cotizacion WHERE id_cotizacion=?");
             sel.setString(1, idCoti);
             ResultSet rsCoti = sel.executeQuery();
-            if (!rsCoti.next()) { conn.close(); return ""; }
+            if (!rsCoti.next()) return "";
             String idEmp = rsCoti.getString("id_empleado");
             String idCli = rsCoti.getString("id_cliente");
             if (idCli == null || idCli.isEmpty()) idCli = "XAXX111111HCCXXXX0";
 
+            // venta_temp es el carrito de Ventas: si tiene productos, borrarlo aquí
+            // perdía esa venta en curso y el stock que tenía descontado.
+            ResultSet rsCarrito = conn.createStatement().executeQuery("SELECT COUNT(*) FROM venta_temp");
+            if (rsCarrito.next() && rsCarrito.getInt(1) > 0) {
+                Mise.JOption("Hay una venta en curso en el módulo de Ventas.\n"
+                    + "Termínela o vacíe su carrito antes de convertir la cotización.",
+                    "Venta en curso", javax.swing.JOptionPane.WARNING_MESSAGE);
+                return "";
+            }
+
             // Copiar cotizacion_detalle a venta_temp
-            conn.createStatement().execute("DELETE FROM venta_temp");
             PreparedStatement copyTemp = conn.prepareStatement(
                 "INSERT INTO venta_temp(id_producto, nombre_p, cantidad_prod, tipo_venta, precio_dado, precio_total, descuento_pct) " +
                 "SELECT id_producto, nombre_p, cantidad, tipo_venta::\"tipoVenta\", precio_dado, precio_total, descuento_pct " +
                 "FROM cotizacion_detalle WHERE id_cotizacion=?");
             copyTemp.setString(1, idCoti);
             copyTemp.executeUpdate();
+            // El trigger de INSERT recalcula el precio sin descuento; el de UPDATE sí
+            // lo aplica. Sin esto la cotización se cobraba a precio completo.
+            conn.createStatement().executeUpdate(
+                "UPDATE venta_temp SET descuento_pct = descuento_pct WHERE descuento_pct > 0");
 
             // Crear venta con el stored procedure
             CallableStatement cstm = conn.prepareCall("{call realizar_venta(?::curp_dominio,?::curp_dominio)}");
@@ -265,9 +263,10 @@ public class CotizacionDAO extends BaseDAO {
                 psKardex.executeUpdate();
 
                 // Persistir descuentos en venta_detalle
-                ResultSet rsDet = conn.prepareStatement(
-                    "SELECT id_producto, descuento_pct FROM cotizacion_detalle WHERE id_cotizacion='" + idCoti + "' AND descuento_pct>0")
-                    .executeQuery();
+                PreparedStatement selDet = conn.prepareStatement(
+                    "SELECT id_producto, descuento_pct FROM cotizacion_detalle WHERE id_cotizacion=? AND descuento_pct>0");
+                selDet.setString(1, idCoti);
+                ResultSet rsDet = selDet.executeQuery();
                 while (rsDet.next()) {
                     ventas.actualizarDescuentoVenta(idVenta, rsDet.getString("id_producto"), rsDet.getDouble("descuento_pct"));
                 }
@@ -279,8 +278,8 @@ public class CotizacionDAO extends BaseDAO {
                 updCoti.setString(2, idCoti);
                 updCoti.executeUpdate();
             }
-            conn.createStatement().execute("DELETE FROM venta_temp");
-            conn.close();
+            // Si realizar_venta falló, regresar al inventario lo copiado al carrito
+            conn.prepareCall("{call vaciar_venta_temp()}").execute();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -288,13 +287,11 @@ public class CotizacionDAO extends BaseDAO {
     }
 
     public void cancelarCotizacion(String idCoti) {
-        try {
-            Connection conn = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conn = conectar()) {
             PreparedStatement pstm = conn.prepareStatement(
                 "UPDATE cotizacion SET estatus='Cancelada' WHERE id_cotizacion=?");
             pstm.setString(1, idCoti);
             pstm.executeUpdate();
-            conn.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }

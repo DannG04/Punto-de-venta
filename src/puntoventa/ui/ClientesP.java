@@ -654,7 +654,7 @@ public class ClientesP extends javax.swing.JPanel {
 
     public void mostrarTabla(){
         Mise.limpiarTabla(modelo);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM cliente");
+        java.sql.ResultSet rs = conect.obtenerClientes();
         if(rs != null){
             try{
                 while(rs.next()){

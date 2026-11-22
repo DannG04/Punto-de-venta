@@ -26,8 +26,7 @@ public class ReporteDAO extends BaseDAO {
             "LEFT JOIN empleado e ON v.id_empleado = e.id_empleado " +
             "WHERE v.fecha_venta = ? " +
             "ORDER BY v.id_venta";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setDate(1, java.sql.Date.valueOf(fecha));
             rs = pstm.executeQuery();
@@ -46,8 +45,7 @@ public class ReporteDAO extends BaseDAO {
         String instruccion = "SELECT id_producto, nombre, cantidad FROM producto " +
             "WHERE estatus = 'Activo' AND (LOWER(nombre) LIKE LOWER(?) OR LOWER(id_producto) LIKE LOWER(?)) " +
             "ORDER BY nombre LIMIT 20";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setString(1, "%" + filtro + "%");
             pstm.setString(2, "%" + filtro + "%");
@@ -69,8 +67,7 @@ public class ReporteDAO extends BaseDAO {
             "WHERE k.id_producto = ? " +
             "AND k.fecha::date >= ? AND k.fecha::date <= ? " +
             "ORDER BY k.fecha DESC";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setString(1, idProducto);
             pstm.setDate(2, java.sql.Date.valueOf(desde));
@@ -84,44 +81,25 @@ public class ReporteDAO extends BaseDAO {
 
     public double ObtenerDato(String nombreCol) {//Función para obtener un dato de la base de datos
         double total = 0;
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DriverManager.getConnection(url + nameBD, usuario, contra);
-            ps = conn.prepareStatement("SELECT * FROM estado_resultados(CAST(? AS NUMERIC))");
+        try (Connection conn = conectar();
+             PreparedStatement ps = conn.prepareStatement("SELECT * FROM estado_resultados(CAST(? AS NUMERIC))")) {
             ps.setDouble(1, 0.00);
-            rs = ps.executeQuery();
-
-            if (rs.next()) {
-                total = rs.getDouble(nombreCol);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    total = rs.getDouble(nombreCol);
+                }
             }
-
         } catch (SQLException e) {
             GestorErrores.registrar(e);
-        } finally {
-            try {
-                if (rs != null)
-                    rs.close();
-                if (ps != null)
-                    ps.close();
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException e) {
-                GestorErrores.registrar(e);
-            }
         }
         return total;
     }
 
     public ResultSet reporte_diario() {//Función para obtener el reporte diario
         ResultSet rs = null;
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call reporte_diario()}");
             rs = cstm.executeQuery();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -130,15 +108,21 @@ public class ReporteDAO extends BaseDAO {
 
     public ResultSet reporte_diario(java.time.LocalDate fecha) {//Función para obtener el reporte diario por fecha
         ResultSet rs = null;
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call reporte_diario(?)}");
             cstm.setDate(1, java.sql.Date.valueOf(fecha));
             rs = cstm.executeQuery();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
         return rs;
+    }
+
+    public ResultSet balanceGeneral(java.time.LocalDate hasta) {//Caja, inventario y clientes desde el 1 de enero del año de la fecha
+        return consultarONulo("SELECT * from balance_general(?, ?)", "01/01/" + hasta.getYear(), hasta.toString());
+    }
+
+    public ResultSet anticipoClientes() {//Anticipos de clientes (apartados) para el balance general
+        return consultarONulo("SELECT anticipo_clientes()");
     }
 }

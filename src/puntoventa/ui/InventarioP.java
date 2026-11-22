@@ -1088,12 +1088,11 @@ public class InventarioP extends javax.swing.JPanel {
 
     private void buskProdKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buskProdKeyReleased
         String busqueda = buskProd.getText();
-        String instruccion = "SELECT p.*, c.nombre AS categoria_nombre FROM producto p LEFT JOIN categoria c ON p.id_categoria = c.id_categoria WHERE p.estatus = 'Activo' AND (p.nombre LIKE '%" + busqueda + "%' OR CAST(p.id_producto AS TEXT) LIKE '%" + busqueda + "%') ORDER BY p.id_producto;";
         if(!buskProd.getText().isEmpty()){
-            mostrarTabla(instruccion);
+            mostrarTabla(busqueda);
         }
         if(evt.getKeyCode() == KeyEvent.VK_BACK_SPACE){
-            mostrarTabla(instruccion);
+            mostrarTabla(busqueda);
         }
     }//GEN-LAST:event_buskProdKeyReleased
 
@@ -1151,15 +1150,15 @@ public class InventarioP extends javax.swing.JPanel {
     }
 
     //TABLAS
-    public final void mostrarTabla(String inst){
+    public final void mostrarTabla(String busqueda){//Inventario por nombre o código; busqueda vacía = todo
+        mostrarInventario(conect.buscarInventario(busqueda));
+    }
+
+    private void mostrarInventario(java.sql.ResultSet rs){
         Mise.limpiarTabla(modelo);
-        if(inst.isEmpty()){
-            inst = "SELECT p.*, c.nombre AS categoria_nombre FROM producto p LEFT JOIN categoria c ON p.id_categoria = c.id_categoria WHERE p.estatus = 'Activo' ORDER BY p.id_producto";
-        }
-        java.sql.ResultSet rs = conect.query(inst);
         if (rs == null) {
             // Fallback: la tabla categoria puede no existir aún
-            rs = conect.query("SELECT *, '' AS categoria_nombre FROM producto WHERE estatus = 'Activo' ORDER BY id_producto");
+            rs = conect.obtenerInventarioSinCategoria();
         }
         llenarTabla(rs);
     }
@@ -1206,15 +1205,9 @@ public class InventarioP extends javax.swing.JPanel {
 
         // Cargar precio de compra actual (solo lectura)
         precioCompraInv.setText("");
-        java.sql.ResultSet rsPC = conect.query("SELECT COALESCE(precio_compra,0) AS pc FROM producto WHERE id_producto = '" + elemento + "';");
-        if (rsPC != null) {
-            try {
-                if (rsPC.next()) {
-                    precioCompraInv.setText("" + rsPC.getDouble("pc"));
-                }
-            } catch (java.sql.SQLException ex) {
-                System.out.println("Error al cargar precio de compra: " + ex.getMessage());
-            }
+        Double precioCompra = conect.obtenerPrecioCompra(elemento);
+        if (precioCompra != null) {
+            precioCompraInv.setText("" + precioCompra);
         }
 
         // Seleccionar la categoría actual en el combo
@@ -1516,8 +1509,7 @@ public class InventarioP extends javax.swing.JPanel {
             mostrarTabla("");
         } else {
             int idCat = filtroCategoriaIds.get(idx);
-            String inst = "SELECT p.*, c.nombre AS categoria_nombre FROM producto p LEFT JOIN categoria c ON p.id_categoria = c.id_categoria WHERE p.id_categoria = " + idCat + " AND p.estatus = 'Activo' ORDER BY p.id_producto";
-            mostrarTabla(inst);
+            mostrarInventario(conect.obtenerInventarioPorCategoria(idCat));
         }
     }
 
