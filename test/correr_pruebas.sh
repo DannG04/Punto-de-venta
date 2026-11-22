@@ -11,7 +11,7 @@ rm -rf build/pruebas && mkdir -p build/pruebas
 cp src/version.properties build/pruebas/ 2>/dev/null || true
 (cd src && find . -type f ! -name "*.java" ! -name "*.form" -exec cp --parents {} ../build/pruebas/ \;)
 clases="$*"
-[ -z "$clases" ] && clases=$(cd test && find . -name "*Prueba.java" | sed 's#^\./##; s#\.java$##; s#/#.#g')
+[ -z "$clases" ] && clases=$(cd test && find . -name "*Prueba.java" ! -path "./pruebas/*" | sed 's#^\./##; s#\.java$##; s#/#.#g')
 rc=0
 for c in $clases; do "$JDK/java" -Djava.awt.headless=true -cp "build/pruebas${SEP}lib/*" "$c" || rc=1; done
 exit $rc
