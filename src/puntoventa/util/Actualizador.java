@@ -63,7 +63,7 @@ public final class Actualizador {
                 return null;
             }
             return parsear(r.body());
-        } catch (Exception e) {
+        } catch (Exception | StackOverflowError e) { // nunca debe tumbar el aviso ni el hilo
             GestorErrores.registrar(e, "Actualizador.buscar");
             if (e instanceof InterruptedException) Thread.currentThread().interrupt();
             return null;
@@ -76,9 +76,7 @@ public final class Actualizador {
         String tag = cadena(json, "tag_name");
         if (tag == null || VersionApp.normalizar(tag).isEmpty()) return null;
         String urlZip = null, urlSha = null;
-        Matcher m = Pattern.compile("\"browser_download_url\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").matcher(json);
-        while (m.find()) {
-            String u = desescapar(m.group(1));
+        for (String u : cadenas(json, "browser_download_url")) {
             if (u.endsWith(".zip.sha256")) urlSha = u;
             else if (u.endsWith(".zip")) urlZip = u;
         }
@@ -91,8 +89,33 @@ public final class Actualizador {
     }
 
     private static String cadena(String json, String campo) {
-        Matcher m = Pattern.compile("\"" + campo + "\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").matcher(json);
-        return m.find() ? desescapar(m.group(1)) : null;
+        List<String> v = cadenas(json, campo);
+        return v.isEmpty() ? null : v.get(0);
+    }
+
+    /**
+     * Valores de texto de todas las apariciones de "campo": "...". Lector iterativo:
+     * un regex con alternancia por carácter desbordaba la pila con notas de ~3 KB.
+     */
+    private static List<String> cadenas(String json, String campo) {
+        List<String> res = new java.util.ArrayList<>();
+        String clave = "\"" + campo + "\"";
+        int i = json.indexOf(clave);
+        while (i >= 0) {
+            int p = i + clave.length();
+            while (p < json.length() && Character.isWhitespace(json.charAt(p))) p++;
+            if (p < json.length() && json.charAt(p) == ':') {
+                p++;
+                while (p < json.length() && Character.isWhitespace(json.charAt(p))) p++;
+                if (p < json.length() && json.charAt(p) == '"') {
+                    int ini = ++p;
+                    while (p < json.length() && json.charAt(p) != '"') p += json.charAt(p) == '\\' ? 2 : 1;
+                    if (p < json.length()) res.add(desescapar(json.substring(ini, p)));
+                }
+            }
+            i = json.indexOf(clave, i + clave.length());
+        }
+        return res;
     }
 
     private static String desescapar(String s) {
@@ -217,8 +240,20 @@ public final class Actualizador {
 
     /** Lanza el actualizador (que cierra y reabre la app) y termina este proceso. */
     public static void lanzarYSalir(Path carpeta, Path instalacion) throws IOException {
-        new ProcessBuilder(comandoActualizacion(instalacion)).directory(carpeta.toFile()).start();
+        procesoActualizacion(carpeta, instalacion).start();
         System.exit(0);
+    }
+
+    /**
+     * Proceso del actualizador con su salida en &lt;carpeta&gt;\lanzador.log: la app termina
+     * enseguida y nadie leería las tuberías; además queda rastro si la actualización
+     * nunca llega a correr (p. ej. UAC cancelado).
+     */
+    static ProcessBuilder procesoActualizacion(Path carpeta, Path instalacion) {
+        return new ProcessBuilder(comandoActualizacion(instalacion))
+                .directory(carpeta.toFile())
+                .redirectErrorStream(true)
+                .redirectOutput(carpeta.resolve("lanzador.log").toFile());
     }
 
     /** true si hay productos en el carrito de Ventas (actualizar los dejaría en el aire). */

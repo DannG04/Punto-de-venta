@@ -39,6 +39,18 @@ public class ActualizadorPrueba {
         check(Actualizador.parsear("no es json") == null, "basura -> null");
         check(Actualizador.parsear(null) == null, "null -> null");
 
+        // notas largas (publicadas con -NotasArchivo): el regex recursivo desbordaba la pila
+        String largo = "- Cambio con \\\"comillas\\\" y acentos \\u00e1\\n".repeat(2000);
+        Release rlargo = null;
+        try {
+            rlargo = Actualizador.parsear(leer("test/recursos/release_ok.json").replace(
+                    "\"body\":\"", "\"body\":\"" + largo));
+        } catch (Throwable t) {
+            check(false, "notas largas lanzan " + t);
+        }
+        check(rlargo != null && rlargo.notas().length() > 50000 && rlargo.notas().contains("\"comillas\""),
+                "notas largas se parsean");
+
         // --- sha256 ---
         check(Actualizador.sha256(tmp("abc")).equals("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"), "sha256 abc");
 
@@ -49,6 +61,14 @@ public class ActualizadorPrueba {
         List<String> cmd = Actualizador.comandoActualizacion(Path.of("C:\\Program Files (x86)\\PuntoVenta"));
         check(cmd.equals(List.of("cmd", "/c", ".\\aplicar_actualizacion.bat",
                 "--auto", "C:\\Program Files (x86)\\PuntoVenta")), "comando: " + cmd);
+
+        // --- proceso del actualizador: salida a un log (la app termina con System.exit y nadie leería las tuberías) ---
+        Path paq = Files.createTempDirectory("pvpaq");
+        ProcessBuilder pb = Actualizador.procesoActualizacion(paq, Path.of("C:\\Program Files (x86)\\PuntoVenta"));
+        check(pb.command().equals(Actualizador.comandoActualizacion(Path.of("C:\\Program Files (x86)\\PuntoVenta"))), "proceso usa el comando");
+        check(paq.toFile().equals(pb.directory()), "proceso corre en la carpeta del paquete");
+        check(pb.redirectOutput().file() != null && pb.redirectOutput().file().equals(paq.resolve("lanzador.log").toFile()), "stdout a lanzador.log");
+        check(pb.redirectErrorStream(), "stderr junto con stdout");
 
         // --- servidor local que imita a GitHub ---
         byte[] zip = zipCon("aplicar_actualizacion.bat", "@echo off\r\necho hola\r\n");

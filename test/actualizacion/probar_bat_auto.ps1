@@ -62,6 +62,21 @@ Check ($r.Salida -notmatch 'Presione una tecla|Press any key') "auto ERROR: no e
 Check ((Test-Path $ultima) -and ((Get-Content $ultima -Raw) -match '^ERROR .*V9\.2')) "auto ERROR: ultima_actualizacion.txt = ERROR ... V9.2"
 Check ((Get-Content (Join-Path $inst 'Proy_Ventas.jar') -Raw) -eq 'viejo') "auto ERROR: JAR NO reemplazado"
 
+# --- Caso 2b: falla la copia de lib/: el JAR nuevo NO debe quedar puesto (sin sus librerias la app no abre) ---
+Remove-Item $ultima -ErrorAction SilentlyContinue
+'viejo' | Set-Content -NoNewline (Join-Path $inst 'Proy_Ventas.jar')
+$libInst = Join-Path $inst 'lib'
+if (Test-Path $libInst) { Remove-Item $libInst -Recurse -Force }
+'no soy carpeta' | Set-Content $libInst          # xcopy hacia lib\ falla
+$pkgLib = Nuevo-Paquete 'paquete lib' 'V9.4__prueba.sql' "BEGIN; SELECT 1; COMMIT;"
+New-Item -ItemType Directory -Force -Path (Join-Path $pkgLib 'lib') | Out-Null
+'jar' | Set-Content (Join-Path $pkgLib 'lib\nueva.jar')
+$r = Correr $pkgLib @('--auto')
+Check ($r.Codigo -ne 0) "auto lib: codigo distinto de 0"
+Check ((Test-Path $ultima) -and ((Get-Content $ultima -Raw) -match '^ERROR')) "auto lib: ultima_actualizacion.txt = ERROR"
+Check ((Get-Content (Join-Path $inst 'Proy_Ventas.jar') -Raw) -eq 'viejo') "auto lib: JAR NO reemplazado si fallan las librerias"
+Remove-Item $libInst -Force
+
 # --- Caso 3: manual (sin --auto) conserva la pausa final y no escribe ultima_actualizacion ---
 Remove-Item $ultima -ErrorAction SilentlyContinue
 $pkg3 = Nuevo-Paquete 'paquete manual' 'V9.3__prueba.sql' "BEGIN; SELECT 1; COMMIT;"

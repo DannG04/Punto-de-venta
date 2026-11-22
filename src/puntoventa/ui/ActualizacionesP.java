@@ -134,7 +134,10 @@ public class ActualizacionesP extends JPanel {
             Mise.JOption("Hay una venta en curso; termínela o vacíe el carrito.", "Actualizaciones", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        if (Mise.JOptionYesNo("La app se cerrará y se actualizará. Tardará unos minutos.\n¿Desea continuar?", "Actualizar") != 0) return;
+        if (Mise.JOptionYesNo("La app se cerrará y se actualizará. Tardará unos minutos.\n"
+                + "Windows pedirá permiso de administrador: acéptelo (si no aparece, búsquelo\n"
+                + "parpadeando en la barra de tareas). Al terminar, la app se abrirá sola.\n"
+                + "¿Desea continuar?", "Actualizar") != 0) return;
 
         JDialog dlg = new JDialog(SwingUtilities.getWindowAncestor(this), "Descargando actualización", Dialog.ModalityType.APPLICATION_MODAL);
         JProgressBar barra = new JProgressBar(0, 100);

@@ -225,22 +225,15 @@ for /f "delims=" %%F in ('dir /b /on "!PKGDIR!\migrations\V*.sql" 2^>nul') do (
 )
 
 :swap_jar
-REM ---------- 8. Reemplazar JAR y dependencias ----------
-if not exist "!PKGDIR!\Proy_Ventas.jar" goto :swap_lib
-echo Reemplazando aplicacion...
-REM Respaldo con timestamp para no pisar un backup bueno en una segunda corrida.
-if exist "!INSTALL_DIR!\Proy_Ventas.jar" copy /y "!INSTALL_DIR!\Proy_Ventas.jar" "!INSTALL_DIR!\Proy_Ventas.jar.!STAMP!.bak" >nul
-copy /y "!PKGDIR!\Proy_Ventas.jar" "!INSTALL_DIR!\Proy_Ventas.jar" >nul
-if !errorlevel! equ 0 goto :jar_ok
-echo [ERROR] No se pudo reemplazar Proy_Ventas.jar ^(la app sigue abierta?^).
-set "PASO=reemplazo de Proy_Ventas.jar"
-goto :fallo
-:jar_ok
-echo [OK] JAR actualizado ^(respaldo: Proy_Ventas.jar.!STAMP!.bak^).
-:swap_lib
+REM ---------- 8. Reemplazar dependencias, lanzador y JAR ----------
+REM Orden: lib y PuntoVenta.exe primero, el JAR al FINAL. Si algo falla antes,
+REM el JAR viejo sigue puesto y la app abre igual (librerias de mas no estorban).
+REM Con el JAR primero, un fallo en lib dejaba un JAR nuevo sin sus librerias
+REM (NoClassDefFoundError) y la tienda sin poder abrir la app.
 if not exist "!PKGDIR!\lib" goto :swap_exe
 xcopy /y /e /i "!PKGDIR!\lib\*" "!INSTALL_DIR!\lib\" >nul
 if !errorlevel! equ 0 goto :lib_ok
+echo [ERROR] No se pudieron copiar las dependencias ^(lib^).
 set "PASO=copia de dependencias (lib)"
 goto :fallo
 :lib_ok
@@ -248,14 +241,31 @@ echo [OK] Dependencias actualizadas.
 :swap_exe
 REM Lanzador PuntoVenta.exe: si el jar cambia la clase principal, un .exe viejo
 REM apunta a una clase que ya no existe y la app no abre. Por eso lo reemplazamos.
-if not exist "!PKGDIR!\PuntoVenta.exe" goto :fin_ok
+set "EXE_CAMBIADO="
+if not exist "!PKGDIR!\PuntoVenta.exe" goto :swap_jar_final
 if exist "!INSTALL_DIR!\PuntoVenta.exe" copy /y "!INSTALL_DIR!\PuntoVenta.exe" "!INSTALL_DIR!\PuntoVenta.exe.!STAMP!.bak" >nul
 copy /y "!PKGDIR!\PuntoVenta.exe" "!INSTALL_DIR!\PuntoVenta.exe" >nul
 if !errorlevel! equ 0 goto :exe_ok
+echo [ERROR] No se pudo reemplazar PuntoVenta.exe.
 set "PASO=reemplazo de PuntoVenta.exe"
 goto :fallo
 :exe_ok
+set "EXE_CAMBIADO=1"
 echo [OK] Lanzador actualizado ^(respaldo: PuntoVenta.exe.!STAMP!.bak^).
+:swap_jar_final
+if not exist "!PKGDIR!\Proy_Ventas.jar" goto :fin_ok
+echo Reemplazando aplicacion...
+REM Respaldo con timestamp para no pisar un backup bueno en una segunda corrida.
+if exist "!INSTALL_DIR!\Proy_Ventas.jar" copy /y "!INSTALL_DIR!\Proy_Ventas.jar" "!INSTALL_DIR!\Proy_Ventas.jar.!STAMP!.bak" >nul
+copy /y "!PKGDIR!\Proy_Ventas.jar" "!INSTALL_DIR!\Proy_Ventas.jar" >nul
+if !errorlevel! equ 0 goto :jar_ok
+echo [ERROR] No se pudo reemplazar Proy_Ventas.jar ^(la app sigue abierta?^).
+REM El JAR viejo sigue puesto: regresar tambien el lanzador viejo para que coincidan.
+if defined EXE_CAMBIADO if exist "!INSTALL_DIR!\PuntoVenta.exe.!STAMP!.bak" copy /y "!INSTALL_DIR!\PuntoVenta.exe.!STAMP!.bak" "!INSTALL_DIR!\PuntoVenta.exe" >nul
+set "PASO=reemplazo de Proy_Ventas.jar"
+goto :fallo
+:jar_ok
+echo [OK] JAR actualizado ^(respaldo: Proy_Ventas.jar.!STAMP!.bak^).
 
 :fin_ok
 echo.
