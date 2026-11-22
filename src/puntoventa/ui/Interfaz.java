@@ -791,8 +791,9 @@ public class Interfaz extends javax.swing.JFrame {
                 botones.setVisible(true);
                 panelPrin.setVisible(true);
                 horaPanel.setVisible(true);
-                this.setSize(tamanio.width, tamanio.height - 20);
-                this.setLocationRelativeTo(null);
+                // Área útil de la pantalla (descuenta la barra de tareas, sin importar su tamaño o posición)
+                java.awt.Rectangle util = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+                this.setBounds(util);
                 menuBar.setVisible(true);
 
                 initerDia.setVisible(false);

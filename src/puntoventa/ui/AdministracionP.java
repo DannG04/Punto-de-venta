@@ -320,8 +320,10 @@ public class AdministracionP extends javax.swing.JPanel {
 
     private void tablaVentasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaVentasMouseClicked
         if(tablaVentas.getSelectedRow() != -1){
-            labelVentaID.setText("Venta: " + modeloVentas.getValueAt(tablaVentas.getSelectedRow(), 0));
-            mostrarTablaVentasDet("" + modeloVentas.getValueAt(tablaVentas.getSelectedRow(), 0));
+            // Con la tabla ordenada, el índice de la vista no es el del modelo:
+            // leer desde la tabla para mostrar la venta que se hizo clic.
+            labelVentaID.setText("Venta: " + tablaVentas.getValueAt(tablaVentas.getSelectedRow(), 0));
+            mostrarTablaVentasDet("" + tablaVentas.getValueAt(tablaVentas.getSelectedRow(), 0));
             ventaDetDialog.setVisible(true);
         }
     }//GEN-LAST:event_tablaVentasMouseClicked

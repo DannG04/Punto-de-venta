@@ -162,7 +162,9 @@ public class ComprasP extends javax.swing.JPanel {
                 descartarPendienteActionPerformed(evt);
             }
         });
-        jPanel3.setPreferredSize(new java.awt.Dimension(150, 160));
+        // Sin tamaño fijo: el GridBagLayout calcula el ancho para que quepa
+        // "Descartar pendiente" (con 150px fijos los botones se cortaban).
+        jPanel3.setPreferredSize(null);
         jPanel3.add(descartarPendienteBtn, gbc);
         jPanel3.revalidate();
     }

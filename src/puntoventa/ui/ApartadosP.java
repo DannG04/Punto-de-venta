@@ -714,7 +714,13 @@ public class ApartadosP extends javax.swing.JPanel {
 
     private void saldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saldActionPerformed
         //Hace la validación de que el apartado este vigente para poder saldarlo
-        if((modeloAp.getValueAt(tablaAp.getSelectedRow(), 8)).equals("Vigente")){
+        // Validar la selección ANTES de leer la fila (con -1 lanzaba una excepción) y leer
+        // el estado desde la tabla, no del modelo (con la tabla ordenada eran filas distintas).
+        if(tablaAp.getSelectedRow() == -1){
+            Mise.JOption("Seleccione la fila que desea saldar", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(("" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 8)).equals("Vigente")){
             if(tablaAp.getSelectedRow() != -1){
                 idApF.setText("" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 0));
                 cantSaldaF.setText("" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 6));
@@ -938,6 +944,10 @@ public class ApartadosP extends javax.swing.JPanel {
         //Cancela un apartado
         if(tablaAp.getSelectedRow() != -1){
             id_apartado = "" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 0);
+            if(!("" + tablaAp.getValueAt(tablaAp.getSelectedRow(), 8)).equals("Vigente")){
+                Mise.JOption("Solo se pueden cancelar apartados vigentes", "Apartado", javax.swing.JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             double mon = conect.cantidadCancelarApartado(id_apartado);
             double tor = (double) tablaAp.getValueAt(tablaAp.getSelectedRow(), 5) - mon;
             int res = Mise.JOptionYesNo("¿Seguro que desea cancelar el apartado? Dada la cantidad recibida y la cantidad de dias que han pasado,\n"

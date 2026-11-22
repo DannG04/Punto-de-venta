@@ -210,14 +210,27 @@ public class CotizacionDAO extends BaseDAO {
             String idCli = rsCoti.getString("id_cliente");
             if (idCli == null || idCli.isEmpty()) idCli = "XAXX111111HCCXXXX0";
 
+            // venta_temp es el carrito de Ventas: si tiene productos, borrarlo aquí
+            // perdía esa venta en curso y el stock que tenía descontado.
+            ResultSet rsCarrito = conn.createStatement().executeQuery("SELECT COUNT(*) FROM venta_temp");
+            if (rsCarrito.next() && rsCarrito.getInt(1) > 0) {
+                Mise.JOption("Hay una venta en curso en el módulo de Ventas.\n"
+                    + "Termínela o vacíe su carrito antes de convertir la cotización.",
+                    "Venta en curso", javax.swing.JOptionPane.WARNING_MESSAGE);
+                return "";
+            }
+
             // Copiar cotizacion_detalle a venta_temp
-            conn.createStatement().execute("DELETE FROM venta_temp");
             PreparedStatement copyTemp = conn.prepareStatement(
                 "INSERT INTO venta_temp(id_producto, nombre_p, cantidad_prod, tipo_venta, precio_dado, precio_total, descuento_pct) " +
                 "SELECT id_producto, nombre_p, cantidad, tipo_venta::\"tipoVenta\", precio_dado, precio_total, descuento_pct " +
                 "FROM cotizacion_detalle WHERE id_cotizacion=?");
             copyTemp.setString(1, idCoti);
             copyTemp.executeUpdate();
+            // El trigger de INSERT recalcula el precio sin descuento; el de UPDATE sí
+            // lo aplica. Sin esto la cotización se cobraba a precio completo.
+            conn.createStatement().executeUpdate(
+                "UPDATE venta_temp SET descuento_pct = descuento_pct WHERE descuento_pct > 0");
 
             // Crear venta con el stored procedure
             CallableStatement cstm = conn.prepareCall("{call realizar_venta(?::curp_dominio,?::curp_dominio)}");
@@ -265,7 +278,8 @@ public class CotizacionDAO extends BaseDAO {
                 updCoti.setString(2, idCoti);
                 updCoti.executeUpdate();
             }
-            conn.createStatement().execute("DELETE FROM venta_temp");
+            // Si realizar_venta falló, regresar al inventario lo copiado al carrito
+            conn.prepareCall("{call vaciar_venta_temp()}").execute();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }

@@ -830,6 +830,11 @@ public class VentasP extends javax.swing.JPanel {
 
                 String formaPago = (String) cmbFormaPago.getSelectedItem();
                 idTemV = conect.registrarVentaConFormaPago(Interfaz.idVendedor,  id_cliente, formaPago);
+                if (idTemV == null || idTemV.isEmpty()) {
+                    // La venta no se registró (el error ya se mostró): conservar el carrito
+                    // para reintentar en lugar de vaciarlo y mostrar un ticket vacío.
+                    return;
+                }
 
                 // Persistir descuentos en venta_detalle
                 for (java.util.Map.Entry<String, Double> entry : descuentos.entrySet()) {

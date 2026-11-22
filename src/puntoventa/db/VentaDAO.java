@@ -64,8 +64,14 @@ public class VentaDAO extends BaseDAO {
     }
 
     // FUNCIONES DE LA TABLA DE VENTA TEMPORAL
-    public void limpiarVentaTemp() {//Función para limpiar la tabla de venta temporal
-        inst("DELETE FROM venta_temp;");
+    public void limpiarVentaTemp() {//Vacía el carrito regresando al inventario lo que tenía apartado
+        // El stock se descuenta al agregar al carrito; un DELETE directo lo perdía (V1.22).
+        try (Connection conexion = conectar()) {
+            CallableStatement cstm = conexion.prepareCall("{call vaciar_venta_temp()}");
+            cstm.execute();
+        } catch (SQLException e) {
+            GestorErrores.manejar(e);
+        }
     }
 
     public void insertarVentaTemp(String[] campos, boolean acum) {//Función para insertar una venta temporal
