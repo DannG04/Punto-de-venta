@@ -1,5 +1,35 @@
 # Parches de actualización — Punto de Venta
 
+## Publicar una versión (actualización automática)
+
+Desde la versión con actualizador, cada punto de venta revisa GitHub Releases al
+iniciar sesión un gerente y cada 6 horas. Si hay una versión nueva, aparece el
+aviso en **Administración → Actualizaciones** y el dueño actualiza con un clic
+(la app descarga el ZIP, verifica su huella SHA-256 y corre
+`aplicar_actualizacion.bat --auto`, que respalda la BD, migra y reabre la app).
+
+Para publicar:
+
+1. Una sola vez: `winget install GitHub.cli` y `gh auth login`.
+2. Haz commit de todo (el script se niega a publicar con cambios sin commit).
+3. Corre:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File installer\update\publicar_version.ps1 -Version 1.23 -Notas "- Corrige el corte de caja"
+   ```
+   (`-NotasArchivo notas.md` para notas largas; `-Jdk C:\ruta\jdk\bin` si no hay
+   `ant`, el `ant` de NetBeans ni `JAVA_HOME`.)
+
+El script sube la versión en `src/version.properties` e `installer/setup.iss`,
+compila, arma `installer/output/PuntoVenta-Update-<v>.zip` + `.sha256`, hace
+commit `chore(release): v<v>`, tag `v<v>`, push y crea el release. Para probar
+sin publicar nada: `-SinPublicar`.
+
+**Tiendas instaladas antes del actualizador:** necesitan una última actualización
+manual (el ZIP con `aplicar_actualizacion.bat`, abajo) o reinstalar con el
+`PuntoVentaSetup.exe` nuevo; desde ahí se actualizan solas.
+
+---
+
 Procedimiento para actualizar usuarios que YA tienen la app + PostgreSQL + la BD.
 No reinstala PostgreSQL ni restaura la BD: solo aplica migraciones nuevas y cambia el JAR.
 
