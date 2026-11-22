@@ -37,13 +37,13 @@ public class ApartadoDAO extends BaseDAO {
             }
         } catch (Exception e) { GestorErrores.registrar(e); }
         try {
-            ResultSet ap = query(
+            ResultSet ap = consultar(
                 "SELECT a.fecha_inicio, a.fecha_limite, a.cantidad_dada, a.cantidad_faltante, a.cantidad_total, " +
                 "c.nombre AS cliente_nombre, e.nombre AS empleado_nombre " +
                 "FROM apartado a " +
                 "JOIN cliente c ON a.id_cliente = c.id_cliente " +
                 "JOIN empleado e ON a.id_empleado = e.id_empleado " +
-                "WHERE a.id_apartado = '" + idApartado + "'");
+                "WHERE a.id_apartado = ?", idApartado);
             if (ap != null && ap.next()) {
                 datos.fecha             = nvl(ap.getString("fecha_inicio"));
                 datos.fechaLimite       = nvl(ap.getString("fecha_limite"));
@@ -73,15 +73,13 @@ public class ApartadoDAO extends BaseDAO {
 
     public String insertarApartado(String[] campos) {//Función para insertar un apartado
         String idAp = "";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call reg_apartado(?::curp_dominio,?::curp_dominio)}");
             cstm.registerOutParameter(1, Types.VARCHAR);
             cstm.setString(1, campos[0]);
             cstm.setString(2, campos[1]);
             cstm.execute();
             idAp = cstm.getString(1);
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -90,13 +88,11 @@ public class ApartadoDAO extends BaseDAO {
 
     public boolean actualizarApartado(String idAp, Double cantPag){//Función para actualizar un apartado
         boolean band = false;
-        try{
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call act_apartado(?,?)}");
             cstm.setString(1, idAp);
             cstm.setObject(2, cantPag, Types.NUMERIC);
             cstm.execute();
-            conexion.close();
             band = true;
         } catch(SQLException e){
             GestorErrores.manejar(e);
@@ -105,23 +101,19 @@ public class ApartadoDAO extends BaseDAO {
     }
 
     public void eliminarApartado(String idAp) {//Función para eliminar un apartado
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call elim_apartado(?)}");
             cstm.setString(1, idAp);
             cstm.execute();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
     }
 
     public void revisarApartado() {//Función para revisar los apartados
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call ap_vigentes()}");
             cstm.execute();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -129,15 +121,13 @@ public class ApartadoDAO extends BaseDAO {
 
     public double cantidadCancelarApartado(String idAp) {// Función para obtener la cantidad a cancelar de un apartado
         double monto = 0.0;
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call cancelar_ap_cliente(?)}");
             cstm.setString(1, idAp);
             ResultSet rs = cstm.executeQuery();
             while (rs.next()) {
                 monto = rs.getDouble(1);
             }
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -145,52 +135,44 @@ public class ApartadoDAO extends BaseDAO {
     }
 
     public void cancelarApartado(String idAp) {//Función para cancelar un apartado
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call cancelar_ap(?)}");
             cstm.setString(1, idAp);
             cstm.execute();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
     }
 
     public void entregarApartado(String idAp) {//Función para entregar un apartado
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call entregar_ap(?)}");
             cstm.setString(1, idAp);
             cstm.execute();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
     }
 
     public void insertarProdApartado(String[] campos, boolean ac) {//Función para insertar un producto en un apartado
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call reg_apdet(?,?::id_producto_dominio,?,?)}");
             cstm.setString(1, campos[0]);
             cstm.setString(2, campos[1]);
             cstm.setObject(3, campos[2], Types.INTEGER);
             cstm.setBoolean(4, ac);
             cstm.execute();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
     }
 
     public void eliminarProdApartado(String[] campos) {//Función para eliminar un producto de un apartado
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call elim_apdet(?,?::id_producto_dominio)}");
             cstm.setString(1, campos[0]);
             cstm.setString(2, campos[1]);
             cstm.execute();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -199,11 +181,9 @@ public class ApartadoDAO extends BaseDAO {
     public ResultSet seleccionarApartado(String idap) {
         ResultSet resultado = null;
         try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            PreparedStatement consulta = conexion.prepareStatement(
-                    "SELECT id_apartado,id_empleado,fecha_inicio,fecha_limite,cantidad_dada,cantidad_faltante,cantidad_total FROM apartado where id_apartado ='"
-                            + idap + "';");
-            resultado = consulta.executeQuery();
+            resultado = consultar(
+                    "SELECT id_apartado,id_empleado,fecha_inicio,fecha_limite,cantidad_dada,cantidad_faltante,cantidad_total FROM apartado where id_apartado = ?",
+                    idap);
         } catch (Exception e) {
             GestorErrores.registrar(e);
         }
@@ -213,16 +193,32 @@ public class ApartadoDAO extends BaseDAO {
     public ResultSet seleccionarProductos(String idApartado) {//Función para seleccionar los productos de un apartado
         ResultSet resultado = null;
         try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
-            Statement stmt = conexion.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             // producto y apartado_detalle tienen ambas una columna "cantidad" (stock vs. piezas apartadas);
             // cantidad_apartada desambigua la del apartado.
-            String query = "SELECT *, apartado_detalle.cantidad AS cantidad_apartada FROM producto, apartado_detalle where producto.id_producto = apartado_detalle.id_producto and id_apartado = '"
-                    + idApartado + "';";
-            resultado = stmt.executeQuery(query);
+            resultado = consultar(
+                    "SELECT *, apartado_detalle.cantidad AS cantidad_apartada FROM producto, apartado_detalle "
+                    + "where producto.id_producto = apartado_detalle.id_producto and id_apartado = ?",
+                    idApartado);
         } catch (Exception e) {
             GestorErrores.registrar(e);
         }
         return resultado;
+    }
+
+    // CONSULTAS PARA LLENAR TABLAS DE LA UI
+
+    public ResultSet buscarApartados(String texto) {//Apartados cuyo id, cliente o empleado contiene el texto; texto vacío = todos
+        if (texto == null || texto.isEmpty()) return consultarONulo("SELECT * FROM apartado ORDER BY id_apartado");
+        String like = "%" + texto + "%";
+        return consultarONulo("SELECT * FROM apartado WHERE CAST(id_apartado AS TEXT) LIKE ? OR CAST(id_cliente AS TEXT) LIKE ? "
+                + "OR CAST(id_empleado AS TEXT) LIKE ? ORDER BY id_apartado", like, like, like);
+    }
+
+    public ResultSet obtenerApartado(String idApartado) {//Fila completa de un apartado
+        return consultarONulo("SELECT * FROM apartado WHERE id_apartado = ?", idApartado);
+    }
+
+    public ResultSet obtenerDetalleApartado(String idApartado) {//Productos de un apartado
+        return consultarONulo("SELECT * FROM apartado_detalle WHERE id_apartado = ?", idApartado);
     }
 }

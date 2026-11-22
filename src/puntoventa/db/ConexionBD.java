@@ -284,4 +284,86 @@ public class ConexionBD extends BaseDAO {
     public String convertirCotizacionAVenta(String idCoti, String formaPago) { return cotizaciones.convertirCotizacionAVenta(idCoti, formaPago); }
 
     public void cancelarCotizacion(String idCoti) { cotizaciones.cancelarCotizacion(idCoti); }
+
+    // ---- CONSULTAS PARA LLENAR TABLAS DE LA UI (antes SQL armado en los paneles) ----
+
+    // Productos / inventario
+    public ResultSet obtenerProductosActivos() { return productos.obtenerProductosActivos(); }
+
+    public ResultSet buscarProductosActivos(String texto) { return productos.buscarProductosActivos(texto); }
+
+    public ResultSet obtenerProductosPocos() { return productos.obtenerProductosPocos(); }
+
+    public ResultSet buscarInventario(String texto) { return productos.buscarInventario(texto); }
+
+    public ResultSet obtenerInventarioPorCategoria(int idCategoria) { return productos.obtenerInventarioPorCategoria(idCategoria); }
+
+    public ResultSet obtenerInventarioSinCategoria() { return productos.obtenerInventarioSinCategoria(); }
+
+    public Double obtenerPrecioCompra(String idProducto) { return productos.obtenerPrecioCompra(idProducto); }
+
+    // Clientes
+    public ResultSet obtenerClientes() { return clientes.obtenerClientes(); }
+
+    public ResultSet obtenerClientesActivos() { return clientes.obtenerClientesActivos(); }
+
+    public ResultSet buscarClientesActivosPorId(String texto) { return clientes.buscarClientesActivosPorId(texto); }
+
+    public ResultSet buscarClientesActivos(String filtro) { return clientes.buscarClientesActivos(filtro); }
+
+    // Empleados
+    public ResultSet obtenerUsuariosActivos() { return empleados.obtenerUsuariosActivos(); }
+
+    public ResultSet obtenerEmpleadosActivos() { return empleados.obtenerEmpleadosActivos(); }
+
+    // Proveedores
+    public ResultSet buscarProveedores(String filtro) { return proveedores.buscarProveedores(filtro); }
+
+    // Ventas
+    public ResultSet obtenerVentaTemp() { return ventas.obtenerVentaTemp(); }
+
+    public ResultSet obtenerVentas() { return ventas.obtenerVentas(); }
+
+    public ResultSet buscarVentasPorId(String texto) { return ventas.buscarVentasPorId(texto); }
+
+    public ResultSet obtenerDetalleVenta(String idVenta) { return ventas.obtenerDetalleVenta(idVenta); }
+
+    public ResultSet obtenerEncabezadoVentaTicket(String idVenta) { return ventas.obtenerEncabezadoVentaTicket(idVenta); }
+
+    public ResultSet obtenerProductosVentaTicket(String idVenta) { return ventas.obtenerProductosVentaTicket(idVenta); }
+
+    // Apartados
+    public ResultSet buscarApartados(String texto) { return apartados.buscarApartados(texto); }
+
+    public ResultSet obtenerApartado(String idApartado) { return apartados.obtenerApartado(idApartado); }
+
+    public ResultSet obtenerDetalleApartado(String idApartado) { return apartados.obtenerDetalleApartado(idApartado); }
+
+    // Devoluciones
+    public ResultSet obtenerDevoluciones() { return devoluciones.obtenerDevoluciones(); }
+
+    public ResultSet obtenerDetalleDevolucion(String idDev) { return devoluciones.obtenerDetalleDevolucion(idDev); }
+
+    public ResultSet obtenerMontoDevolucion(String idDev) { return devoluciones.obtenerMontoDevolucion(idDev); }
+
+    // Compras
+    public ResultSet obtenerComprasYBorradores() { return compras.obtenerComprasYBorradores(); }
+
+    public ResultSet obtenerProductosCompra(String idCompra) { return compras.obtenerProductosCompra(idCompra); }
+
+    public ResultSet obtenerImportesCompra(String idCompra) { return compras.obtenerImportesCompra(idCompra); }
+
+    // Gastos y otras ganancias
+    public boolean eliminarGasto(String idGasto) { return gastos.eliminarGasto(idGasto); }
+
+    public ResultSet obtenerGastos() { return gastos.obtenerGastos(); }
+
+    public boolean eliminarOtraGanancia(String idOtraGanancia) { return ganancias.eliminarOtraGanancia(idOtraGanancia); }
+
+    public ResultSet obtenerOtrasGanancias() { return ganancias.obtenerOtrasGanancias(); }
+
+    // Balance general
+    public ResultSet balanceGeneral(java.time.LocalDate hasta) { return reportes.balanceGeneral(hasta); }
+
+    public ResultSet anticipoClientes() { return reportes.anticipoClientes(); }
 }

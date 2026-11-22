@@ -37,13 +37,7 @@ public class VentaDAO extends BaseDAO {
             }
         } catch (Exception e) { GestorErrores.registrar(e); }
         try {
-            ResultSet v = query(
-                "SELECT v.total_venta, v.fecha_venta, v.forma_pago, " +
-                "COALESCE(c.nombre,'Cliente General') AS cliente_nombre, e.nombre AS empleado_nombre " +
-                "FROM venta v " +
-                "LEFT JOIN cliente c ON v.id_cliente = c.id_cliente " +
-                "JOIN empleado e ON v.id_empleado = e.id_empleado " +
-                "WHERE v.id_venta = '" + idVenta + "'");
+            ResultSet v = obtenerEncabezadoVentaTicket(idVenta);
             if (v != null && v.next()) {
                 datos.fecha         = nvl(v.getString("fecha_venta"));
                 datos.total         = v.getDouble("total_venta");
@@ -53,10 +47,7 @@ public class VentaDAO extends BaseDAO {
             }
         } catch (Exception e) { GestorErrores.registrar(e); }
         try {
-            ResultSet det = query(
-                "SELECT p.nombre, vd.cantidad_producto, vd.precio_dado, vd.precio_total " +
-                "FROM venta_detalle vd JOIN producto p ON vd.id_producto = p.id_producto " +
-                "WHERE vd.id_venta = '" + idVenta + "'");
+            ResultSet det = obtenerProductosVentaTicket(idVenta);
             int num = 1;
             while (det != null && det.next()) {
                 datos.productos.add(new String[]{
@@ -78,26 +69,22 @@ public class VentaDAO extends BaseDAO {
     }
 
     public void insertarVentaTemp(String[] campos, boolean acum) {//Función para insertar una venta temporal
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call set_venta_temp(?::id_producto_dominio,?,?)}");
             cstm.setString(1, campos[0]);
             cstm.setObject(2, campos[1], Types.INTEGER);
             cstm.setBoolean(3, acum);
             cstm.execute();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
     }
 
     public void eliminarVentaTemp(String ide) {//Función para eliminar una venta temporal
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call eliminar_prod(?::id_producto_dominio)}");
             cstm.setString(1, ide);
             cstm.execute();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -105,14 +92,12 @@ public class VentaDAO extends BaseDAO {
 
     public Double sumaVentaTemp() {//Función para obtener la suma de la venta temporal
         Double sum = 0.0;
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call suma_venta_temp()}");
             ResultSet rs = cstm.executeQuery();
             while (rs.next()) {
                 sum = rs.getDouble(1);
             }
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -122,15 +107,13 @@ public class VentaDAO extends BaseDAO {
     // FUNCIONES DE LA TABLA VENTA
     public String registrarVenta(String idEmp, String idCli) {//Función para registrar una venta
         String idVenta = "";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call realizar_venta(?::curp_dominio,?::curp_dominio)}");
             cstm.registerOutParameter(1, Types.VARCHAR);
             cstm.setString(1, idEmp);
             cstm.setString(2, idCli);
             cstm.execute();
             idVenta = cstm.getString(1);
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -140,8 +123,7 @@ public class VentaDAO extends BaseDAO {
     public String registrarVentaConFormaPago(String idEmp, String idCli, String formaPago) {//Función para registrar una venta con forma de pago
         String idVenta = registrarVenta(idEmp, idCli);
         if (!idVenta.isEmpty()) {
-            try {
-                Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+            try (Connection conexion = conectar()) {
                 // Actualizar forma de pago
                 PreparedStatement pstm = conexion.prepareStatement("UPDATE venta SET forma_pago=? WHERE id_venta=?");
                 pstm.setString(1, formaPago);
@@ -165,7 +147,6 @@ public class VentaDAO extends BaseDAO {
                 psKardex.setString(2, idEmp);
                 psKardex.setString(3, idVenta);
                 psKardex.executeUpdate();
-                conexion.close();
             } catch (SQLException e) {
                 GestorErrores.manejar(e);
             }
@@ -175,13 +156,11 @@ public class VentaDAO extends BaseDAO {
 
     // FUNCIONES DE DESCUENTOS
     public void actualizarDescuentoTemp(String idProducto, double descuento) {//Función para actualizar el descuento en venta_temp
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call actualizar_desc_temp(?::id_producto_dominio, ?::numeric)}");
             cstm.setString(1, idProducto);
             cstm.setDouble(2, descuento);
             cstm.execute();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -189,14 +168,12 @@ public class VentaDAO extends BaseDAO {
 
     public void actualizarDescuentoVenta(String idVenta, String idProducto, double descuento) {//Función para guardar descuento en venta_detalle
         String instruccion = "UPDATE venta_detalle SET descuento_pct = ? WHERE id_venta = ? AND id_producto = ?;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setDouble(1, descuento);
             pstm.setString(2, idVenta);
             pstm.setString(3, idProducto);
             pstm.executeUpdate();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -204,18 +181,52 @@ public class VentaDAO extends BaseDAO {
 
     public double obtenerMinMaxDescuentoTemp() {//Función para obtener el menor max_descuento entre los productos del carrito
         double minMax = 100.0;
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             Statement s = conexion.createStatement();
             ResultSet rs = s.executeQuery(
                 "SELECT COALESCE(MIN(p.max_descuento), 100) FROM venta_temp vt JOIN producto p ON vt.id_producto = p.id_producto;");
             if (rs.next()) {
                 minMax = rs.getDouble(1);
             }
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
         return minMax;
+    }
+
+    // CONSULTAS PARA LLENAR TABLAS DE LA UI Y TICKETS
+
+    public ResultSet obtenerVentaTemp() {//Renglones del carrito
+        return consultarONulo("SELECT * FROM venta_temp");
+    }
+
+    public ResultSet obtenerVentas() {//Todas las ventas
+        return consultarONulo("SELECT * FROM venta");
+    }
+
+    public ResultSet buscarVentasPorId(String texto) {//Ventas cuyo id contiene el texto; texto vacío = todas
+        if (texto == null || texto.isEmpty()) return obtenerVentas();
+        return consultarONulo("SELECT * FROM venta WHERE id_venta LIKE ?", "%" + texto + "%");
+    }
+
+    public ResultSet obtenerDetalleVenta(String idVenta) {//Renglones de una venta
+        return consultarONulo("SELECT * FROM venta_detalle WHERE id_venta = ?", idVenta);
+    }
+
+    public ResultSet obtenerEncabezadoVentaTicket(String idVenta) {//Total, fecha, forma de pago, cliente y vendedor de una venta
+        return consultarONulo(
+            "SELECT v.total_venta, v.fecha_venta, v.forma_pago, " +
+            "COALESCE(c.nombre,'Cliente General') AS cliente_nombre, e.nombre AS empleado_nombre " +
+            "FROM venta v " +
+            "LEFT JOIN cliente c ON v.id_cliente = c.id_cliente " +
+            "JOIN empleado e ON v.id_empleado = e.id_empleado " +
+            "WHERE v.id_venta = ?", idVenta);
+    }
+
+    public ResultSet obtenerProductosVentaTicket(String idVenta) {//Productos de una venta con su nombre
+        return consultarONulo(
+            "SELECT p.nombre, vd.cantidad_producto, vd.precio_dado, vd.precio_total " +
+            "FROM venta_detalle vd JOIN producto p ON vd.id_producto = p.id_producto " +
+            "WHERE vd.id_venta = ?", idVenta);
     }
 }

@@ -31,8 +31,7 @@ public class ListaPreciosDAO extends BaseDAO {
             "LEFT JOIN producto_precio pp " +
             "       ON pp.id_producto = p.id_producto AND pp.id_lista = lp.id_lista " +
             "WHERE lp.id_lista = ?;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setString(1, idProducto);
             pstm.setInt(2, idLista);
@@ -43,7 +42,6 @@ public class ListaPreciosDAO extends BaseDAO {
                     precio = p;
                 }
             }
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -52,14 +50,12 @@ public class ListaPreciosDAO extends BaseDAO {
 
     public void actualizarPrecioEnLista(String idProducto, int idLista, double precio) {//Función para actualizar el precio de un producto en una lista
         String instruccion = "UPDATE producto_precio SET precio=? WHERE id_producto=? AND id_lista=?;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setDouble(1, precio);
             pstm.setString(2, idProducto);
             pstm.setInt(3, idLista);
             pstm.executeUpdate();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -68,14 +64,12 @@ public class ListaPreciosDAO extends BaseDAO {
     public void insertarPrecioEnLista(String idProducto, int idLista, double precio) {//Función para insertar o actualizar el precio de un producto en una lista
         String instruccion = "INSERT INTO producto_precio(id_producto, id_lista, precio) VALUES(?,?,?) " +
                              "ON CONFLICT (id_producto, id_lista) DO UPDATE SET precio = EXCLUDED.precio;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setString(1, idProducto);
             pstm.setInt(2, idLista);
             pstm.setDouble(3, precio);
             pstm.executeUpdate();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }
@@ -83,13 +77,11 @@ public class ListaPreciosDAO extends BaseDAO {
 
     public void eliminarPrecioEnLista(String idProducto, int idLista) {//Función para quitar el override de precio (vuelve a usarse el precio base del producto)
         String instruccion = "DELETE FROM producto_precio WHERE id_producto=? AND id_lista=?;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setString(1, idProducto);
             pstm.setInt(2, idLista);
             pstm.executeUpdate();
-            conexion.close();
         } catch (SQLException e) {
             Mise.JOption(e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -97,14 +89,12 @@ public class ListaPreciosDAO extends BaseDAO {
 
     public void actualizarPrecioListaTemp(String idProducto, double nuevoPrecio, String nombreLista) {//Función para sobreescribir el precio en venta_temp con el de la lista activa
         String instruccion = "UPDATE venta_temp SET precio_dado=?, precio_total=?*cantidad_prod WHERE id_producto=?;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setDouble(1, nuevoPrecio);
             pstm.setDouble(2, nuevoPrecio);
             pstm.setString(3, idProducto);
             pstm.executeUpdate();
-            conexion.close();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
         }

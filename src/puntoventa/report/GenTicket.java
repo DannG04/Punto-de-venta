@@ -387,13 +387,7 @@ public class GenTicket {
                 }
             } catch (Exception ignored) {}
 
-            ResultSet vh = con.query(
-                "SELECT v.total_venta, v.fecha_venta, v.forma_pago, " +
-                "COALESCE(c.nombre,'Cliente General') AS cliente_nombre, e.nombre AS empleado_nombre " +
-                "FROM venta v " +
-                "LEFT JOIN cliente c ON v.id_cliente = c.id_cliente " +
-                "JOIN empleado e ON v.id_empleado = e.id_empleado " +
-                "WHERE v.id_venta = '" + idVenta + "'");
+            ResultSet vh = con.obtenerEncabezadoVentaTicket(idVenta);
             if (vh == null || !vh.next()) return;
 
             double totalVenta = vh.getDouble("total_venta");
@@ -402,10 +396,7 @@ public class GenTicket {
             String clienteNom  = nvl(vh.getString("cliente_nombre"));
             String vendedorNom = nvl(vh.getString("empleado_nombre"));
 
-            ResultSet det = con.query(
-                "SELECT p.nombre, vd.cantidad_producto, vd.precio_dado, vd.precio_total " +
-                "FROM venta_detalle vd JOIN producto p ON vd.id_producto = p.id_producto " +
-                "WHERE vd.id_venta = '" + idVenta + "'");
+            ResultSet det = con.obtenerProductosVentaTicket(idVenta);
 
             java.util.List<String[]> prods = new java.util.ArrayList<>();
             while (det != null && det.next()) {

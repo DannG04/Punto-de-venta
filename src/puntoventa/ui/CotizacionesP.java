@@ -496,10 +496,7 @@ public class CotizacionesP extends javax.swing.JPanel {
 
     private void cargarClientes(String filtro) {
         Mise.limpiarTabla(modeloCliBusc);
-        String sql = "SELECT id_cliente, nombre FROM cliente WHERE estatus='Activo'";
-        if (!filtro.isEmpty()) sql += " AND (id_cliente ILIKE '%" + filtro + "%' OR nombre ILIKE '%" + filtro + "%')";
-        sql += " ORDER BY nombre";
-        ResultSet rs = conect.query(sql);
+        ResultSet rs = conect.buscarClientesActivos(filtro);
         try {
             while (rs != null && rs.next()) {
                 modeloCliBusc.addRow(new Object[]{rs.getString("id_cliente"), rs.getString("nombre")});

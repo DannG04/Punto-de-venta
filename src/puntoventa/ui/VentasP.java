@@ -977,8 +977,7 @@ public class VentasP extends javax.swing.JPanel {
     private void BuscKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_BuscKeyReleased
         String palabra = Busc.getText();
         Mise.limpiarTabla(modeloBusc);
-        String instruccion = "SELECT * FROM producto WHERE estatus = 'Activo' AND (nombre LIKE '%" + palabra + "%' OR CAST(id_producto AS TEXT) LIKE '%" + palabra + "%') ORDER BY id_producto;";
-        mostrarBusqueda(instruccion);
+        mostrarBusqueda(palabra);
     }//GEN-LAST:event_BuscKeyReleased
 
     private void tablaBuscMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaBuscMouseClicked
@@ -1013,7 +1012,7 @@ public class VentasP extends javax.swing.JPanel {
 
     private void curpClienteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_curpClienteKeyReleased
         String pal = curpCliente.getText();
-        mostrarClientes("SELECT * FROM cliente WHERE estatus='Activo' AND id_cliente LIKE '%" + pal +"%';");
+        mostrarClientes(pal);
     }//GEN-LAST:event_curpClienteKeyReleased
 
     private void hechoAct1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoAct1ActionPerformed
@@ -1038,7 +1037,7 @@ public class VentasP extends javax.swing.JPanel {
     
     public final void mostrarTablaVentaT(){
         Mise.limpiarTabla(modelo);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM venta_temp");
+        java.sql.ResultSet rs = conect.obtenerVentaTemp();
         try{
             while(rs.next()){
                 double dct = 0.0;
@@ -1053,12 +1052,9 @@ public class VentasP extends javax.swing.JPanel {
         totalLabel.setText("Total: " + precT);
     }
     
-    public void mostrarBusqueda(String instruccion){
-        if(instruccion.equals("")){
-            instruccion = "SELECT * FROM producto WHERE estatus = 'Activo' ORDER BY id_producto";
-        }
+    public void mostrarBusqueda(String palabra){//Productos activos por nombre o código; palabra vacía = todos
         Mise.limpiarTabla(modeloBusc);
-        java.sql.ResultSet rs = conect.query(instruccion);
+        java.sql.ResultSet rs = conect.buscarProductosActivos(palabra);
         try{
             while(rs.next()){
                 modeloBusc.addRow( new Object[]{rs.getString("id_producto"), rs.getString("nombre"), rs.getDouble("precio_menudeo"), 
@@ -1069,12 +1065,9 @@ public class VentasP extends javax.swing.JPanel {
         }
     }
     
-    public void mostrarClientes(String instruccion){
-        if(instruccion.equals("")){
-            instruccion = "SELECT * FROM cliente WHERE estatus='Activo';";
-        }
+    public void mostrarClientes(String curp){//Clientes activos cuyo CURP contiene el texto; vacío = todos
         Mise.limpiarTabla(modeloCli);
-        java.sql.ResultSet rs = conect.query(instruccion);
+        java.sql.ResultSet rs = conect.buscarClientesActivosPorId(curp);
         try{
             while(rs.next()){
                 modeloCli.addRow( new Object[]{rs.getString("id_cliente"), rs.getString("nombre")});
@@ -1088,7 +1081,7 @@ public class VentasP extends javax.swing.JPanel {
     
     public void mostrarProdPocos(){
         Mise.limpiarTabla(modeloProdP);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM producto WHERE estatus = 'Activo' AND cantidad<=12 ORDER BY id_producto");
+        java.sql.ResultSet rs = conect.obtenerProductosPocos();
         try{
             while(rs.next()){
                 modeloProdP.addRow(new Object[]{rs.getString("id_producto"), rs.getString("nombre"), rs.getInt("cantidad")});

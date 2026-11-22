@@ -771,10 +771,10 @@ public class ApartadosP extends javax.swing.JPanel {
         //Busca los apartados por ID de apartado, ID de cliente o ID de empleado
         String busqueda = buskAp.getText();
         if(!buskAp.getText().isEmpty()){
-            mostrarTablaAp("SELECT * FROM apartado WHERE CAST(id_apartado AS TEXT) LIKE '%" + busqueda + "%' OR CAST(id_cliente AS TEXT) LIKE '%" + busqueda + "%' OR CAST(id_empleado AS TEXT) LIKE '%" + busqueda + "%' ORDER BY id_apartado;");
+            mostrarTablaAp(busqueda);
         }
         if(evt.getKeyChar() == java.awt.event.KeyEvent.VK_BACK_SPACE){
-            mostrarTablaAp("SELECT * FROM apartado WHERE CAST(id_apartado AS TEXT) LIKE '%" + busqueda + "%' OR CAST(id_cliente AS TEXT) LIKE '%" + busqueda + "%' OR CAST(id_empleado AS TEXT) LIKE '%" + busqueda + "%' ORDER BY id_apartado;");
+            mostrarTablaAp(busqueda);
         }
     }//GEN-LAST:event_buskApKeyReleased
 
@@ -1043,12 +1043,9 @@ public class ApartadosP extends javax.swing.JPanel {
         return cambioNum;
     }
     
-    public void mostrarTablaAp(String instruccion){//Muestra la tabla de apartados
-        if(instruccion.equals("")){
-            instruccion = "SELECT * FROM apartado ORDER BY id_apartado";
-        }
+    public void mostrarTablaAp(String busqueda){//Muestra la tabla de apartados; busqueda vacía = todos
         Mise.limpiarTabla(modeloAp);
-        java.sql.ResultSet rs = conect.query(instruccion);
+        java.sql.ResultSet rs = conect.buscarApartados(busqueda);
         if(rs != null){
             try{
                 while(rs.next()){
@@ -1063,7 +1060,7 @@ public class ApartadosP extends javax.swing.JPanel {
     
     public void mostrarTablaProdA(){//Muestra la tabla de productos apartados
         Mise.limpiarTabla(modeloProdAp);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM apartado_detalle WHERE id_apartado='" + id_apartado + "';");
+        java.sql.ResultSet rs = conect.obtenerDetalleApartado(id_apartado);
         if(rs != null){
             try{
                 while(rs.next()){
@@ -1078,7 +1075,7 @@ public class ApartadosP extends javax.swing.JPanel {
     
     public void mostrarTablaPro(){//Muestra la tabla de productos
         Mise.limpiarTabla(modeloProd);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM producto WHERE estatus = 'Activo' ORDER BY id_producto");
+        java.sql.ResultSet rs = conect.obtenerProductosActivos();
         if(rs != null){
             try{
                 while(rs.next()){
@@ -1092,7 +1089,7 @@ public class ApartadosP extends javax.swing.JPanel {
     
     public void mostrarTablaCli(){//Muestra la tabla de clientes
         Mise.limpiarTabla(modeloCli);
-        java.sql.ResultSet rs = conect.query("SELECT * FROM cliente WHERE estatus='Activo'");
+        java.sql.ResultSet rs = conect.obtenerClientesActivos();
         if(rs != null){
             try{
                 while(rs.next()){
@@ -1105,7 +1102,7 @@ public class ApartadosP extends javax.swing.JPanel {
     }
     
     public void datosAp(){//Muestra los datos del apartado
-        java.sql.ResultSet rs = conect.query("SELECT * FROM apartado WHERE id_apartado='" + id_apartado + "';");
+        java.sql.ResultSet rs = conect.obtenerApartado(id_apartado);
         if(rs != null){
             try{
                 while(rs.next()){

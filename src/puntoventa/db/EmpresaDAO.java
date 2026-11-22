@@ -20,8 +20,7 @@ public class EmpresaDAO extends BaseDAO {
             String estado, String cp, String mensajeTicket, String logoRuta) {
         String instruccion = "UPDATE empresa SET nombre=?, razon_social=?, rfc=?, telefono=?, correo=?, " +
             "direccion=?, ciudad=?, estado=?, cp=?, mensaje_ticket=?, logo_ruta=? WHERE id=1;";
-        try {
-            Connection conexion = DriverManager.getConnection(url + nameBD, usuario, contra);
+        try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setString(1, nombre);
             pstm.setString(2, razonSocial.isEmpty() ? null : razonSocial);
@@ -35,7 +34,6 @@ public class EmpresaDAO extends BaseDAO {
             pstm.setString(10, mensajeTicket.isEmpty() ? null : mensajeTicket);
             pstm.setString(11, logoRuta.isEmpty() ? null : logoRuta);
             pstm.executeUpdate();
-            conexion.close();
             return true;
         } catch (SQLException e) {
             GestorErrores.manejar(e);

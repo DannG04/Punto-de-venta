@@ -956,7 +956,7 @@ public class Interfaz extends javax.swing.JFrame {
 
     public final void comboUsuarios() {// Llena el comboBox con los usuarios activos
         java.util.ArrayList<String> users = new java.util.ArrayList<>();
-        java.sql.ResultSet rs = conect.query("SELECT usuario FROM empleado WHERE estatus='Activo'");
+        java.sql.ResultSet rs = conect.obtenerUsuariosActivos();
         try {
             while (rs.next()) {
                 users.add(rs.getString("usuario"));
