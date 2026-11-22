@@ -47,7 +47,7 @@ public class ActualizadorPrueba {
         // argumento de "cmd /c" empieza con comillas, cmd quita la primera y la última del
         // renglón y rompe rutas con espacios (p. ej. C:\Users\Juan Perez\AppData\Local\Temp).
         List<String> cmd = Actualizador.comandoActualizacion(Path.of("C:\\Program Files (x86)\\PuntoVenta"));
-        check(cmd.equals(List.of("cmd", "/c", "aplicar_actualizacion.bat",
+        check(cmd.equals(List.of("cmd", "/c", ".\\aplicar_actualizacion.bat",
                 "--auto", "C:\\Program Files (x86)\\PuntoVenta")), "comando: " + cmd);
 
         // --- servidor local que imita a GitHub ---

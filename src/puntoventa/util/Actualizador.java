@@ -208,9 +208,11 @@ public final class Actualizador {
      * Comando para aplicar el parche. El .bat va por nombre y se ejecuta con la carpeta
      * del paquete como directorio: si el primer argumento de "cmd /c" empieza con
      * comillas, cmd quita la primera y la última del renglón y rompe rutas con espacios.
+     * Lleva ".\" porque con NoDefaultCurrentDirectoryInExePath=1 (equipos endurecidos)
+     * cmd no busca en la carpeta actual.
      */
     public static List<String> comandoActualizacion(Path instalacion) {
-        return List.of("cmd", "/c", "aplicar_actualizacion.bat", "--auto", instalacion.toString());
+        return List.of("cmd", "/c", ".\\aplicar_actualizacion.bat", "--auto", instalacion.toString());
     }
 
     /** Lanza el actualizador (que cierra y reabre la app) y termina este proceso. */
