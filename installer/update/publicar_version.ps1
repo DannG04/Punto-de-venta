@@ -15,6 +15,8 @@
 #   ... -NotasArchivo notas.md          (notas largas; tambien se usa notas/v<version>.md si existe)
 #   ... -Jdk "C:\ruta\jdk\bin"          (compilar con ese JDK aunque haya ant)
 #   ... -SinPublicar                    (todo menos el release; para probar, desde cualquier rama)
+#   ... -Instalador                     (tambien compila PuntoVentaSetup.exe con Inno Setup y lo
+#                                        adjunta; antes: pwsh -File installer\preparar_dependencias.ps1)
 #
 # Requisito para publicar: GitHub CLI con sesion (gh auth login) o GH_TOKEN (en Actions).
 # Requiere PowerShell 7 (pwsh): en Windows PowerShell 5.1, con ErrorActionPreference=Stop,
@@ -25,7 +27,8 @@ param(
     [string]$Notas = "",
     [string]$NotasArchivo = "",
     [string]$Jdk = "",
-    [switch]$SinPublicar
+    [switch]$SinPublicar,
+    [switch]$Instalador
 )
 $ErrorActionPreference = 'Stop'
 $upd  = $PSScriptRoot
@@ -135,6 +138,39 @@ function Buscar-Ant {
     return ($candidatos | Where-Object { Test-Path $_ } | Select-Object -First 1)
 }
 
+# ISCC (compilador de Inno Setup): variable ISCC (pruebas / rutas propias), instalaciones
+# habituales y por último el PATH.
+function Buscar-Iscc {
+    $candidatos = @($env:ISCC,
+        "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
+        "$env:ProgramFiles\Inno Setup 6\ISCC.exe",
+        "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe") | Where-Object { $_ }
+    $c = $candidatos | Where-Object { Test-Path $_ } | Select-Object -First 1
+    if ($c) { return $c }
+    $g = Get-Command ISCC -ErrorAction SilentlyContinue
+    if ($g) { return $g.Source }
+    return $null
+}
+
+$exeInstalador = Join-Path $proj 'installer\output\PuntoVentaSetup.exe'
+
+function Compilar-Instalador {
+    $requeridos = @('installer\jre\bin\java.exe', 'installer\postgresql-18.1-2-windows-x64.exe', 'installer\base_datos\backup.tar')
+    foreach ($r in $requeridos) {
+        if (-not (Test-Path (Join-Path $proj $r))) {
+            throw "Falta $r para armar el instalador. Ejecuta primero: pwsh -File installer\preparar_dependencias.ps1"
+        }
+    }
+    $iscc = Buscar-Iscc
+    if (-not $iscc) { throw "No encontré Inno Setup (ISCC.exe). Instálalo (winget install JRSoftware.InnoSetup) o define la variable ISCC." }
+    if (Test-Path $exeInstalador) { Remove-Item $exeInstalador -Force }
+    Write-Host "Compilando el instalador con Inno Setup: $iscc"
+    & $iscc /Q (Join-Path $proj 'installer\setup.iss')
+    if ($LASTEXITCODE -ne 0) { throw "Inno Setup falló al compilar installer\setup.iss (código $LASTEXITCODE)." }
+    if (-not (Test-Path $exeInstalador)) { throw "Inno Setup no generó $exeInstalador" }
+    Write-Host "[OK] $exeInstalador"
+}
+
 function Buscar-Jdk {
     if ($env:JAVA_HOME -and (Test-Path (Join-Path $env:JAVA_HOME 'bin\javac.exe'))) { return (Join-Path $env:JAVA_HOME 'bin') }
     $c = Get-Command javac -ErrorAction SilentlyContinue
@@ -217,6 +253,9 @@ try {
     [IO.File]::WriteAllText($shaFile, "$hash  $(Split-Path $zip -Leaf)`n", (New-Object Text.ASCIIEncoding))
     Write-Host "[OK] $zip"
     Write-Host "[OK] SHA-256 $hash"
+
+    # Instalador completo, con la MISMA versión (setup.iss ya la tiene escrita en este punto)
+    if ($Instalador) { Compilar-Instalador }
 } catch {
     $error1 = $_.Exception.Message
 } finally {
@@ -232,6 +271,8 @@ if ($SinPublicar) {
 
 # ---------- 5. Publicar (tag + release en un paso) ----------
 $notasArgs = if ($archivoNotas) { @('--notes-file', $archivoNotas) } else { @('--notes', $Notas) }
-gh release create "v$Version" $zip $shaFile --repo $REPO --target $head --title "Versión $Version" @notasArgs
+$assets = @($zip, $shaFile)
+if ($Instalador) { $assets += $exeInstalador }   # link fijo: releases/latest/download/PuntoVentaSetup.exe
+gh release create "v$Version" @assets --repo $REPO --target $head --title "Versión $Version" @notasArgs
 if ($LASTEXITCODE -ne 0) { Fallar "No se pudo crear el release v$Version en GitHub." }
 Write-Host "[OK] Versión $Version publicada. Los puntos de venta la verán en su próxima revisión (al iniciar sesión o cada 6 horas)."

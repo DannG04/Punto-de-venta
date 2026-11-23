@@ -23,6 +23,20 @@ $jdkArg = @(); if ($Jdk) { $jdkArg = @('-Jdk', $Jdk) }
 # Sin red ni releases reales: "ninguna" = no hay releases, se usa src/version.properties (1.22)
 $env:PV_ULTIMA_PUBLICADA = 'ninguna'
 
+# Dependencias pesadas falsas (rutas ignoradas por git: el árbol del clon sigue limpio)
+New-Item -ItemType Directory -Force -Path (Join-Path $clon 'installer\jre\bin') | Out-Null
+'java falso' | Set-Content (Join-Path $clon 'installer\jre\bin\java.exe')
+'pg falso' | Set-Content (Join-Path $clon 'installer\postgresql-18.1-2-windows-x64.exe')
+# Inno Setup falso: guarda el setup.iss con el que lo llamaron y crea el instalador
+$isccDir = Join-Path ([IO.Path]::GetTempPath()) 'pv iscc falso'
+New-Item -ItemType Directory -Force -Path $isccDir | Out-Null
+$isccOk = Join-Path $isccDir 'ISCC_ok.bat'
+"@echo off`r`nfor %%a in (%*) do if /i `"%%~xa`"==`".iss`" (`r`n  copy /y `"%%~a`" `"%%~dpaoutput\iss_usado.txt`" >nul`r`n  echo instalador> `"%%~dpaoutput\PuntoVentaSetup.exe`"`r`n)`r`nexit /b 0" | Set-Content -Encoding ascii $isccOk
+$isccMalo = Join-Path $isccDir 'ISCC_malo.bat'
+"@echo off`r`necho Error de compilacion de Inno Setup`r`nexit /b 1" | Set-Content -Encoding ascii $isccMalo
+$env:ISCC = $isccOk
+$salida = Join-Path $clon 'installer\output'
+
 function Publicar([string[]]$a) {
     $out = & pwsh -NoProfile -File $pub @a @jdkArg 2>&1 | Out-String
     return @{ Codigo = $LASTEXITCODE; Salida = $out }
@@ -113,6 +127,7 @@ $out = & pwsh -NoProfile -File (Join-Path $clon 'installer\update\publicar_ci.ps
 $cod = $LASTEXITCODE
 Check ($cod -eq 0) "publicar_ci.ps1 (como el boton, simulando) codigo 0: $out"
 Check (Test-Path (Join-Path $clon 'installer\output\PuntoVenta-Update-9.6.zip')) "publicar_ci.ps1 genera el ZIP 9.6"
+Check ((Test-Path (Join-Path $salida 'PuntoVentaSetup.exe')) -and ((Get-Content (Join-Path $salida 'iss_usado.txt') -Raw) -match 'MyAppVersion "9\.6"')) "publicar_ci.ps1 arma el instalador 9.6"
 Remove-Item Env:VERSION, Env:NOTAS, Env:SIMULAR -ErrorAction SilentlyContinue
 $env:JAVA_HOME = $javaHomeAntes
 
@@ -137,6 +152,27 @@ $r = Publicar @('-Version', '9.5', '-Notas', 'x')
 Check ($r.Codigo -ne 0 -and $r.Salida -match 'gh auth login') "gh sin sesion detiene la publicacion: $($r.Salida)"
 $env:PATH = $pathAntes
 $env:PV_ULTIMA_PUBLICADA = 'ninguna'
+
+# 11. -Instalador: compila setup.iss con la versión nueva y deja PuntoVentaSetup.exe
+Remove-Item (Join-Path $salida 'PuntoVentaSetup.exe'), (Join-Path $salida 'iss_usado.txt') -ErrorAction SilentlyContinue
+$r = Publicar @('-Version', '9.4', '-SinPublicar', '-Instalador')
+Check ($r.Codigo -eq 0) "-Instalador codigo 0: $($r.Salida)"
+Check (Test-Path (Join-Path $salida 'PuntoVentaSetup.exe')) "-Instalador genera PuntoVentaSetup.exe"
+Check ((Test-Path (Join-Path $salida 'iss_usado.txt')) -and ((Get-Content (Join-Path $salida 'iss_usado.txt') -Raw) -match '#define MyAppVersion "9\.4"')) "Inno Setup recibio setup.iss con la version 9.4"
+Check ((Get-Content (Join-Path $clon 'installer\setup.iss') -Raw) -match '#define MyAppVersion "1\.22"') "-Instalador: setup.iss restaurado a 1.22"
+
+# 12. sin JRE preparado: indica cómo preparar las dependencias
+Rename-Item (Join-Path $clon 'installer\jre') 'jre_oculto'
+$r = Publicar @('-Version', '9.4', '-SinPublicar', '-Instalador')
+Check ($r.Codigo -ne 0 -and $r.Salida -match 'preparar_dependencias\.ps1') "sin JRE: error que indica preparar_dependencias.ps1: $($r.Salida)"
+Rename-Item (Join-Path $clon 'installer\jre_oculto') 'jre'
+
+# 13. Inno Setup falla: no se continúa y setup.iss queda restaurado
+$env:ISCC = $isccMalo
+$r = Publicar @('-Version', '9.4', '-SinPublicar', '-Instalador')
+Check ($r.Codigo -ne 0 -and $r.Salida -match 'Inno Setup') "Inno Setup con error detiene el script: $($r.Salida)"
+Check ((Get-Content (Join-Path $clon 'installer\setup.iss') -Raw) -match '#define MyAppVersion "1\.22"') "Inno Setup con error: setup.iss restaurado"
+$env:ISCC = $isccOk
 
 # 7. el script nunca hace commits
 Check ((git -C $clon log -1 --format=%s) -eq 'prueba') "no se crearon commits"
