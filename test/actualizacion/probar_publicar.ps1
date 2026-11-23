@@ -10,6 +10,9 @@ function Check($cond, $desc) { if ($cond) { $script:ok++ } else { $script:fallos
 $clon = Join-Path ([IO.Path]::GetTempPath()) 'pv publicar prueba'
 if (Test-Path $clon) { Remove-Item $clon -Recurse -Force }
 git clone --quiet $repo $clon
+# Rama propia en el clon: las pruebas no deben depender de la rama desde la que se
+# corren (en un push a master el clon quedaría en master y la validación de rama pasaría).
+git -C $clon checkout --quiet -b prueba-publicar
 # Usar los scripts de la copia de trabajo (pueden no estar en commit todavía)
 foreach ($f in 'publicar_version.ps1', 'publicar_ci.ps1', 'empaquetar_update.ps1', 'PuntoVenta.exe') {
     $src = Join-Path $repo "installer\update\$f"
