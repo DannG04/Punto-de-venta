@@ -17,6 +17,9 @@ REM ============================================================
 
 set "APPID={A1B2C3D4-E5F6-7890-ABCD-EF1234567890}_is1"
 set "PKGDIR=%~dp0"
+REM Ruta del propio script ANTES de leer argumentos: "shift" tambien recorre
+REM %0, y despues %~f0 ya no es este archivo (seria la carpeta de instalacion).
+set "SCRIPT=%~f0"
 if "%PKGDIR:~-1%"=="\" set "PKGDIR=%PKGDIR:~0,-1%"
 
 REM ---------- 0. Argumentos: [--elevated] [--auto] [ruta] en cualquier orden ----------
@@ -37,6 +40,8 @@ REM auto-elevacion aunque el equipo reporte mal el nivel de integridad del
 REM token (relanzado como admin, UAC ya no pregunta y se generaria un bucle
 REM de ventanas que parpadean y se cierran).
 if defined ELEVADO goto :ya_es_admin
+REM PV_SIN_UAC (solo pruebas): recorre el relanzamiento sin pedir UAC.
+if defined PV_SIN_UAC goto :solicitar_admin
 
 REM Detectamos la elevacion REAL por el nivel de integridad del token, que es
 REM justo lo que controla UAC. No usamos "net session" (depende del servicio
@@ -47,6 +52,7 @@ REM   S-1-16-12288 = Alta (proceso elevado)   S-1-16-16384 = Sistema
 whoami /groups | findstr /c:"S-1-16-12288" /c:"S-1-16-16384" >nul 2>&1
 if %errorlevel% equ 0 goto :ya_es_admin
 
+:solicitar_admin
 echo Solicitando permisos de administrador...
 REM Manual: "cmd /k" para que la ventana elevada NO se cierre (algunos
 REM contextos de elevacion no retienen el "pause" y la consola desaparece
@@ -59,9 +65,11 @@ set "MODO_CMD=/k"
 set "FLAGS=--elevated"
 if defined AUTO set "MODO_CMD=/c"
 if defined AUTO set "FLAGS=--elevated --auto"
-set "PSARGS=%MODO_CMD% \"\"%~f0\" %FLAGS%\""
-if defined RUTA_ARG set "PSARGS=%MODO_CMD% \"\"%~f0\" %FLAGS% \"!RUTA_ARG!\"\""
-powershell -NoProfile -Command "try { $p = Start-Process -FilePath 'cmd.exe' -ArgumentList '!PSARGS!' -Verb RunAs -PassThru -ErrorAction Stop; if (-not $p) { exit 1 } } catch { exit 1 }"
+set "PSARGS=%MODO_CMD% \"\"!SCRIPT!\" %FLAGS%\""
+if defined RUTA_ARG set "PSARGS=%MODO_CMD% \"\"!SCRIPT!\" %FLAGS% \"!RUTA_ARG!\"\""
+set "VERBO=-Verb RunAs"
+if defined PV_SIN_UAC set "VERBO=-Wait -WindowStyle Hidden"
+powershell -NoProfile -Command "try { $p = Start-Process -FilePath 'cmd.exe' -ArgumentList '!PSARGS!' !VERBO! -PassThru -ErrorAction Stop; if (-not $p) { exit 1 } } catch { exit 1 }"
 if !errorlevel! equ 0 exit /b 0
 
 REM Start-Process fallo (UAC cancelado, cuenta sin privilegios, sesion

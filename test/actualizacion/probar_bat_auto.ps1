@@ -31,8 +31,10 @@ function Nuevo-Paquete($nombre, $migracion, $sql) {
     return $pkg
 }
 
-function Correr($pkg, [string[]]$extra) {
-    $a = @('/c', '.\aplicar_actualizacion.bat', '--elevated') + $extra + @($inst)
+function Correr($pkg, [string[]]$extra, [switch]$ComoLaApp) {
+    # -ComoLaApp: igual que Actualizador.comandoActualizacion (sin --elevated), para recorrer el
+    # relanzamiento elevado (con PV_SIN_UAC no aparece el aviso de UAC).
+    $a = @('/c', '.\aplicar_actualizacion.bat') + $(if ($ComoLaApp) { @() } else { @('--elevated') }) + $extra + @($inst)
     $p = Start-Process cmd.exe -ArgumentList ($a | ForEach-Object { if ($_ -match ' ') { "`"$_`"" } else { $_ } }) `
         -WorkingDirectory $pkg -NoNewWindow -PassThru -RedirectStandardOutput "$pkg\salida.txt" -RedirectStandardInput "$repo\test\actualizacion\vacio.txt"
     if (-not $p.WaitForExit(180000)) { $p.Kill(); return @{ Codigo = -1; Salida = 'TIMEOUT' } }
@@ -76,6 +78,18 @@ Check ($r.Codigo -ne 0) "auto lib: codigo distinto de 0"
 Check ((Test-Path $ultima) -and ((Get-Content $ultima -Raw) -match '^ERROR')) "auto lib: ultima_actualizacion.txt = ERROR"
 Check ((Get-Content (Join-Path $inst 'Proy_Ventas.jar') -Raw) -eq 'viejo') "auto lib: JAR NO reemplazado si fallan las librerias"
 Remove-Item $libInst -Force
+
+# --- Caso 2c: lanzado como lo hace la app (--auto + ruta, sin --elevated): el relanzamiento
+#     elevado debe apuntar a ESTE .bat. Antes "shift" movia %0 y se relanzaba la carpeta de
+#     instalacion: UAC se aceptaba pero nada corria y la app nunca volvia a abrir. ---
+Remove-Item $ultima -ErrorAction SilentlyContinue
+'viejo' | Set-Content -NoNewline (Join-Path $inst 'Proy_Ventas.jar')
+$pkgApp = Nuevo-Paquete 'paquete app' 'V9.5__prueba.sql' "BEGIN; SELECT 1; COMMIT;"
+$env:PV_SIN_UAC = '1'
+try { $r = Correr $pkgApp @('--auto') -ComoLaApp } finally { Remove-Item Env:PV_SIN_UAC }
+Check ($r.Salida -match 'Solicitando permisos') "como la app: paso por el relanzamiento elevado"
+Check ((Test-Path $ultima) -and ((Get-Content $ultima -Raw).Trim() -eq 'OK 1.23')) "como la app: ultima_actualizacion.txt = OK 1.23 (fue '$(if (Test-Path $ultima) { (Get-Content $ultima -Raw).Trim() })')"
+Check ((Get-Content (Join-Path $inst 'Proy_Ventas.jar') -Raw) -eq 'nuevo') "como la app: JAR reemplazado"
 
 # --- Caso 3: manual (sin --auto) conserva la pausa final y no escribe ultima_actualizacion ---
 Remove-Item $ultima -ErrorAction SilentlyContinue
