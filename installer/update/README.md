@@ -16,12 +16,22 @@ Flujo de ramas: el trabajo entra a `dev` por PR (con pruebas automáticas), y
 largas, haz commit de `notas/v1.23.md` antes y deja la línea vacía. Con
 **simular** marcado arma el ZIP (descargable como artefacto) sin publicar.
 
+Cada release lleva tres archivos: el parche `PuntoVenta-Update-<v>.zip`, su
+huella `.sha256` y el instalador completo `PuntoVentaSetup.exe` de la misma
+versión. **Link fijo para instalar en una PC nueva** (siempre la última versión):
+`https://github.com/DannG04/Punto-de-venta/releases/latest/download/PuntoVentaSetup.exe`
+
+El botón descarga y verifica (SHA-256) el JRE Temurin 23.0.2+7 y PostgreSQL
+18.1-2 con `installer/preparar_dependencias.ps1` (fijados ahí) y compila con Inno Setup.
+
 **Desde tu PC** (mismo resultado), en `master` al día con `origin/master`:
 ```powershell
 pwsh -File installer\update\publicar_version.ps1 -Version 1.23 -Notas "- Corrige el corte de caja"
 ```
 (requiere PowerShell 7 —`pwsh`— y `gh auth login`; `-NotasArchivo ruta.md` para notas largas; `-Jdk
-C:\ruta\jdk\bin` para compilar con ese JDK; `-SinPublicar` para probar.)
+C:\ruta\jdk\bin` para compilar con ese JDK; `-SinPublicar` para probar;
+`-Instalador` para incluir `PuntoVentaSetup.exe`, que requiere Inno Setup y
+antes `pwsh -File installer\preparar_dependencias.ps1`.)
 
 El script **no hace commit**: la versión vigente es la del último release, la
 nueva se escribe solo para compilar (luego se restauran `src/version.properties`

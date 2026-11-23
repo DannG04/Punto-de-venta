@@ -61,16 +61,38 @@ jobs:
           distribution: temurin
           java-version: '23'
 
+      # JRE y PostgreSQL para el instalador: la clave incluye las huellas fijadas en
+      # preparar_dependencias.ps1 (si cambian, se descarga de nuevo y se verifica).
+      - name: Cache de dependencias del instalador
+        uses: actions/cache@v4
+        with:
+          path: |
+            installer/jre
+            installer/postgresql-18.1-2-windows-x64.exe
+          key: instalador-deps-${{ hashFiles('installer/preparar_dependencias.ps1') }}
+
+      - name: Preparar JRE y PostgreSQL (descarga verificada)
+        shell: pwsh
+        run: ./installer/preparar_dependencias.ps1
+
+      - name: Asegurar Inno Setup
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) {
+            choco install innosetup -y --no-progress
+          }
+
       - name: Publicar
         shell: pwsh
         # publicar_ci.ps1 lee VERSION/NOTAS/SIMULAR/JAVA_HOME y está cubierto por probar_publicar.ps1
         run: ./installer/update/publicar_ci.ps1
 
-      - name: Guardar el paquete (simulación)
+      - name: Guardar el paquete y el instalador (simulación)
         if: ${{ inputs.simular }}
         uses: actions/upload-artifact@v4
         with:
-          name: PuntoVenta-Update-${{ inputs.version }}
+          name: PuntoVenta-${{ inputs.version }}
           path: |
             installer/output/PuntoVenta-Update-*.zip
             installer/output/PuntoVenta-Update-*.zip.sha256
+            installer/output/PuntoVentaSetup.exe

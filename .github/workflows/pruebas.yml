@@ -47,6 +47,10 @@ jobs:
         shell: pwsh
         run: ./test/actualizacion/probar_bat_auto.ps1 -PgBin $env:PGBIN
 
+      - name: Prueba de preparar_dependencias.ps1 (servidor local, sin internet)
+        shell: pwsh
+        run: ./test/actualizacion/probar_dependencias.ps1
+
       - name: Revision de los workflows
         shell: pwsh
         run: ./test/actualizacion/probar_workflows.ps1
