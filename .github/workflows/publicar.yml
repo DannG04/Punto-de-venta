@@ -63,11 +63,8 @@ jobs:
 
       - name: Publicar
         shell: pwsh
-        run: |
-          $argumentos = @('-Version', $env:VERSION, '-Jdk', "$env:JAVA_HOME\bin")
-          if ($env:NOTAS) { $argumentos += @('-Notas', $env:NOTAS) }
-          if ($env:SIMULAR -eq 'true') { $argumentos += '-SinPublicar' }
-          ./installer/update/publicar_version.ps1 @argumentos
+        # publicar_ci.ps1 lee VERSION/NOTAS/SIMULAR/JAVA_HOME y está cubierto por probar_publicar.ps1
+        run: ./installer/update/publicar_ci.ps1
 
       - name: Guardar el paquete (simulación)
         if: ${{ inputs.simular }}

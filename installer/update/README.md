@@ -18,9 +18,9 @@ largas, haz commit de `notas/v1.23.md` antes y deja la línea vacía. Con
 
 **Desde tu PC** (mismo resultado), en `master` al día con `origin/master`:
 ```powershell
-powershell -ExecutionPolicy Bypass -File installer\update\publicar_version.ps1 -Version 1.23 -Notas "- Corrige el corte de caja"
+pwsh -File installer\update\publicar_version.ps1 -Version 1.23 -Notas "- Corrige el corte de caja"
 ```
-(requiere `gh auth login`; `-NotasArchivo ruta.md` para notas largas; `-Jdk
+(requiere PowerShell 7 —`pwsh`— y `gh auth login`; `-NotasArchivo ruta.md` para notas largas; `-Jdk
 C:\ruta\jdk\bin` para compilar con ese JDK; `-SinPublicar` para probar.)
 
 El script **no hace commit**: la versión vigente es la del último release, la

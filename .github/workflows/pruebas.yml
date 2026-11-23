@@ -47,6 +47,10 @@ jobs:
         shell: pwsh
         run: ./test/actualizacion/probar_bat_auto.ps1 -PgBin $env:PGBIN
 
+      - name: Revision de los workflows
+        shell: pwsh
+        run: ./test/actualizacion/probar_workflows.ps1
+
       - name: Prueba de publicar_version.ps1 (sin publicar)
         shell: pwsh
         run: ./test/actualizacion/probar_publicar.ps1 -Jdk "$env:JAVA_HOME\bin"
@@ -56,10 +60,15 @@ jobs:
     if: github.event_name == 'pull_request' && github.base_ref == 'master'
     runs-on: ubuntu-latest
     steps:
-      - name: A master solo se llega desde dev
+      - name: A master solo se llega desde dev (de este mismo repositorio)
+        env:
+          # Por variables de entorno: un nombre de rama con $(...) no se ejecuta.
+          RAMA_ORIGEN: ${{ github.head_ref }}
+          REPO_ORIGEN: ${{ github.event.pull_request.head.repo.full_name }}
+          REPO_DESTINO: ${{ github.repository }}
         run: |
-          if [ "${{ github.head_ref }}" != "dev" ]; then
-            echo "::error::Los PR a master deben venir de dev (este viene de '${{ github.head_ref }}')."
+          if [ "$REPO_ORIGEN" != "$REPO_DESTINO" ] || [ "$RAMA_ORIGEN" != "dev" ]; then
+            echo "::error::Los PR a master deben venir de la rama dev de $REPO_DESTINO (este viene de $REPO_ORIGEN:$RAMA_ORIGEN)."
             exit 1
           fi
-          echo "Origen correcto: dev"
+          echo "Origen correcto: $REPO_ORIGEN:dev"

@@ -11,7 +11,7 @@ $clon = Join-Path ([IO.Path]::GetTempPath()) 'pv publicar prueba'
 if (Test-Path $clon) { Remove-Item $clon -Recurse -Force }
 git clone --quiet $repo $clon
 # Usar los scripts de la copia de trabajo (pueden no estar en commit todavía)
-foreach ($f in 'publicar_version.ps1', 'empaquetar_update.ps1', 'PuntoVenta.exe') {
+foreach ($f in 'publicar_version.ps1', 'publicar_ci.ps1', 'empaquetar_update.ps1', 'PuntoVenta.exe') {
     $src = Join-Path $repo "installer\update\$f"
     if (Test-Path $src) { Copy-Item $src (Join-Path $clon "installer\update\$f") -Force }
 }
@@ -104,6 +104,39 @@ Check ($r.Codigo -ne 0) "compilacion rota -> codigo distinto de 0"
 Check ((Get-Content (Join-Path $clon 'src\version.properties') -Raw) -match 'app.version=1\.22') "compilacion rota: version.properties intacto"
 Check (-not (git -C $clon status --porcelain)) "compilacion rota: arbol sin cambios"
 git -C $clon reset --quiet --hard HEAD~1
+
+# 8. publicar_ci.ps1: la llamada que hace el botón de Actions (entradas por variables de entorno)
+$javaHomeAntes = $env:JAVA_HOME
+if ($Jdk) { $env:JAVA_HOME = Split-Path $Jdk }
+$env:VERSION = '9.6'; $env:NOTAS = 'Notas de prueba CI'; $env:SIMULAR = 'true'
+$out = & pwsh -NoProfile -File (Join-Path $clon 'installer\update\publicar_ci.ps1') 2>&1 | Out-String
+$cod = $LASTEXITCODE
+Check ($cod -eq 0) "publicar_ci.ps1 (como el boton, simulando) codigo 0: $out"
+Check (Test-Path (Join-Path $clon 'installer\output\PuntoVenta-Update-9.6.zip')) "publicar_ci.ps1 genera el ZIP 9.6"
+Remove-Item Env:VERSION, Env:NOTAS, Env:SIMULAR -ErrorAction SilentlyContinue
+$env:JAVA_HOME = $javaHomeAntes
+
+# 9. Windows PowerShell 5.1 no sirve (rompe con stderr de gh): mensaje claro de que se requiere PowerShell 7
+$out = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $pub -Version 9.5 -SinPublicar 2>&1 | Out-String
+Check ($LASTEXITCODE -ne 0 -and $out -match '#requires') "Windows PowerShell 5.1 rechazado con mensaje de version: $out"
+
+# 10. Fallos de gh: solo "release not found" significa "no hay releases"; cualquier otro error detiene
+$ghFalso = Join-Path ([IO.Path]::GetTempPath()) 'pv gh falso'
+New-Item -ItemType Directory -Force -Path $ghFalso | Out-Null
+function GhFalso([string]$cuerpo) { "@echo off`r`n$cuerpo" | Set-Content -Encoding ascii (Join-Path $ghFalso 'gh.bat') }
+Remove-Item Env:PV_ULTIMA_PUBLICADA
+$pathAntes = $env:PATH; $env:PATH = "$ghFalso;$env:PATH"
+GhFalso "if `"%1`"==`"auth`" exit /b 0`r`necho HTTP 503: Service Unavailable 1>&2`r`nexit /b 1"
+$r = Publicar @('-Version', '9.5', '-Notas', 'x')
+Check ($r.Codigo -ne 0 -and $r.Salida -match 'No se pudo consultar el último release') "gh con error de red detiene la publicacion: $($r.Salida)"
+GhFalso "if `"%1`"==`"auth`" exit /b 0`r`necho release not found 1>&2`r`nexit /b 1"
+$r = Publicar @('-Version', '9.5', '-Notas', 'x')
+Check ($r.Salida -match 'Solo se publica desde master') "sin releases: usa 1.22 y sigue (se detiene en la rama): $($r.Salida)"
+GhFalso "if `"%1`"==`"auth`" exit /b 1`r`nexit /b 1"
+$r = Publicar @('-Version', '9.5', '-Notas', 'x')
+Check ($r.Codigo -ne 0 -and $r.Salida -match 'gh auth login') "gh sin sesion detiene la publicacion: $($r.Salida)"
+$env:PATH = $pathAntes
+$env:PV_ULTIMA_PUBLICADA = 'ninguna'
 
 # 7. el script nunca hace commits
 Check ((git -C $clon log -1 --format=%s) -eq 'prueba') "no se crearon commits"

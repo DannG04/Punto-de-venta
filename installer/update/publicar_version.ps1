@@ -11,12 +11,15 @@
 #   5. Crea tag y release en un paso: gh release create v<v> --target <commit>.
 #
 # Uso:
-#   powershell -ExecutionPolicy Bypass -File installer\update\publicar_version.ps1 -Version 1.23 -Notas "- Corrige el corte de caja"
+#   pwsh -File installer\update\publicar_version.ps1 -Version 1.23 -Notas "- Corrige el corte de caja"
 #   ... -NotasArchivo notas.md          (notas largas; tambien se usa notas/v<version>.md si existe)
 #   ... -Jdk "C:\ruta\jdk\bin"          (compilar con ese JDK aunque haya ant)
 #   ... -SinPublicar                    (todo menos el release; para probar, desde cualquier rama)
 #
 # Requisito para publicar: GitHub CLI con sesion (gh auth login) o GH_TOKEN (en Actions).
+# Requiere PowerShell 7 (pwsh): en Windows PowerShell 5.1, con ErrorActionPreference=Stop,
+# cualquier mensaje de gh en stderr ("release not found") aborta el script.
+#Requires -Version 7
 param(
     [Parameter(Mandatory = $true)][string]$Version,
     [string]$Notas = "",
@@ -72,9 +75,18 @@ function Version-Vigente {
         if ($SinPublicar) { return Version-DelArchivo }
         Fallar "Falta GitHub CLI. Instálalo con: winget install GitHub.cli  y luego: gh auth login"
     }
-    $tag = gh release view --repo $REPO --json tagName --jq .tagName 2>$null
-    if ($LASTEXITCODE -ne 0 -or -not $tag) { return Version-DelArchivo }   # aún no hay releases
-    return ($tag.Trim().TrimStart('v', 'V'))
+    if (-not $SinPublicar) {
+        gh auth status *> $null
+        if ($LASTEXITCODE -ne 0) { Fallar "GitHub CLI no tiene sesión. Ejecuta: gh auth login" }
+    }
+    $salida = (gh release view --repo $REPO --json tagName --jq .tagName 2>&1 | Out-String).Trim()
+    if ($LASTEXITCODE -eq 0 -and $salida) { return $salida.TrimStart('v', 'V') }
+    # Solo "release not found" significa que aún no hay releases. Cualquier otro error
+    # (sin red, sin sesión, límite de la API) NO puede tomarse como "no hay": se podría
+    # publicar una versión menor a la que ya tienen las tiendas.
+    if ($salida -match 'release not found') { return Version-DelArchivo }
+    if ($SinPublicar) { return Version-DelArchivo }
+    Fallar "No se pudo consultar el último release en GitHub: $salida"
 }
 
 # ---------- 1. Validaciones ----------
@@ -104,8 +116,9 @@ if (-not $SinPublicar) {
     if ($LASTEXITCODE -ne 0) { Fallar "No se pudo consultar origin/master." }
     $head = (git -C $proj rev-parse HEAD).Trim()
     if ($head -ne (git -C $proj rev-parse origin/master).Trim()) { Fallar "Tu master no es igual a origin/master. Haz git pull antes de publicar." }
-    gh release view "v$Version" --repo $REPO *> $null
+    $salida = (gh release view "v$Version" --repo $REPO 2>&1 | Out-String).Trim()
     if ($LASTEXITCODE -eq 0) { Fallar "Ya existe el release v$Version." }
+    if ($salida -notmatch 'release not found') { Fallar "No se pudo verificar si existe v${Version}: $salida" }
 }
 
 # ---------- 3. Compilar ----------
