@@ -16,7 +16,8 @@ foreach ($f in 'publicar_version.ps1', 'empaquetar_update.ps1', 'PuntoVenta.exe'
     if (Test-Path $src) { Copy-Item $src (Join-Path $clon "installer\update\$f") -Force }
 }
 Push-Location $clon
-git add -A; git -c user.name=prueba -c user.email=prueba@local commit --quiet -m "prueba" 2>$null | Out-Null
+# --allow-empty: siempre hay un commit "prueba" como referencia (aunque no haya diferencias que copiar)
+git add -A; git -c user.name=prueba -c user.email=prueba@local commit --quiet --allow-empty -m "prueba" 2>$null | Out-Null
 $pub = Join-Path $clon 'installer\update\publicar_version.ps1'
 $jdkArg = @(); if ($Jdk) { $jdkArg = @('-Jdk', $Jdk) }
 # Sin red ni releases reales: "ninguna" = no hay releases, se usa src/version.properties (1.22)
