@@ -102,9 +102,58 @@ COMMIT;
 
 | Versión | Archivo | Descripción | Fecha |
 |---------|---------|-------------|-------|
-| 1.0 | `V1.0__baseline.tar` | Base de datos inicial del proyecto | 2026-02-17 |
+| 1.0  | `V1.0__baseline.tar`                   | Base de datos inicial del proyecto                              | 2026-02-17 |
+| 1.1  | `V1.1__add_categoria.sql`              | Categorías de productos y columna en producto                   | 2026-03-08 |
+| 1.2  | `V1.2__add_proveedor.sql`              | Catálogo de proveedores y columna en compras                    | 2026-03-21 |
+| 1.3  | `V1.3__reporte_diario_fecha.sql`       | Reporte diario por fecha como función PostgreSQL                | 2026-03-25 |
+| 1.4  | `V1.4__add_descuentos.sql`             | Descuentos por producto y en venta_temp / venta_detalle         | 2026-03-28 |
+| 1.5  | `V1.5__fix_trigger_descuento.sql`      | Corrige trigger verif_exist_update para respetar descuento_pct  | 2026-03-28 |
+| 1.6  | `V1.6__forma_pago.sql`                 | Forma de pago en venta y tabla forma_pago_venta                 | 2026-03-28 |
+| 1.7  | `V1.7__kardex.sql`                     | Tabla kardex de movimientos de inventario                       | 2026-03-28 |
+| 1.10 | `V1.10__lista_precios.sql`             | Listas de precios (menudeo/mayoreo) y precio por lista          | 2026-04-06 |
+| 1.11 | `V1.11__empresa.sql`                   | Tabla empresa con datos del negocio para tickets                | 2026-04-20 |
+| 1.12 | `V1.12__cotizaciones.sql`              | Módulo de cotizaciones con conversión a venta                   | 2026-04-21 |
+| 1.13 | `V1.13__fix_precio_lista_override.sql` | Re-siembra listas de fábrica y ajusta override de precio_lista  | 2026-06-01 |
 
 > **Cada desarrollador debe agregar su migración a esta tabla cuando la suba.**
+
+---
+
+## Control de versiones en producción (schema_version)
+
+Las instalaciones de usuarios llevan una tabla `schema_version` que registra qué
+migraciones se han aplicado. La crea y siembra `installer/update/_bootstrap_schema_version.sql`.
+
+**Toda migración nueva (V1.14 en adelante) DEBE:**
+
+1. Ser idempotente: usar `IF NOT EXISTS` (DDL) y `WHERE NOT EXISTS` / `ON CONFLICT`
+   (DML) para poder re-ejecutarse sin romper nada.
+2. Auto-registrarse al final, dentro de su propia transacción.
+
+### Plantilla
+
+```sql
+-- V1.14__descripcion_corta.sql
+-- Descripcion: ...
+-- Autor: ...
+-- Fecha: YYYY-MM-DD
+
+BEGIN;
+
+-- ... cambios idempotentes ...
+ALTER TABLE producto ADD COLUMN IF NOT EXISTS ejemplo TEXT;
+
+-- Registrar la versión (el parche también la registra, pero esto deja
+-- constancia cuando la corres a mano con psql -f en desarrollo).
+INSERT INTO schema_version (version, descripcion)
+VALUES ('1.14', 'descripcion corta')
+ON CONFLICT (version) DO NOTHING;
+
+COMMIT;
+```
+
+> **Ordenamiento:** el parche aplica las migraciones por nombre de archivo ascendente.
+> Numera las migraciones de un mismo release de forma consecutiva (1.14, 1.15, 1.16).
 
 ---
 

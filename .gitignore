@@ -14,3 +14,26 @@
 # Sistema operativo
 .DS_Store
 Thumbs.db
+
+#IDEs
+.claude/
+.vscode/
+
+# Archivos accidentales de Windows
+nul
+#Documentos de Excel
+/BalancesGenerales/
+/Estados de resultados/
+/Reportes de ventas/
+
+#Ignora la carpeta del instalador (binarios grandes, JRE, etc.)
+#pero versiona los scripts del parche en installer/update/
+/installer/*
+!/installer/update/
+
+# Logs de la aplicación
+logs/
+
+# Artefactos de tiempo de ejecución (logo de empresa y plantillas generadas)
+/logo.png
+/impresionVenta.txt
