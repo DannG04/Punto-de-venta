@@ -1,0 +1,74 @@
+# Pruebas automáticas: cada PR y push a dev/master, y antes de publicar (workflow_call).
+# Los nombres de los jobs ("pruebas", "origen-master") son checks requeridos en la
+# protección de ramas: no cambiarlos sin actualizar esa configuración.
+name: Pruebas
+
+on:
+  pull_request:
+    branches: [dev, master]
+  push:
+    branches: [dev, master]
+  workflow_call:
+
+concurrency:
+  group: pruebas-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pruebas:
+    name: pruebas
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      PGPASSWORD: root
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # probar_publicar.ps1 clona el repo; un clon superficial no sirve
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '23'
+
+      - name: Arrancar PostgreSQL del runner (usuario postgres / root)
+        shell: pwsh
+        run: |
+          $svc = Get-Service -Name 'postgresql*' | Select-Object -First 1
+          Set-Service -InputObject $svc -StartupType Manual
+          Start-Service -InputObject $svc
+          & "$env:PGBIN\pg_isready.exe" -h 127.0.0.1 -p 5432 -t 60
+
+      - name: Pruebas Java
+        shell: bash
+        run: bash test/correr_pruebas.sh
+
+      - name: Prueba de aplicar_actualizacion.bat
+        shell: pwsh
+        run: ./test/actualizacion/probar_bat_auto.ps1 -PgBin $env:PGBIN
+
+      - name: Revision de los workflows
+        shell: pwsh
+        run: ./test/actualizacion/probar_workflows.ps1
+
+      - name: Prueba de publicar_version.ps1 (sin publicar)
+        shell: pwsh
+        run: ./test/actualizacion/probar_publicar.ps1 -Jdk "$env:JAVA_HOME\bin"
+
+  origen-master:
+    name: origen-master
+    if: github.event_name == 'pull_request' && github.base_ref == 'master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: A master solo se llega desde dev (de este mismo repositorio)
+        env:
+          # Por variables de entorno: un nombre de rama con $(...) no se ejecuta.
+          RAMA_ORIGEN: ${{ github.head_ref }}
+          REPO_ORIGEN: ${{ github.event.pull_request.head.repo.full_name }}
+          REPO_DESTINO: ${{ github.repository }}
+        run: |
+          if [ "$REPO_ORIGEN" != "$REPO_DESTINO" ] || [ "$RAMA_ORIGEN" != "dev" ]; then
+            echo "::error::Los PR a master deben venir de la rama dev de $REPO_DESTINO (este viene de $REPO_ORIGEN:$RAMA_ORIGEN)."
+            exit 1
+          fi
+          echo "Origen correcto: $REPO_ORIGEN:dev"
