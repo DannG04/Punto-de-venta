@@ -16,7 +16,11 @@ if (-not (Test-Path $jar)) {
 # principal. Si el cliente queda con un .exe viejo y el jar movio la clase
 # principal, no abre. Por eso el parche tambien lo lleva y el .bat lo reemplaza.
 if (-not (Test-Path $exe)) {
-    throw "No existe $exe. Genera el lanzador con launch4j (installer\launch4j-config.xml) antes de empaquetar."
+    # Copia versionada del lanzador (su configuracion Launch4j no cambia entre versiones)
+    $exe = Join-Path $updDir 'PuntoVenta.exe'
+}
+if (-not (Test-Path $exe)) {
+    throw "No existe dist\PuntoVenta.exe ni installer\update\PuntoVenta.exe. Genera el lanzador con launch4j (installer\launch4j-config.xml)."
 }
 
 $staging = Join-Path $env:TEMP "PuntoVenta-Update-$Version"
@@ -28,6 +32,8 @@ Copy-Item $jar                                              $staging
 Copy-Item $exe                                              $staging
 Copy-Item (Join-Path $updDir 'aplicar_actualizacion.bat')  $staging
 Copy-Item (Join-Path $updDir '_bootstrap_schema_version.sql') $staging
+# Version del paquete: aplicar_actualizacion.bat --auto la reporta en ultima_actualizacion.txt
+Copy-Item (Join-Path $proj 'src\version.properties')       $staging
 
 # Carpeta lib/ completa (dependencias). IMPRESCINDIBLE: si un build agrega un JAR
 # nuevo (p. ej. svg-salamander, nanohttpd), su manifest lo exige pero el lib/ viejo

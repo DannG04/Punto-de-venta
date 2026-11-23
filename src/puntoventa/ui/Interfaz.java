@@ -47,6 +47,12 @@ public class Interfaz extends javax.swing.JFrame {
     CategoriasP catPanel;
     KardexP kardexPanel;
     EmpresaP empresaPanel;
+    ActualizacionesP actPanel;
+    // Aviso de actualizaciones (solo gerentes)
+    private javax.swing.JMenuItem actualizacionesButton;
+    private javax.swing.JLabel lblAvisoAct;
+    private javax.swing.Timer timerAct;
+    private static final int CADA_6_HORAS = 6 * 60 * 60 * 1000;
     CotizacionesP cotiPanel;
     private javax.swing.JMenu cotizButton;
 
@@ -86,6 +92,64 @@ public class Interfaz extends javax.swing.JFrame {
         configurarBotonServidor();
         this.setSize(tamanioMin);
         this.setLocationRelativeTo(null);
+        // Resultado de una actualización aplicada con aplicar_actualizacion.bat --auto
+        String msgAct = mensajeUltimaActualizacion(java.nio.file.Path.of(System.getProperty("user.dir")));
+        if (msgAct != null) {
+            java.awt.EventQueue.invokeLater(() -> Mise.JOption(msgAct, "Actualizaciones", javax.swing.JOptionPane.INFORMATION_MESSAGE));
+        }
+    }
+
+    /**
+     * Lee y borra ultima_actualizacion.txt ("OK &lt;version&gt;" o "ERROR &lt;paso&gt;").
+     * Devuelve el mensaje para el usuario, o null si no hay archivo.
+     */
+    static String mensajeUltimaActualizacion(java.nio.file.Path dir) {
+        java.nio.file.Path f = dir.resolve("ultima_actualizacion.txt");
+        if (!java.nio.file.Files.exists(f)) return null;
+        String linea = "";
+        try {
+            linea = java.nio.file.Files.readString(f).trim();
+        } catch (java.io.IOException e) {
+            GestorErrores.registrar(e);
+        }
+        try {
+            java.nio.file.Files.deleteIfExists(f);
+        } catch (java.io.IOException e) {
+            GestorErrores.registrar(e);
+        }
+        if (linea.startsWith("OK")) {
+            return "Actualizado a la versión " + linea.substring(2).trim();
+        }
+        return "La actualización no se completó; la versión anterior sigue funcionando. Detalle en actualizacion.log";
+    }
+
+    /** Lo llama ActualizacionesP y la revisión periódica con cada consulta exitosa. */
+    void avisarActualizacion(puntoventa.util.Actualizador.Release r) {
+        boolean hay = admActivo && r != null
+                && puntoventa.util.VersionApp.esMasNueva(r.version(), puntoventa.util.VersionApp.actual());
+        actualizacionesButton.setText(hay ? "Actualizaciones (" + r.version() + " disponible)" : "Actualizaciones");
+        administrButton.setText(hay ? "Administración •" : "Administración");
+        lblAvisoAct.setText(hay ? "Hay una actualización disponible (" + r.version() + ")" : "");
+        lblAvisoAct.setVisible(hay);
+        if (r != null) actPanel.mostrar(r);
+    }
+
+    /** Consulta en segundo plano; sin red no muestra nada (Actualizador solo lo registra en el log). */
+    private void revisarActualizaciones() {
+        if (!admActivo) return;
+        new javax.swing.SwingWorker<puntoventa.util.Actualizador.Release, Void>() {
+            @Override protected puntoventa.util.Actualizador.Release doInBackground() {
+                return puntoventa.util.Actualizador.buscar();
+            }
+            @Override protected void done() {
+                try {
+                    puntoventa.util.Actualizador.Release r = get();
+                    if (r != null) avisarActualizacion(r);
+                } catch (Exception e) {
+                    GestorErrores.registrar(e);
+                }
+            }
+        }.execute();
     }
 
     /**
@@ -679,9 +743,14 @@ public class Interfaz extends javax.swing.JFrame {
             btnServidor.setText("Servidor móvil");
         }
         iniDia = false;
+        if (timerAct != null) {
+            timerAct.stop();
+            timerAct = null;
+        }
         Mise.JOption("Hasta luego", "Salir", javax.swing.JOptionPane.PLAIN_MESSAGE);
         userActivo = false;
         admActivo = false;
+        avisarActualizacion(null); // quita el aviso al salir
         contraF1.setText("");
         contInc.setText("");
         eyeB1.setSelected(false);
@@ -805,6 +874,14 @@ public class Interfaz extends javax.swing.JFrame {
                     timerDia = new javax.swing.Timer(30000, e -> verificarEstadoDia());
                     timerDia.start();
                 }
+                // Actualizaciones: al iniciar sesión un gerente y cada 6 horas
+                if (admActivo) {
+                    revisarActualizaciones();
+                    if (timerAct == null) {
+                        timerAct = new javax.swing.Timer(CADA_6_HORAS, e -> revisarActualizaciones());
+                        timerAct.start();
+                    }
+                }
             }
         }
     }
@@ -904,6 +981,7 @@ public class Interfaz extends javax.swing.JFrame {
         catPanel.setVisible(false);
         kardexPanel.setVisible(false);
         empresaPanel.setVisible(false);
+        actPanel.setVisible(false);
         switch (b) {
             case 1:// Panel de Compras
                 getContentPane().add(comPanel, java.awt.BorderLayout.CENTER);
@@ -945,6 +1023,11 @@ public class Interfaz extends javax.swing.JFrame {
                 this.add(empresaPanel);
                 empresaPanel.cargarDatos();
                 empresaPanel.setVisible(true);
+                break;
+            case 8:// Panel de Actualizaciones
+                getContentPane().add(actPanel, java.awt.BorderLayout.CENTER);
+                this.add(actPanel);
+                actPanel.setVisible(true);
                 break;
         }
     }
@@ -1059,6 +1142,28 @@ public class Interfaz extends javax.swing.JFrame {
         catPanel = new CategoriasP();
         kardexPanel = new KardexP();
         empresaPanel = new EmpresaP();
+        actPanel = new ActualizacionesP(this::avisarActualizacion);
+        actualizacionesButton = new javax.swing.JMenuItem("Actualizaciones");
+        actualizacionesButton.setIcon(SvgIcon.load("/icons/servidor_movil.svg"));
+        actualizacionesButton.addActionListener(e -> {
+            if (admActivo) visibilidad(3, 8);
+        });
+        administrButton.add(actualizacionesButton);
+        // Aviso discreto en la barra de la hora; clic = abrir la sección
+        lblAvisoAct = new javax.swing.JLabel();
+        lblAvisoAct.setFont(new java.awt.Font("Noto Serif", java.awt.Font.BOLD, 15));
+        lblAvisoAct.setForeground(new java.awt.Color(0, 110, 60));
+        lblAvisoAct.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
+        lblAvisoAct.setVisible(false);
+        lblAvisoAct.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (admActivo) visibilidad(3, 8);
+            }
+        });
+        java.awt.GridBagConstraints gbcAviso = new java.awt.GridBagConstraints();
+        gbcAviso.gridx = 1;
+        gbcAviso.insets = new java.awt.Insets(5, 30, 5, 5);
+        horaPanel.add(lblAvisoAct, gbcAviso);
         // Menú de cotizaciones (se agrega antes de Reportes, posición 6)
         cotizButton = new javax.swing.JMenu("Cotizaciones");
         cotizButton.setIcon(SvgIcon.load("/icons/shopping.svg"));
