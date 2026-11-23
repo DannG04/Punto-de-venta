@@ -45,7 +45,7 @@ public class ActualizacionesP extends JPanel {
         titulo.setForeground(new Color(78, 150, 150));
         titulo.setHorizontalAlignment(SwingConstants.CENTER);
         titulo.setBorder(BorderFactory.createEmptyBorder(16, 20, 8, 0));
-        titulo.setIcon(SvgIcon.load("/icons/servidor_movil.svg", SvgIcon.LARGE));
+        titulo.setIcon(SvgIcon.load("/icons/actualizaciones.svg", SvgIcon.LARGE));
         add(titulo, BorderLayout.NORTH);
 
         JPanel centro = new JPanel(new GridBagLayout());
