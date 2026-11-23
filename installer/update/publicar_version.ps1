@@ -112,13 +112,16 @@ if ($LASTEXITCODE -ne 0) { Fallar "No se pudo leer el estado de git en $proj." }
 if ($cambios) { Fallar "El repositorio tiene cambios sin commit. Haz commit o descártalos antes de publicar:`n$($cambios -join "`n")" }
 
 if (-not $SinPublicar) {
-    $rama = (git -C $proj rev-parse --abbrev-ref HEAD).Trim()
-    # En Actions el checkout de un dispatch queda en la rama; localmente debe ser master.
-    if ($rama -ne 'master') { Fallar "Solo se publica desde master (estás en '$rama')." }
-    git -C $proj fetch --quiet origin master
-    if ($LASTEXITCODE -ne 0) { Fallar "No se pudo consultar origin/master." }
     $head = (git -C $proj rev-parse HEAD).Trim()
-    if ($head -ne (git -C $proj rev-parse origin/master).Trim()) { Fallar "Tu master no es igual a origin/master. Haz git pull antes de publicar." }
+    # PV_SIN_VALIDAR_RAMA solo se usa en las pruebas (el clon de prueba no está en master).
+    if (-not $env:PV_SIN_VALIDAR_RAMA) {
+        $rama = (git -C $proj rev-parse --abbrev-ref HEAD).Trim()
+        # En Actions el checkout de un dispatch queda en la rama; localmente debe ser master.
+        if ($rama -ne 'master') { Fallar "Solo se publica desde master (estás en '$rama')." }
+        git -C $proj fetch --quiet origin master
+        if ($LASTEXITCODE -ne 0) { Fallar "No se pudo consultar origin/master." }
+        if ($head -ne (git -C $proj rev-parse origin/master).Trim()) { Fallar "Tu master no es igual a origin/master. Haz git pull antes de publicar." }
+    }
     $salida = (gh release view "v$Version" --repo $REPO 2>&1 | Out-String).Trim()
     if ($LASTEXITCODE -eq 0) { Fallar "Ya existe el release v$Version." }
     if ($salida -notmatch 'release not found') { Fallar "No se pudo verificar si existe v${Version}: $salida" }
@@ -274,5 +277,15 @@ $notasArgs = if ($archivoNotas) { @('--notes-file', $archivoNotas) } else { @('-
 $assets = @($zip, $shaFile)
 if ($Instalador) { $assets += $exeInstalador }   # link fijo: releases/latest/download/PuntoVentaSetup.exe
 gh release create "v$Version" @assets --repo $REPO --target $head --title "Versión $Version" @notasArgs
-if ($LASTEXITCODE -ne 0) { Fallar "No se pudo crear el release v$Version en GitHub." }
+if ($LASTEXITCODE -ne 0) {
+    # Con archivos adjuntos gh crea el release como borrador, sube y luego publica. Si la
+    # subida se corta queda un borrador v<v> (no llega a las tiendas) que bloquearía el
+    # reintento con "ya existe": se elimina junto con su tag.
+    $esBorrador = (gh release view "v$Version" --repo $REPO --json isDraft --jq .isDraft 2>$null | Out-String).Trim()
+    if ($esBorrador -eq 'true') {
+        gh release delete "v$Version" --repo $REPO --yes --cleanup-tag *> $null
+        Fallar "No se pudo crear el release v$Version (se eliminó el borrador incompleto). Puedes reintentar."
+    }
+    Fallar "No se pudo crear el release v$Version en GitHub."
+}
 Write-Host "[OK] Versión $Version publicada. Los puntos de venta la verán en su próxima revisión (al iniciar sesión o cada 6 horas)."

@@ -61,13 +61,14 @@ jobs:
           distribution: temurin
           java-version: '23'
 
-      # JRE y PostgreSQL para el instalador: la clave incluye las huellas fijadas en
-      # preparar_dependencias.ps1 (si cambian, se descarga de nuevo y se verifica).
+      # Se cachean SOLO los archivos descargados (zip del JRE y exe de PostgreSQL), nunca la
+      # carpeta jre descomprimida: preparar_dependencias.ps1 re-verifica su huella en cada
+      # corrida y reconstruye installer/jre desde el zip, así una caché alterada no llega al instalador.
       - name: Cache de dependencias del instalador
         uses: actions/cache@v4
         with:
           path: |
-            installer/jre
+            installer/jre.zip
             installer/postgresql-18.1-2-windows-x64.exe
           key: instalador-deps-${{ hashFiles('installer/preparar_dependencias.ps1') }}
 
@@ -75,12 +76,14 @@ jobs:
         shell: pwsh
         run: ./installer/preparar_dependencias.ps1
 
-      - name: Asegurar Inno Setup
+      # Inno Setup 6 (el runner lo trae; si no, versión fijada) y ruta explícita para el script
+      - name: Asegurar Inno Setup 6
         shell: pwsh
         run: |
-          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) {
-            choco install innosetup -y --no-progress
-          }
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup --version 6.3.2 -y --no-progress }
+          if (-not (Test-Path $iscc)) { throw "No se encontró Inno Setup 6 en $iscc" }
+          "ISCC=$iscc" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Publicar
         shell: pwsh

@@ -174,6 +174,29 @@ Check ($r.Codigo -ne 0 -and $r.Salida -match 'Inno Setup') "Inno Setup con error
 Check ((Get-Content (Join-Path $clon 'installer\setup.iss') -Raw) -match '#define MyAppVersion "1\.22"') "Inno Setup con error: setup.iss restaurado"
 $env:ISCC = $isccOk
 
+# 14. falla la creación del release (p. ej. subida de 390 MB cortada): no queda un borrador
+#     que bloquee el reintento. gh falso que registra las llamadas.
+$ghLog = Join-Path $ghFalso 'llamadas.txt'
+Remove-Item $ghLog -ErrorAction SilentlyContinue
+GhFalso @"
+echo %* >> "$ghLog"
+if "%1"=="auth" exit /b 0
+if "%1 %2"=="release create" exit /b 1
+if "%1 %2"=="release delete" exit /b 0
+echo %* | findstr /c:"isDraft" >nul && (echo true& exit /b 0)
+echo release not found 1>&2
+exit /b 1
+"@
+$env:PATH = "$ghFalso;$env:PATH"
+$env:PV_SIN_VALIDAR_RAMA = '1'
+$r = Publicar @('-Version', '9.3', '-Notas', 'x', '-Instalador')
+$env:PATH = $pathAntes
+Remove-Item Env:PV_SIN_VALIDAR_RAMA
+$llamadas = if (Test-Path $ghLog) { Get-Content $ghLog -Raw } else { '' }
+Check ($r.Codigo -ne 0) "release create con error -> codigo distinto de 0"
+Check ($llamadas -match 'release create v9\.3' -and $llamadas -match 'PuntoVentaSetup\.exe') "se intento crear v9.3 con el instalador: $llamadas"
+Check ($llamadas -match 'release delete v9\.3') "el borrador v9.3 se elimina tras el fallo: $llamadas"
+
 # 7. el script nunca hace commits
 Check ((git -C $clon log -1 --format=%s) -eq 'prueba') "no se crearon commits"
 

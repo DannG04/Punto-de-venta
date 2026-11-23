@@ -47,6 +47,23 @@ try {
     Check ($r.Codigo -eq 0) "segunda corrida codigo 0"
     Check ((Peticiones) -eq $antes) "segunda corrida no descarga de nuevo ($antes -> $(Peticiones))"
 
+    # 2b. JRE descomprimido alterado (p. ej. caché manipulada): se reconstruye desde el zip
+    #     verificado, sin volver a descargar
+    'java ALTERADO' | Set-Content (Join-Path $dest 'jre\bin\java.exe')
+    'extra' | Set-Content (Join-Path $dest 'jre\bin\intruso.dll')
+    $antes = Peticiones
+    $r = Preparar $dest $shaPg
+    Check ($r.Codigo -eq 0) "JRE alterado: codigo 0"
+    Check ((Get-Content (Join-Path $dest 'jre\bin\java.exe') -Raw).Trim() -eq 'java falso') "JRE alterado: java.exe reconstruido desde el zip verificado"
+    Check (-not (Test-Path (Join-Path $dest 'jre\bin\intruso.dll'))) "JRE alterado: archivos ajenos eliminados"
+    Check ((Peticiones) -eq $antes) "JRE alterado: no hizo falta descargar (zip en cache verificado)"
+
+    # 2c. zip del JRE en caché alterado: se descarta y se vuelve a descargar
+    'zip corrupto' | Set-Content (Join-Path $dest 'jre.zip')
+    $antes = Peticiones
+    $r = Preparar $dest $shaPg
+    Check ($r.Codigo -eq 0 -and (Peticiones) -gt $antes) "zip en cache alterado: se descarga de nuevo"
+
     # 3. huella incorrecta: falla y no deja el archivo
     $dest2 = Join-Path $raiz 'destino malo'
     $r = Preparar $dest2 ('0' * 64)

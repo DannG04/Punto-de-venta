@@ -52,29 +52,31 @@ try {
     }
 
     # ---------- JRE ----------
-    # Marca con la huella del zip de origen: si coincide y java.exe existe, ya está.
+    # Se conserva el zip verificado (installer\jre.zip, el que guarda la caché de Actions)
+    # y la carpeta jre se reconstruye SIEMPRE desde él: así una carpeta jre alterada
+    # nunca llega al instalador (la huella se comprueba sobre el zip en cada corrida).
     $jreDir = Join-Path $Destino 'jre'
-    $marca = Join-Path $jreDir '.origen.sha256'
-    $listo = (Test-Path (Join-Path $jreDir 'bin\java.exe')) -and (Test-Path $marca) -and ((Get-Content $marca -Raw).Trim() -eq $ShaJre.ToLower())
-    if ($listo) {
-        Write-Host "[OK] JRE ya presente y verificado."
+    $zipJre = Join-Path $Destino 'jre.zip'
+    if ((Test-Path $zipJre) -and ((Huella $zipJre) -eq $ShaJre.ToLower())) {
+        Write-Host "[OK] Zip del JRE ya presente y verificado."
     } else {
-        $zip = Descargar-Verificado $UrlJre $ShaJre 'jre.zip'
-        $tmpDir = Join-Path ([IO.Path]::GetTempPath()) ("pv-jre-" + [guid]::NewGuid())
-        try {
-            Expand-Archive -Path $zip -DestinationPath $tmpDir
-            # El zip de Adoptium trae una sola carpeta raíz (jdk-23.0.2+7-jre)
-            $raices = @(Get-ChildItem $tmpDir -Directory)
-            $origen = if ($raices.Count -eq 1 -and -not (Test-Path (Join-Path $tmpDir 'bin'))) { $raices[0].FullName } else { $tmpDir }
-            if (-not (Test-Path (Join-Path $origen 'bin\java.exe'))) { throw "El zip del JRE no contiene bin\java.exe." }
-            if (Test-Path $jreDir) { Remove-Item $jreDir -Recurse -Force }
-            Move-Item $origen $jreDir
-            Set-Content -Path $marca -Value $ShaJre.ToLower() -Encoding ascii -NoNewline
-            Write-Host "[OK] JRE descargado, verificado y descomprimido en $jreDir"
-        } finally {
-            Remove-Item $zip -Force -ErrorAction SilentlyContinue
-            Remove-Item $tmpDir -Recurse -Force -ErrorAction SilentlyContinue
-        }
+        $tmp = Descargar-Verificado $UrlJre $ShaJre 'jre.zip'
+        Move-Item $tmp $zipJre -Force
+        Write-Host "[OK] Zip del JRE descargado y verificado."
+    }
+    # Descomprimir dentro del destino (mismo disco: el movimiento final no cruza volúmenes)
+    $tmpDir = Join-Path $Destino (".jre-tmp-" + [guid]::NewGuid())
+    try {
+        Expand-Archive -Path $zipJre -DestinationPath $tmpDir
+        # El zip de Adoptium trae una sola carpeta raíz (jdk-23.0.2+7-jre)
+        $raices = @(Get-ChildItem $tmpDir -Directory)
+        $origen = if ($raices.Count -eq 1 -and -not (Test-Path (Join-Path $tmpDir 'bin'))) { $raices[0].FullName } else { $tmpDir }
+        if (-not (Test-Path (Join-Path $origen 'bin\java.exe'))) { throw "El zip del JRE no contiene bin\java.exe." }
+        if (Test-Path $jreDir) { Remove-Item $jreDir -Recurse -Force }
+        Move-Item $origen $jreDir
+        Write-Host "[OK] JRE descomprimido desde el zip verificado en $jreDir"
+    } finally {
+        Remove-Item $tmpDir -Recurse -Force -ErrorAction SilentlyContinue
     }
 } catch {
     Fallar $_.Exception.Message
