@@ -11,6 +11,13 @@ $pruebas  = Get-Content (Join-Path $repo '.github\workflows\pruebas.yml') -Raw
 Check ($publicar -match 'installer/update/publicar_ci\.ps1') "publicar.yml usa publicar_ci.ps1"
 Check ($publicar -notmatch '@argumentos') "publicar.yml no hace splat de un arreglo de argumentos"
 
+# El botón arma el instalador: prepara dependencias verificadas, asegura Inno Setup y
+# deja PuntoVentaSetup.exe en el artefacto de la simulación.
+Check ($publicar -match 'installer/preparar_dependencias\.ps1') "publicar.yml prepara JRE y PostgreSQL verificados"
+Check ($publicar -match 'innosetup') "publicar.yml asegura Inno Setup"
+Check ($publicar -match 'PuntoVentaSetup\.exe') "el artefacto de la simulacion incluye PuntoVentaSetup.exe"
+Check ($publicar -match 'actions/cache@') "las descargas pesadas usan cache"
+
 # origen-master: comparar también el repositorio de origen (un fork con rama 'dev' no cuenta)
 # y no interpolar head_ref dentro del script (nombres de rama con $(...)).
 $origen = ($pruebas -split 'origen-master:', 2)[1]

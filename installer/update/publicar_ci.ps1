@@ -9,5 +9,6 @@ $ErrorActionPreference = 'Stop'
 $parametros = @{ Version = $env:VERSION; Jdk = "$env:JAVA_HOME\bin" }
 if ($env:NOTAS) { $parametros.Notas = $env:NOTAS }
 if ($env:SIMULAR -eq 'true') { $parametros.SinPublicar = $true }
+$parametros.Instalador = $true   # el botón siempre arma y adjunta PuntoVentaSetup.exe
 & (Join-Path $PSScriptRoot 'publicar_version.ps1') @parametros
 exit $LASTEXITCODE
