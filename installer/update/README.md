@@ -8,21 +8,25 @@ aviso en **Administración → Actualizaciones** y el dueño actualiza con un cl
 (la app descarga el ZIP, verifica su huella SHA-256 y corre
 `aplicar_actualizacion.bat --auto`, que respalda la BD, migra y reabre la app).
 
-Para publicar:
+Flujo de ramas: el trabajo entra a `dev` por PR (con pruebas automáticas), y
+`dev` pasa a `master` (producción) por PR. **Publicar es un paso aparte**, cuando tú decidas:
 
-1. Una sola vez: `winget install GitHub.cli` y `gh auth login`.
-2. Haz commit de todo (el script se niega a publicar con cambios sin commit).
-3. Corre:
-   ```powershell
-   powershell -ExecutionPolicy Bypass -File installer\update\publicar_version.ps1 -Version 1.23 -Notas "- Corrige el corte de caja"
-   ```
-   (`-NotasArchivo notas.md` para notas largas; `-Jdk C:\ruta\jdk\bin` si no hay
-   `ant`, el `ant` de NetBeans ni `JAVA_HOME`.)
+**Camino normal — botón en GitHub:** Actions → **Publicar versión** → *Run workflow*
+(rama `master`). Escribe la versión (`1.23`) y una línea de notas. Para notas
+largas, haz commit de `notas/v1.23.md` antes y deja la línea vacía. Con
+**simular** marcado arma el ZIP (descargable como artefacto) sin publicar.
 
-El script sube la versión en `src/version.properties` e `installer/setup.iss`,
-compila, arma `installer/output/PuntoVenta-Update-<v>.zip` + `.sha256`, hace
-commit `chore(release): v<v>`, tag `v<v>`, push y crea el release. Para probar
-sin publicar nada: `-SinPublicar`.
+**Desde tu PC** (mismo resultado), en `master` al día con `origin/master`:
+```powershell
+powershell -ExecutionPolicy Bypass -File installer\update\publicar_version.ps1 -Version 1.23 -Notas "- Corrige el corte de caja"
+```
+(requiere `gh auth login`; `-NotasArchivo ruta.md` para notas largas; `-Jdk
+C:\ruta\jdk\bin` para compilar con ese JDK; `-SinPublicar` para probar.)
+
+El script **no hace commit**: la versión vigente es la del último release, la
+nueva se escribe solo para compilar (luego se restauran `src/version.properties`
+e `installer/setup.iss`), arma `installer/output/PuntoVenta-Update-<v>.zip` +
+`.sha256` y crea tag y release en un paso (`gh release create --target`).
 
 **Tiendas instaladas antes del actualizador:** necesitan una última actualización
 manual (el ZIP con `aplicar_actualizacion.bat`, abajo) o reinstalar con el

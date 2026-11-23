@@ -19,6 +19,8 @@ Push-Location $clon
 git add -A; git -c user.name=prueba -c user.email=prueba@local commit --quiet -m "prueba" 2>$null | Out-Null
 $pub = Join-Path $clon 'installer\update\publicar_version.ps1'
 $jdkArg = @(); if ($Jdk) { $jdkArg = @('-Jdk', $Jdk) }
+# Sin red ni releases reales: "ninguna" = no hay releases, se usa src/version.properties (1.22)
+$env:PV_ULTIMA_PUBLICADA = 'ninguna'
 
 function Publicar([string[]]$a) {
     $out = & pwsh -NoProfile -File $pub @a @jdkArg 2>&1 | Out-String
@@ -72,9 +74,38 @@ if ((Test-Path $zip) -and (Test-Path $sha)) {
     Check ($man -match 'Main-Class: puntoventa\.ui\.Interfaz') "manifiesto con Main-Class"
     $j.Dispose()
 }
-Check ((Get-Content (Join-Path $clon 'src\version.properties') -Raw) -match 'app.version=9\.9') "src/version.properties = 9.9"
-Check ((Get-Content (Join-Path $clon 'installer\setup.iss') -Raw) -match '#define MyAppVersion "9\.9"') "setup.iss MyAppVersion = 9.9"
+# la versión solo se escribe para compilar: al terminar los archivos quedan como estaban (master está protegida)
+Check ((Get-Content (Join-Path $clon 'src\version.properties') -Raw) -match 'app.version=1\.22') "src/version.properties restaurado a 1.22"
+Check ((Get-Content (Join-Path $clon 'installer\setup.iss') -Raw) -match '#define MyAppVersion "1\.22"') "setup.iss restaurado a 1.22"
 Check (-not (git -C $clon tag --list 'v9.9')) "-SinPublicar no crea tag"
+
+# 4. versión vigente tomada del último release
+$env:PV_ULTIMA_PUBLICADA = '9.9'
+$r = Publicar @('-Version', '9.5', '-Notas', 'x', '-SinPublicar')
+Check ($r.Codigo -ne 0) "9.5 rechazada cuando el ultimo release es 9.9"
+Check ($r.Salida -match 'La versión debe ser mayor que 9\.9') "mensaje usa el ultimo release: $($r.Salida)"
+$env:PV_ULTIMA_PUBLICADA = 'ninguna'
+
+# 5. con -Jdk no se usa ant aunque exista (en el runner hay ant y el build.xml es de NetBeans)
+$antFalso = Join-Path ([IO.Path]::GetTempPath()) 'pv ant falso'
+New-Item -ItemType Directory -Force -Path $antFalso | Out-Null
+"@echo off`r`necho ANT FALSO`r`nexit /b 1" | Set-Content -Encoding ascii (Join-Path $antFalso 'ant.bat')
+$pathAntes = $env:PATH; $env:PATH = "$antFalso;$env:PATH"
+$r = Publicar @('-Version', '9.8', '-Notas', 'x', '-SinPublicar')
+$env:PATH = $pathAntes
+Check ($r.Codigo -eq 0 -and $r.Salida -notmatch 'ANT FALSO') "con -Jdk compila con el JDK aunque haya ant: $($r.Salida)"
+
+# 6. si la compilación falla, los archivos de versión quedan intactos
+'class Roto {' | Set-Content (Join-Path $clon 'src\Roto.java')
+git -C $clon add -A; git -C $clon -c user.name=prueba -c user.email=prueba@local commit --quiet -m "roto" | Out-Null
+$r = Publicar @('-Version', '9.7', '-Notas', 'x', '-SinPublicar')
+Check ($r.Codigo -ne 0) "compilacion rota -> codigo distinto de 0"
+Check ((Get-Content (Join-Path $clon 'src\version.properties') -Raw) -match 'app.version=1\.22') "compilacion rota: version.properties intacto"
+Check (-not (git -C $clon status --porcelain)) "compilacion rota: arbol sin cambios"
+git -C $clon reset --quiet --hard HEAD~1
+
+# 7. el script nunca hace commits
+Check ((git -C $clon log -1 --format=%s) -eq 'prueba') "no se crearon commits"
 
 Pop-Location
 Write-Host "probar_publicar: $($script:ok) OK, $($script:fallos) fallos"
