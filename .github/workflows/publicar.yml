@@ -61,16 +61,41 @@ jobs:
           distribution: temurin
           java-version: '23'
 
+      # Se cachean SOLO los archivos descargados (zip del JRE y exe de PostgreSQL), nunca la
+      # carpeta jre descomprimida: preparar_dependencias.ps1 re-verifica su huella en cada
+      # corrida y reconstruye installer/jre desde el zip, así una caché alterada no llega al instalador.
+      - name: Cache de dependencias del instalador
+        uses: actions/cache@v4
+        with:
+          path: |
+            installer/jre.zip
+            installer/postgresql-18.1-2-windows-x64.exe
+          key: instalador-deps-${{ hashFiles('installer/preparar_dependencias.ps1') }}
+
+      - name: Preparar JRE y PostgreSQL (descarga verificada)
+        shell: pwsh
+        run: ./installer/preparar_dependencias.ps1
+
+      # Inno Setup 6 (el runner lo trae; si no, versión fijada) y ruta explícita para el script
+      - name: Asegurar Inno Setup 6
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup --version 6.3.2 -y --no-progress }
+          if (-not (Test-Path $iscc)) { throw "No se encontró Inno Setup 6 en $iscc" }
+          "ISCC=$iscc" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
       - name: Publicar
         shell: pwsh
         # publicar_ci.ps1 lee VERSION/NOTAS/SIMULAR/JAVA_HOME y está cubierto por probar_publicar.ps1
         run: ./installer/update/publicar_ci.ps1
 
-      - name: Guardar el paquete (simulación)
+      - name: Guardar el paquete y el instalador (simulación)
         if: ${{ inputs.simular }}
         uses: actions/upload-artifact@v4
         with:
-          name: PuntoVenta-Update-${{ inputs.version }}
+          name: PuntoVenta-${{ inputs.version }}
           path: |
             installer/output/PuntoVenta-Update-*.zip
             installer/output/PuntoVenta-Update-*.zip.sha256
+            installer/output/PuntoVentaSetup.exe
