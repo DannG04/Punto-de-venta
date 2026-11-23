@@ -1144,7 +1144,7 @@ public class Interfaz extends javax.swing.JFrame {
         empresaPanel = new EmpresaP();
         actPanel = new ActualizacionesP(this::avisarActualizacion);
         actualizacionesButton = new javax.swing.JMenuItem("Actualizaciones");
-        actualizacionesButton.setIcon(SvgIcon.load("/icons/servidor_movil.svg"));
+        actualizacionesButton.setIcon(SvgIcon.load("/icons/actualizaciones.svg"));
         actualizacionesButton.addActionListener(e -> {
             if (admActivo) visibilidad(3, 8);
         });
