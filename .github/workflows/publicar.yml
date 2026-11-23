@@ -1,0 +1,79 @@
+# Botón "Publicar versión": Actions → Publicar versión → Run workflow (rama master).
+# Corre las pruebas y, si pasan, publica el release que descargan las tiendas
+# (installer/update/publicar_version.ps1). Con "simular" arma el ZIP sin publicar.
+name: Publicar versión
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versión a publicar (p. ej. 1.23). Debe ser mayor que el último release.'
+        required: true
+        type: string
+      notas:
+        description: 'Novedades en una línea. Para notas largas déjalo vacío y haz commit de notas/v<versión>.md'
+        required: false
+        type: string
+        default: ''
+      simular:
+        description: 'Simular: arma el ZIP (descargable) sin publicar nada'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  validar:
+    name: validar
+    runs-on: ubuntu-latest
+    steps:
+      - name: Solo se publica desde master
+        if: ${{ !inputs.simular && github.ref != 'refs/heads/master' }}
+        run: |
+          echo "::error::Solo se publica desde master (se eligió ${GITHUB_REF})."
+          exit 1
+      - run: echo "Rama ${GITHUB_REF}, simular=${{ inputs.simular }}"
+
+  pruebas:
+    needs: validar
+    uses: ./.github/workflows/pruebas.yml
+
+  publicar:
+    name: publicar
+    needs: pruebas
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Las entradas van por variables de entorno (no interpoladas en el script)
+      VERSION: ${{ inputs.version }}
+      NOTAS: ${{ inputs.notas }}
+      SIMULAR: ${{ inputs.simular }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '23'
+
+      - name: Publicar
+        shell: pwsh
+        run: |
+          $argumentos = @('-Version', $env:VERSION, '-Jdk', "$env:JAVA_HOME\bin")
+          if ($env:NOTAS) { $argumentos += @('-Notas', $env:NOTAS) }
+          if ($env:SIMULAR -eq 'true') { $argumentos += '-SinPublicar' }
+          ./installer/update/publicar_version.ps1 @argumentos
+
+      - name: Guardar el paquete (simulación)
+        if: ${{ inputs.simular }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: PuntoVenta-Update-${{ inputs.version }}
+          path: |
+            installer/output/PuntoVenta-Update-*.zip
+            installer/output/PuntoVenta-Update-*.zip.sha256
