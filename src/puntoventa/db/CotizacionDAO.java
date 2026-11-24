@@ -198,6 +198,7 @@ public class CotizacionDAO extends BaseDAO {
 
     public String convertirCotizacionAVenta(String idCoti, String formaPago) {
         String idVenta = "";
+        boolean copiadoAlCarrito = false;
         try (Connection conn = conectar()) {
 
             // Obtener datos de la cotizacion
@@ -211,7 +212,7 @@ public class CotizacionDAO extends BaseDAO {
             if (idCli == null || idCli.isEmpty()) idCli = "XAXX111111HCCXXXX0";
 
             // venta_temp es el carrito de Ventas: si tiene productos, borrarlo aquí
-            // perdía esa venta en curso y el stock que tenía descontado.
+            // perdía esa venta en curso.
             ResultSet rsCarrito = conn.createStatement().executeQuery("SELECT COUNT(*) FROM venta_temp");
             if (rsCarrito.next() && rsCarrito.getInt(1) > 0) {
                 Mise.JOption("Hay una venta en curso en el módulo de Ventas.\n"
@@ -226,6 +227,7 @@ public class CotizacionDAO extends BaseDAO {
                 "SELECT id_producto, nombre_p, cantidad, tipo_venta::\"tipoVenta\", precio_dado, precio_total, descuento_pct " +
                 "FROM cotizacion_detalle WHERE id_cotizacion=?");
             copyTemp.setString(1, idCoti);
+            copiadoAlCarrito = true;
             copyTemp.executeUpdate();
             // El trigger de INSERT recalcula el precio sin descuento; el de UPDATE sí
             // lo aplica. Sin esto la cotización se cobraba a precio completo.
@@ -248,19 +250,7 @@ public class CotizacionDAO extends BaseDAO {
                 updVenta.setString(2, idVenta);
                 updVenta.executeUpdate();
 
-                // Retroalimentar kardex
-                String sqlKardex =
-                    "UPDATE kardex SET referencia=?, id_empleado=?::CHAR(18) " +
-                    "WHERE id_kardex IN (" +
-                    "  SELECT DISTINCT ON (vd.id_producto) k.id_kardex " +
-                    "  FROM venta_detalle vd JOIN kardex k ON k.id_producto=vd.id_producto " +
-                    "  WHERE vd.id_venta=? AND k.referencia IS NULL AND k.tipo_movimiento='Venta' " +
-                    "  ORDER BY vd.id_producto, k.id_kardex DESC)";
-                PreparedStatement psKardex = conn.prepareStatement(sqlKardex);
-                psKardex.setString(1, idVenta);
-                psKardex.setString(2, idEmp);
-                psKardex.setString(3, idVenta);
-                psKardex.executeUpdate();
+                // El kardex de la venta lo registra realizar_venta (V1.23).
 
                 // Persistir descuentos en venta_detalle
                 PreparedStatement selDet = conn.prepareStatement(
@@ -278,10 +268,17 @@ public class CotizacionDAO extends BaseDAO {
                 updCoti.setString(2, idCoti);
                 updCoti.executeUpdate();
             }
-            // Si realizar_venta falló, regresar al inventario lo copiado al carrito
-            conn.prepareCall("{call vaciar_venta_temp()}").execute();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
+        } finally {
+            // Si realizar_venta falló (p. ej. sin existencia), no dejar la cotización en el carrito
+            if (copiadoAlCarrito) {
+                try (Connection conn = conectar()) {
+                    conn.prepareCall("{call vaciar_venta_temp()}").execute();
+                } catch (SQLException e) {
+                    GestorErrores.registrar(e);
+                }
+            }
         }
         return idVenta;
     }

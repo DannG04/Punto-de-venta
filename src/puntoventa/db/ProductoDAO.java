@@ -43,10 +43,17 @@ public class ProductoDAO extends BaseDAO {
         }
     }
 
+    /** Si el UPDATE cambia la existencia, el kardex lo registra como ajuste (entrada o salida). */
+    private static void marcarAjusteInventario(Connection conexion) throws SQLException {
+        fijarVariableSesion(conexion, "kardex.tipo", "Ajuste");
+        fijarVariableSesion(conexion, "kardex.observacion", "Existencia editada en Inventario");
+    }
+
     public void actualizarProducto(String ideprod, String[] datos) {//Función para actualizar un producto
         String columnas = "nombre = ?, cantidad = ?, precio_mayoreo = ?, precio_menudeo = ?";
         String instruccion = "UPDATE producto SET " + columnas + " WHERE id_producto = ?;";
         try (Connection conexion = conectar()) {
+            marcarAjusteInventario(conexion);
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setString(1, datos[0]);
             pstm.setInt(2, Integer.parseInt(datos[1]));
@@ -248,6 +255,7 @@ public class ProductoDAO extends BaseDAO {
     public void actualizarProductoConCategoria(String ideprod, String[] datos, Integer idCategoria, double maxDescuento) {//Función para actualizar un producto con categoría
         String instruccion = "UPDATE producto SET nombre=?, cantidad=?, precio_mayoreo=?, precio_menudeo=?, id_categoria=?, max_descuento=? WHERE id_producto=?;";
         try (Connection conexion = conectar()) {
+            marcarAjusteInventario(conexion);
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setString(1, datos[0]);
             pstm.setInt(2, Integer.parseInt(datos[1]));

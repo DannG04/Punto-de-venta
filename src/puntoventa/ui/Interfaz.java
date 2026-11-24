@@ -743,6 +743,7 @@ public class Interfaz extends javax.swing.JFrame {
             btnServidor.setText("Servidor móvil");
         }
         iniDia = false;
+        ConexionBD.fijarEmpleadoSesion(null);
         if (timerAct != null) {
             timerAct.stop();
             timerAct = null;
@@ -844,6 +845,7 @@ public class Interfaz extends javax.swing.JFrame {
             String[] datos = conect.idEmpleado(userBD, passwordBD);
             if (datos[0] != null) {
                 idVendedor = datos[0];
+                ConexionBD.fijarEmpleadoSesion(idVendedor); // el kardex registra quién hace cada movimiento
                 Mise.JOption("Bienvenido, " + datos[1], "Inicio de sesión", javax.swing.JOptionPane.PLAIN_MESSAGE);
                 userActivo = true;
                 if (datos[2].equals("gerente")) {

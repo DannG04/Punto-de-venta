@@ -114,6 +114,7 @@ COMMIT;
 | 1.11 | `V1.11__empresa.sql`                   | Tabla empresa con datos del negocio para tickets                | 2026-04-20 |
 | 1.12 | `V1.12__cotizaciones.sql`              | Módulo de cotizaciones con conversión a venta                   | 2026-04-21 |
 | 1.13 | `V1.13__fix_precio_lista_override.sql` | Re-siembra listas de fábrica y ajusta override de precio_lista  | 2026-06-01 |
+| 1.23 | `V1.23__kardex_confiable.sql`          | Kardex de solo inserción: venta al cobrar, ajustes, saldo inicial | 2026-11-24 |
 
 > **Cada desarrollador debe agregar su migración a esta tabla cuando la suba.**
 
