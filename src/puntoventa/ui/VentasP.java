@@ -1132,6 +1132,8 @@ public class VentasP extends javax.swing.JPanel {
         if (idx < 0) return;
         int idLista = listaIds.get(idx);
         String nombreLista = (String) cmbListaPrecios.getSelectedItem();
+        // "Menudeo" es la lista base: el carrito ya calcula menudeo/mayoreo según la cantidad (12 o más = mayoreo).
+        if ("Menudeo".equals(nombreLista)) return;
         double precioLista = conect.obtenerPrecioEnLista(idProd, idLista);
         if (precioLista < 0) {
             Mise.JOption("El producto no tiene precio en la lista \"" + nombreLista +

@@ -116,6 +116,7 @@ COMMIT;
 | 1.13 | `V1.13__fix_precio_lista_override.sql` | Re-siembra listas de fábrica y ajusta override de precio_lista  | 2026-06-01 |
 | 1.23 | `V1.23__kardex_confiable.sql`          | Kardex de solo inserción: venta al cobrar, ajustes, saldo inicial | 2026-11-24 |
 | 1.24 | `V1.24__ajuste_existencia_mermas.sql`  | Ajuste de existencia con motivo y mermas en devoluciones        | 2026-11-24 |
+| 1.25 | `V1.25__precio_lista_carrito.sql`      | El carrito respeta el precio de la lista de precios activa      | 2026-11-24 |
 
 > **Cada desarrollador debe agregar su migración a esta tabla cuando la suba.**
 
