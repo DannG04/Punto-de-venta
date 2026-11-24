@@ -1,7 +1,8 @@
--- V1.23__kardex_confiable.sql
+-- V1.24__kardex_confiable.sql
 -- Descripcion: el kardex registra cada movimiento una sola vez, con su tipo,
 --              folio y empleado, y ya no se borra ni se edita.
 -- Fecha: 2026-11-24
+-- Depende de: V1.23__fix_bugs_plan_de_pruebas.sql (precio_fijo y reglas de productos dados de baja)
 --
 -- Problemas que corrige (reproducidos con la app el 2026-11-24):
 --  * El carrito descontaba stock al agregar un producto y cada cambio dejaba un
@@ -148,33 +149,36 @@ END;
 $$;
 
 -- 5) Carrito: solo valida existencia, ya no reserva stock.
+--    Se conservan las reglas de V1.23: no se venden productos dados de baja y, con
+--    precio_fijo, el renglón mantiene el precio y tipo de una lista o cotización.
 CREATE OR REPLACE FUNCTION public.verif_exist_insert()
  RETURNS trigger
  LANGUAGE plpgsql
 AS $function$
 DECLARE
-    neim   VARCHAR(50);
-    praise NUMERIC(10,2);
-    cant   INTEGER;
+    neim  VARCHAR(50);
+    cant  INTEGER;
+    est   VARCHAR(10);
 BEGIN
-    SELECT cantidad INTO cant FROM producto WHERE id_producto = NEW.id_producto;
-    IF cant >= NEW.cantidad_prod THEN
-        SELECT nombre INTO neim FROM producto WHERE id_producto = NEW.id_producto;
-        NEW.nombre_p := neim;
-        IF NEW.cantidad_prod >= 12 THEN
-            SELECT precio_mayoreo INTO praise FROM producto WHERE id_producto = NEW.id_producto;
-            NEW.precio_dado := praise;
-            NEW.tipo_venta  := 'Mayoreo';
-        ELSE
-            SELECT precio_menudeo INTO praise FROM producto WHERE id_producto = NEW.id_producto;
-            NEW.precio_dado := praise;
-            NEW.tipo_venta  := 'Menudeo';
-        END IF;
-        NEW.precio_total := NEW.precio_dado * NEW.cantidad_prod;
-        RETURN NEW;
-    ELSE
+    SELECT cantidad, nombre, estatus INTO cant, neim, est FROM producto WHERE id_producto = NEW.id_producto;
+    IF est IS DISTINCT FROM 'Activo' THEN
+        RAISE EXCEPTION 'El producto % está dado de baja y no se puede vender', NEW.id_producto;
+    END IF;
+    IF cant < NEW.cantidad_prod THEN
         RAISE EXCEPTION 'No hay suficiente cantidad de productos';
     END IF;
+    NEW.nombre_p := neim;
+    IF NOT NEW.precio_fijo OR NEW.precio_dado IS NULL OR NEW.tipo_venta IS NULL THEN
+        IF NEW.cantidad_prod >= 12 THEN
+            SELECT precio_mayoreo INTO NEW.precio_dado FROM producto WHERE id_producto = NEW.id_producto;
+            NEW.tipo_venta := 'Mayoreo';
+        ELSE
+            SELECT precio_menudeo INTO NEW.precio_dado FROM producto WHERE id_producto = NEW.id_producto;
+            NEW.tipo_venta := 'Menudeo';
+        END IF;
+    END IF;
+    NEW.precio_total := ROUND(NEW.precio_dado * NEW.cantidad_prod * (1.0 - COALESCE(NEW.descuento_pct, 0) / 100.0), 2);
+    RETURN NEW;
 END;
 $function$;
 
@@ -183,31 +187,27 @@ CREATE OR REPLACE FUNCTION public.verif_exist_update()
  LANGUAGE plpgsql
 AS $function$
 DECLARE
-    praise NUMERIC(10,2);
-    cant   INTEGER;
+    cant INTEGER;
 BEGIN
     SELECT cantidad INTO cant FROM producto WHERE id_producto = NEW.id_producto;
-
-    IF cant >= NEW.cantidad_prod THEN
-        IF NEW.cantidad_prod >= 12 THEN
-            SELECT precio_mayoreo INTO praise FROM producto WHERE id_producto = NEW.id_producto;
-            NEW.precio_dado  := praise;
-            NEW.tipo_venta   := 'Mayoreo';
-        ELSE
-            SELECT precio_menudeo INTO praise FROM producto WHERE id_producto = NEW.id_producto;
-            NEW.precio_dado  := praise;
-            NEW.tipo_venta   := 'Menudeo';
-        END IF;
-
-        -- Aplicar descuento al calcular precio_total
-        NEW.precio_total := ROUND(NEW.precio_dado * NEW.cantidad_prod * (1.0 - NEW.descuento_pct / 100.0), 2);
-        RETURN NEW;
-    ELSE
+    IF cant < NEW.cantidad_prod THEN
         RAISE EXCEPTION 'No hay suficiente cantidad de productos';
     END IF;
+    IF NOT NEW.precio_fijo OR NEW.precio_dado IS NULL THEN
+        IF NEW.cantidad_prod >= 12 THEN
+            SELECT precio_mayoreo INTO NEW.precio_dado FROM producto WHERE id_producto = NEW.id_producto;
+            NEW.tipo_venta := 'Mayoreo';
+        ELSE
+            SELECT precio_menudeo INTO NEW.precio_dado FROM producto WHERE id_producto = NEW.id_producto;
+            NEW.tipo_venta := 'Menudeo';
+        END IF;
+    END IF;
+    NEW.precio_total := ROUND(NEW.precio_dado * NEW.cantidad_prod * (1.0 - COALESCE(NEW.descuento_pct, 0) / 100.0), 2);
+    RETURN NEW;
 END;
 $function$;
 
+-- Quitar un producto que no está en el carrito no hace nada (sin stock que devolver).
 CREATE OR REPLACE FUNCTION public.eliminar_prod(idepro id_producto_dominio)
  RETURNS void
  LANGUAGE plpgsql
@@ -226,26 +226,31 @@ DECLARE
     idevent VARCHAR(15);
     r       RECORD;
     disp    INTEGER;
+    est     VARCHAR(10);
     suma    NUMERIC(10,2);
 BEGIN
-    INSERT INTO venta(id_empleado, total_venta, id_cliente) VALUES (idemp, -1, idecli);
-    SELECT id_venta INTO idevent FROM venta WHERE total_venta = -1;
+    -- V1.23 (D-09): no se cobra un carrito vacío
+    IF NOT EXISTS (SELECT 1 FROM venta_temp) THEN
+        RAISE EXCEPTION 'No es posible registrar una venta sin productos';
+    END IF;
+    INSERT INTO venta(id_empleado, total_venta, id_cliente) VALUES (idemp, -1, idecli)
+        RETURNING id_venta INTO idevent;
 
     PERFORM set_config('kardex.empleado', idemp::text, true);
 
-    FOR r IN SELECT id_producto, cantidad_prod, precio_dado, precio_total, tipo_venta
+    FOR r IN SELECT id_producto, cantidad_prod, precio_dado, precio_total, tipo_venta, descuento_pct
                FROM venta_temp ORDER BY id_producto LOOP
-        SELECT cantidad INTO disp FROM producto WHERE id_producto = r.id_producto FOR UPDATE;
+        SELECT cantidad, estatus INTO disp, est FROM producto WHERE id_producto = r.id_producto FOR UPDATE;
+        IF est IS DISTINCT FROM 'Activo' THEN
+            RAISE EXCEPTION 'El producto % está dado de baja y no se puede vender', r.id_producto;
+        END IF;
         IF disp IS NULL OR disp < r.cantidad_prod THEN
             RAISE EXCEPTION 'No hay suficiente existencia de % (quedan %, se piden %)',
                 r.id_producto, COALESCE(disp, 0), r.cantidad_prod;
         END IF;
 
-        INSERT INTO venta_detalle(id_venta, id_producto) VALUES (idevent, r.id_producto);
-        UPDATE venta_detalle
-           SET cantidad_producto = r.cantidad_prod, precio_dado = r.precio_dado,
-               precio_total = r.precio_total, tipo_venta = r.tipo_venta
-         WHERE id_venta = idevent AND id_producto = r.id_producto;
+        INSERT INTO venta_detalle(id_venta, id_producto, cantidad_producto, precio_dado, precio_total, tipo_venta, descuento_pct)
+        VALUES (idevent, r.id_producto, r.cantidad_prod, r.precio_dado, r.precio_total, r.tipo_venta, COALESCE(r.descuento_pct, 0));
 
         PERFORM mover_inventario_con_kardex(FALSE, r.id_producto, r.cantidad_prod, 'Venta', idevent);
     END LOOP;
@@ -265,26 +270,31 @@ DECLARE
     idevent VARCHAR(15);
     r       RECORD;
     disp    INTEGER;
+    est     VARCHAR(10);
     suma    NUMERIC(10,2);
 BEGIN
-    INSERT INTO venta(id_empleado, total_venta) VALUES (idemp, -1);
-    SELECT id_venta INTO idevent FROM venta WHERE total_venta = -1;
+    -- V1.23 (D-09): no se cobra un carrito vacío
+    IF NOT EXISTS (SELECT 1 FROM venta_temp) THEN
+        RAISE EXCEPTION 'No es posible registrar una venta sin productos';
+    END IF;
+    INSERT INTO venta(id_empleado, total_venta) VALUES (idemp, -1)
+        RETURNING id_venta INTO idevent;
 
     PERFORM set_config('kardex.empleado', idemp::text, true);
 
-    FOR r IN SELECT id_producto, cantidad_prod, precio_dado, precio_total, tipo_venta
+    FOR r IN SELECT id_producto, cantidad_prod, precio_dado, precio_total, tipo_venta, descuento_pct
                FROM venta_temp ORDER BY id_producto LOOP
-        SELECT cantidad INTO disp FROM producto WHERE id_producto = r.id_producto FOR UPDATE;
+        SELECT cantidad, estatus INTO disp, est FROM producto WHERE id_producto = r.id_producto FOR UPDATE;
+        IF est IS DISTINCT FROM 'Activo' THEN
+            RAISE EXCEPTION 'El producto % está dado de baja y no se puede vender', r.id_producto;
+        END IF;
         IF disp IS NULL OR disp < r.cantidad_prod THEN
             RAISE EXCEPTION 'No hay suficiente existencia de % (quedan %, se piden %)',
                 r.id_producto, COALESCE(disp, 0), r.cantidad_prod;
         END IF;
 
-        INSERT INTO venta_detalle(id_venta, id_producto) VALUES (idevent, r.id_producto);
-        UPDATE venta_detalle
-           SET cantidad_producto = r.cantidad_prod, precio_dado = r.precio_dado,
-               precio_total = r.precio_total, tipo_venta = r.tipo_venta
-         WHERE id_venta = idevent AND id_producto = r.id_producto;
+        INSERT INTO venta_detalle(id_venta, id_producto, cantidad_producto, precio_dado, precio_total, tipo_venta, descuento_pct)
+        VALUES (idevent, r.id_producto, r.cantidad_prod, r.precio_dado, r.precio_total, r.tipo_venta, COALESCE(r.descuento_pct, 0));
 
         PERFORM mover_inventario_con_kardex(FALSE, r.id_producto, r.cantidad_prod, 'Venta', idevent);
     END LOOP;
@@ -306,6 +316,7 @@ DECLARE
     nueva INTEGER;
     delta INTEGER;
     ka    INTEGER;
+    est   VARCHAR(10);
     tot   NUMERIC(10,2);
 BEGIN
     SELECT cantidad INTO cantt FROM apartado_detalle WHERE id_apartado = ideapar AND id_producto = idepro;
@@ -314,7 +325,10 @@ BEGIN
                   ELSE cant END;
     delta := nueva - COALESCE(cantt, 0);
 
-    SELECT cantidad INTO ka FROM producto WHERE id_producto = idepro FOR UPDATE;
+    SELECT cantidad, estatus INTO ka, est FROM producto WHERE id_producto = idepro FOR UPDATE;
+    IF est IS DISTINCT FROM 'Activo' THEN
+        RAISE EXCEPTION 'El producto % está dado de baja y no se puede apartar', idepro;
+    END IF;
     IF ka IS NULL OR ka < delta THEN
         RAISE EXCEPTION 'No hay suficiente cantidad de productos';
     END IF;
@@ -406,6 +420,9 @@ BEGIN
         PERFORM mover_inventario_con_kardex(FALSE, idepro, cant, 'Cancelacion devolucion', idedev);
     END IF;
     DELETE FROM devolucion_ventas_detalle WHERE id_devolucion = idedev AND id_producto = idepro;
+    UPDATE devolucion_ventas
+       SET monto = (SELECT COALESCE(SUM(total), 0) FROM devolucion_ventas_detalle WHERE id_devolucion = idedev)
+     WHERE id_devolucion = idedev;
 END;
 $function$;
 
@@ -490,7 +507,7 @@ DO $$
 BEGIN
     IF to_regclass('public.schema_version') IS NOT NULL THEN
         INSERT INTO schema_version (version, descripcion)
-        VALUES ('1.23', 'kardex confiable')
+        VALUES ('1.24', 'kardex confiable')
         ON CONFLICT (version) DO NOTHING;
     END IF;
 END;

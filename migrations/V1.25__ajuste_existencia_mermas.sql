@@ -1,7 +1,7 @@
--- V1.24__ajuste_existencia_mermas.sql
+-- V1.25__ajuste_existencia_mermas.sql
 -- Descripcion: ajustes de existencia con motivo obligatorio y mermas en el kardex.
 -- Fecha: 2026-11-24
--- Depende de: V1.23__kardex_confiable.sql
+-- Depende de: V1.24__kardex_confiable.sql
 --
 --  * ajustar_existencia(): la existencia ya no se edita directamente. Se captura la
 --    cantidad contada y un motivo; la diferencia se registra en el kardex como
@@ -161,6 +161,9 @@ BEGIN
     END IF;
     PERFORM revertir_devolucion_prod(idedev, idepro, ras, cant);
     DELETE FROM devolucion_ventas_detalle WHERE id_devolucion = idedev AND id_producto = idepro;
+    UPDATE devolucion_ventas
+       SET monto = (SELECT COALESCE(SUM(total), 0) FROM devolucion_ventas_detalle WHERE id_devolucion = idedev)
+     WHERE id_devolucion = idedev;
 END;
 $function$;
 
@@ -168,7 +171,7 @@ DO $$
 BEGIN
     IF to_regclass('public.schema_version') IS NOT NULL THEN
         INSERT INTO schema_version (version, descripcion)
-        VALUES ('1.24', 'ajuste de existencia con motivo y mermas')
+        VALUES ('1.25', 'ajuste de existencia con motivo y mermas')
         ON CONFLICT (version) DO NOTHING;
     END IF;
 END;
