@@ -14,10 +14,22 @@ import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Excel {
-    public static double utilidadDelEjercicio;
     static ConexionBD conect = new ConexionBD();
-    
-    public static void balanceGeneral() {//Método que genera el balance general
+
+    /**
+     * Utilidad del ejercicio con la misma fórmula del Estado de resultados:
+     * ventas netas - (inventario inicial + compras - inventario final) - gastos
+     * + otras ganancias, menos 16 % de impuestos. La usan ambos reportes para que coincidan.
+     */
+    public static double calcularUtilidad(double inventarioInicial) {
+        double ventasNetas = conect.ObtenerDato("total_ventas") - conect.ObtenerDato("total_devoluciones");
+        double costoVendido = inventarioInicial + conect.ObtenerDato("total_compras") - conect.ObtenerDato("inventario_final");
+        double antesImpuestos = ventasNetas - costoVendido - conect.ObtenerDato("total_gastos")
+                + conect.ObtenerDato("total_otras_ganancias");
+        return antesImpuestos - antesImpuestos * 0.16;
+    }
+
+    public static void balanceGeneral(double inventarioInicial) {//Método que genera el balance general
 
         Workbook book = new XSSFWorkbook();
         Sheet sheet = book.createSheet("Reporte");
@@ -111,15 +123,13 @@ public class Excel {
             Row filaFecha = sheet.createRow(3);
             Cell celdaFecha = filaFecha.createCell(1);
             celdaFecha.setCellStyle(fechaEstilo);
-            String[] empBG = obtenerDatosEmpresa();
-            celdaTitulo.setCellValue(empBG[0] + (empBG[1].isEmpty() ? "" : "  RFC: " + empBG[1]));
+            ponerEncabezadoEmpresa(book, sheet, celdaTitulo, obtenerDatosEmpresa());
             sheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 5));
             String mes2 = cambiarmes(mes);
             celdaFecha.setCellValue("Balance general del " + dia + " de " + mes2 + " del año " + anio);
 
             BalGeneral bg = new BalGeneral(sheet, 6);
-            obtenerUtilidad();
-            bg.llenarBalance(datosEstilo,utilidadDelEjercicio);
+            bg.llenarBalance(datosEstilo, calcularUtilidad(inventarioInicial));
 
             sheet.setZoom(150);
             String directoryName = "BalancesGenerales";
@@ -194,8 +204,7 @@ public class Excel {
             Row filaFecha = sheet.createRow(3);
             Cell celdaFecha = filaFecha.createCell(1);
             celdaFecha.setCellStyle(fechaEstilo);
-            String[] empER = obtenerDatosEmpresa();
-            celdaTitulo.setCellValue(empER[0] + (empER[1].isEmpty() ? "" : "  RFC: " + empER[1]));
+            ponerEncabezadoEmpresa(book, sheet, celdaTitulo, obtenerDatosEmpresa());
             sheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 5));
             String mes2 = cambiarmes(mes);
             celdaFecha.setCellValue("Estado de resultados del " + dia + " de " + mes2 + " del año " + anio);
@@ -583,7 +592,7 @@ public class Excel {
         // BLOQUE 2 — TÍTULO DEL REPORTE
         // ════════════════════════════════════════════════════════════════════
         fila = agregarFilaMerge(sheet, fila, 0, 4, "REPORTE DIARIO", estTitulo);
-        fila = agregarFilaMerge(sheet, fila, 0, 4, fecha(), estSubtitulo);
+        fila = agregarFilaMerge(sheet, fila, 0, 4, fechaLarga(fecha), estSubtitulo);
         fila++; // separador
 
         // ════════════════════════════════════════════════════════════════════
@@ -1127,6 +1136,39 @@ public class Excel {
         return s;
     }
     
+    /** Fecha en formato largo ("23 de noviembre del 2026"). */
+    public static String fechaLarga(java.time.LocalDate fecha) {
+        return fecha.format(java.time.format.DateTimeFormatter.ofPattern("dd 'de' MMMM 'del' yyyy", new java.util.Locale("es", "ES")));
+    }
+
+    /**
+     * Encabezado de los estados financieros: nombre comercial y, en una segunda línea,
+     * razón social y RFC (la entidad se identifica por su razón social; el RFC la identifica fiscalmente).
+     */
+    private static void ponerEncabezadoEmpresa(Workbook book, Sheet sheet, Cell celda, String[] emp) {
+        String nombre = emp[0], razon = emp[1], rfc = emp[2];
+        String linea2 = razon;
+        if (!rfc.isEmpty()) linea2 += (linea2.isEmpty() ? "" : "  ·  ") + "RFC: " + rfc;
+        String texto = linea2.isEmpty() ? nombre : nombre + "\n" + linea2;
+        RichTextString rt = book.getCreationHelper().createRichTextString(texto);
+        Font grande = book.createFont();
+        grande.setFontName("Times new roman");
+        grande.setBold(true);
+        grande.setFontHeightInPoints((short) 14);
+        Font chica = book.createFont();
+        chica.setFontName("Arial");
+        chica.setFontHeightInPoints((short) 10);
+        rt.applyFont(0, nombre.length(), grande);
+        if (texto.length() > nombre.length()) rt.applyFont(nombre.length(), texto.length(), chica);
+        CellStyle estilo = book.createCellStyle();
+        estilo.cloneStyleFrom(celda.getCellStyle());
+        estilo.setWrapText(true);
+        celda.setCellStyle(estilo);
+        celda.setCellValue(rt);
+        sheet.getRow(1).setHeightInPoints(22);
+        (sheet.getRow(2) != null ? sheet.getRow(2) : sheet.createRow(2)).setHeightInPoints(18);
+    }
+
     public static String fecha(){//Método que obtiene la fecha actual
         java.time.LocalDateTime ahora = java.time.LocalDateTime.now();
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd 'de' MMMM 'del' yyyy", new java.util.Locale("es", "ES"));;
@@ -1215,34 +1257,4 @@ public class Excel {
         }
     }
 
-    public static void obtenerUtilidad(){//Método que obtiene la utilidad del ejercicio
-        LocalDate fecha = LocalDate.now();
-        String dia = String.valueOf(fecha.getDayOfMonth());
-        String mes = String.valueOf(fecha.getMonthValue());
-        String anio = String.valueOf(fecha.getYear());
-        String fileName = "/estadodeResultados" + dia + "_" + mes + "_" + anio;
-        String filePath;
-       
-        try {
-            filePath = "Estados de resultados" + fileName + ".xlsx";
-            FileInputStream fis = new FileInputStream(filePath);
-        
-            
-            Workbook workbook = new XSSFWorkbook(fis);
-
-            Sheet sheet = workbook.getSheetAt(0); // Obtén la primera hoja
-            Cell cell = sheet.getRow(21).getCell(5); // Obtén la celda F21 
-
-            FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
-            CellValue cellValue = evaluator.evaluate(cell);
-
-            utilidadDelEjercicio = cellValue.getNumberValue(); // Guarda el valor en una variable
-
-            System.out.println("Utilidad del ejercicio: " + utilidadDelEjercicio);
-
-        } catch (IOException e) {
-            GestorErrores.registrar(e);
-        }
-
-    }
 }

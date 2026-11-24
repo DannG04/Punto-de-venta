@@ -637,13 +637,21 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_gastosButtonActionPerformed
 
     private void balgenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_balgenButtonActionPerformed
-        Excel.balanceGeneral();
+        // El balance incluye la utilidad del ejercicio, que se calcula con el inventario inicial
+        String res = Mise.JOptionInput("Ingrese el inventario inicial", "Balance General");
+        if (res == null || res.isBlank()) return;   // ventana cerrada: cancelar
+        try {
+            Excel.balanceGeneral(Double.valueOf(res.trim()));
+        } catch (NumberFormatException e) {
+            Mise.JOption("Debe ingresar un numero", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_balgenButtonActionPerformed
 
     private void estresultButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_estresultButtonActionPerformed
         String res = Mise.JOptionInput("Ingrese el inventario inicial", "Estado de Resultados");
+        if (res == null || res.isBlank()) return;   // ventana cerrada: cancelar
         try {
-            Double invini = Double.valueOf(res);
+            Double invini = Double.valueOf(res.trim());
             Excel.estadodeResultados(invini);
         } catch (NumberFormatException e) {
             Mise.JOption("Debe ingresar un numero", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
