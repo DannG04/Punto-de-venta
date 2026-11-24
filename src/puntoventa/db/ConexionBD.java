@@ -31,6 +31,7 @@ public class ConexionBD extends BaseDAO {
     private final VentaDAO ventas = new VentaDAO();
     private final CotizacionDAO cotizaciones = new CotizacionDAO();
     private final ReporteDAO reportes = new ReporteDAO();
+    private final KardexDAO kardex = new KardexDAO();
 
     // FUNCION DE LA TABLA EMPLEADO
     public boolean insertarEmpleado(String[] campos) { return empleados.insertarEmpleado(campos); }
@@ -87,11 +88,13 @@ public class ConexionBD extends BaseDAO {
 
     public ResultSet totalesDia(java.time.LocalDate fecha) { return reportes.totalesDia(fecha); }
 
-    public ResultSet buscarProductoKardex(String filtro) { return reportes.buscarProductoKardex(filtro); }
+    public ResultSet buscarProductoKardex(String filtro, boolean incluirBaja) { return kardex.buscarProductos(filtro, incluirBaja); }
 
     public ResultSet buscarProductosCotizacion(String filtro) { return cotizaciones.buscarProductosCotizacion(filtro); }
 
-    public ResultSet kardexProducto(String idProducto, java.time.LocalDate desde, java.time.LocalDate hasta) { return reportes.kardexProducto(idProducto, desde, hasta); }
+    public KardexPeriodo consultarKardex(String idProducto, java.time.LocalDate desde, java.time.LocalDate hasta) { return kardex.consultar(idProducto, desde, hasta); }
+
+    public DocumentoKardex documentoKardex(String folio) { return kardex.documento(folio); }
 
     // FUNCIONES DE LA TABLA COMPRAS
     public String insertarCompra(String[] campos) { return compras.insertarCompra(campos); }

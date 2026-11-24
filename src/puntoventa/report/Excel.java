@@ -761,38 +761,87 @@ public class Excel {
         c.setCellStyle(estilo);
     }
     
-    public static void reporteKardex(String idProducto, String nombreProducto, java.time.LocalDate desde, java.time.LocalDate hasta) {//Método que genera el reporte de kardex de un producto
-        String dia = String.valueOf(hasta.getDayOfMonth());
-        String mes = String.valueOf(hasta.getMonthValue());
-        String anio = String.valueOf(hasta.getYear());
-
+    /**
+     * Reporte de kardex de un producto: resumen del periodo (saldo inicial, entradas,
+     * salidas, saldo final, existencia y si cuadra) y los movimientos mostrados en pantalla.
+     */
+    public static void reporteKardex(String nombreProducto, KardexPeriodo p,
+            java.util.List<KardexPeriodo.Movimiento> movimientos, String tipoFiltro) {
+        java.time.format.DateTimeFormatter dmy = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
         Workbook book = new XSSFWorkbook();
         Sheet sheet = book.createSheet("Kardex");
 
         CellStyle tituloEstilo = crearEstiloTitulo(book);
         CellStyle encabezadoEstilo = crearEstiloEncabezado(book);
         CellStyle datosEstilo = crearEstiloDatos(book);
+        CellStyle numeroEstilo = book.createCellStyle();
+        numeroEstilo.cloneStyleFrom(datosEstilo);
+        numeroEstilo.setAlignment(HorizontalAlignment.RIGHT);
+        numeroEstilo.setDataFormat(book.createDataFormat().getFormat("#,##0"));
+        CellStyle fechaEstilo = book.createCellStyle();
+        fechaEstilo.cloneStyleFrom(datosEstilo);
+        fechaEstilo.setDataFormat(book.createDataFormat().getFormat("dd/mm/yyyy hh:mm"));
+        CellStyle negritaEstilo = book.createCellStyle();
+        negritaEstilo.cloneStyleFrom(encabezadoEstilo);
+        negritaEstilo.setAlignment(HorizontalAlignment.LEFT);
+        CellStyle negritaNumero = book.createCellStyle();
+        negritaNumero.cloneStyleFrom(numeroEstilo);
+        org.apache.poi.ss.usermodel.Font fNegrita = book.createFont();
+        fNegrita.setFontName("Times New Roman");
+        fNegrita.setFontHeightInPoints((short) 12);
+        fNegrita.setBold(true);
+        negritaNumero.setFont(fNegrita);
+        // Variantes en amarillo para los renglones con salto
+        CellStyle[] base = {datosEstilo, numeroEstilo, fechaEstilo};
+        CellStyle[] salto = new CellStyle[base.length];
+        for (int i = 0; i < base.length; i++) {
+            salto[i] = book.createCellStyle();
+            salto[i].cloneStyleFrom(base[i]);
+            salto[i].setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex());
+            salto[i].setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        }
 
+        String[] columnas = {"Fecha", "Tipo", "Folio", "Entrada", "Salida", "Saldo", "Empleado", "Observación"};
+        int ultimaCol = columnas.length - 1;
         int fila = 0;
 
-        // Título
-        CellRangeAddress fusT = new CellRangeAddress(fila, fila, 0, 6);
-        sheet.addMergedRegion(fusT);
-        Row rowTitulo = sheet.createRow(fila++);
-        Cell cTitulo = rowTitulo.createCell(0);
-        cTitulo.setCellValue("KARDEX — " + nombreProducto + " (" + idProducto + ")");
+        sheet.addMergedRegion(new CellRangeAddress(fila, fila, 0, ultimaCol));
+        Cell cTitulo = sheet.createRow(fila++).createCell(0);
+        cTitulo.setCellValue("KARDEX — " + nombreProducto + " (" + p.idProducto + ")");
         cTitulo.setCellStyle(tituloEstilo);
 
-        // Periodo
-        CellRangeAddress fusP = new CellRangeAddress(fila, fila, 0, 6);
-        sheet.addMergedRegion(fusP);
-        Row rowPeriodo = sheet.createRow(fila++);
-        Cell cPeriodo = rowPeriodo.createCell(0);
-        cPeriodo.setCellValue("Periodo: " + desde + " al " + hasta);
+        sheet.addMergedRegion(new CellRangeAddress(fila, fila, 0, ultimaCol));
+        Cell cPeriodo = sheet.createRow(fila++).createCell(0);
+        cPeriodo.setCellValue("Periodo: " + p.desde.format(dmy) + " al " + p.hasta.format(dmy)
+                + (tipoFiltro == null ? "" : "   —   Solo movimientos de tipo: " + tipoFiltro));
         cPeriodo.setCellStyle(tituloEstilo);
+        fila++;
 
-        // Encabezados
-        String[] columnas = {"Fecha", "Tipo", "Cantidad", "Exist. Anterior", "Exist. Posterior", "Referencia", "Empleado"};
+        Object[][] resumen = {
+            {"Saldo inicial", p.saldoInicial},
+            {"Entradas", p.entradas},
+            {"Salidas", p.salidas},
+            {"Saldo final", p.saldoFinal()},
+            {"Existencia actual", p.existenciaActual},
+            {"Estado", p.descripcionEstado()},
+        };
+        for (Object[] r : resumen) {
+            Row row = sheet.createRow(fila++);
+            Cell et = row.createCell(0);
+            et.setCellValue((String) r[0]);
+            et.setCellStyle(negritaEstilo);
+            Cell val = row.createCell(1);
+            if (r[1] instanceof Integer) {
+                val.setCellValue((Integer) r[1]);
+                val.setCellStyle(negritaNumero);
+            } else {
+                sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, ultimaCol));
+                val.setCellValue(String.valueOf(r[1]));
+                val.setCellStyle(datosEstilo);
+            }
+        }
+        fila++;
+
         Row rowEnc = sheet.createRow(fila++);
         for (int i = 0; i < columnas.length; i++) {
             Cell c = rowEnc.createCell(i);
@@ -800,48 +849,71 @@ public class Excel {
             c.setCellStyle(encabezadoEstilo);
         }
 
-        // Datos
-        java.sql.ResultSet rs = conect.kardexProducto(idProducto, desde, hasta);
-        try {
-            while (rs != null && rs.next()) {
-                Row rowD = sheet.createRow(fila++);
-                String[] vals = {
-                    rs.getString("fecha"),
-                    rs.getString("tipo_movimiento"),
-                    String.valueOf(rs.getInt("cantidad")),
-                    String.valueOf(rs.getInt("existencia_anterior")),
-                    String.valueOf(rs.getInt("existencia_posterior")),
-                    rs.getString("referencia") != null ? rs.getString("referencia") : "",
-                    rs.getString("empleado") != null ? rs.getString("empleado") : ""
-                };
-                for (int i = 0; i < vals.length; i++) {
-                    Cell c = rowD.createCell(i);
-                    c.setCellValue(vals[i]);
-                    c.setCellStyle(datosEstilo);
-                }
+        int primeraDato = fila;
+        for (KardexPeriodo.Movimiento m : movimientos) {
+            Row r = sheet.createRow(fila++);
+            CellStyle[] e = m.salto ? salto : base;
+            Cell c = r.createCell(0);
+            c.setCellValue(java.sql.Timestamp.valueOf(m.fecha));
+            c.setCellStyle(e[2]);
+            celdaTexto(r, 1, m.tipo, e[0]);
+            celdaTexto(r, 2, m.referencia, e[0]);
+            celdaNumero(r, 3, m.entrada(), e[1]);
+            celdaNumero(r, 4, m.salida(), e[1]);
+            celdaNumero(r, 5, m.existenciaPosterior, e[1]);
+            celdaTexto(r, 6, m.empleado, e[0]);
+            celdaTexto(r, 7, m.observacion, e[0]);
+        }
+
+        Row tot = sheet.createRow(fila);
+        Cell cTot = tot.createCell(2);
+        cTot.setCellValue("Totales");
+        cTot.setCellStyle(negritaEstilo);
+        for (int col = 3; col <= 4; col++) {
+            Cell c = tot.createCell(col);
+            if (movimientos.isEmpty()) {
+                c.setCellValue(0);
+            } else {
+                String letra = String.valueOf((char) ('A' + col));
+                c.setCellFormula("SUM(" + letra + (primeraDato + 1) + ":" + letra + fila + ")");
             }
-        } catch (java.sql.SQLException e) {
-            System.out.println("Error generando kardex Excel: " + e.getMessage());
+            c.setCellStyle(negritaNumero);
         }
 
         for (int i = 0; i < columnas.length; i++) {
             sheet.autoSizeColumn(i);
         }
+        sheet.setColumnWidth(0, Math.max(sheet.getColumnWidth(0), 18 * 256));
 
         try {
             String directoryName = "Reportes de ventas";
             new java.io.File(directoryName).mkdirs();
-            String fileName = "Kardex_" + idProducto + "_" + dia + "_" + mes + "_" + anio + ".xlsx";
+            String fileName = "Kardex_" + p.idProducto.replaceAll("[^A-Za-z0-9_-]", "_") + "_"
+                    + p.desde + "_a_" + p.hasta + ".xlsx";
             java.io.File file = new java.io.File(directoryName + "/" + fileName);
-            java.io.FileOutputStream fileOut = new java.io.FileOutputStream(file);
-            book.write(fileOut);
-            fileOut.close();
-            java.awt.Desktop.getDesktop().open(file);
+            try (java.io.FileOutputStream fileOut = new java.io.FileOutputStream(file)) {
+                book.write(fileOut);
+            }
+            if (java.awt.Desktop.isDesktopSupported()) {
+                java.awt.Desktop.getDesktop().open(file);
+            }
         } catch (Exception e) {
-            System.out.println("Error al guardar kardex Excel: " + e.getMessage());
+            GestorErrores.manejar(e);
+        } finally {
+            try { book.close(); } catch (Exception e) { GestorErrores.registrar(e); }
         }
+    }
 
-        try { book.close(); } catch (Exception e) { System.out.println("Error al cerrar libro"); }
+    private static void celdaTexto(Row r, int col, String valor, CellStyle estilo) {
+        Cell c = r.createCell(col);
+        c.setCellValue(valor == null ? "" : valor);
+        c.setCellStyle(estilo);
+    }
+
+    private static void celdaNumero(Row r, int col, int valor, CellStyle estilo) {
+        Cell c = r.createCell(col);
+        if (valor != 0 || col == 5) c.setCellValue(valor);  // entradas/salidas en cero se dejan vacías
+        c.setCellStyle(estilo);
     }
 
     private static CellStyle crearEstiloTitulo(Workbook buk){//Estilo para el titulo
