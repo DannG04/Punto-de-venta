@@ -347,7 +347,7 @@ public class ProductoDAO extends BaseDAO {
     public ResultSet buscarProductosActivos(String texto) {//Productos activos cuyo nombre o código contiene el texto
         if (texto == null || texto.isEmpty()) return obtenerProductosActivos();
         String like = "%" + texto + "%";
-        return consultarONulo("SELECT * FROM producto WHERE estatus = 'Activo' AND (nombre LIKE ? OR CAST(id_producto AS TEXT) LIKE ?) ORDER BY id_producto",
+        return consultarONulo("SELECT * FROM producto WHERE estatus = 'Activo' AND (nombre ILIKE ? OR CAST(id_producto AS TEXT) ILIKE ?) ORDER BY id_producto",
                 like, like);
     }
 
@@ -359,7 +359,7 @@ public class ProductoDAO extends BaseDAO {
         String base = "SELECT p.*, c.nombre AS categoria_nombre FROM producto p LEFT JOIN categoria c ON p.id_categoria = c.id_categoria WHERE p.estatus = 'Activo' ";
         if (texto == null || texto.isEmpty()) return consultarONulo(base + "ORDER BY p.id_producto");
         String like = "%" + texto + "%";
-        return consultarONulo(base + "AND (p.nombre LIKE ? OR CAST(p.id_producto AS TEXT) LIKE ?) ORDER BY p.id_producto", like, like);
+        return consultarONulo(base + "AND (p.nombre ILIKE ? OR CAST(p.id_producto AS TEXT) ILIKE ?) ORDER BY p.id_producto", like, like);
     }
 
     public ResultSet obtenerInventarioPorCategoria(int idCategoria) {//Inventario activo de una categoría
