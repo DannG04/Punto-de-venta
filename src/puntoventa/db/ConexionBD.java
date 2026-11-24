@@ -223,6 +223,10 @@ public class ConexionBD extends BaseDAO {
 
     public void actualizarProductoConCategoria(String ideprod, String[] datos, Integer idCategoria, double maxDescuento) { productos.actualizarProductoConCategoria(ideprod, datos, idCategoria, maxDescuento); }
 
+    public Integer existenciaProducto(String idProducto) { return productos.existencia(idProducto); }
+
+    public Integer ajustarExistencia(String idProducto, int contada, String motivo, String nota) { return productos.ajustarExistencia(idProducto, contada, motivo, nota); }
+
     public void actualizarCamposCompraProducto(String idProducto, String codigoBarras, boolean llevaIva,
             String unidadCompra, String unidadVenta, double factor) {
         productos.actualizarCamposCompraProducto(idProducto, codigoBarras, llevaIva, unidadCompra, unidadVenta, factor);
