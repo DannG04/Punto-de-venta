@@ -61,14 +61,15 @@ public class ReportesPruebaBD {
         check(VentasPruebaBD.cuenta(rep.totalesDia(hoy)) == 1, "CU-REP-02 totales del día");
 
         // CU-REP-03 kardex del producto: venta, devolución y compra con sus referencias
-        ResultSet k = rep.kardexProducto(p, hoy, hoy);
+        KardexDAO kardex = new KardexDAO();
         StringBuilder tipos = new StringBuilder();
-        while (k.next()) tipos.append(k.getString("tipo_movimiento")).append(k.getInt("cantidad")).append(' ');
+        for (KardexPeriodo.Movimiento m : kardex.consultar(p, hoy, hoy).movimientos)
+            tipos.append(m.tipo).append(m.cantidad).append(' ');
         String t = tipos.toString();
         check(t.contains("Venta-10") && t.contains("Devolucion2") && t.contains("Compra5"), "CU-REP-03 movimientos del kardex: " + t);
         check(descuadreKardex(p, 40) == null, "CU-REP-03 kardex cuadra: " + descuadreKardex(p, 40));
-        check(VentasPruebaBD.cuenta(rep.kardexProducto(p, hoy.minusDays(10), hoy.minusDays(1))) == 0, "CU-REP-03 filtro de fechas");
-        check(VentasPruebaBD.cuenta(rep.buscarProductoKardex(p)) == 1, "CU-REP-03 búsqueda de producto");
+        check(kardex.consultar(p, hoy.minusDays(10), hoy.minusDays(1)).movimientos.isEmpty(), "CU-REP-03 filtro de fechas");
+        check(VentasPruebaBD.cuenta(kardex.buscarProductos(p, false)) == 1, "CU-REP-03 búsqueda de producto");
 
         // CU-REP-04 balance general: caja = ventas + otras ganancias - compras - devoluciones - gastos
         double caja1 = num("SELECT total_caja(date_trunc('year', CURRENT_DATE)::date, CURRENT_DATE)");
@@ -89,10 +90,10 @@ public class ReportesPruebaBD {
         System.setProperty("user.home", trabajo.getPath());
         try { puntoventa.report.Excel.reporteDiario("ReporteDiario", hoy); } catch (Exception e) { }
         check(existeXlsx(new File(trabajo, "Documents/Reportes de ventas")), "CU-REP-07 Excel del reporte diario");
-        try { puntoventa.report.Excel.balanceGeneral(); } catch (Exception e) { }
+        try { puntoventa.report.Excel.balanceGeneral(0.0); } catch (Exception e) { }
         check(existeXlsx(new File(trabajo, "BalancesGenerales")), "CU-REP-07 Excel del balance general");
         try { puntoventa.report.Excel.estadodeResultados(0.0); } catch (Exception e) { }
-        try { puntoventa.report.Excel.reporteKardex(p, "Prueba", hoy, hoy); } catch (Exception e) { }
+        try { KardexPeriodo kp = kardex.consultar(p, hoy, hoy); puntoventa.report.Excel.reporteKardex("Prueba", kp, kp.movimientos, null); } catch (Exception e) { }
         File[] carpetas = trabajo.listFiles(File::isDirectory);
         int xlsx = 0;
         for (File c : carpetas) { File[] fs = c.listFiles((x, n) -> n.endsWith(".xlsx")); if (fs != null) xlsx += fs.length; }
