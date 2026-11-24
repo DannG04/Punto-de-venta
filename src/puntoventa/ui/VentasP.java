@@ -1136,6 +1136,7 @@ public class VentasP extends javax.swing.JPanel {
         if (precioLista < 0) {
             Mise.JOption("El producto no tiene precio en la lista \"" + nombreLista +
                 "\". Se usará el precio de Menudeo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            conect.actualizarPrecioListaTemp(idProd, 0, "Menudeo"); // vuelve al precio automático
         } else {
             conect.actualizarPrecioListaTemp(idProd, precioLista, nombreLista);
         }

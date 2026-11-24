@@ -48,6 +48,15 @@ public class BaseDAO {
 
     // FUNCIONES GENERALES
 
+    /**
+     * Conexión con la configuración de db.properties para código fuera de puntoventa.db
+     * que necesita una conexión propia de larga duración (servidor web del celular).
+     * Quien la pide la cierra.
+     */
+    public static Connection nuevaConexion() throws SQLException {
+        return new BaseDAO().conectar();
+    }
+
     /** Abre una conexión nueva. Quien la pide la cierra (usar siempre try-with-resources). */
     protected Connection conectar() throws SQLException {
         return DriverManager.getConnection(url + nameBD, usuario, contra);
