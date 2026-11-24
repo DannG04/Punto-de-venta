@@ -57,6 +57,15 @@ public class BaseDAO {
         empleadoSesion = (idEmpleado != null && idEmpleado.matches("[A-Za-z0-9]{1,18}")) ? idEmpleado : null;
     }
 
+    /**
+     * Conexión con la configuración de db.properties para código fuera de puntoventa.db
+     * que necesita una conexión propia de larga duración (servidor web del celular).
+     * Quien la pide la cierra.
+     */
+    public static Connection nuevaConexion() throws SQLException {
+        return new BaseDAO().conectar();
+    }
+
     /** Abre una conexión nueva. Quien la pide la cierra (usar siempre try-with-resources). */
     protected Connection conectar() throws SQLException {
         Properties props = new Properties();
