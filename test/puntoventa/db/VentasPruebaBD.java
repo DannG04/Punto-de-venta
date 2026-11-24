@@ -11,10 +11,11 @@ public class VentasPruebaBD {
         VentaDAO v = new VentaDAO();
         v.limpiarVentaTemp();
 
-        // CU-VEN-01 agregar al carrito a menudeo: descuenta stock y fija precio menudeo
+        // CU-VEN-01 agregar al carrito a menudeo: fija precio menudeo; el carrito no aparta
+        // existencia (V1.24): se descuenta al cobrar, una sola vez y con su kardex (CU-VEN-10)
         String p1 = producto("VEN", 50, 20.0, 15.0);
         v.insertarVentaTemp(new String[]{p1, "3"}, true);
-        check(stock(p1) == 47, "CU-VEN-01 stock tras agregar 3: " + stock(p1));
+        check(stock(p1) == 50, "CU-VEN-01 agregar al carrito no mueve existencia: " + stock(p1));
         check(num("SELECT precio_dado FROM venta_temp WHERE id_producto=?", p1) == 20.0, "CU-VEN-01 precio menudeo");
         check("Menudeo".equals(texto("SELECT tipo_venta::text FROM venta_temp WHERE id_producto=?", p1)), "CU-VEN-01 tipo Menudeo");
         check(v.ventaEnCurso(), "CU-VEN-01 ventaEnCurso() = true con productos");
@@ -22,14 +23,14 @@ public class VentasPruebaBD {
         // CU-VEN-02 acumular: mismo producto otra vez suma cantidades y pasa a mayoreo al llegar a 12
         v.insertarVentaTemp(new String[]{p1, "9"}, true);
         check(entero("SELECT cantidad_prod FROM venta_temp WHERE id_producto=?", p1) == 12, "CU-VEN-02 acumula 3+9=12");
-        check(stock(p1) == 38, "CU-VEN-02 stock 50-12=38: " + stock(p1));
+        check(stock(p1) == 50, "CU-VEN-02 acumular no mueve existencia: " + stock(p1));
         check("Mayoreo".equals(texto("SELECT tipo_venta::text FROM venta_temp WHERE id_producto=?", p1)), "CU-VEN-02 12 piezas -> Mayoreo");
         check(num("SELECT precio_total FROM venta_temp WHERE id_producto=?", p1) == 180.0, "CU-VEN-02 total 12*15=180");
 
-        // CU-VEN-03 actualizar cantidad (sin acumular) devuelve la diferencia al stock
+        // CU-VEN-03 actualizar cantidad (sin acumular) reemplaza la cantidad
         v.insertarVentaTemp(new String[]{p1, "2"}, false);
         check(entero("SELECT cantidad_prod FROM venta_temp WHERE id_producto=?", p1) == 2, "CU-VEN-03 reemplaza a 2");
-        check(stock(p1) == 48, "CU-VEN-03 stock 48: " + stock(p1));
+        check(stock(p1) == 50, "CU-VEN-03 cambiar cantidad no mueve existencia: " + stock(p1));
 
         // CU-VEN-04 stock insuficiente: error y no cambia nada
         String p2 = producto("VEN", 5, 10.0, 8.0);
@@ -49,16 +50,16 @@ public class VentasPruebaBD {
         check(err != null, "CU-VEN-06 vender producto INACTIVO debería rechazarse (se aceptó, stock=" + stock(pBaja) + ")");
         v.eliminarVentaTemp(pBaja);
 
-        // CU-VEN-07 quitar renglón regresa el stock
+        // CU-VEN-07 quitar renglón deja la existencia igual
         v.insertarVentaTemp(new String[]{p2, "4"}, true);
         v.eliminarVentaTemp(p2);
-        check(stock(p2) == 5, "CU-VEN-07 eliminar renglón regresa stock: " + stock(p2));
+        check(stock(p2) == 5, "CU-VEN-07 eliminar renglón deja la existencia igual: " + stock(p2));
 
-        // CU-VEN-08 vaciar carrito regresa todo el stock
+        // CU-VEN-08 vaciar carrito deja la existencia igual
         String p3 = producto("VEN", 10, 5.0, 4.0);
         v.insertarVentaTemp(new String[]{p3, "4"}, true);
         v.limpiarVentaTemp();
-        check(stock(p3) == 10 && stock(p1) == 50, "CU-VEN-08 vaciar regresa stock p3=" + stock(p3) + " p1=" + stock(p1));
+        check(stock(p3) == 10 && stock(p1) == 50, "CU-VEN-08 vaciar deja la existencia igual p3=" + stock(p3) + " p1=" + stock(p1));
         check(!v.ventaEnCurso(), "CU-VEN-08 carrito vacío");
 
         // CU-VEN-09 descuento por renglón y tope max_descuento
@@ -70,7 +71,7 @@ public class VentasPruebaBD {
         v.actualizarDescuentoTemp(p3, 10);
         check(num("SELECT precio_total FROM venta_temp WHERE id_producto=?", p3) == 9.0, "CU-VEN-09 10% sobre 10 = 9");
         check(Math.abs(v.sumaVentaTemp() - 29.0) < 0.001, "CU-VEN-09 suma carrito 9+20=29: " + v.sumaVentaTemp());
-        check(stock(p3) == 8, "CU-VEN-09 aplicar descuento no mueve stock: " + stock(p3));
+        check(stock(p3) == 10, "CU-VEN-09 aplicar descuento no mueve stock: " + stock(p3));
 
         // CU-VEN-10 cobrar con forma de pago: venta, detalle, carrito vacío, kardex referenciado
         String idVenta = v.registrarVentaConFormaPago(ADMIN, CLIENTE_GENERICO, "Tarjeta");
@@ -79,6 +80,7 @@ public class VentasPruebaBD {
         check("Tarjeta".equals(texto("SELECT forma_pago FROM venta WHERE id_venta=?", idVenta)), "CU-VEN-10 forma de pago");
         check(entero("SELECT count(*) FROM venta_detalle WHERE id_venta=?", idVenta) == 2, "CU-VEN-10 2 renglones");
         check(!v.ventaEnCurso(), "CU-VEN-10 carrito vacío tras cobrar");
+        check(stock(p3) == 8 && stock(p1) == 49, "CU-VEN-10 cobrar descuenta la existencia p3=" + stock(p3) + " p1=" + stock(p1));
         check(entero("SELECT count(*) FROM kardex WHERE referencia=? AND tipo_movimiento='Venta'", idVenta) == 2,
                 "CU-VEN-10 kardex de la venta con referencia: " + entero("SELECT count(*) FROM kardex WHERE referencia=?", idVenta));
         v.actualizarDescuentoVenta(idVenta, p3, 10);

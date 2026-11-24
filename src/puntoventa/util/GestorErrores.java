@@ -76,7 +76,7 @@ public class GestorErrores {
                     case "22001": return "Uno de los valores es demasiado largo.";
                     case "22P02":
                     case "22003": return "Alguno de los datos tiene un formato incorrecto.";
-                    case "P0001": return sql.getMessage(); // regla de negocio escrita en el stored procedure
+                    case "P0001": return mensajeDeRegla(sql.getMessage()); // regla de negocio escrita en el stored procedure
                 }
                 if (estado.startsWith("08")) {
                     return "No hay conexión con la base de datos. Verifique e intente de nuevo.";
@@ -84,6 +84,22 @@ public class GestorErrores {
             }
         }
         return "Ocurrió un error al procesar la operación. Intente de nuevo.";
+    }
+
+    /**
+     * Deja solo el texto del RAISE EXCEPTION: el driver antepone "ERROR: " y agrega
+     * líneas técnicas ("Where: PL/pgSQL function ...") que no le sirven al usuario.
+     */
+    static String mensajeDeRegla(String mensaje) {
+        if (mensaje == null) return "Ocurrió un error al procesar la operación. Intente de nuevo.";
+        String m = mensaje.trim();
+        int corte = m.indexOf('\n');
+        if (corte >= 0) m = m.substring(0, corte);
+        int donde = m.indexOf("Where:");
+        if (donde >= 0) m = m.substring(0, donde);
+        if (m.startsWith("ERROR:")) m = m.substring("ERROR:".length());
+        m = m.trim();
+        return m.isEmpty() ? "Ocurrió un error al procesar la operación. Intente de nuevo." : m;
     }
 
     /** Recorre la cadena de causas buscando una SQLException (el driver puede envolverla). */

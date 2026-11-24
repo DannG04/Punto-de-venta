@@ -43,16 +43,22 @@ public class ProductoDAO extends BaseDAO {
         }
     }
 
+    /** Motivos aceptados por ajustar_existencia() (V1.24). Merma y robo se registran como 'Merma'. */
+    public static final String[] MOTIVOS_AJUSTE = {
+        "Conteo físico", "Merma (dañado o caducado)", "Robo o extravío", "Corrección de captura", "Otro"
+    };
+
+    // La existencia NO se actualiza aquí (datos[1] se ignora): guardar el valor que tenía el
+    // formulario al abrirse pisaba las ventas hechas mientras tanto. Se cambia con ajustarExistencia().
     public void actualizarProducto(String ideprod, String[] datos) {//Función para actualizar un producto
-        String columnas = "nombre = ?, cantidad = ?, precio_mayoreo = ?, precio_menudeo = ?";
+        String columnas = "nombre = ?, precio_mayoreo = ?, precio_menudeo = ?";
         String instruccion = "UPDATE producto SET " + columnas + " WHERE id_producto = ?;";
         try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setString(1, datos[0]);
-            pstm.setInt(2, Integer.parseInt(datos[1]));
-            pstm.setDouble(3, Double.parseDouble(datos[2]));
-            pstm.setDouble(4, Double.parseDouble(datos[3]));
-            pstm.setString(5, ideprod);
+            pstm.setDouble(2, Double.parseDouble(datos[2]));
+            pstm.setDouble(3, Double.parseDouble(datos[3]));
+            pstm.setString(4, ideprod);
             pstm.executeUpdate();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
@@ -246,23 +252,56 @@ public class ProductoDAO extends BaseDAO {
     }
 
     public void actualizarProductoConCategoria(String ideprod, String[] datos, Integer idCategoria, double maxDescuento) {//Función para actualizar un producto con categoría
-        String instruccion = "UPDATE producto SET nombre=?, cantidad=?, precio_mayoreo=?, precio_menudeo=?, id_categoria=?, max_descuento=? WHERE id_producto=?;";
+        // Sin la existencia (datos[1] se ignora); ver actualizarProducto().
+        String instruccion = "UPDATE producto SET nombre=?, precio_mayoreo=?, precio_menudeo=?, id_categoria=?, max_descuento=? WHERE id_producto=?;";
         try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
             pstm.setString(1, datos[0]);
-            pstm.setInt(2, Integer.parseInt(datos[1]));
-            pstm.setDouble(3, Double.parseDouble(datos[2]));
-            pstm.setDouble(4, Double.parseDouble(datos[3]));
+            pstm.setDouble(2, Double.parseDouble(datos[2]));
+            pstm.setDouble(3, Double.parseDouble(datos[3]));
             if (idCategoria != null && idCategoria > 0) {
-                pstm.setInt(5, idCategoria);
+                pstm.setInt(4, idCategoria);
             } else {
-                pstm.setNull(5, Types.INTEGER);
+                pstm.setNull(4, Types.INTEGER);
             }
-            pstm.setDouble(6, maxDescuento);
-            pstm.setString(7, ideprod);
+            pstm.setDouble(5, maxDescuento);
+            pstm.setString(6, ideprod);
             pstm.executeUpdate();
         } catch (SQLException e) {
             GestorErrores.manejar(e);
+        }
+    }
+
+    /** Existencia actual del producto, o null si no existe o hubo error. */
+    public Integer existencia(String idProducto) {
+        try {
+            ResultSet rs = consultar("SELECT cantidad FROM producto WHERE id_producto = ?", idProducto);
+            return rs.next() ? rs.getInt(1) : null;
+        } catch (SQLException e) {
+            GestorErrores.manejar(e);
+            return null;
+        }
+    }
+
+    /**
+     * Ajusta la existencia a la cantidad contada con un motivo de MOTIVOS_AJUSTE (y una nota,
+     * obligatoria con "Otro"). Devuelve la diferencia aplicada (0 si ya coincidía) o null si falló;
+     * el error (p. ej. motivo inválido o merma que aumenta) ya se mostró al usuario.
+     */
+    public Integer ajustarExistencia(String idProducto, int contada, String motivo, String nota) {
+        try (Connection conexion = conectar();
+             PreparedStatement ps = conexion.prepareStatement(
+                 "SELECT ajustar_existencia(?::id_producto_dominio, ?, ?, ?)")) {
+            ps.setString(1, idProducto);
+            ps.setInt(2, contada);
+            ps.setString(3, motivo);
+            ps.setString(4, nota);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : null;
+            }
+        } catch (SQLException e) {
+            GestorErrores.manejar(e);
+            return null;
         }
     }
 
@@ -308,7 +347,7 @@ public class ProductoDAO extends BaseDAO {
     public ResultSet buscarProductosActivos(String texto) {//Productos activos cuyo nombre o código contiene el texto
         if (texto == null || texto.isEmpty()) return obtenerProductosActivos();
         String like = "%" + texto + "%";
-        return consultarONulo("SELECT * FROM producto WHERE estatus = 'Activo' AND (nombre LIKE ? OR CAST(id_producto AS TEXT) LIKE ?) ORDER BY id_producto",
+        return consultarONulo("SELECT * FROM producto WHERE estatus = 'Activo' AND (nombre ILIKE ? OR CAST(id_producto AS TEXT) ILIKE ?) ORDER BY id_producto",
                 like, like);
     }
 
@@ -320,7 +359,7 @@ public class ProductoDAO extends BaseDAO {
         String base = "SELECT p.*, c.nombre AS categoria_nombre FROM producto p LEFT JOIN categoria c ON p.id_categoria = c.id_categoria WHERE p.estatus = 'Activo' ";
         if (texto == null || texto.isEmpty()) return consultarONulo(base + "ORDER BY p.id_producto");
         String like = "%" + texto + "%";
-        return consultarONulo(base + "AND (p.nombre LIKE ? OR CAST(p.id_producto AS TEXT) LIKE ?) ORDER BY p.id_producto", like, like);
+        return consultarONulo(base + "AND (p.nombre ILIKE ? OR CAST(p.id_producto AS TEXT) ILIKE ?) ORDER BY p.id_producto", like, like);
     }
 
     public ResultSet obtenerInventarioPorCategoria(int idCategoria) {//Inventario activo de una categoría

@@ -107,6 +107,8 @@ public final class BD {
             StringBuilder sb = new StringBuilder();
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
+                    // V1.24: el alta de un producto con existencia deja "Inventario inicial" (0 -> N)
+                    if ("Inventario inicial".equals(rs.getString(4))) esperado = rs.getInt(2);
                     if (rs.getInt(2) != esperado)
                         sb.append(" salto ").append(esperado).append("->").append(rs.getInt(2)).append(" antes de ").append(rs.getString(4)).append(';');
                     esperado = rs.getInt(3);
