@@ -48,6 +48,15 @@ public class BaseDAO {
 
     // FUNCIONES GENERALES
 
+    /** Empleado con sesión iniciada; el trigger del kardex lo registra en cada movimiento. */
+    private static volatile String empleadoSesion = null;
+
+    /** Fija (o limpia con null) el empleado activo. Se llama al iniciar y cerrar sesión. */
+    public static void fijarEmpleadoSesion(String idEmpleado) {
+        // Solo CURPs (letras y números): el valor viaja en las opciones de arranque de la conexión.
+        empleadoSesion = (idEmpleado != null && idEmpleado.matches("[A-Za-z0-9]{1,18}")) ? idEmpleado : null;
+    }
+
     /**
      * Conexión con la configuración de db.properties para código fuera de puntoventa.db
      * que necesita una conexión propia de larga duración (servidor web del celular).
@@ -59,7 +68,15 @@ public class BaseDAO {
 
     /** Abre una conexión nueva. Quien la pide la cierra (usar siempre try-with-resources). */
     protected Connection conectar() throws SQLException {
-        return DriverManager.getConnection(url + nameBD, usuario, contra);
+        Properties props = new Properties();
+        props.setProperty("user", usuario);
+        props.setProperty("password", contra);
+        String emp = empleadoSesion;
+        if (emp != null) {
+            // Queda como variable de sesión kardex.empleado sin una consulta extra.
+            props.setProperty("options", "-c kardex.empleado=" + emp);
+        }
+        return DriverManager.getConnection(url + nameBD, props);
     }
 
     /**

@@ -5,8 +5,8 @@ import puntoventa.util.*;
 import java.sql.*;
 
 /**
- * DAO de Reportes: corte y totales del día, reporte diario, estado de
- * resultados y kardex de producto.
+ * DAO de Reportes: corte y totales del día, reporte diario y estado de
+ * resultados. El kardex está en KardexDAO.
  *
  * @author mayra
  */
@@ -38,45 +38,6 @@ public class ReporteDAO extends BaseDAO {
 
     public ResultSet totalesDia(java.time.LocalDate fecha) {//Función para obtener los 5 totales del día
         return reporte_diario(fecha);
-    }
-
-    public ResultSet buscarProductoKardex(String filtro) {//Función para buscar productos por nombre o código
-        ResultSet rs = null;
-        String instruccion = "SELECT id_producto, nombre, cantidad FROM producto " +
-            "WHERE estatus = 'Activo' AND (LOWER(nombre) LIKE LOWER(?) OR LOWER(id_producto) LIKE LOWER(?)) " +
-            "ORDER BY nombre LIMIT 20";
-        try (Connection conexion = conectar()) {
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setString(1, "%" + filtro + "%");
-            pstm.setString(2, "%" + filtro + "%");
-            rs = pstm.executeQuery();
-        } catch (SQLException e) {
-            GestorErrores.manejar(e);
-        }
-        return rs;
-    }
-
-    public ResultSet kardexProducto(String idProducto, java.time.LocalDate desde, java.time.LocalDate hasta) {//Función para obtener el kardex de un producto filtrado por fechas
-        ResultSet rs = null;
-        String instruccion =
-            "SELECT k.fecha, k.tipo_movimiento, k.cantidad, " +
-            "k.existencia_anterior, k.existencia_posterior, k.referencia, " +
-            "COALESCE(e.nombre, k.id_empleado) AS empleado " +
-            "FROM kardex k " +
-            "LEFT JOIN empleado e ON k.id_empleado = e.id_empleado " +
-            "WHERE k.id_producto = ? " +
-            "AND k.fecha::date >= ? AND k.fecha::date <= ? " +
-            "ORDER BY k.fecha DESC";
-        try (Connection conexion = conectar()) {
-            PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setString(1, idProducto);
-            pstm.setDate(2, java.sql.Date.valueOf(desde));
-            pstm.setDate(3, java.sql.Date.valueOf(hasta));
-            rs = pstm.executeQuery();
-        } catch (SQLException e) {
-            GestorErrores.manejar(e);
-        }
-        return rs;
     }
 
     public double ObtenerDato(String nombreCol) {//Función para obtener un dato de la base de datos

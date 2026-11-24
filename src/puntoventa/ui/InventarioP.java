@@ -62,11 +62,131 @@ public class InventarioP extends javax.swing.JPanel {
     /**
      * Creates new form Inventario
      */
+    // Botón agregado fuera del editor de formularios (ver configurarAjusteExistencia)
+    private final javax.swing.JButton ajusteB = new javax.swing.JButton();
+
     public InventarioP() {
         initComponents();
         modelo=(DefaultTableModel)tablaVentas.getModel();
         cargarFiltroCategorias();
+        configurarAjusteExistencia();
         mostrarTabla("");
+    }
+
+    /** Agrega "Ajustar existencia" al panel de botones (solo visible para el gerente, como los demás). */
+    private void configurarAjusteExistencia() {
+        ajusteB.setFont(new java.awt.Font("Noto Serif", 1, 18));
+        ajusteB.setBackground(new java.awt.Color(255, 214, 153));
+        ajusteB.setText("<html><center>Ajustar<br>existencia</center></html>");
+        ajusteB.setIcon(SvgIcon.load("/icons/kardex.svg", SvgIcon.MEDIUM));
+        ajusteB.setPreferredSize(new java.awt.Dimension(160, 66));
+        ajusteB.addActionListener(e -> ajustarExistencia());
+        java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridheight = 2;
+        gbc.insets = new java.awt.Insets(10, 30, 10, 30);
+        panelBotones.add(ajusteB, gbc);
+    }
+
+    /** Diálogo de ajuste: se captura lo contado y un motivo; el kardex registra la diferencia. */
+    private void ajustarExistencia() {
+        int filaVista = tablaVentas.getSelectedRow();
+        if (filaVista == -1) {
+            Mise.JOption("Seleccione el producto que desea ajustar", "Ajustar existencia", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int fila = tablaVentas.convertRowIndexToModel(filaVista);
+        String idProd = "" + modelo.getValueAt(fila, 0);
+        String nombre = "" + modelo.getValueAt(fila, 1);
+        Integer enSistema = conect.existenciaProducto(idProd);  // valor fresco, no el de la tabla
+        if (enSistema == null) return;
+
+        java.awt.Font fNormal = new java.awt.Font("Noto Serif", java.awt.Font.PLAIN, 15);
+        java.awt.Font fNegrita = new java.awt.Font("Noto Serif", java.awt.Font.BOLD, 15);
+        javax.swing.JDialog dlg = new javax.swing.JDialog(javax.swing.SwingUtilities.getWindowAncestor(this),
+                "Ajustar existencia — " + idProd + " " + nombre, java.awt.Dialog.ModalityType.APPLICATION_MODAL);
+        javax.swing.JPanel form = new javax.swing.JPanel(new java.awt.GridBagLayout());
+        form.setBorder(javax.swing.BorderFactory.createEmptyBorder(16, 16, 8, 16));
+
+        javax.swing.JLabel lblSistema = new javax.swing.JLabel(String.valueOf(enSistema));
+        javax.swing.JSpinner spnContada = new javax.swing.JSpinner(new javax.swing.SpinnerNumberModel((int) enSistema, 0, 1_000_000, 1));
+        javax.swing.JLabel lblDiferencia = new javax.swing.JLabel(" ");
+        javax.swing.JComboBox<String> cmbMotivo = new javax.swing.JComboBox<>(ProductoDAO.MOTIVOS_AJUSTE);
+        javax.swing.JTextField txtNota = new javax.swing.JTextField(28);
+        javax.swing.JLabel lblAviso = new javax.swing.JLabel(" ");
+        lblAviso.setForeground(new java.awt.Color(190, 30, 30));
+        for (javax.swing.JComponent c : new javax.swing.JComponent[]{lblSistema, spnContada, lblDiferencia, cmbMotivo, txtNota, lblAviso}) {
+            c.setFont(fNormal);
+        }
+        lblSistema.setFont(fNegrita);
+        lblDiferencia.setFont(fNegrita);
+
+        String[] etiquetas = {"Existencia en sistema:", "Existencia contada:", "Diferencia:", "Motivo:", "Nota:"};
+        javax.swing.JComponent[] campos = {lblSistema, spnContada, lblDiferencia, cmbMotivo, txtNota};
+        java.awt.GridBagConstraints gc = new java.awt.GridBagConstraints();
+        gc.anchor = java.awt.GridBagConstraints.WEST;
+        gc.insets = new java.awt.Insets(5, 0, 5, 12);
+        for (int i = 0; i < etiquetas.length; i++) {
+            javax.swing.JLabel et = new javax.swing.JLabel(etiquetas[i]);
+            et.setFont(fNegrita);
+            gc.gridy = i; gc.gridx = 0; gc.weightx = 0; gc.fill = java.awt.GridBagConstraints.NONE;
+            form.add(et, gc);
+            gc.gridx = 1; gc.weightx = 1; gc.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            form.add(campos[i], gc);
+        }
+        gc.gridy = etiquetas.length; gc.gridx = 0; gc.gridwidth = 2;
+        form.add(lblAviso, gc);
+
+        javax.swing.JButton registrar = new javax.swing.JButton("Registrar ajuste");
+        javax.swing.JButton cancelar = new javax.swing.JButton("Cancelar");
+        registrar.setFont(fNegrita);
+        cancelar.setFont(fNegrita);
+
+        // Vista previa de la diferencia y validación del motivo
+        Runnable actualizar = () -> {
+            int contada = (Integer) spnContada.getValue();
+            int dif = contada - enSistema;
+            String motivo = (String) cmbMotivo.getSelectedItem();
+            boolean esMerma = motivo.startsWith("Merma") || motivo.startsWith("Robo");
+            lblDiferencia.setText(dif == 0 ? "0 (sin cambio)" : (dif > 0 ? "+" + dif + " (entrada)" : dif + (esMerma ? " (merma)" : " (salida)")));
+            lblDiferencia.setForeground(dif > 0 ? new java.awt.Color(0, 128, 60) : dif < 0 ? new java.awt.Color(190, 30, 30) : java.awt.Color.DARK_GRAY);
+            String aviso = " ";
+            if (dif == 0) aviso = "La existencia contada coincide con el sistema: no hay nada que ajustar.";
+            else if (esMerma && dif > 0) aviso = "Una merma o un robo solo pueden reducir la existencia.";
+            else if ("Otro".equals(motivo) && txtNota.getText().trim().isEmpty()) aviso = "Con el motivo \"Otro\" escriba una nota.";
+            lblAviso.setText(aviso);
+            registrar.setEnabled(" ".equals(aviso));
+        };
+        spnContada.addChangeListener(e -> actualizar.run());
+        cmbMotivo.addActionListener(e -> actualizar.run());
+        txtNota.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { actualizar.run(); }
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { actualizar.run(); }
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { actualizar.run(); }
+        });
+        actualizar.run();
+
+        registrar.addActionListener(e -> {
+            Integer dif = conect.ajustarExistencia(idProd, (Integer) spnContada.getValue(),
+                    (String) cmbMotivo.getSelectedItem(), txtNota.getText().trim());
+            if (dif == null) return;  // el error ya se mostró; el diálogo sigue abierto
+            dlg.dispose();
+            mostrarTabla("");
+            Mise.JOption("Ajuste registrado en el kardex: " + (dif > 0 ? "+" : "") + dif + " pieza(s).",
+                    "Ajustar existencia", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        });
+        cancelar.addActionListener(e -> dlg.dispose());
+
+        javax.swing.JPanel pie = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        pie.add(cancelar);
+        pie.add(registrar);
+        dlg.setLayout(new java.awt.BorderLayout());
+        dlg.add(form, java.awt.BorderLayout.CENTER);
+        dlg.add(pie, java.awt.BorderLayout.SOUTH);
+        dlg.pack();
+        dlg.setLocationRelativeTo(this);
+        dlg.setVisible(true);
     }
 
     /**
@@ -792,6 +912,9 @@ public class InventarioP extends javax.swing.JPanel {
         // Habilitar campos de código al agregar
         codigoProvField.setEnabled(true);
         checkGenerarCodigo.setEnabled(true);
+        // Al dar de alta sí se captura la existencia (queda como "Inventario inicial" en el kardex)
+        cadd.setEnabled(true);
+        cadd.setToolTipText(null);
 
         // Cargar categorías activas en combo
         cargarCategoriasCombo();
@@ -836,6 +959,9 @@ public class InventarioP extends javax.swing.JPanel {
 
             //MOSTRAR LOS DATOS EN EL FIELD
             mostrarDAct(a);
+            // La existencia solo se cambia con "Ajustar existencia" (queda en el kardex con motivo)
+            cadd.setEnabled(false);
+            cadd.setToolTipText("Para cambiar la existencia use el botón \"Ajustar existencia\"");
 
             //Reinicia el scroll hasta arriba
             if (dialogScrollPane != null) {

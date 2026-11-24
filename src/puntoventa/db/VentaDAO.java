@@ -64,8 +64,8 @@ public class VentaDAO extends BaseDAO {
     }
 
     // FUNCIONES DE LA TABLA DE VENTA TEMPORAL
-    public void limpiarVentaTemp() {//Vacía el carrito regresando al inventario lo que tenía apartado
-        // El stock se descuenta al agregar al carrito; un DELETE directo lo perdía (V1.22).
+    public void limpiarVentaTemp() {//Vacía el carrito
+        // Desde V1.23 el carrito no reserva stock: el inventario se descuenta al cobrar (realizar_venta).
         try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call vaciar_venta_temp()}");
             cstm.execute();
@@ -145,24 +145,7 @@ public class VentaDAO extends BaseDAO {
                 pstm.setString(1, formaPago);
                 pstm.setString(2, idVenta);
                 pstm.executeUpdate();
-                // Retroalimentar referencia y empleado en kardex para los productos de esta venta
-                // (el trigger kardex se dispara al agregar al carrito, antes de que exista el id_venta)
-                String sqlKardex =
-                    "UPDATE kardex SET referencia = ?, id_empleado = ?::CHAR(18) " +
-                    "WHERE id_kardex IN (" +
-                    "  SELECT DISTINCT ON (vd.id_producto) k.id_kardex " +
-                    "  FROM venta_detalle vd " +
-                    "  JOIN kardex k ON k.id_producto = vd.id_producto " +
-                    "  WHERE vd.id_venta = ? " +
-                    "  AND k.referencia IS NULL " +
-                    "  AND k.tipo_movimiento = 'Venta' " +
-                    "  ORDER BY vd.id_producto, k.id_kardex DESC" +
-                    ")";
-                PreparedStatement psKardex = conexion.prepareStatement(sqlKardex);
-                psKardex.setString(1, idVenta);
-                psKardex.setString(2, idEmp);
-                psKardex.setString(3, idVenta);
-                psKardex.executeUpdate();
+                // El kardex de la venta (folio, empleado y hora del cobro) lo registra realizar_venta (V1.23).
             } catch (SQLException e) {
                 GestorErrores.manejar(e);
             }

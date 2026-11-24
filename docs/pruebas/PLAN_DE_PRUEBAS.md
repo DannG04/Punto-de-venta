@@ -107,7 +107,7 @@ Estado: ✅ pasa · ❌ falla (defecto en la sección 6) · ✋ manual pendiente
 | CU-APA-07 | Eliminar apartado con / sin productos | Rechaza / elimina | A | ✅ |
 | CU-APA-08 | Ticket del apartado | Muestra piezas apartadas, abonado y faltante | A | ✅ |
 | CU-APA-09 | Entregar (saldar) | Estado Entregado, genera venta, ya no se puede cancelar | A | ✅ |
-| CU-APA-10 | Cancelar a mitad del plazo | Regresa stock, otra ganancia = 15/30 del abono | A | ✅ (kardex ❌ D-07) |
+| CU-APA-10 | Cancelar a mitad del plazo | Regresa stock, otra ganancia = 15/30 del abono | A | ✅ (kardex ✅ D-07, V1.24) |
 | CU-APA-11 | Apartado vencido + revisión | Anulado, regresa stock, abono a otras ganancias | A | ✅ |
 | CU-APA-12 | Buscar apartado | Lo encuentra | A | ✅ |
 | CU-APA-M1 | Primer pago menor al 50 % | "El pago debe ser mayor o igual a la cantidad mínima a pagar" | M | ✋ |
@@ -159,7 +159,7 @@ Estado: ✅ pasa · ❌ falla (defecto en la sección 6) · ✋ manual pendiente
 | CU-COM-03 | Un renglón falla | No queda nada (rollback) | A | ✅ |
 | CU-COM-04 | Borrador: guardar, retomar, actualizar, terminar | No mueve stock hasta terminar; borrador se elimina | A | ✅ |
 | CU-COM-05 | Descartar borrador | Eliminado | A | ✅ |
-| CU-COM-06 | Quitar un renglón de una compra registrada | Stock regresa, kardex sin movimientos falsos | A | ❌ D-05 |
+| CU-COM-06 | Quitar un renglón de una compra registrada | Stock regresa, kardex sin movimientos falsos | A | ✅ D-05 (V1.24) |
 | CU-COM-07 | Proveedor: alta, edición, baja, búsqueda | Inactivo no sale en el combo | A | ✅ |
 | CU-COM-M1 | Total calculado ≠ total en factura | Aviso de diferencia | M | ✋ |
 | CU-COM-M2 | Código de barras de 7 dígitos / repetido | Mensajes de validación | M | ✋ |
@@ -172,7 +172,7 @@ Estado: ✅ pasa · ❌ falla (defecto en la sección 6) · ✋ manual pendiente
 | CU-INV-02 | Código repetido o con espacios | Rechazado | A | ✅ |
 | CU-INV-03 | Código de barras: buscar y detectar repetido | Correcto | A | ✅ |
 | CU-INV-04 | Editar precios/categoría | Guardado | A | ✅ |
-| CU-INV-05 | Corregir existencias a mano desde *Actualizar* | Queda en kardex como ajuste | A | ❌ D-06 |
+| CU-INV-05 | Corregir existencias a mano desde *Actualizar* | Queda en kardex como ajuste | A | ✅ D-06 (V1.24 y V1.25) |
 | CU-INV-06 | Baja con stock / con 0 / reactivar | Rechaza / baja lógica / reactiva | A | ✅ |
 | CU-INV-07 | Archivar | Libera el código para reutilizarlo | A | ✅ |
 | CU-INV-08 | Stock bajo (≤ 12) | Aviso y listado | A | ✅ |
@@ -258,7 +258,7 @@ Estado: ✅ pasa · ❌ falla (defecto en la sección 6) · ✋ manual pendiente
 | UtilidadesPrueba | 15 / 0 | 15 / 0 |
 | **Total** | **249 / 14** | **269 / 5** |
 
-Los 5 fallos que quedan son los defectos de kardex D-05, D-06 y D-07, que se dejaron fuera de esta corrección a propósito.
+Los 5 fallos que quedaban (defectos de kardex D-05, D-06 y D-07) se corrigieron en V1.24 (kardex confiable) y V1.25 (ajuste de existencia con motivo); la suite completa pasa.
 
 ## 6. Defectos encontrados
 
@@ -280,4 +280,4 @@ Los 5 fallos que quedan son los defectos de kardex D-05, D-06 y D-07, que se dej
 
 Además, V1.23 hace que `eliminar_prod` no truene si se intenta quitar del carrito un producto que no está en él (antes fallaba con un error de kardex).
 
-**Pendientes (fuera de esta corrección):** D-05, D-06 y D-07 (kardex).
+**Corregidos después:** D-05, D-06 y D-07 (kardex) en V1.24 y V1.25. Desde V1.24 el carrito ya no aparta existencia: se descuenta al cobrar, una sola vez y con su folio en el kardex.

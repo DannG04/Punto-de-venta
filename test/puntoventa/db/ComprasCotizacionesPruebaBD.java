@@ -134,7 +134,7 @@ public class ComprasCotizacionesPruebaBD {
         String pv = producto("COT", 5, 1.0, 1.0);
         v.insertarVentaTemp(new String[]{pv, "1"}, true);
         String err = error(() -> co.convertirCotizacionAVenta(id, "Efectivo"));
-        check(err != null && v.ventaEnCurso() && stock(pv) == 4, "CU-COT-04 bloqueado y carrito intacto");
+        check(err != null && v.ventaEnCurso() && stock(pv) == 5, "CU-COT-04 bloqueado y carrito intacto (el carrito no aparta existencia)");
         v.limpiarVentaTemp();
 
         // CU-COT-05 convertir: crea venta con descuentos, descuenta stock, marca Convertida
