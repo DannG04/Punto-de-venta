@@ -222,15 +222,13 @@ public class CotizacionDAO extends BaseDAO {
 
             // Copiar cotizacion_detalle a venta_temp
             PreparedStatement copyTemp = conn.prepareStatement(
-                "INSERT INTO venta_temp(id_producto, nombre_p, cantidad_prod, tipo_venta, precio_dado, precio_total, descuento_pct) " +
-                "SELECT id_producto, nombre_p, cantidad, tipo_venta::\"tipoVenta\", precio_dado, precio_total, descuento_pct " +
+                "INSERT INTO venta_temp(id_producto, nombre_p, cantidad_prod, tipo_venta, precio_dado, precio_total, descuento_pct, precio_fijo) " +
+                "SELECT id_producto, nombre_p, cantidad, tipo_venta::\"tipoVenta\", precio_dado, precio_total, descuento_pct, true " +
                 "FROM cotizacion_detalle WHERE id_cotizacion=?");
             copyTemp.setString(1, idCoti);
+            // precio_fijo: se cobra el precio y tipo cotizados (no el que tocaría por
+            // cantidad) y el trigger aplica el descuento del renglón (V1.23).
             copyTemp.executeUpdate();
-            // El trigger de INSERT recalcula el precio sin descuento; el de UPDATE sí
-            // lo aplica. Sin esto la cotización se cobraba a precio completo.
-            conn.createStatement().executeUpdate(
-                "UPDATE venta_temp SET descuento_pct = descuento_pct WHERE descuento_pct > 0");
 
             // Crear venta con el stored procedure
             CallableStatement cstm = conn.prepareCall("{call realizar_venta(?::curp_dominio,?::curp_dominio)}");

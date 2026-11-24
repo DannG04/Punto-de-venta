@@ -88,12 +88,23 @@ public class ListaPreciosDAO extends BaseDAO {
     }
 
     public void actualizarPrecioListaTemp(String idProducto, double nuevoPrecio, String nombreLista) {//Función para sobreescribir el precio en venta_temp con el de la lista activa
-        String instruccion = "UPDATE venta_temp SET precio_dado=?, precio_total=?*cantidad_prod WHERE id_producto=?;";
+        // La lista "Menudeo" es el modo automático: menudeo o mayoreo según la cantidad
+        // (12 o más). Cualquier otra lista fija su precio en el renglón (precio_fijo) y
+        // el trigger de venta_temp lo respeta y aplica el descuento sobre él (V1.23).
+        boolean automatico = "Menudeo".equals(nombreLista);
+        String instruccion = automatico
+                ? "UPDATE venta_temp SET precio_fijo=false WHERE id_producto=?;"
+                : "UPDATE venta_temp SET precio_dado=?, precio_fijo=true, "
+                  + "tipo_venta = CASE WHEN ? = 'Mayoreo' THEN 'Mayoreo'::\"tipoVenta\" ELSE tipo_venta END WHERE id_producto=?;";
         try (Connection conexion = conectar()) {
             PreparedStatement pstm = conexion.prepareStatement(instruccion);
-            pstm.setDouble(1, nuevoPrecio);
-            pstm.setDouble(2, nuevoPrecio);
-            pstm.setString(3, idProducto);
+            if (automatico) {
+                pstm.setString(1, idProducto);
+            } else {
+                pstm.setDouble(1, nuevoPrecio);
+                pstm.setString(2, nombreLista);
+                pstm.setString(3, idProducto);
+            }
             pstm.executeUpdate();
         } catch (SQLException e) {
             GestorErrores.manejar(e);

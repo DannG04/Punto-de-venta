@@ -26,11 +26,8 @@ public class WebInventario extends NanoWSD {
 
     public static final int PUERTO = 8765;
 
-    // Mismos parámetros que ConexionBD
-    private final String url = "jdbc:postgresql://localhost:5432/";
-    private final String nameBD = "punto_de_venta";
-    private final String usuario = "postgres";
-    private final String contra = "root";
+    // La conexión la abre BaseDAO, así respeta db.properties (host, puerto, base,
+    // usuario y contraseña elegidos en el instalador) igual que el resto de la app.
 
     private Connection conn = null;
 
@@ -44,7 +41,7 @@ public class WebInventario extends NanoWSD {
         // que isClosed() no detecta (es solo un flag local del driver)
         if (conn == null || conn.isClosed() || !conn.isValid(2)) {
             try { if (conn != null) conn.close(); } catch (Exception ignored) {}
-            conn = DriverManager.getConnection(url + nameBD, usuario, contra);
+            conn = BaseDAO.nuevaConexion();
         }
         return conn;
     }
