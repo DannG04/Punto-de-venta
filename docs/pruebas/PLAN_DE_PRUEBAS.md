@@ -253,6 +253,9 @@ Estado: ✅ pasa · ❌ falla (defecto en la sección 6) · ✋ manual pendiente
 | CU-CR-08..09 | Enter de más: 300 ms al abrir y esperar a que se suelte el Enter que abrió el diálogo | A | ✅ |
 | CU-CR-10..13 | Agregar al carrito y descuento sin ventana: éxito, sin existencia, inexistente | A | ✅ |
 | CU-CR-14 | Conteo de productos con poco stock | A | ✅ |
+| CU-CR-15 | Texto o código sin coincidencias se queda en Código (el siguiente escaneo no cae en la búsqueda) | A | ✅ |
+| CU-CR-16 | Estado real de Enter en toda la aplicación (soltar antes de que abra el diálogo cuenta) | A | ✅ |
+| CU-CR-17 | Ticket: ningún componente con foco se traga Enter (`test/puntoventa/ui/TeclasTicketPrueba`, necesita pantalla) | A | ✅ |
 
 **Prueba manual en la aplicación** (la interfaz no tiene pruebas automáticas):
 

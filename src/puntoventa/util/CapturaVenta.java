@@ -43,6 +43,20 @@ public final class CapturaVenta {
         return new CapturaVenta(Tipo.PRODUCTO, cantidad, der, null);
     }
 
+    /** Qué hacer con un PRODUCTO capturado. */
+    public enum Accion { AGREGAR, NO_EXISTE, BUSCAR }
+
+    /**
+     * Decide entre agregar, avisar "no existe" (y quedarse en Código para que el siguiente
+     * escaneo reemplace el texto) o abrir la búsqueda. Un código de solo dígitos nunca se
+     * busca, y un texto sin coincidencias tampoco: así un escaneo nunca cae en la búsqueda vacía.
+     */
+    public Accion accion(boolean existeCodigo, int coincidenciasBusqueda) {
+        if (existeCodigo) return Accion.AGREGAR;
+        if (soloDigitos() || coincidenciasBusqueda <= 0) return Accion.NO_EXISTE;
+        return Accion.BUSCAR;
+    }
+
     /** true si el texto (código) son solo dígitos, como un código de barras. */
     public boolean soloDigitos() {
         if (texto.isEmpty()) return false;

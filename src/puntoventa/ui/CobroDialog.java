@@ -2,6 +2,7 @@ package puntoventa.ui;
 
 import puntoventa.db.ConexionBD;
 import puntoventa.util.Cobro;
+import puntoventa.util.EstadoEnter;
 import puntoventa.util.GuardaEnter;
 
 import java.awt.*;
@@ -20,16 +21,12 @@ public class CobroDialog extends JDialog {
         public final double cambio;
         public final String idCliente;
         public final String nombreCliente;
-        /** true si se confirmó con Enter (el ticket debe esperar a que se suelte). */
-        public final boolean conEnter;
-
-        Resultado(String formaPago, double recibido, double cambio, String idCliente, String nombreCliente, boolean conEnter) {
+        Resultado(String formaPago, double recibido, double cambio, String idCliente, String nombreCliente) {
             this.formaPago = formaPago;
             this.recibido = recibido;
             this.cambio = cambio;
             this.idCliente = idCliente;
             this.nombreCliente = nombreCliente;
-            this.conEnter = conEnter;
         }
     }
 
@@ -54,10 +51,7 @@ public class CobroDialog extends JDialog {
     private String nombreCliente = NOMBRE_PUBLICO_GENERAL;
     private Resultado resultado;
 
-    /**
-     * @param abiertoConEnter true si se abrió con Enter (ese Enter puede seguir sostenido)
-     */
-    public CobroDialog(Window owner, double total, ConexionBD conect, boolean abiertoConEnter) {
+    public CobroDialog(Window owner, double total, ConexionBD conect) {
         super(owner, "Cobrar", ModalityType.APPLICATION_MODAL);
         this.total = total;
         this.conect = conect;
@@ -67,7 +61,8 @@ public class CobroDialog extends JDialog {
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowOpened(java.awt.event.WindowEvent e) {
-                guarda.abrir(System.currentTimeMillis(), abiertoConEnter);
+                // si el Enter que abrió el cobro sigue abajo, no cuenta hasta soltarlo
+                guarda.abrir(System.currentTimeMillis(), EstadoEnter.abajo());
                 recibidoField.requestFocusInWindow();
                 recibidoField.selectAll();
             }
@@ -227,6 +222,8 @@ public class CobroDialog extends JDialog {
             nombreCliente = elegido[1];
             actualizarCliente();
         }
+        // el Enter con que se eligió al cliente puede seguir abajo: que no cobre
+        guarda.abrir(System.currentTimeMillis(), EstadoEnter.abajo());
         recibidoField.requestFocusInWindow();
     }
 
@@ -245,7 +242,7 @@ public class CobroDialog extends JDialog {
             }
             recibido = monto;
         }
-        resultado = new Resultado(formaPago, recibido, Cobro.cambio(total, recibido), idCliente, nombreCliente, conEnter);
+        resultado = new Resultado(formaPago, recibido, Cobro.cambio(total, recibido), idCliente, nombreCliente);
         dispose();
     }
 

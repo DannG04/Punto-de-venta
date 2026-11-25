@@ -92,7 +92,7 @@ Aparecen en la línea roja de abajo:
 | Mensaje | Qué hacer |
 |---|---|
 | *Escriba o escanee el código del producto* | El campo **Código** está vacío. |
-| *No existe un producto con el código …* | Revisa el código o búscalo por nombre. |
+| *No existe un producto con el código o nombre …* | No hay ningún producto con ese código ni nombre parecido. Revisa lo escrito; el siguiente escaneo lo reemplaza. |
 | *Cantidad no válida …* | Usa un número de 1 a 9999 (en **Cantidad** o antes del `*`). |
 | *No hay suficiente cantidad de productos* | No hay existencia suficiente; agrega menos piezas. |
 

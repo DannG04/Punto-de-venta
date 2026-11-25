@@ -45,6 +45,23 @@ public class ComandosRapidosPrueba {
         k.abrir(1000, false);
         check(k.permite(1300), "CU-CR-09 abierto sin Enter no espera a que se suelte");
 
+        // Revisión final, Important 2: un código desconocido con letras no debe mandar el siguiente escaneo a la búsqueda
+        c = CapturaVenta.interpretar("ABC-12");
+        check(c.accion(true, 0) == CapturaVenta.Accion.AGREGAR, "CU-CR-15 código existente se agrega");
+        check(c.accion(false, 0) == CapturaVenta.Accion.NO_EXISTE, "CU-CR-15 texto sin coincidencias se queda en Código con aviso");
+        check(c.accion(false, 2) == CapturaVenta.Accion.BUSCAR, "CU-CR-15 texto con coincidencias va a la búsqueda");
+        c = CapturaVenta.interpretar("7501234567890");
+        check(c.accion(false, 3) == CapturaVenta.Accion.NO_EXISTE, "CU-CR-15 solo dígitos inexistente nunca va a la búsqueda");
+
+        // Revisión final, Important 1: el estado real de Enter (no suponerlo por cómo se abrió el diálogo)
+        javax.swing.JLabel fuente = new javax.swing.JLabel();
+        EstadoEnter.procesar(new java.awt.event.KeyEvent(fuente, java.awt.event.KeyEvent.KEY_PRESSED, 0, 0, java.awt.event.KeyEvent.VK_ENTER, '\n'));
+        check(EstadoEnter.abajo(), "CU-CR-16 Enter presionado se registra");
+        EstadoEnter.procesar(new java.awt.event.KeyEvent(fuente, java.awt.event.KeyEvent.KEY_RELEASED, 0, 0, java.awt.event.KeyEvent.VK_ENTER, '\n'));
+        check(!EstadoEnter.abajo(), "CU-CR-16 Enter soltado (aunque el diálogo aún no abría) se registra");
+        EstadoEnter.procesar(new java.awt.event.KeyEvent(fuente, java.awt.event.KeyEvent.KEY_PRESSED, 0, 0, java.awt.event.KeyEvent.VK_A, 'a'));
+        check(!EstadoEnter.abajo(), "CU-CR-16 otras teclas no cambian el estado");
+
         terminar("ComandosRapidosPrueba");
     }
 }

@@ -169,6 +169,7 @@ public class VentasP extends javax.swing.JPanel {
 
         cargarListasPrecios();
 
+        EstadoEnter.instalar();
         configurarComandosRapidos();
         enfocarCodigo();
     }
@@ -885,7 +886,7 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_elimActionPerformed
 
     private void ventaRealiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ventaRealiActionPerformed
-        abrirCobro(false);
+        abrirCobro();
     }//GEN-LAST:event_ventaRealiActionPerformed
 
     private void regActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regActionPerformed
@@ -912,11 +913,11 @@ public class VentasP extends javax.swing.JPanel {
         }
         String idProd = resolverCodigo(c.texto);
         if (idProd == null) {
-            if (c.soloDigitos()) {
-                mostrarAviso("No existe un producto con el código " + c.texto);
-                enfocarCodigo();
-            } else {
+            if (c.accion(false, c.soloDigitos() ? 0 : coincidencias(c.texto)) == CapturaVenta.Accion.BUSCAR) {
                 irABusqueda(c.texto, cantidad);
+            } else {
+                mostrarAviso("No existe un producto con el código o nombre \"" + c.texto + "\"");
+                enfocarCodigo();
             }
             return;
         }
@@ -1136,7 +1137,7 @@ public class VentasP extends javax.swing.JPanel {
             if (codigoVacio()) cambiarCantidadSeleccionada(-1); else codigoProd.replaceSelection("-");
         });
         tecla(this, javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, "F4", "editarRenglon", () -> actBActionPerformed(null));
-        tecla(this, javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, "F12", "cobrar", () -> abrirCobro(false));
+        tecla(this, javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, "F12", "cobrar", this::abrirCobro);
 
         // Diálogo de actualizar renglón (F4): Enter guarda, Esc cancela
         Runnable guardarRenglon = hechoAct::doClick;
@@ -1219,7 +1220,7 @@ public class VentasP extends javax.swing.JPanel {
     private void procesarCaptura() {
         CapturaVenta c = CapturaVenta.interpretar(codigoProd.getText());
         if (c.tipo == CapturaVenta.Tipo.VACIO) {
-            abrirCobro(true);
+            abrirCobro();
             return;
         }
         if (c.tipo == CapturaVenta.Tipo.INVALIDO) {
@@ -1228,15 +1229,26 @@ public class VentasP extends javax.swing.JPanel {
             return;
         }
         String idProd = resolverCodigo(c.texto);
-        if (idProd != null) {
-            if (agregarProducto(idProd, c.cantidad)) codigoProd.setText("");
-            else codigoProd.selectAll();
-        } else if (c.soloDigitos()) {
-            mostrarAviso("No existe un producto con el código " + c.texto);
-            codigoProd.selectAll();
-        } else {
-            irABusqueda(c.texto, c.cantidad);
+        switch (c.accion(idProd != null, idProd != null || c.soloDigitos() ? 0 : coincidencias(c.texto))) {
+            case AGREGAR:
+                if (agregarProducto(idProd, c.cantidad)) codigoProd.setText("");
+                else codigoProd.selectAll();
+                break;
+            case BUSCAR:
+                irABusqueda(c.texto, c.cantidad);
+                break;
+            default:
+                mostrarAviso("No existe un producto con el código o nombre \"" + c.texto + "\"");
+                codigoProd.selectAll();
         }
+    }
+
+    /** Cuántos productos activos coinciden con el texto en la búsqueda (deja la tabla de búsqueda con ellos). */
+    private int coincidencias(String texto) {
+        mostrarBusqueda(texto);
+        int n = modeloBusc.getRowCount();
+        if (n == 0) mostrarBusqueda("");
+        return n;
     }
 
     /** id del producto por id o código de barras; reintenta en mayúsculas. null si no existe. */
@@ -1329,6 +1341,7 @@ public class VentasP extends javax.swing.JPanel {
         Busc.setText(texto);
         mostrarBusqueda(texto);
         limpiarAviso();
+        Busc.selectAll();
         Busc.requestFocusInWindow();
     }
 
@@ -1377,16 +1390,15 @@ public class VentasP extends javax.swing.JPanel {
 
     /**
      * Abre el cobro (F12, Enter con el campo vacío o el botón Venta Hecha).
-     * @param conEnter true si se abrió con Enter (ese Enter no debe cobrar solo)
      */
-    private void abrirCobro(boolean conEnter) {
+    private void abrirCobro() {
         if (modelo.getRowCount() == 0) {
             mostrarAviso("No hay productos para cobrar");
             enfocarCodigo();
             return;
         }
         CobroDialog dialogo = new CobroDialog(javax.swing.SwingUtilities.getWindowAncestor(this),
-                conect.sumaVentaTemp(), conect, conEnter);
+                conect.sumaVentaTemp(), conect);
         CobroDialog.Resultado r = dialogo.mostrar();
         if (r != null) registrarVenta(r);
         enfocarCodigo();
@@ -1420,7 +1432,7 @@ public class VentasP extends javax.swing.JPanel {
         datosTicket.recibido = r.recibido;
         datosTicket.cambio = r.cambio;
         TicketDialog ticket = new TicketDialog(datosTicket, conect);
-        ticket.activarTeclasRapidas(r.conEnter);
+        ticket.activarTeclasRapidas();
         ticket.setVisible(true);
         if (alCambiarStock != null) alCambiarStock.run();
         return true;
