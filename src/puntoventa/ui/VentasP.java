@@ -43,7 +43,12 @@ public class VentasP extends javax.swing.JPanel {
     private javax.swing.JLabel jLabelLista = new javax.swing.JLabel("Lista de precios activa:");
     private javax.swing.JComboBox<String> cmbListaPrecios = new javax.swing.JComboBox<>();
     private java.util.ArrayList<Integer> listaIds = new java.util.ArrayList<>();
-    
+
+    // Comandos rápidos de teclado (manejados fuera del form editor)
+    private final javax.swing.JLabel avisoLabel = new javax.swing.JLabel(" ");
+    private int cantidadPendiente = 1;        // cantidad de un "N*texto" mientras se elige en la búsqueda
+    private Runnable alCambiarStock;          // Interfaz refresca el aviso de poco stock después de cobrar
+
     /**
      * Creates new form Ventas
      */
@@ -163,6 +168,10 @@ public class VentasP extends javax.swing.JPanel {
         jPanel2.add(cmbListaPrecios, gbcLista);
 
         cargarListasPrecios();
+
+        EstadoEnter.instalar();
+        configurarComandosRapidos();
+        enfocarCodigo();
     }
 
     /**
@@ -764,25 +773,38 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_cantPKeyTyped
 
     private void hechoActActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoActActionPerformed
-        if(codp.getText().isEmpty() || cantP.getText().isEmpty()){
-            Mise.JOption("Todos los campos deben ser completados", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            String idProd = codp.getText();
-            double descuento = dctPAct.getText().isEmpty() ? 0.0 : Double.parseDouble(dctPAct.getText());
-            double maxDesc = conect.obtenerMaxDescuento(idProd);
-            if (descuento > maxDesc) {
-                Mise.JOption("El descuento máximo para este producto es " + maxDesc + "%.\nSe aplicará ese límite.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-                descuento = maxDesc;
-                dctPAct.setText("" + maxDesc);
-            }
-            String[] datos = {idProd, cantP.getText()};
-            conect.insertarVentaTemp(datos, false);
-            conect.actualizarDescuentoTemp(idProd, descuento);
-            aplicarPrecioLista(idProd);
-            mostrarTablaVentaT();
-            mostrarBusqueda("");
+        // Errores y avisos van a la línea roja de Ventas, no a ventanas
+        int cantidad = (int) leerNumero(cantP.getText());
+        if (codp.getText().isEmpty() || cantidad < 1 || cantidad > CapturaVenta.CANTIDAD_MAXIMA) {
             ventaDialog.setVisible(false);
+            mostrarAviso("Cantidad no válida: use un número de 1 a " + CapturaVenta.CANTIDAD_MAXIMA);
+            enfocarCodigo();
+            return;
         }
+        String idProd = codp.getText();
+        String aviso = null;
+        double descuento = leerNumero(dctPAct.getText());
+        double maxDesc = conect.obtenerMaxDescuento(idProd);
+        if (descuento > maxDesc) {
+            aviso = "El descuento máximo para este producto es " + maxDesc + "%. Se aplicó ese límite.";
+            descuento = maxDesc;
+        }
+        ventaDialog.setVisible(false);
+        String error = conect.insertarVentaTempSinDialogo(new String[]{idProd, String.valueOf(cantidad)}, false);
+        if (error != null) {
+            mostrarAviso(error);
+            enfocarCodigo();
+            return;
+        }
+        String errDct = conect.actualizarDescuentoTempSinDialogo(idProd, descuento);
+        if (errDct != null) aviso = errDct;
+        String avisoLista = aplicarPrecioLista(idProd);
+        if (avisoLista != null) aviso = avisoLista;
+        mostrarTablaVentaT();
+        seleccionarRenglon(idProd);
+        if (aviso != null) mostrarAviso(aviso);
+        else limpiarAviso();
+        enfocarCodigo();
     }//GEN-LAST:event_hechoActActionPerformed
 
     private void recCTKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_recCTKeyTyped
@@ -811,52 +833,7 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_recCTKeyTyped
 
     private void hechoCambActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoCambActionPerformed
-        if(recCT.getText().isEmpty()){
-            Mise.JOption("El campo no puede estar vacío", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            Double a = Double.valueOf(recCT.getText());
-            Double b = Double.valueOf(totalCT.getText());
-            if(a < b){
-                Mise.JOption("Lo recibido no debe ser menor que el total", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                // Guardar descuentos del carrito antes de registrar la venta
-                java.util.Map<String, Double> descuentos = new java.util.HashMap<>();
-                for (int i = 0; i < modelo.getRowCount(); i++) {
-                    String idProd = "" + modelo.getValueAt(i, 0);
-                    Object dctObj = modelo.getValueAt(i, 6);
-                    double dct = (dctObj != null && !dctObj.toString().isEmpty()) ? Double.parseDouble(dctObj.toString()) : 0.0;
-                    if (dct > 0) descuentos.put(idProd, dct);
-                }
-
-                String formaPago = (String) cmbFormaPago.getSelectedItem();
-                idTemV = conect.registrarVentaConFormaPago(Interfaz.idVendedor,  id_cliente, formaPago);
-                if (idTemV == null || idTemV.isEmpty()) {
-                    // La venta no se registró (el error ya se mostró): conservar el carrito
-                    // para reintentar en lugar de vaciarlo y mostrar un ticket vacío.
-                    return;
-                }
-
-                // Persistir descuentos en venta_detalle
-                for (java.util.Map.Entry<String, Double> entry : descuentos.entrySet()) {
-                    conect.actualizarDescuentoVenta(idTemV, entry.getKey(), entry.getValue());
-                }
-
-                conect.limpiarVentaTemp();
-                Mise.limpiarTabla(modelo);
-                precT = 0.0;
-                totalLabel.setText("Total: " + precT);
-                dctGlobal.setText("0");
-                ventaDialog.setVisible(false);
-                TicketData datosTicket = conect.obtenerDatosVenta(idTemV);
-                datosTicket.recibido = recCT.getText().isEmpty() ? datosTicket.total : Double.valueOf(recCT.getText());
-                datosTicket.cambio   = cambCT.getText().isEmpty() ? 0.0 : Double.valueOf(cambCT.getText());
-                new TicketDialog(datosTicket, conect).setVisible(true);
-                if(conect.hayPocosProductos()){
-                    mostrarProdPocos();
-                    prodPocosDialog.setVisible(true);
-                }
-            }
-        }
+        // Reemplazado por CobroDialog (comandos rápidos)
     }//GEN-LAST:event_hechoCambActionPerformed
 
     private void cancelarBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarBActionPerformed
@@ -870,23 +847,14 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_recCTKeyReleased
 
     private void BuscKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_BuscKeyTyped
+        // Letras (con acentos y ñ), dígitos, espacio y guion; sin espacio al inicio
         char letra = evt.getKeyChar();
-        if(!Cake.letrasMayus(letra) && !Cake.letrasMinus(letra) && !Cake.numeros(letra) && !(Cake.inicioEspacios(letra))){
+        boolean permitido = Character.isLetterOrDigit(letra) || letra == ' ' || letra == '-';
+        if (!permitido || (letra == ' ' && Busc.getText().isEmpty())) {
             evt.consume();
         }
-        
-        if(!(Busc.getText().isEmpty())){
-            if(Cake.espacios(Busc.getText(), letra)){
-                evt.consume();
-            }
-        }
-        else{
-            if(Cake.inicioEspacios(letra)){
-                evt.consume();
-            }
-        }
-        
-        if(Cake.tamaño(Busc.getText(), 30)){
+        int seleccion = Busc.getSelectionEnd() - Busc.getSelectionStart();
+        if (Busc.getText().length() - seleccion >= CapturaVenta.LONGITUD_MAXIMA) {
             evt.consume();
         }
     }//GEN-LAST:event_BuscKeyTyped
@@ -899,60 +867,67 @@ public class VentasP extends javax.swing.JPanel {
             mostrarDAct(a);
             panelAct.setVisible(true);
             panelCamb.setVisible(false);
+            javax.swing.SwingUtilities.invokeLater(() -> { cantP.requestFocusInWindow(); cantP.selectAll(); });
             ventaDialog.setVisible(true);
+            enfocarCodigo();
         } else{
-            Mise.JOption("Debe seleccionar la fila que desea actualizar", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarAviso("Seleccione un renglón con ↑/↓");
+            enfocarCodigo();
         }
     }//GEN-LAST:event_actBActionPerformed
 
     private void elimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elimActionPerformed
-        int a = tablaVentas.getSelectedRow();
-        if(a != -1){
-            conect.eliminarVentaTemp("" + modelo.getValueAt(a, 0)); //se elimina el producto
-            mostrarTablaVentaT();
-            mostrarBusqueda("");
+        if (tablaVentas.getSelectedRow() != -1) {
+            quitarSeleccionado();
+        } else {
+            mostrarAviso("Seleccione el renglón que desea quitar");
         }
-        else {
-            Mise.JOption("Debe seleccionar la fila que desea eliminar", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        enfocarCodigo();
     }//GEN-LAST:event_elimActionPerformed
 
     private void ventaRealiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ventaRealiActionPerformed
-        if(modelo.getRowCount() != 0){
-            mostrarClientes("");
-            regVentaDialog.setVisible(true);
-        } else{
-            Mise.JOption("No es posible registrar una venta sin productos", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        abrirCobro();
     }//GEN-LAST:event_ventaRealiActionPerformed
 
     private void regActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regActionPerformed
-        if(!codigoProd.getText().isEmpty() && !cantidadProd.getText().isEmpty()){
-            String idProd = conect.resolverCodigo(codigoProd.getText().trim());
-            if (idProd == null) {
-                Mise.JOption("No existe un producto con ese código o código de barras.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        // Mismo camino que Enter en el campo de código; si "Cantidad" tiene número, ese gana
+        CapturaVenta c = CapturaVenta.interpretar(codigoProd.getText());
+        if (c.tipo == CapturaVenta.Tipo.VACIO) {
+            mostrarAviso("Escriba o escanee el código del producto");
+            enfocarCodigo();
+            return;
+        }
+        if (c.tipo == CapturaVenta.Tipo.INVALIDO) {
+            mostrarAviso(c.mensaje);
+            enfocarCodigo();
+            return;
+        }
+        int cantidad = c.cantidad;
+        String textoCant = cantidadProd.getText().trim();
+        if (!textoCant.isEmpty()) {
+            try { cantidad = Integer.parseInt(textoCant); } catch (NumberFormatException e) { cantidad = 0; }
+            if (cantidad < 1 || cantidad > CapturaVenta.CANTIDAD_MAXIMA) {
+                mostrarAviso("Cantidad no válida: use un número de 1 a " + CapturaVenta.CANTIDAD_MAXIMA);
                 return;
             }
-            double descuento = dctProd.getText().isEmpty() ? 0.0 : Double.parseDouble(dctProd.getText());
-            double maxDesc = conect.obtenerMaxDescuento(idProd);
-            if (descuento > maxDesc) {
-                Mise.JOption("El descuento máximo para este producto es " + maxDesc + "%.\nSe aplicará ese límite.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-                descuento = maxDesc;
-                dctProd.setText("" + maxDesc);
+        }
+        String idProd = resolverCodigo(c.texto);
+        if (idProd == null) {
+            if (c.accion(false, c.soloDigitos() ? 0 : coincidencias(c.texto)) == CapturaVenta.Accion.BUSCAR) {
+                irABusqueda(c.texto, cantidad);
+            } else {
+                mostrarAviso("No existe un producto con el código o nombre \"" + c.texto + "\"");
+                enfocarCodigo();
             }
-            String[] datos = {idProd, cantidadProd.getText()};
-            conect.insertarVentaTemp(datos, true);
-            conect.actualizarDescuentoTemp(idProd, descuento);
-            aplicarPrecioLista(idProd);
-            mostrarTablaVentaT();
+            return;
+        }
+        if (agregarProducto(idProd, cantidad)) {
             codigoProd.setText("");
             cantidadProd.setText("");
-            dctProd.setText("0");
             Busc.setText("");
             mostrarBusqueda("");
-        } else{
-            Mise.JOption("Debe llenar los dos campos de texto", "Error", JOptionPane.ERROR_MESSAGE);
         }
+        enfocarCodigo();
     }//GEN-LAST:event_regActionPerformed
 
     private void cantidadProdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cantidadProdKeyTyped
@@ -968,13 +943,11 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_cantidadProdKeyTyped
 
     private void codigoProdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_codigoProdKeyTyped
-        // TODO add your handling code here:
+        // Acepta código, código de barras, "N*código" o texto para buscar
         char letra = evt.getKeyChar();
-        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra) && !Cake.guionShort(letra)){
-            evt.consume();
-        }
-
-        if(Cake.tamaño(codigoProd.getText(), 20)){
+        int seleccion = codigoProd.getSelectionEnd() - codigoProd.getSelectionStart();
+        if (Character.isISOControl(letra)
+                || codigoProd.getText().length() - seleccion >= CapturaVenta.LONGITUD_MAXIMA) {
             evt.consume();
         }
     }//GEN-LAST:event_codigoProdKeyTyped
@@ -993,15 +966,7 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_tablaBuscMouseClicked
 
     private void tablaCliMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaCliMouseClicked
-        id_cliente = "" + tablaCli.getValueAt(tablaCli.getSelectedRow(), 0);
-        precT = conect.sumaVentaTemp();
-        recCT.setText("");
-        totalCT.setText("" + precT);
-        cambCT.setText("0.0");
-        panelAct.setVisible(false);
-        panelCamb.setVisible(true);
-        regVentaDialog.setVisible(false);
-        ventaDialog.setVisible(true);
+        // Reemplazado por CobroDialog (comandos rápidos)
     }//GEN-LAST:event_tablaCliMouseClicked
 
     private void curpClienteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_curpClienteKeyTyped
@@ -1084,18 +1049,6 @@ public class VentasP extends javax.swing.JPanel {
         }
     }
     
-    public void mostrarProdPocos(){
-        Mise.limpiarTabla(modeloProdP);
-        java.sql.ResultSet rs = conect.obtenerProductosPocos();
-        try{
-            while(rs.next()){
-                modeloProdP.addRow(new Object[]{rs.getString("id_producto"), rs.getString("nombre"), rs.getInt("cantidad")});
-            }
-        } catch(java.sql.SQLException e){
-            System.out.println("Error al mostrar la tabla pocos productos");
-        }
-    }
-    
     public void mostrarDAct(int a){
         String elemento = "" + modelo.getValueAt(a, 0);
         String canti = "" + modelo.getValueAt(a, 2);
@@ -1126,20 +1079,363 @@ public class VentasP extends javax.swing.JPanel {
         }
     }
 
-    private void aplicarPrecioLista(String idProd) {
-        if (listaIds.isEmpty()) return;
+    /** Aplica la lista de precios activa al renglón; regresa un aviso para la línea roja o null. */
+    private String aplicarPrecioLista(String idProd) {
+        if (listaIds.isEmpty()) return null;
         int idx = cmbListaPrecios.getSelectedIndex();
-        if (idx < 0) return;
+        if (idx < 0) return null;
         int idLista = listaIds.get(idx);
         String nombreLista = (String) cmbListaPrecios.getSelectedItem();
         double precioLista = conect.obtenerPrecioEnLista(idProd, idLista);
         if (precioLista < 0) {
-            Mise.JOption("El producto no tiene precio en la lista \"" + nombreLista +
-                "\". Se usará el precio de Menudeo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             conect.actualizarPrecioListaTemp(idProd, 0, "Menudeo"); // vuelve al precio automático
-        } else {
-            conect.actualizarPrecioListaTemp(idProd, precioLista, nombreLista);
+            return "El producto no tiene precio en la lista \"" + nombreLista + "\". Se usó el precio de Menudeo.";
         }
+        conect.actualizarPrecioListaTemp(idProd, precioLista, nombreLista);
+        return null;
+    }
+
+    // ===================== COMANDOS RÁPIDOS DE TECLADO =====================
+
+    private void configurarComandosRapidos() {
+        javax.swing.JPanel sur = new javax.swing.JPanel(new java.awt.GridLayout(0, 1));
+        sur.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 12, 6, 12));
+        avisoLabel.setFont(new java.awt.Font("Noto Serif", java.awt.Font.BOLD, 20));
+        avisoLabel.setForeground(new java.awt.Color(190, 30, 30));
+        javax.swing.JLabel ayuda = new javax.swing.JLabel(
+                "Enter Agregar · F2 Buscar · F4 Cantidad · Supr Quitar · +/- Cantidad · F12 COBRAR");
+        ayuda.setFont(new java.awt.Font("Noto Serif", java.awt.Font.PLAIN, 16));
+        sur.add(avisoLabel);
+        sur.add(ayuda);
+        add(sur, java.awt.BorderLayout.SOUTH);
+
+        tecla(codigoProd, javax.swing.JComponent.WHEN_FOCUSED, "ENTER", "procesarCaptura", this::procesarCaptura);
+
+        // Búsqueda sin mouse
+        tecla(this, javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, "F2", "buscar", this::buscarDesdeCodigo);
+        tecla(Busc, javax.swing.JComponent.WHEN_FOCUSED, "ENTER", "elegirBusqueda", () -> elegirDesdeBusqueda(true));
+        tecla(Busc, javax.swing.JComponent.WHEN_FOCUSED, "DOWN", "bajarBusqueda", () -> elegirDesdeBusqueda(false));
+        tecla(Busc, javax.swing.JComponent.WHEN_FOCUSED, "ESCAPE", "salirBusqueda", this::volverACodigo);
+        // JTable trae su acción de Enter ("siguiente fila") en este InputMap: se reemplaza
+        tecla(tablaBusc, javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, "ENTER", "agregarBusqueda",
+                () -> agregarDesdeBusqueda(tablaBusc.getSelectedRow()));
+        tecla(tablaBusc, javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, "ESCAPE", "salirTablaBusqueda", this::volverACodigo);
+
+        // Editar el carrito con el campo de código vacío (con texto, las teclas escriben normal)
+        tecla(codigoProd, javax.swing.JComponent.WHEN_FOCUSED, "UP", "renglonArriba", () -> { if (codigoVacio()) moverSeleccion(-1); });
+        tecla(codigoProd, javax.swing.JComponent.WHEN_FOCUSED, "DOWN", "renglonAbajo", () -> { if (codigoVacio()) moverSeleccion(1); });
+        javax.swing.Action borrarSiguiente = codigoProd.getActionMap().get(javax.swing.text.DefaultEditorKit.deleteNextCharAction);
+        tecla(codigoProd, javax.swing.JComponent.WHEN_FOCUSED, "DELETE", "quitarRenglon", () -> {
+            if (codigoVacio()) quitarSeleccionado();
+            else if (borrarSiguiente != null) borrarSiguiente.actionPerformed(new java.awt.event.ActionEvent(codigoProd, 0, ""));
+        });
+        // "typed" cubre el + / - del teclado normal y del numérico (registrar también ADD/SUBTRACT lo haría dos veces)
+        tecla(codigoProd, javax.swing.JComponent.WHEN_FOCUSED, "typed +", "masUno", () -> {
+            if (codigoVacio()) cambiarCantidadSeleccionada(1); else codigoProd.replaceSelection("+");
+        });
+        tecla(codigoProd, javax.swing.JComponent.WHEN_FOCUSED, "typed -", "menosUno", () -> {
+            if (codigoVacio()) cambiarCantidadSeleccionada(-1); else codigoProd.replaceSelection("-");
+        });
+        tecla(this, javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, "F4", "editarRenglon", () -> actBActionPerformed(null));
+        tecla(this, javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, "F12", "cobrar", this::abrirCobro);
+
+        // Diálogo de actualizar renglón (F4): Enter guarda, Esc cancela
+        Runnable guardarRenglon = hechoAct::doClick;
+        Runnable cancelarRenglon = () -> { ventaDialog.setVisible(false); enfocarCodigo(); };
+        tecla(ventaDialog.getRootPane(), javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW, "ENTER", "guardarRenglon", guardarRenglon);
+        tecla(ventaDialog.getRootPane(), javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW, "ESCAPE", "cancelarRenglon", cancelarRenglon);
+        for (javax.swing.JComponent campo : new javax.swing.JComponent[]{cantP, dctPAct, codp}) {
+            // los JFormattedTextField tienen su propio Enter; se reemplaza para que guarde
+            tecla(campo, javax.swing.JComponent.WHEN_FOCUSED, "ENTER", "guardarRenglon", guardarRenglon);
+        }
+    }
+
+    private boolean codigoVacio() {
+        return codigoProd.getText().trim().isEmpty();
+    }
+
+    /** ↑/↓ sobre el carrito; sin selección, ↑ va al último renglón y ↓ al primero. */
+    private void moverSeleccion(int paso) {
+        int filas = modelo.getRowCount();
+        if (filas == 0) return;
+        int actual = tablaVentas.getSelectedRow();
+        int nueva = actual < 0 ? (paso < 0 ? filas - 1 : 0) : Math.max(0, Math.min(filas - 1, actual + paso));
+        tablaVentas.setRowSelectionInterval(nueva, nueva);
+        tablaVentas.scrollRectToVisible(tablaVentas.getCellRect(nueva, 0, true));
+    }
+
+    /** +/-: suma o resta al renglón seleccionado; en 0 lo quita. Conserva su descuento. */
+    void cambiarCantidadSeleccionada(int delta) {
+        int fila = tablaVentas.getSelectedRow();
+        if (fila < 0) return;
+        String idProd = "" + modelo.getValueAt(fila, 0);
+        int nueva = (int) leerNumero("" + modelo.getValueAt(fila, 2)) + delta;
+        if (nueva <= 0) {
+            quitarSeleccionado();
+            return;
+        }
+        if (nueva > CapturaVenta.CANTIDAD_MAXIMA) {
+            mostrarAviso("La cantidad máxima por renglón es " + CapturaVenta.CANTIDAD_MAXIMA);
+            return;
+        }
+        double dct = leerNumero("" + modelo.getValueAt(fila, 6));
+        String error = conect.insertarVentaTempSinDialogo(new String[]{idProd, String.valueOf(nueva)}, false);
+        if (error != null) {
+            mostrarAviso(error);
+            return;
+        }
+        String aviso = dct > 0 ? conect.actualizarDescuentoTempSinDialogo(idProd, dct) : null;
+        String avisoLista = aplicarPrecioLista(idProd);
+        if (avisoLista != null) aviso = avisoLista;
+        mostrarTablaVentaT();
+        seleccionarRenglon(idProd);
+        if (aviso != null) mostrarAviso(aviso);
+        else limpiarAviso();
+    }
+
+    /** Supr: quita el renglón seleccionado y deja seleccionado el siguiente. */
+    void quitarSeleccionado() {
+        int fila = tablaVentas.getSelectedRow();
+        if (fila < 0) return;
+        conect.eliminarVentaTemp("" + modelo.getValueAt(fila, 0));
+        mostrarTablaVentaT();
+        int filas = modelo.getRowCount();
+        if (filas > 0) {
+            int sel = Math.min(fila, filas - 1);
+            tablaVentas.setRowSelectionInterval(sel, sel);
+        }
+        limpiarAviso();
+    }
+
+    /** Registra una tecla (formato de KeyStroke.getKeyStroke(String)) con su acción. */
+    private static void tecla(javax.swing.JComponent c, int condicion, String teclaTexto, String nombre, Runnable accion) {
+        c.getInputMap(condicion).put(javax.swing.KeyStroke.getKeyStroke(teclaTexto), nombre);
+        c.getActionMap().put(nombre, new javax.swing.AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) { accion.run(); }
+        });
+    }
+
+    /** Enter en el campo de código: agrega, busca, avisa o (vacío) cobra. */
+    private void procesarCaptura() {
+        CapturaVenta c = CapturaVenta.interpretar(codigoProd.getText());
+        if (c.tipo == CapturaVenta.Tipo.VACIO) {
+            abrirCobro();
+            return;
+        }
+        if (c.tipo == CapturaVenta.Tipo.INVALIDO) {
+            mostrarAviso(c.mensaje);
+            codigoProd.selectAll();
+            return;
+        }
+        String idProd = resolverCodigo(c.texto);
+        switch (c.accion(idProd != null, idProd != null || c.soloDigitos() ? 0 : coincidencias(c.texto))) {
+            case AGREGAR:
+                if (agregarProducto(idProd, c.cantidad)) codigoProd.setText("");
+                else codigoProd.selectAll();
+                break;
+            case BUSCAR:
+                irABusqueda(c.texto, c.cantidad);
+                break;
+            default:
+                mostrarAviso("No existe un producto con el código o nombre \"" + c.texto + "\"");
+                codigoProd.selectAll();
+        }
+    }
+
+    /** Cuántos productos activos coinciden con el texto en la búsqueda (deja la tabla de búsqueda con ellos). */
+    private int coincidencias(String texto) {
+        mostrarBusqueda(texto);
+        int n = modeloBusc.getRowCount();
+        if (n == 0) mostrarBusqueda("");
+        return n;
+    }
+
+    /** id del producto por id o código de barras; reintenta en mayúsculas. null si no existe. */
+    private String resolverCodigo(String texto) {
+        String id = conect.resolverCodigo(texto);
+        String mayus = texto.toUpperCase();
+        if (id == null && !mayus.equals(texto)) id = conect.resolverCodigo(mayus);
+        return id;
+    }
+
+    /**
+     * Agrega (acumulando) el producto al carrito. Errores y avisos van a la línea roja,
+     * nunca a una ventana. Regresa true si el producto quedó en el carrito.
+     */
+    boolean agregarProducto(String idProd, int cantidad) {
+        double dctExistente = descuentoEnCarrito(idProd);
+        String error = conect.insertarVentaTempSinDialogo(new String[]{idProd, String.valueOf(cantidad)}, true);
+        if (error != null) {
+            mostrarAviso(error);
+            return false;
+        }
+        String aviso = null;
+        double descuento = leerNumero(dctProd.getText());
+        if (descuento > 0) {
+            double maxDesc = conect.obtenerMaxDescuento(idProd);
+            if (descuento > maxDesc) {
+                aviso = "El descuento máximo para este producto es " + maxDesc + "%. Se aplicó ese límite.";
+                descuento = maxDesc;
+            }
+            dctProd.setText("0");
+        } else {
+            descuento = dctExistente; // volver a escanear no le quita el descuento que ya tenía
+        }
+        if (descuento > 0) {
+            String errDct = conect.actualizarDescuentoTempSinDialogo(idProd, descuento);
+            if (errDct != null) aviso = errDct;
+        }
+        String avisoLista = aplicarPrecioLista(idProd);
+        if (avisoLista != null) aviso = avisoLista;
+        mostrarTablaVentaT();
+        seleccionarRenglon(idProd);
+        if (aviso != null) mostrarAviso(aviso);
+        else limpiarAviso();
+        return true;
+    }
+
+    /** Descuento (%) que ya tiene el producto en el carrito; 0 si no está. */
+    private double descuentoEnCarrito(String idProd) {
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            if (idProd.equals("" + modelo.getValueAt(i, 0))) {
+                Object d = modelo.getValueAt(i, 6);
+                return d == null ? 0.0 : leerNumero(d.toString());
+            }
+        }
+        return 0.0;
+    }
+
+    private static double leerNumero(String texto) {
+        try { return texto == null || texto.trim().isEmpty() ? 0.0 : Double.parseDouble(texto.trim()); }
+        catch (NumberFormatException e) { return 0.0; }
+    }
+
+    /** Muestra el aviso en rojo y suena el error (en lugar de una ventana que el lector cerraría). */
+    void mostrarAviso(String mensaje) {
+        avisoLabel.setText(mensaje == null || mensaje.isEmpty() ? " " : mensaje);
+        java.awt.Toolkit.getDefaultToolkit().beep();
+    }
+
+    void limpiarAviso() {
+        avisoLabel.setText(" ");
+    }
+
+    void seleccionarRenglon(String idProd) {
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            if (idProd.equals("" + modelo.getValueAt(i, 0))) {
+                tablaVentas.setRowSelectionInterval(i, i);
+                tablaVentas.scrollRectToVisible(tablaVentas.getCellRect(i, 0, true));
+                return;
+            }
+        }
+    }
+
+    public void enfocarCodigo() {
+        javax.swing.SwingUtilities.invokeLater(codigoProd::requestFocusInWindow);
+    }
+
+    /** Pasa el texto a la búsqueda de productos y guarda la cantidad para cuando elijan uno. */
+    private void irABusqueda(String texto, int cantidad) {
+        cantidadPendiente = cantidad;
+        Busc.setText(texto);
+        mostrarBusqueda(texto);
+        limpiarAviso();
+        Busc.selectAll();
+        Busc.requestFocusInWindow();
+    }
+
+    /** F2: abre la búsqueda con lo que haya en el campo de código (respeta un "N*texto"). */
+    private void buscarDesdeCodigo() {
+        CapturaVenta c = CapturaVenta.interpretar(codigoProd.getText());
+        if (c.tipo == CapturaVenta.Tipo.PRODUCTO) irABusqueda(c.texto, c.cantidad);
+        else irABusqueda("", 1);
+    }
+
+    /** Enter (o ↓) en el campo de búsqueda. */
+    private void elegirDesdeBusqueda(boolean agregarSiEsUnico) {
+        int filas = modeloBusc.getRowCount();
+        if (filas == 0) {
+            mostrarAviso("No se encontraron productos con \"" + Busc.getText().trim() + "\"");
+            return;
+        }
+        if (filas == 1 && agregarSiEsUnico) {
+            agregarDesdeBusqueda(0);
+            return;
+        }
+        tablaBusc.setRowSelectionInterval(0, 0);
+        tablaBusc.scrollRectToVisible(tablaBusc.getCellRect(0, 0, true));
+        tablaBusc.requestFocusInWindow();
+    }
+
+    private void agregarDesdeBusqueda(int fila) {
+        if (fila < 0 || fila >= modeloBusc.getRowCount()) return;
+        String idProd = "" + modeloBusc.getValueAt(fila, 0);
+        if (agregarProducto(idProd, cantidadPendiente)) {
+            codigoProd.setText("");
+            volverACodigo();
+        }
+    }
+
+    private void volverACodigo() {
+        Busc.setText("");
+        mostrarBusqueda("");
+        cantidadPendiente = 1;
+        enfocarCodigo();
+    }
+
+    public void setAlCambiarStock(Runnable accion) {
+        this.alCambiarStock = accion;
+    }
+
+    /**
+     * Abre el cobro (F12, Enter con el campo vacío o el botón Venta Hecha).
+     */
+    private void abrirCobro() {
+        if (modelo.getRowCount() == 0) {
+            mostrarAviso("No hay productos para cobrar");
+            enfocarCodigo();
+            return;
+        }
+        CobroDialog dialogo = new CobroDialog(javax.swing.SwingUtilities.getWindowAncestor(this),
+                conect.sumaVentaTemp(), conect);
+        CobroDialog.Resultado r = dialogo.mostrar();
+        if (r != null) registrarVenta(r);
+        enfocarCodigo();
+    }
+
+    /** Registra la venta cobrada, limpia el carrito y muestra el ticket. false si no se registró. */
+    private boolean registrarVenta(CobroDialog.Resultado r) {
+        // Guardar descuentos del carrito antes de registrar la venta
+        java.util.Map<String, Double> descuentos = new java.util.HashMap<>();
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            double dct = leerNumero("" + modelo.getValueAt(i, 6));
+            if (dct > 0) descuentos.put("" + modelo.getValueAt(i, 0), dct);
+        }
+
+        idTemV = conect.registrarVentaConFormaPago(Interfaz.idVendedor, r.idCliente, r.formaPago);
+        if (idTemV == null || idTemV.isEmpty()) {
+            // La venta no se registró (el error ya se mostró): conservar el carrito para reintentar
+            return false;
+        }
+        for (java.util.Map.Entry<String, Double> entry : descuentos.entrySet()) {
+            conect.actualizarDescuentoVenta(idTemV, entry.getKey(), entry.getValue());
+        }
+
+        conect.limpiarVentaTemp();
+        Mise.limpiarTabla(modelo);
+        precT = 0.0;
+        totalLabel.setText("Total: " + precT);
+        dctGlobal.setText("0");
+        limpiarAviso();
+        TicketData datosTicket = conect.obtenerDatosVenta(idTemV);
+        datosTicket.recibido = r.recibido;
+        datosTicket.cambio = r.cambio;
+        TicketDialog ticket = new TicketDialog(datosTicket, conect);
+        ticket.activarTeclasRapidas();
+        ticket.setVisible(true);
+        if (alCambiarStock != null) alCambiarStock.run();
+        return true;
     }
 
     private void aplicarDescuentoGlobal() {

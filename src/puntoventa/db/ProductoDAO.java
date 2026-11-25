@@ -355,6 +355,17 @@ public class ProductoDAO extends BaseDAO {
         return consultarONulo("SELECT * FROM producto WHERE estatus = 'Activo' AND cantidad<=12 ORDER BY id_producto");
     }
 
+    public int contarProductosPocos() {//Cuántos productos activos tienen 12 piezas o menos (aviso del menú)
+        try (Connection conexion = conectar();
+             PreparedStatement ps = conexion.prepareStatement("SELECT count(*) FROM producto WHERE estatus = 'Activo' AND cantidad<=12");
+             ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? rs.getInt(1) : 0;
+        } catch (SQLException e) {
+            GestorErrores.registrar(e);
+            return 0;
+        }
+    }
+
     public ResultSet buscarInventario(String texto) {//Inventario (con nombre de categoría); texto vacío = todo
         String base = "SELECT p.*, c.nombre AS categoria_nombre FROM producto p LEFT JOIN categoria c ON p.id_categoria = c.id_categoria WHERE p.estatus = 'Activo' ";
         if (texto == null || texto.isEmpty()) return consultarONulo(base + "ORDER BY p.id_producto");
