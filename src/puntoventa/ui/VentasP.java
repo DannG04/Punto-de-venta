@@ -43,7 +43,12 @@ public class VentasP extends javax.swing.JPanel {
     private javax.swing.JLabel jLabelLista = new javax.swing.JLabel("Lista de precios activa:");
     private javax.swing.JComboBox<String> cmbListaPrecios = new javax.swing.JComboBox<>();
     private java.util.ArrayList<Integer> listaIds = new java.util.ArrayList<>();
-    
+
+    // Comandos rápidos de teclado (manejados fuera del form editor)
+    private final javax.swing.JLabel avisoLabel = new javax.swing.JLabel(" ");
+    private int cantidadPendiente = 1;        // cantidad de un "N*texto" mientras se elige en la búsqueda
+    private Runnable alCambiarStock;          // Interfaz refresca el aviso de poco stock después de cobrar
+
     /**
      * Creates new form Ventas
      */
@@ -163,6 +168,9 @@ public class VentasP extends javax.swing.JPanel {
         jPanel2.add(cmbListaPrecios, gbcLista);
 
         cargarListasPrecios();
+
+        configurarComandosRapidos();
+        enfocarCodigo();
     }
 
     /**
@@ -927,32 +935,44 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_ventaRealiActionPerformed
 
     private void regActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regActionPerformed
-        if(!codigoProd.getText().isEmpty() && !cantidadProd.getText().isEmpty()){
-            String idProd = conect.resolverCodigo(codigoProd.getText().trim());
-            if (idProd == null) {
-                Mise.JOption("No existe un producto con ese código o código de barras.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        // Mismo camino que Enter en el campo de código; si "Cantidad" tiene número, ese gana
+        CapturaVenta c = CapturaVenta.interpretar(codigoProd.getText());
+        if (c.tipo == CapturaVenta.Tipo.VACIO) {
+            mostrarAviso("Escriba o escanee el código del producto");
+            enfocarCodigo();
+            return;
+        }
+        if (c.tipo == CapturaVenta.Tipo.INVALIDO) {
+            mostrarAviso(c.mensaje);
+            enfocarCodigo();
+            return;
+        }
+        int cantidad = c.cantidad;
+        String textoCant = cantidadProd.getText().trim();
+        if (!textoCant.isEmpty()) {
+            try { cantidad = Integer.parseInt(textoCant); } catch (NumberFormatException e) { cantidad = 0; }
+            if (cantidad < 1 || cantidad > CapturaVenta.CANTIDAD_MAXIMA) {
+                mostrarAviso("Cantidad no válida: use un número de 1 a " + CapturaVenta.CANTIDAD_MAXIMA);
                 return;
             }
-            double descuento = dctProd.getText().isEmpty() ? 0.0 : Double.parseDouble(dctProd.getText());
-            double maxDesc = conect.obtenerMaxDescuento(idProd);
-            if (descuento > maxDesc) {
-                Mise.JOption("El descuento máximo para este producto es " + maxDesc + "%.\nSe aplicará ese límite.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-                descuento = maxDesc;
-                dctProd.setText("" + maxDesc);
+        }
+        String idProd = resolverCodigo(c.texto);
+        if (idProd == null) {
+            if (c.soloDigitos()) {
+                mostrarAviso("No existe un producto con el código " + c.texto);
+                enfocarCodigo();
+            } else {
+                irABusqueda(c.texto, cantidad);
             }
-            String[] datos = {idProd, cantidadProd.getText()};
-            conect.insertarVentaTemp(datos, true);
-            conect.actualizarDescuentoTemp(idProd, descuento);
-            aplicarPrecioLista(idProd);
-            mostrarTablaVentaT();
+            return;
+        }
+        if (agregarProducto(idProd, cantidad)) {
             codigoProd.setText("");
             cantidadProd.setText("");
-            dctProd.setText("0");
             Busc.setText("");
             mostrarBusqueda("");
-        } else{
-            Mise.JOption("Debe llenar los dos campos de texto", "Error", JOptionPane.ERROR_MESSAGE);
         }
+        enfocarCodigo();
     }//GEN-LAST:event_regActionPerformed
 
     private void cantidadProdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cantidadProdKeyTyped
@@ -968,13 +988,11 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_cantidadProdKeyTyped
 
     private void codigoProdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_codigoProdKeyTyped
-        // TODO add your handling code here:
+        // Acepta código, código de barras, "N*código" o texto para buscar
         char letra = evt.getKeyChar();
-        if(!Cake.letrasMayus(letra) && !Cake.numeros(letra) && !Cake.guionShort(letra)){
-            evt.consume();
-        }
-
-        if(Cake.tamaño(codigoProd.getText(), 20)){
+        int seleccion = codigoProd.getSelectionEnd() - codigoProd.getSelectionStart();
+        if (Character.isISOControl(letra)
+                || codigoProd.getText().length() - seleccion >= CapturaVenta.LONGITUD_MAXIMA) {
             evt.consume();
         }
     }//GEN-LAST:event_codigoProdKeyTyped
@@ -1126,20 +1144,163 @@ public class VentasP extends javax.swing.JPanel {
         }
     }
 
-    private void aplicarPrecioLista(String idProd) {
-        if (listaIds.isEmpty()) return;
+    /** Aplica la lista de precios activa al renglón; regresa un aviso para la línea roja o null. */
+    private String aplicarPrecioLista(String idProd) {
+        if (listaIds.isEmpty()) return null;
         int idx = cmbListaPrecios.getSelectedIndex();
-        if (idx < 0) return;
+        if (idx < 0) return null;
         int idLista = listaIds.get(idx);
         String nombreLista = (String) cmbListaPrecios.getSelectedItem();
         double precioLista = conect.obtenerPrecioEnLista(idProd, idLista);
         if (precioLista < 0) {
-            Mise.JOption("El producto no tiene precio en la lista \"" + nombreLista +
-                "\". Se usará el precio de Menudeo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             conect.actualizarPrecioListaTemp(idProd, 0, "Menudeo"); // vuelve al precio automático
-        } else {
-            conect.actualizarPrecioListaTemp(idProd, precioLista, nombreLista);
+            return "El producto no tiene precio en la lista \"" + nombreLista + "\". Se usó el precio de Menudeo.";
         }
+        conect.actualizarPrecioListaTemp(idProd, precioLista, nombreLista);
+        return null;
+    }
+
+    // ===================== COMANDOS RÁPIDOS DE TECLADO =====================
+
+    private void configurarComandosRapidos() {
+        javax.swing.JPanel sur = new javax.swing.JPanel(new java.awt.GridLayout(0, 1));
+        sur.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 12, 6, 12));
+        avisoLabel.setFont(new java.awt.Font("Noto Serif", java.awt.Font.BOLD, 20));
+        avisoLabel.setForeground(new java.awt.Color(190, 30, 30));
+        javax.swing.JLabel ayuda = new javax.swing.JLabel(
+                "Enter Agregar · F2 Buscar · F4 Cantidad · Supr Quitar · +/- Cantidad · F12 COBRAR");
+        ayuda.setFont(new java.awt.Font("Noto Serif", java.awt.Font.PLAIN, 16));
+        sur.add(avisoLabel);
+        sur.add(ayuda);
+        add(sur, java.awt.BorderLayout.SOUTH);
+
+        tecla(codigoProd, javax.swing.JComponent.WHEN_FOCUSED, "ENTER", "procesarCaptura", this::procesarCaptura);
+    }
+
+    /** Registra una tecla (formato de KeyStroke.getKeyStroke(String)) con su acción. */
+    private static void tecla(javax.swing.JComponent c, int condicion, String teclaTexto, String nombre, Runnable accion) {
+        c.getInputMap(condicion).put(javax.swing.KeyStroke.getKeyStroke(teclaTexto), nombre);
+        c.getActionMap().put(nombre, new javax.swing.AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) { accion.run(); }
+        });
+    }
+
+    /** Enter en el campo de código: agrega, busca, avisa o (vacío) cobra. */
+    private void procesarCaptura() {
+        CapturaVenta c = CapturaVenta.interpretar(codigoProd.getText());
+        if (c.tipo == CapturaVenta.Tipo.VACIO) {
+            abrirCobro();
+            return;
+        }
+        if (c.tipo == CapturaVenta.Tipo.INVALIDO) {
+            mostrarAviso(c.mensaje);
+            codigoProd.selectAll();
+            return;
+        }
+        String idProd = resolverCodigo(c.texto);
+        if (idProd != null) {
+            if (agregarProducto(idProd, c.cantidad)) codigoProd.setText("");
+            else codigoProd.selectAll();
+        } else if (c.soloDigitos()) {
+            mostrarAviso("No existe un producto con el código " + c.texto);
+            codigoProd.selectAll();
+        } else {
+            irABusqueda(c.texto, c.cantidad);
+        }
+    }
+
+    /** id del producto por id o código de barras; reintenta en mayúsculas. null si no existe. */
+    private String resolverCodigo(String texto) {
+        String id = conect.resolverCodigo(texto);
+        String mayus = texto.toUpperCase();
+        if (id == null && !mayus.equals(texto)) id = conect.resolverCodigo(mayus);
+        return id;
+    }
+
+    /**
+     * Agrega (acumulando) el producto al carrito. Errores y avisos van a la línea roja,
+     * nunca a una ventana. Regresa true si el producto quedó en el carrito.
+     */
+    boolean agregarProducto(String idProd, int cantidad) {
+        double dctExistente = descuentoEnCarrito(idProd);
+        String error = conect.insertarVentaTempSinDialogo(new String[]{idProd, String.valueOf(cantidad)}, true);
+        if (error != null) {
+            mostrarAviso(error);
+            return false;
+        }
+        String aviso = null;
+        double descuento = leerNumero(dctProd.getText());
+        if (descuento > 0) {
+            double maxDesc = conect.obtenerMaxDescuento(idProd);
+            if (descuento > maxDesc) {
+                aviso = "El descuento máximo para este producto es " + maxDesc + "%. Se aplicó ese límite.";
+                descuento = maxDesc;
+            }
+            dctProd.setText("0");
+        } else {
+            descuento = dctExistente; // volver a escanear no le quita el descuento que ya tenía
+        }
+        if (descuento > 0) {
+            String errDct = conect.actualizarDescuentoTempSinDialogo(idProd, descuento);
+            if (errDct != null) aviso = errDct;
+        }
+        String avisoLista = aplicarPrecioLista(idProd);
+        if (avisoLista != null) aviso = avisoLista;
+        mostrarTablaVentaT();
+        seleccionarRenglon(idProd);
+        if (aviso != null) mostrarAviso(aviso);
+        else limpiarAviso();
+        return true;
+    }
+
+    /** Descuento (%) que ya tiene el producto en el carrito; 0 si no está. */
+    private double descuentoEnCarrito(String idProd) {
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            if (idProd.equals("" + modelo.getValueAt(i, 0))) {
+                Object d = modelo.getValueAt(i, 6);
+                return d == null ? 0.0 : leerNumero(d.toString());
+            }
+        }
+        return 0.0;
+    }
+
+    private static double leerNumero(String texto) {
+        try { return texto == null || texto.trim().isEmpty() ? 0.0 : Double.parseDouble(texto.trim()); }
+        catch (NumberFormatException e) { return 0.0; }
+    }
+
+    /** Muestra el aviso en rojo y suena el error (en lugar de una ventana que el lector cerraría). */
+    void mostrarAviso(String mensaje) {
+        avisoLabel.setText(mensaje == null || mensaje.isEmpty() ? " " : mensaje);
+        java.awt.Toolkit.getDefaultToolkit().beep();
+    }
+
+    void limpiarAviso() {
+        avisoLabel.setText(" ");
+    }
+
+    void seleccionarRenglon(String idProd) {
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            if (idProd.equals("" + modelo.getValueAt(i, 0))) {
+                tablaVentas.setRowSelectionInterval(i, i);
+                tablaVentas.scrollRectToVisible(tablaVentas.getCellRect(i, 0, true));
+                return;
+            }
+        }
+    }
+
+    public void enfocarCodigo() {
+        javax.swing.SwingUtilities.invokeLater(codigoProd::requestFocusInWindow);
+    }
+
+    /** Pasa el texto a la búsqueda de productos (Task 4 la completa). */
+    private void irABusqueda(String texto, int cantidad) {
+        mostrarAviso("No se encontró el código \"" + texto + "\"");
+    }
+
+    /** Abre el cobro (Task 6 lo completa). */
+    private void abrirCobro() {
     }
 
     private void aplicarDescuentoGlobal() {
