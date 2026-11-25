@@ -832,52 +832,7 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_recCTKeyTyped
 
     private void hechoCambActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hechoCambActionPerformed
-        if(recCT.getText().isEmpty()){
-            Mise.JOption("El campo no puede estar vacío", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            Double a = Double.valueOf(recCT.getText());
-            Double b = Double.valueOf(totalCT.getText());
-            if(a < b){
-                Mise.JOption("Lo recibido no debe ser menor que el total", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                // Guardar descuentos del carrito antes de registrar la venta
-                java.util.Map<String, Double> descuentos = new java.util.HashMap<>();
-                for (int i = 0; i < modelo.getRowCount(); i++) {
-                    String idProd = "" + modelo.getValueAt(i, 0);
-                    Object dctObj = modelo.getValueAt(i, 6);
-                    double dct = (dctObj != null && !dctObj.toString().isEmpty()) ? Double.parseDouble(dctObj.toString()) : 0.0;
-                    if (dct > 0) descuentos.put(idProd, dct);
-                }
-
-                String formaPago = (String) cmbFormaPago.getSelectedItem();
-                idTemV = conect.registrarVentaConFormaPago(Interfaz.idVendedor,  id_cliente, formaPago);
-                if (idTemV == null || idTemV.isEmpty()) {
-                    // La venta no se registró (el error ya se mostró): conservar el carrito
-                    // para reintentar en lugar de vaciarlo y mostrar un ticket vacío.
-                    return;
-                }
-
-                // Persistir descuentos en venta_detalle
-                for (java.util.Map.Entry<String, Double> entry : descuentos.entrySet()) {
-                    conect.actualizarDescuentoVenta(idTemV, entry.getKey(), entry.getValue());
-                }
-
-                conect.limpiarVentaTemp();
-                Mise.limpiarTabla(modelo);
-                precT = 0.0;
-                totalLabel.setText("Total: " + precT);
-                dctGlobal.setText("0");
-                ventaDialog.setVisible(false);
-                TicketData datosTicket = conect.obtenerDatosVenta(idTemV);
-                datosTicket.recibido = recCT.getText().isEmpty() ? datosTicket.total : Double.valueOf(recCT.getText());
-                datosTicket.cambio   = cambCT.getText().isEmpty() ? 0.0 : Double.valueOf(cambCT.getText());
-                new TicketDialog(datosTicket, conect).setVisible(true);
-                if(conect.hayPocosProductos()){
-                    mostrarProdPocos();
-                    prodPocosDialog.setVisible(true);
-                }
-            }
-        }
+        // Reemplazado por CobroDialog (comandos rápidos)
     }//GEN-LAST:event_hechoCambActionPerformed
 
     private void cancelarBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarBActionPerformed
@@ -930,12 +885,7 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_elimActionPerformed
 
     private void ventaRealiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ventaRealiActionPerformed
-        if(modelo.getRowCount() != 0){
-            mostrarClientes("");
-            regVentaDialog.setVisible(true);
-        } else{
-            Mise.JOption("No es posible registrar una venta sin productos", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        abrirCobro(false);
     }//GEN-LAST:event_ventaRealiActionPerformed
 
     private void regActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regActionPerformed
@@ -1015,15 +965,7 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_tablaBuscMouseClicked
 
     private void tablaCliMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaCliMouseClicked
-        id_cliente = "" + tablaCli.getValueAt(tablaCli.getSelectedRow(), 0);
-        precT = conect.sumaVentaTemp();
-        recCT.setText("");
-        totalCT.setText("" + precT);
-        cambCT.setText("0.0");
-        panelAct.setVisible(false);
-        panelCamb.setVisible(true);
-        regVentaDialog.setVisible(false);
-        ventaDialog.setVisible(true);
+        // Reemplazado por CobroDialog (comandos rápidos)
     }//GEN-LAST:event_tablaCliMouseClicked
 
     private void curpClienteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_curpClienteKeyTyped
@@ -1103,18 +1045,6 @@ public class VentasP extends javax.swing.JPanel {
             modeloCli.fireTableDataChanged();
         }catch(java.sql.SQLException e){
             System.out.println("Error al mostrar la tabla de clientes");
-        }
-    }
-    
-    public void mostrarProdPocos(){
-        Mise.limpiarTabla(modeloProdP);
-        java.sql.ResultSet rs = conect.obtenerProductosPocos();
-        try{
-            while(rs.next()){
-                modeloProdP.addRow(new Object[]{rs.getString("id_producto"), rs.getString("nombre"), rs.getInt("cantidad")});
-            }
-        } catch(java.sql.SQLException e){
-            System.out.println("Error al mostrar la tabla pocos productos");
         }
     }
     
@@ -1206,6 +1136,7 @@ public class VentasP extends javax.swing.JPanel {
             if (codigoVacio()) cambiarCantidadSeleccionada(-1); else codigoProd.replaceSelection("-");
         });
         tecla(this, javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, "F4", "editarRenglon", () -> actBActionPerformed(null));
+        tecla(this, javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, "F12", "cobrar", () -> abrirCobro(false));
 
         // Diálogo de actualizar renglón (F4): Enter guarda, Esc cancela
         Runnable guardarRenglon = hechoAct::doClick;
@@ -1288,7 +1219,7 @@ public class VentasP extends javax.swing.JPanel {
     private void procesarCaptura() {
         CapturaVenta c = CapturaVenta.interpretar(codigoProd.getText());
         if (c.tipo == CapturaVenta.Tipo.VACIO) {
-            abrirCobro();
+            abrirCobro(true);
             return;
         }
         if (c.tipo == CapturaVenta.Tipo.INVALIDO) {
@@ -1440,8 +1371,59 @@ public class VentasP extends javax.swing.JPanel {
         enfocarCodigo();
     }
 
-    /** Abre el cobro (Task 6 lo completa). */
-    private void abrirCobro() {
+    public void setAlCambiarStock(Runnable accion) {
+        this.alCambiarStock = accion;
+    }
+
+    /**
+     * Abre el cobro (F12, Enter con el campo vacío o el botón Venta Hecha).
+     * @param conEnter true si se abrió con Enter (ese Enter no debe cobrar solo)
+     */
+    private void abrirCobro(boolean conEnter) {
+        if (modelo.getRowCount() == 0) {
+            mostrarAviso("No hay productos para cobrar");
+            enfocarCodigo();
+            return;
+        }
+        CobroDialog dialogo = new CobroDialog(javax.swing.SwingUtilities.getWindowAncestor(this),
+                conect.sumaVentaTemp(), conect, conEnter);
+        CobroDialog.Resultado r = dialogo.mostrar();
+        if (r != null) registrarVenta(r);
+        enfocarCodigo();
+    }
+
+    /** Registra la venta cobrada, limpia el carrito y muestra el ticket. false si no se registró. */
+    private boolean registrarVenta(CobroDialog.Resultado r) {
+        // Guardar descuentos del carrito antes de registrar la venta
+        java.util.Map<String, Double> descuentos = new java.util.HashMap<>();
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            double dct = leerNumero("" + modelo.getValueAt(i, 6));
+            if (dct > 0) descuentos.put("" + modelo.getValueAt(i, 0), dct);
+        }
+
+        idTemV = conect.registrarVentaConFormaPago(Interfaz.idVendedor, r.idCliente, r.formaPago);
+        if (idTemV == null || idTemV.isEmpty()) {
+            // La venta no se registró (el error ya se mostró): conservar el carrito para reintentar
+            return false;
+        }
+        for (java.util.Map.Entry<String, Double> entry : descuentos.entrySet()) {
+            conect.actualizarDescuentoVenta(idTemV, entry.getKey(), entry.getValue());
+        }
+
+        conect.limpiarVentaTemp();
+        Mise.limpiarTabla(modelo);
+        precT = 0.0;
+        totalLabel.setText("Total: " + precT);
+        dctGlobal.setText("0");
+        limpiarAviso();
+        TicketData datosTicket = conect.obtenerDatosVenta(idTemV);
+        datosTicket.recibido = r.recibido;
+        datosTicket.cambio = r.cambio;
+        TicketDialog ticket = new TicketDialog(datosTicket, conect);
+        ticket.activarTeclasRapidas(r.conEnter);
+        ticket.setVisible(true);
+        if (alCambiarStock != null) alCambiarStock.run();
+        return true;
     }
 
     private void aplicarDescuentoGlobal() {

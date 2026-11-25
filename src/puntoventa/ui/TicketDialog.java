@@ -84,6 +84,26 @@ public class TicketDialog extends javax.swing.JDialog {
         cerrar();
     }//GEN-LAST:event_btnCerrarActionPerformed
 
+    /**
+     * Enter = Imprimir, Esc = Cerrar. Solo lo activa Ventas (Apartados no cambia).
+     * @param abiertoConEnter true si el cobro se confirmó con Enter: ese Enter no debe imprimir
+     */
+    public void activarTeclasRapidas(boolean abiertoConEnter) {
+        puntoventa.util.GuardaEnter guarda = new puntoventa.util.GuardaEnter(300);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                guarda.abrir(System.currentTimeMillis(), abiertoConEnter);
+            }
+        });
+        javax.swing.JRootPane raiz = getRootPane();
+        CobroDialog.tecla(raiz, javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW, "ENTER", "imprimir", () -> {
+            if (guarda.permite(System.currentTimeMillis())) btnImprimir.doClick();
+        });
+        CobroDialog.tecla(raiz, javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW, "released ENTER", "soltarEnter", guarda::soltado);
+        CobroDialog.tecla(raiz, javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW, "ESCAPE", "cerrar", this::cerrar);
+    }
+
     private void cerrar() {
         if (!yaImprimio && hayImpresora()) {
             imprimirSegunTipo();

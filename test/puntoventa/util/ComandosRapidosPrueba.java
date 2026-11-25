@@ -35,6 +35,16 @@ public class ComandosRapidosPrueba {
         g.abrir(1000);
         check(!g.permite(1000) && !g.permite(1299) && g.permite(1300) && g.permite(5000), "CU-CR-08 bloquea los primeros 300 ms");
 
+        // Enter sostenido: la repetición del teclado empieza ~500 ms después, así que el tiempo no basta
+        GuardaEnter h = new GuardaEnter(300);
+        h.abrir(1000, true);
+        check(!h.permite(2000), "CU-CR-09 Enter sostenido desde antes de abrir no confirma");
+        h.soltado();
+        check(h.permite(2000), "CU-CR-09 tras soltar Enter, el siguiente sí confirma");
+        GuardaEnter k = new GuardaEnter(300);
+        k.abrir(1000, false);
+        check(k.permite(1300), "CU-CR-09 abierto sin Enter no espera a que se suelte");
+
         terminar("ComandosRapidosPrueba");
     }
 }
