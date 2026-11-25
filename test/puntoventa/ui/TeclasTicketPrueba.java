@@ -11,6 +11,11 @@ import javax.swing.*;
  */
 public class TeclasTicketPrueba {
     public static void main(String[] a) throws Exception {
+        if (java.awt.GraphicsEnvironment.isHeadless()) {
+            // El CI corre sin pantalla y un JDialog no se puede crear ahí; se prueba en una máquina con pantalla
+            System.out.println("TeclasTicketPrueba: omitida (sin pantalla)");
+            return;
+        }
         SwingUtilities.invokeAndWait(() -> {
             puntoventa.report.TicketData d = new puntoventa.report.TicketData();
             d.tipo = puntoventa.report.TipoTicket.VENTA;
