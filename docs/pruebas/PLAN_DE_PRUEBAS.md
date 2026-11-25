@@ -26,6 +26,8 @@ Casos de uso, escenarios y resultados. Primera ejecución: **2026-11-23** (versi
 | `test/puntoventa/web/WebInventarioPruebaBD` | Servidor de inventario para el celular |
 | `test/puntoventa/ui/PantallasPruebaBD` | Carga de las 16 pantallas |
 | `test/puntoventa/util/UtilidadesPrueba` | Mensajes de error, códigos de barras, ticket |
+| `test/puntoventa/util/ComandosRapidosPrueba` | Comandos rápidos de Ventas: captura `N*código`, montos del cobro, protección contra Enter de más (sin base) |
+| `test/puntoventa/db/ComandosRapidosPruebaBD` | Agregar al carrito sin ventana de error, conteo de poco stock |
 
 ## 2. Actores
 
@@ -241,6 +243,31 @@ Estado: ✅ pasa · ❌ falla (defecto en la sección 6) · ✋ manual pendiente
 | CU-UTL-01 | Mensajes de error amigables por código de PostgreSQL | A | ✅ |
 | CU-UTL-02 | EAN-13 con dígito verificador, CODE-128, QR, código automático | A | ✅ |
 | CU-UTL-03 | Ticket: encabezado, escape de HTML, apartado con fecha límite | A | ✅ |
+
+### Comandos rápidos de Ventas (CU-CR)
+
+| ID | Caso | Tipo | Estado |
+|---|---|---|---|
+| CU-CR-01..05 | Captura: vacío, código, ceros a la izquierda, `N*código`, texto, cantidades inválidas | A | ✅ |
+| CU-CR-06..07 | Montos del cobro: formatos válidos e inválidos, tolerancia de centavos, cambio | A | ✅ |
+| CU-CR-08..09 | Enter de más: 300 ms al abrir y esperar a que se suelte el Enter que abrió el diálogo | A | ✅ |
+| CU-CR-10..13 | Agregar al carrito y descuento sin ventana: éxito, sin existencia, inexistente | A | ✅ |
+| CU-CR-14 | Conteo de productos con poco stock | A | ✅ |
+
+**Prueba manual en la aplicación** (la interfaz no tiene pruebas automáticas):
+
+1. Escanear un mismo producto 5 veces rápido: queda con cantidad 5.
+2. `3*` y luego escanear: suma 3.
+3. Escanear un código no registrado: aviso rojo y sonido; el siguiente escaneo lo reemplaza.
+4. Escribir `coca` + Enter: búsqueda. Con varios resultados, ↓ y Enter agrega.
+5. ↑/↓, `+`/`-`, `Supr` y `F4` sobre el carrito. Al volver a escanear un renglón con descuento, el descuento se conserva.
+6. `F12` + Enter: cobra con pago justo a Público general.
+7. `F12`, `500`, Enter: muestra el cambio. `F3`: Recibido queda deshabilitado.
+8. `F5`: elegir cliente por nombre con el teclado.
+9. Ticket: Enter imprime, Esc cierra; el cursor vuelve a Código.
+10. Mantener Enter presionado con el campo vacío: abre el cobro pero no cobra hasta soltar y volver a pulsar.
+11. El ticket desde Apartados se comporta igual que antes (sin teclas nuevas).
+12. El menú muestra `Inventario (⚠ N)` y la casilla *Solo poco stock* filtra.
 
 ---
 

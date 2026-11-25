@@ -28,6 +28,41 @@ En el menú superior haz clic en **Ventas**.
 12. **Buscar:** busca productos por nombre o código.
 13. **Resultados de la búsqueda,** con precios y existencia.
 
+## Cobrar con el teclado (lo más rápido)
+
+Toda la venta se puede hacer sin mouse, con el teclado o con el lector de código de barras. Al entrar a Ventas el cursor ya está en **Código**, y vuelve ahí después de cada producto.
+
+1. **Escanea o escribe el código y pulsa Enter.** El producto entra con cantidad 1. Si ya estaba en el carrito, se le suma 1.
+2. **¿Lleva varios?** Escribe la cantidad y un asterisco antes del código: `3*7501234567890` y Enter. Con lector: escribe `3*` y escanea.
+3. **¿No sabes el código?** Escribe parte del nombre (por ejemplo `coca`) y Enter. Se abre la búsqueda; si hay un solo resultado se agrega solo. Si hay varios, elige con ↑/↓ y pulsa Enter.
+4. **Para cobrar** pulsa **F12**, o **Enter con el campo de código vacío**. Si te pagan justo, pulsa Enter otra vez y listo.
+
+| Tecla | En la pantalla de Ventas |
+|---|---|
+| **Enter** | Agrega el código escrito. Con el campo vacío, abre el cobro. |
+| `N*código` | Agrega N piezas (de 1 a 9999). |
+| **F2** | Ir a la búsqueda de productos. En la búsqueda: ↓ entra a la lista, Enter agrega, Esc regresa. |
+| **↑ / ↓** | Moverse por los renglones del carrito (con el campo de código vacío). |
+| **+ / -** | Sumar o restar una pieza al renglón seleccionado. En 0 se quita. |
+| **Supr** | Quitar el renglón seleccionado. |
+| **F4** | Cambiar la cantidad o el descuento del renglón seleccionado. Enter guarda, Esc cancela. |
+| **F12** | Cobrar. |
+
+| Tecla | En la ventana de cobro |
+|---|---|
+| **Enter** | Cobrar. |
+| **F1 / F2 / F3 / F4** | Forma de pago: Efectivo / Transferencia / Tarjeta / Otro. |
+| **F5** | Elegir otro cliente (por CURP o nombre). |
+| **Esc** | Regresar al carrito sin cobrar. |
+
+En el ticket: **Enter** imprime y **Esc** cierra.
+
+### La línea roja
+
+Si algo sale mal al agregar (un código que no existe, falta de existencia, una cantidad mal escrita, un producto sin precio en la lista), **no se abre ninguna ventana**: suena un aviso y el mensaje aparece en **rojo abajo de la pantalla**. Lo que escribiste se queda en el campo, seleccionado, así que puedes corregirlo o escanear el siguiente producto encima.
+
+La línea roja se borra sola cuando agregas el siguiente producto.
+
 ## Agregar productos al carrito
 
 Hay dos formas:
@@ -52,11 +87,16 @@ Cuando el cliente lleva **12 piezas o más** del mismo producto, el carrito apli
 
 ### Mensajes al agregar
 
+Aparecen en la línea roja de abajo:
+
 | Mensaje | Qué hacer |
 |---|---|
-| *Debe llenar los dos campos de texto* | Escribe el código y la cantidad. |
-| *No existe un producto con ese código o código de barras.* | Revisa el código o búscalo por nombre. |
+| *Escriba o escanee el código del producto* | El campo **Código** está vacío. |
+| *No existe un producto con el código …* | Revisa el código o búscalo por nombre. |
+| *Cantidad no válida …* | Usa un número de 1 a 9999 (en **Cantidad** o antes del `*`). |
 | *No hay suficiente cantidad de productos* | No hay existencia suficiente; agrega menos piezas. |
+
+La **Cantidad** ya no es obligatoria: si la dejas vacía se agrega 1 pieza.
 
 ## Descuentos
 
@@ -104,39 +144,27 @@ Si un producto no tiene precio en la lista elegida, el sistema avisa y usa el pr
 
 ## Cobrar
 
-1. Pulsa **Venta Hecha**.
-2. Elige al **cliente**. Para una venta normal haz clic en **Público general**. Puedes buscar a un cliente escribiendo su CURP; si es nuevo, pulsa **Registrar nuevo cliente**.
+1. Pulsa **Venta Hecha**, **F12** o Enter con el campo de código vacío.
+2. Se abre la ventana de cobro. La venta va a **Público general**; para ponerla a nombre de un cliente pulsa **F5** y búscalo por CURP o nombre (si es nuevo, pulsa **Registrar nuevo cliente**).
+3. **Recibido** ya trae el total escrito:
+   - **Pago justo:** pulsa Enter.
+   - **Pagan con billete:** escribe con cuánto pagan (por ejemplo `500`). El **CAMBIO** aparece en grande; pulsa Enter.
+   - **Otra forma de pago:** pulsa F2 (Transferencia), F3 (Tarjeta) o F4 (Otro). F1 regresa a Efectivo.
 
-![Elegir al cliente](img/10_elegir_cliente.png)
-
-3. Se abre la ventana de cobro:
-
-![Cobro](img/11_cobro.png)
-
-1. **Total** a pagar.
-2. **Recibido:** cuánto te entregó el cliente.
-3. **Cambio:** se calcula solo.
-4. **Forma de Pago:** Efectivo, Transferencia, Tarjeta u Otro.
-5. **Hecho:** registra la venta.
-6. **Cancelar:** regresa al carrito sin cobrar.
-
-4. Aparece el **ticket**. Pulsa **Imprimir** para entregarlo al cliente o **Cerrar**.
+   Si lo recibido es menor que el total, el aviso aparece en rojo dentro de la ventana y no se registra la venta. **Esc** regresa al carrito sin perder nada.
+4. Aparece el **ticket**. Pulsa **Imprimir** (o Enter) para entregarlo al cliente, o **Cerrar** (o Esc).
 
 ![Ticket de venta](img/12_ticket.png)
 
-El carrito queda vacío y listo para el siguiente cliente.
+El carrito queda vacío y el cursor regresa a **Código**, listo para el siguiente cliente.
 
-Si intentas cobrar sin productos, aparece el aviso *"No es posible registrar una venta sin productos"*:
+Para que un Enter de más no cobre ni imprima por accidente, la ventana de cobro y el ticket no aceptan Enter hasta que sueltas la tecla con la que los abriste.
 
-![Venta sin productos](img/02_sin_productos.png)
+Si intentas cobrar sin productos, aparece el aviso *"No hay productos para cobrar"* en la línea roja.
 
-Si lo recibido es menor que el total, el sistema lo indica y no registra la venta.
+## Productos por agotarse
 
-## Aviso de productos por agotarse
-
-Después de cobrar, si hay productos con **12 piezas o menos**, aparece la lista **"Quedan pocos productos en el inventario"**. Pulsa **Aceptar** y avisa al encargado de compras.
-
-![Productos por agotarse](img/13_pocos_productos.png)
+El aviso de productos con **12 piezas o menos** ya no interrumpe el cobro. Ahora aparece en el menú, en el botón **Inventario (⚠ N)**. Ver el manual de Inventario.
 
 ## Consejos
 
