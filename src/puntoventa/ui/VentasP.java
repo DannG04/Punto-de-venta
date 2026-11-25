@@ -878,23 +878,14 @@ public class VentasP extends javax.swing.JPanel {
     }//GEN-LAST:event_recCTKeyReleased
 
     private void BuscKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_BuscKeyTyped
+        // Letras (con acentos y ñ), dígitos, espacio y guion; sin espacio al inicio
         char letra = evt.getKeyChar();
-        if(!Cake.letrasMayus(letra) && !Cake.letrasMinus(letra) && !Cake.numeros(letra) && !(Cake.inicioEspacios(letra))){
+        boolean permitido = Character.isLetterOrDigit(letra) || letra == ' ' || letra == '-';
+        if (!permitido || (letra == ' ' && Busc.getText().isEmpty())) {
             evt.consume();
         }
-        
-        if(!(Busc.getText().isEmpty())){
-            if(Cake.espacios(Busc.getText(), letra)){
-                evt.consume();
-            }
-        }
-        else{
-            if(Cake.inicioEspacios(letra)){
-                evt.consume();
-            }
-        }
-        
-        if(Cake.tamaño(Busc.getText(), 30)){
+        int seleccion = Busc.getSelectionEnd() - Busc.getSelectionStart();
+        if (Busc.getText().length() - seleccion >= CapturaVenta.LONGITUD_MAXIMA) {
             evt.consume();
         }
     }//GEN-LAST:event_BuscKeyTyped
@@ -1175,6 +1166,16 @@ public class VentasP extends javax.swing.JPanel {
         add(sur, java.awt.BorderLayout.SOUTH);
 
         tecla(codigoProd, javax.swing.JComponent.WHEN_FOCUSED, "ENTER", "procesarCaptura", this::procesarCaptura);
+
+        // Búsqueda sin mouse
+        tecla(this, javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, "F2", "buscar", this::buscarDesdeCodigo);
+        tecla(Busc, javax.swing.JComponent.WHEN_FOCUSED, "ENTER", "elegirBusqueda", () -> elegirDesdeBusqueda(true));
+        tecla(Busc, javax.swing.JComponent.WHEN_FOCUSED, "DOWN", "bajarBusqueda", () -> elegirDesdeBusqueda(false));
+        tecla(Busc, javax.swing.JComponent.WHEN_FOCUSED, "ESCAPE", "salirBusqueda", this::volverACodigo);
+        // JTable trae su acción de Enter ("siguiente fila") en este InputMap: se reemplaza
+        tecla(tablaBusc, javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, "ENTER", "agregarBusqueda",
+                () -> agregarDesdeBusqueda(tablaBusc.getSelectedRow()));
+        tecla(tablaBusc, javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, "ESCAPE", "salirTablaBusqueda", this::volverACodigo);
     }
 
     /** Registra una tecla (formato de KeyStroke.getKeyStroke(String)) con su acción. */
@@ -1294,9 +1295,52 @@ public class VentasP extends javax.swing.JPanel {
         javax.swing.SwingUtilities.invokeLater(codigoProd::requestFocusInWindow);
     }
 
-    /** Pasa el texto a la búsqueda de productos (Task 4 la completa). */
+    /** Pasa el texto a la búsqueda de productos y guarda la cantidad para cuando elijan uno. */
     private void irABusqueda(String texto, int cantidad) {
-        mostrarAviso("No se encontró el código \"" + texto + "\"");
+        cantidadPendiente = cantidad;
+        Busc.setText(texto);
+        mostrarBusqueda(texto);
+        limpiarAviso();
+        Busc.requestFocusInWindow();
+    }
+
+    /** F2: abre la búsqueda con lo que haya en el campo de código (respeta un "N*texto"). */
+    private void buscarDesdeCodigo() {
+        CapturaVenta c = CapturaVenta.interpretar(codigoProd.getText());
+        if (c.tipo == CapturaVenta.Tipo.PRODUCTO) irABusqueda(c.texto, c.cantidad);
+        else irABusqueda("", 1);
+    }
+
+    /** Enter (o ↓) en el campo de búsqueda. */
+    private void elegirDesdeBusqueda(boolean agregarSiEsUnico) {
+        int filas = modeloBusc.getRowCount();
+        if (filas == 0) {
+            mostrarAviso("No se encontraron productos con \"" + Busc.getText().trim() + "\"");
+            return;
+        }
+        if (filas == 1 && agregarSiEsUnico) {
+            agregarDesdeBusqueda(0);
+            return;
+        }
+        tablaBusc.setRowSelectionInterval(0, 0);
+        tablaBusc.scrollRectToVisible(tablaBusc.getCellRect(0, 0, true));
+        tablaBusc.requestFocusInWindow();
+    }
+
+    private void agregarDesdeBusqueda(int fila) {
+        if (fila < 0 || fila >= modeloBusc.getRowCount()) return;
+        String idProd = "" + modeloBusc.getValueAt(fila, 0);
+        if (agregarProducto(idProd, cantidadPendiente)) {
+            codigoProd.setText("");
+            volverACodigo();
+        }
+    }
+
+    private void volverACodigo() {
+        Busc.setText("");
+        mostrarBusqueda("");
+        cantidadPendiente = 1;
+        enfocarCodigo();
     }
 
     /** Abre el cobro (Task 6 lo completa). */
