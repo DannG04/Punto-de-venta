@@ -67,10 +67,14 @@ public class ConexionBD extends BaseDAO {
 
     public boolean hayPocosProductos() { return productos.hayPocosProductos(); }
 
+    public int contarProductosPocos() { return productos.contarProductosPocos(); }
+
     // FUNCIONES DE LA TABLA DE VENTA TEMPORAL
     public void limpiarVentaTemp() { ventas.limpiarVentaTemp(); }
 
     public void insertarVentaTemp(String[] campos, boolean acum) { ventas.insertarVentaTemp(campos, acum); }
+
+    public String insertarVentaTempSinDialogo(String[] campos, boolean acum) { return ventas.insertarVentaTempSinDialogo(campos, acum); }
 
     public void eliminarVentaTemp(String ide) { ventas.eliminarVentaTemp(ide); }
 
@@ -236,6 +240,8 @@ public class ConexionBD extends BaseDAO {
     public double obtenerMaxDescuento(String idProducto) { return productos.obtenerMaxDescuento(idProducto); }
 
     public void actualizarDescuentoTemp(String idProducto, double descuento) { ventas.actualizarDescuentoTemp(idProducto, descuento); }
+
+    public String actualizarDescuentoTempSinDialogo(String idProducto, double descuento) { return ventas.actualizarDescuentoTempSinDialogo(idProducto, descuento); }
 
     public void actualizarDescuentoVenta(String idVenta, String idProducto, double descuento) { ventas.actualizarDescuentoVenta(idVenta, idProducto, descuento); }
 

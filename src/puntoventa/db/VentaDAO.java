@@ -75,15 +75,26 @@ public class VentaDAO extends BaseDAO {
     }
 
     public void insertarVentaTemp(String[] campos, boolean acum) {//Función para insertar una venta temporal
+        mostrarSiHayError(insertarVentaTempSinDialogo(campos, acum));
+    }
+
+    /** Igual que insertarVentaTemp pero sin ventana: regresa null si salió bien o el mensaje para el usuario. */
+    public String insertarVentaTempSinDialogo(String[] campos, boolean acum) {
         try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call set_venta_temp(?::id_producto_dominio,?,?)}");
             cstm.setString(1, campos[0]);
             cstm.setObject(2, campos[1], Types.INTEGER);
             cstm.setBoolean(3, acum);
             cstm.execute();
+            return null;
         } catch (SQLException e) {
-            GestorErrores.manejar(e);
+            GestorErrores.registrar(e);
+            return GestorErrores.mensajeAmigable(e);
         }
+    }
+
+    private static void mostrarSiHayError(String mensaje) {
+        if (mensaje != null) Mise.JOption(mensaje, "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
     }
 
     public void eliminarVentaTemp(String ide) {//Función para eliminar una venta temporal
@@ -155,13 +166,20 @@ public class VentaDAO extends BaseDAO {
 
     // FUNCIONES DE DESCUENTOS
     public void actualizarDescuentoTemp(String idProducto, double descuento) {//Función para actualizar el descuento en venta_temp
+        mostrarSiHayError(actualizarDescuentoTempSinDialogo(idProducto, descuento));
+    }
+
+    /** Igual que actualizarDescuentoTemp pero sin ventana: null si salió bien o el mensaje para el usuario. */
+    public String actualizarDescuentoTempSinDialogo(String idProducto, double descuento) {
         try (Connection conexion = conectar()) {
             CallableStatement cstm = conexion.prepareCall("{call actualizar_desc_temp(?::id_producto_dominio, ?::numeric)}");
             cstm.setString(1, idProducto);
             cstm.setDouble(2, descuento);
             cstm.execute();
+            return null;
         } catch (SQLException e) {
-            GestorErrores.manejar(e);
+            GestorErrores.registrar(e);
+            return GestorErrores.mensajeAmigable(e);
         }
     }
 

@@ -84,6 +84,33 @@ public class TicketDialog extends javax.swing.JDialog {
         cerrar();
     }//GEN-LAST:event_btnCerrarActionPerformed
 
+    /**
+     * Enter = Imprimir, Esc = Cerrar. Solo lo activa Ventas (Apartados no cambia).
+     * Si el Enter que confirmó el cobro sigue abajo, no imprime hasta soltarlo.
+     */
+    public void activarTeclasRapidas() {
+        puntoventa.util.GuardaEnter guarda = new puntoventa.util.GuardaEnter(300);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                guarda.abrir(System.currentTimeMillis(), puntoventa.util.EstadoEnter.abajo());
+            }
+        });
+        Runnable imprimir = () -> {
+            if (guarda.permite(System.currentTimeMillis())) btnImprimir.doClick();
+        };
+        javax.swing.JRootPane raiz = getRootPane();
+        CobroDialog.tecla(raiz, javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW, "ENTER", "imprimir", imprimir);
+        // El JEditorPane del ticket se tragaba Enter (insert-break) y algunos look-and-feel
+        // asignan Enter a los botones con foco: todos llevan a la misma acción protegida
+        ticketPane.setFocusable(false);
+        for (javax.swing.JButton b : new javax.swing.JButton[]{btnImprimir, btnCerrar}) {
+            CobroDialog.tecla(b, javax.swing.JComponent.WHEN_FOCUSED, "ENTER", "imprimir", imprimir);
+        }
+        CobroDialog.tecla(raiz, javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW, "released ENTER", "soltarEnter", guarda::soltado);
+        CobroDialog.tecla(raiz, javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW, "ESCAPE", "cerrar", this::cerrar);
+    }
+
     private void cerrar() {
         if (!yaImprimio && hayImpresora()) {
             imprimirSegunTipo();

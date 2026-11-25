@@ -32,6 +32,12 @@ En el menú superior haz clic en **Inventario**.
 8. **Dados de baja:** consulta y reactiva productos dados de baja.
 9. **Ajustar existencia:** corrige la cantidad en existencia del producto seleccionado.
 
+## Productos por agotarse
+
+Cuando hay productos con **12 piezas o menos**, el botón del menú se pone en rojo y dice cuántos son, por ejemplo **Inventario (⚠ 3)**. El número se actualiza al cambiar de módulo y después de cada venta.
+
+Para verlos, entra a Inventario y marca la casilla **Solo poco stock**, junto al filtro de categoría. Al desmarcarla, buscar o elegir una categoría, la tabla vuelve a mostrar todo.
+
 ## Buscar un producto
 
 Escribe en **Buscar** parte del nombre o del código; la tabla se filtra mientras escribes. No importa si escribes con mayúsculas o minúsculas.
