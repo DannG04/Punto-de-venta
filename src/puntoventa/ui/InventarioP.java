@@ -64,13 +64,32 @@ public class InventarioP extends javax.swing.JPanel {
      */
     // Botón agregado fuera del editor de formularios (ver configurarAjusteExistencia)
     private final javax.swing.JButton ajusteB = new javax.swing.JButton();
+    // Casilla agregada fuera del editor de formularios (ver configurarFiltroPocoStock)
+    private final javax.swing.JCheckBox soloPocoStock = new javax.swing.JCheckBox("Solo poco stock");
 
     public InventarioP() {
         initComponents();
         modelo=(DefaultTableModel)tablaVentas.getModel();
         cargarFiltroCategorias();
         configurarAjusteExistencia();
+        configurarFiltroPocoStock();
         mostrarTabla("");
+    }
+
+    /** Casilla junto al filtro de categoría: muestra solo los productos con 12 piezas o menos. */
+    private void configurarFiltroPocoStock() {
+        soloPocoStock.setFont(new java.awt.Font("Noto Serif", java.awt.Font.BOLD, 16));
+        soloPocoStock.setForeground(new java.awt.Color(190, 30, 30));
+        soloPocoStock.addActionListener(e -> {
+            if (soloPocoStock.isSelected()) mostrarInventario(conect.obtenerProductosPocos());
+            else filtroCategoriaActionPerformed(null);
+        });
+        java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 2;
+        gbc.anchor = java.awt.GridBagConstraints.WEST;
+        gbc.insets = new java.awt.Insets(5, 10, 10, 10);
+        jPanel1.add(soloPocoStock, gbc);
     }
 
     /** Agrega "Ajustar existencia" al panel de botones (solo visible para el gerente, como los demás). */
@@ -1277,6 +1296,7 @@ public class InventarioP extends javax.swing.JPanel {
 
     //TABLAS
     public final void mostrarTabla(String busqueda){//Inventario por nombre o código; busqueda vacía = todo
+        soloPocoStock.setSelected(false);
         mostrarInventario(conect.buscarInventario(busqueda));
     }
 
@@ -1630,6 +1650,7 @@ public class InventarioP extends javax.swing.JPanel {
     private void filtroCategoriaActionPerformed(java.awt.event.ActionEvent evt) {
         if (cargandoFiltro) return;
         int idx = filtroCategoria.getSelectedIndex();
+        if (idx > 0) soloPocoStock.setSelected(false);
         if (idx <= 0) {
             // "Todas" – mostrar todo
             mostrarTabla("");

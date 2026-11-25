@@ -58,6 +58,7 @@ public class Interfaz extends javax.swing.JFrame {
 
     // Conexion
     ConexionBD conect = new ConexionBD();
+    private java.awt.Color colorInventarioOriginal; // color del botón Inventario sin aviso de poco stock
 
     // Usuario Datos
     static String idVendedor = "";
@@ -874,6 +875,7 @@ public class Interfaz extends javax.swing.JFrame {
                 java.awt.Rectangle util = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
                 this.setBounds(util);
                 menuBar.setVisible(true);
+                actualizarAvisoStock();
 
                 initerDia.setVisible(false);
                 java.time.LocalTime ahora = java.time.LocalTime.now();
@@ -911,7 +913,24 @@ public class Interfaz extends javax.swing.JFrame {
         }
     }
 
+    /** Botón Inventario del menú: "Inventario (⚠ N)" en rojo si hay productos con poco stock. */
+    public void actualizarAvisoStock() {
+        if (colorInventarioOriginal == null) colorInventarioOriginal = inventButton.getForeground();
+        int pocos = userActivo ? conect.contarProductosPocos() : 0;
+        if (pocos > 0) {
+            boolean hayIcono = inventButton.getFont().canDisplay('⚠');
+            inventButton.setText(hayIcono ? "Inventario (⚠ " + pocos + ")" : "Inventario (" + pocos + ")");
+            inventButton.setForeground(new java.awt.Color(190, 30, 30));
+            inventButton.setToolTipText(pocos + " producto(s) con 12 piezas o menos");
+        } else {
+            inventButton.setText("Inventario");
+            inventButton.setForeground(colorInventarioOriginal);
+            inventButton.setToolTipText(null);
+        }
+    }
+
     public void visibilidad(int a, int b) {// Muestra los paneles
+        actualizarAvisoStock();
         panelPrin.setVisible(false);
         invPanel.setVisible(false);
         ventPanel.setVisible(false);
@@ -942,6 +961,7 @@ public class Interfaz extends javax.swing.JFrame {
                 ventPanel.mostrarTablaVentaT();
                 ventPanel.mostrarBusqueda("");
                 ventPanel.setVisible(true);
+                ventPanel.enfocarCodigo();
                 break;
             // NO HAY CASE 3
             case 4:// Panel Sistema de Apartados
@@ -1138,6 +1158,7 @@ public class Interfaz extends javax.swing.JFrame {
         // Paneles
         invPanel = new InventarioP();
         ventPanel = new VentasP();
+        ventPanel.setAlCambiarStock(this::actualizarAvisoStock);
         docsPanel = new AdministracionP();
         apPanel = new ApartadosP();
         devPanel = new DevolucionesP();
